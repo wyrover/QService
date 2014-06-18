@@ -1,0 +1,72 @@
+1°¢ ps -aef | grep TestTcpSV
+rickey    2932  1864  0 17:00 pts/0    00:00:00 ./TestTcpSV
+rickey    2999  2939  0 17:06 pts/1    00:00:00 grep TestTcpSV
+
+2°¢top -H -p 2932
+top - 17:07:31 up 24 days,  7:11,  2 users,  load average: 0.22, 0.28, 0.29
+Tasks:   5 total,   0 running,   5 sleeping,   0 stopped,   0 zombie
+Cpu(s): 10.5%us,  6.2%sy,  0.0%ni, 72.4%id, 10.2%wa,  0.0%hi,  0.7%si,  0.0%st
+Mem:   1808812k total,  1194496k used,   614316k free,   208688k buffers
+Swap:  3637240k total,    50248k used,  3586992k free,   732100k cached
+
+  PID USER      PR  NI  VIRT  RES  SHR S %CPU %MEM    TIME+  COMMAND            
+ 2932 rickey    20   0 59864 1412 1180 S  0.0  0.1   0:00.00 TestTcpSV          
+ 2935 rickey    20   0 59864 1412 1180 S  0.0  0.1   0:00.00 TestTcpSV          
+ 2936 rickey    20   0 59864 1412 1180 S  0.0  0.1   0:00.00 TestTcpSV          
+ 2937 rickey    20   0 59864 1412 1180 S  0.0  0.1   0:00.00 TestTcpSV          
+ 2938 rickey    20   0 59864 1412 1180 S  0.0  0.1   0:00.00 TestTcpSV
+
+3°¢pstack 2932 £®LWP ”Î ID∂‘”¶£©
+Thread 5 (Thread 0xb6affb70 (LWP 2935)):
+#0  0x008c8424 in __kernel_vsyscall ()
+#1  0x00b319d6 in epoll_wait () from /lib/libc.so.6
+#2  0x08085450 in epoll_dispatch ()
+#3  0x08075209 in event_base_loop ()
+#4  0x08076079 in event_base_dispatch ()
+#5  0x0805ae64 in CTcpSVTask::Run() ()
+#6  0x0805c976 in CThreadPoolTask::Run() ()
+#7  0x0805b9ad in Run(void*) ()
+#8  0x00c1fa09 in start_thread () from /lib/libpthread.so.0
+#9  0x00b3115e in clone () from /lib/libc.so.6
+Thread 4 (Thread 0xb5effb70 (LWP 2936)):
+#0  0x008c8424 in __kernel_vsyscall ()
+#1  0x00b319d6 in epoll_wait () from /lib/libc.so.6
+#2  0x08085450 in epoll_dispatch ()
+#3  0x08075209 in event_base_loop ()
+#4  0x08076079 in event_base_dispatch ()
+#5  0x0805ae64 in CTcpSVTask::Run() ()
+#6  0x0805c976 in CThreadPoolTask::Run() ()
+#7  0x0805b9ad in Run(void*) ()
+#8  0x00c1fa09 in start_thread () from /lib/libpthread.so.0
+#9  0x00b3115e in clone () from /lib/libc.so.6
+Thread 3 (Thread 0xb52ffb70 (LWP 2937)):
+#0  0x008c8424 in __kernel_vsyscall ()
+#1  0x00b319d6 in epoll_wait () from /lib/libc.so.6
+#2  0x08085450 in epoll_dispatch ()
+#3  0x08075209 in event_base_loop ()
+#4  0x08076079 in event_base_dispatch ()
+#5  0x0805ae64 in CTcpSVTask::Run() ()
+#6  0x0805c976 in CThreadPoolTask::Run() ()
+#7  0x0805b9ad in Run(void*) ()
+#8  0x00c1fa09 in start_thread () from /lib/libpthread.so.0
+#9  0x00b3115e in clone () from /lib/libc.so.6
+Thread 2 (Thread 0xb48feb70 (LWP 2938)):
+#0  0x008c8424 in __kernel_vsyscall ()
+#1  0x00b319d6 in epoll_wait () from /lib/libc.so.6
+#2  0x08085450 in epoll_dispatch ()
+#3  0x08075209 in event_base_loop ()
+#4  0x08076079 in event_base_dispatch ()
+#5  0x0805ae64 in CTcpSVTask::Run() ()
+#6  0x0805c976 in CThreadPoolTask::Run() ()
+#7  0x0805b9ad in Run(void*) ()
+#8  0x00c1fa09 in start_thread () from /lib/libpthread.so.0
+#9  0x00b3115e in clone () from /lib/libc.so.6
+Thread 1 (Thread 0xb77af6d0 (LWP 2932)):
+#0  0x008c8424 in __kernel_vsyscall ()
+#1  0x00b319d6 in epoll_wait () from /lib/libc.so.6
+#2  0x08085450 in epoll_dispatch ()
+#3  0x08075209 in event_base_loop ()
+#4  0x08076079 in event_base_dispatch ()
+#5  0x08059909 in CTcpSV::Loop() ()
+#6  0x0805a9ba in CTcpSV::Start() ()
+#7  0x0804ac3d in main ()

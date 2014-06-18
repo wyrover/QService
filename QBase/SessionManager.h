@@ -1,0 +1,123 @@
+/*****************************************************************************
+ * Copyright (c) 2011-2012. Qifu Luo All Rights Reserved.200309129@163.com 
+ * svn:http://asuraserver.googlecode.com/svn/
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 3. The name of the author may not be used to endorse or promote products
+ *    derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+ * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+ * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*****************************************************************************/
+
+#ifndef Q_SESSION_MANAGER_H_
+#define Q_SESSION_MANAGER_H_
+
+#include "Session.h"
+#include "Buffer.h"
+#include "EventInterface.h"
+
+/*session管理*/
+class CSessionManager
+{
+public:
+    CSessionManager(void);
+    ~CSessionManager(void);
+
+    /*获取session数量*/
+    size_t getSessionSize(void);
+    /*根据ID关闭连接*/
+    void closeClintByID(const int iID);
+    /*关闭当前连接*/
+    void closeCurClint(void);
+    /*获取当前连接session*/
+    CSession *getCurSession(void);
+    /*根据ID获取session*/
+    CSession *getSessionByID(const int iID);
+    /*获取服务器间连接的Session*/
+    CSession *getServerLinkerSession(const char *pszName);
+
+    /*直接发送 格式 unsigned short(消息长度) + 消息*/
+    bool sendToCur(const char *pszData, const size_t uiLens);
+    bool sendToByID(const int iID, const char *pszData, const size_t uiLens);
+    bool sendToAll(const char *pszData, const size_t uiLens);
+
+    /*将消息打包，打包完成后再发送, 不需要该包则调用Clear清理掉*/
+    bool pushMsg(const char *pszData, const size_t usLens);
+    bool sendPushMsgToCur(void);
+    bool sendPushMsgToByID(const int iID);
+    bool sendPushMsgToAll(void);
+    void Clear(void);
+
+    /*设置当前触发操作的session*/ 
+    void setCurSession(CSession *pSession);
+    /*删除session*/
+    void dellSession(struct bufferevent *bev);
+    /*初始化一session*/
+    int addSession(struct bufferevent *bev);
+    /*获取session*/
+    CSession *getSession(struct bufferevent *bev);
+    /*添加服务器间连接*/
+    void addServerLinker(const char *pszName, struct bufferevent *pBufEvent);
+    /*删除服务器间连接*/
+    void delServerLinker(const char *pszName);
+    /*设置事件处理对象*/
+    void setInterface(class CEventInterface *pInterface);
+    class CEventInterface *getInterface(void);
+    /*线程编号*/
+    void setThreadIndex(const short &sIndex);
+    short getThreadIndex(void);
+    /*定时器触发时间*/
+    void setTimer(unsigned int &uiMS);
+    unsigned int getTimer(void);
+    /*定时器触发次数*/
+    void addCount(void);
+    unsigned int getCount(void);
+
+    std::map<int, CSession *> *getAllSession(void)
+    {
+        return &m_mapSession;
+    };
+    /*返回指定类型的服务器连接*/
+    std::vector<std::string> getServerLinkerByType(const int iType);
+    /*判断是否为指定类型的服务器连接*/
+    bool checkType(const int iType, const int iClientID);
+    /*获取服务器间连接数*/
+    int getGetSVLinkerNum(void);
+
+private:
+    /*释放所有session*/
+    void freeAllSession(void);
+    bool sendWithHead(CSession *pCurrent, 
+        const char *pszData, const size_t &uiLens);
+    bool checkParam(CSession *pCurrent, 
+        const char *pszData, const size_t &uiLens);
+
+private:
+    short m_sThreadIndex;
+    unsigned int m_uiTimer;
+    unsigned int m_uiCount;
+    CSession *m_pCurrent; //当前Session
+    class CEventInterface *m_pInterface;
+    std::map<int, CSession *> m_mapSession;//所有Session
+    std::vector<CSession *> m_vcFreeSession;//空闲的session
+    std::map<std::string, bufferevent* > m_mapServerLinker;
+    CBuffer m_objBuffer;
+};
+
+#endif//Q_SESSION_MANAGER_H_

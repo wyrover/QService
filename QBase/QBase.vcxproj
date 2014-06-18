@@ -1,0 +1,358 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="AES.h" />
+    <ClInclude Include="Base64.h" />
+    <ClInclude Include="Buffer.h" />
+    <ClInclude Include="Charset.h" />
+    <ClInclude Include="Cond.h" />
+    <ClInclude Include="Config.h" />
+    <ClInclude Include="CoreDump.h" />
+    <ClInclude Include="CTask.h" />
+    <ClInclude Include="DataBase.h" />
+    <ClInclude Include="DBPool.h" />
+    <ClInclude Include="Enum.h" />
+    <ClInclude Include="ErrorCode.h" />
+    <ClInclude Include="EventBuffer.h" />
+    <ClInclude Include="EventInterface.h" />
+    <ClInclude Include="Exception.h" />
+    <ClInclude Include="File.h" />
+    <ClInclude Include="Filter.h" />
+    <ClInclude Include="Include.h" />
+    <ClInclude Include="Ini.h" />
+    <ClInclude Include="Library.h" />
+    <ClInclude Include="Loger.h" />
+    <ClInclude Include="lua5.2\dtoa_config.h" />
+    <ClInclude Include="lua5.2\fpconv.h" />
+    <ClInclude Include="lua5.2\lapi.h" />
+    <ClInclude Include="lua5.2\lauxlib.h" />
+    <ClInclude Include="lua5.2\lcode.h" />
+    <ClInclude Include="lua5.2\lctype.h" />
+    <ClInclude Include="lua5.2\ldebug.h" />
+    <ClInclude Include="lua5.2\ldo.h" />
+    <ClInclude Include="lua5.2\lfunc.h" />
+    <ClInclude Include="lua5.2\lgc.h" />
+    <ClInclude Include="lua5.2\llex.h" />
+    <ClInclude Include="lua5.2\llimits.h" />
+    <ClInclude Include="lua5.2\lmem.h" />
+    <ClInclude Include="lua5.2\lobject.h" />
+    <ClInclude Include="lua5.2\lopcodes.h" />
+    <ClInclude Include="lua5.2\lparser.h" />
+    <ClInclude Include="lua5.2\lstate.h" />
+    <ClInclude Include="lua5.2\lstring.h" />
+    <ClInclude Include="lua5.2\ltable.h" />
+    <ClInclude Include="lua5.2\ltm.h" />
+    <ClInclude Include="lua5.2\lua.h" />
+    <ClInclude Include="lua5.2\lua.hpp" />
+    <ClInclude Include="lua5.2\luaconf.h" />
+    <ClInclude Include="lua5.2\lualib.h" />
+    <ClInclude Include="lua5.2\lundump.h" />
+    <ClInclude Include="lua5.2\lvm.h" />
+    <ClInclude Include="lua5.2\lzio.h" />
+    <ClInclude Include="lua5.2\strbuf.h" />
+    <ClInclude Include="LuaBridge\detail\CFunctions.h" />
+    <ClInclude Include="LuaBridge\detail\ClassInfo.h" />
+    <ClInclude Include="LuaBridge\detail\Constructor.h" />
+    <ClInclude Include="LuaBridge\detail\dump.h" />
+    <ClInclude Include="LuaBridge\detail\FuncTraits.h" />
+    <ClInclude Include="LuaBridge\detail\Iterator.h" />
+    <ClInclude Include="LuaBridge\detail\LuaException.h" />
+    <ClInclude Include="LuaBridge\detail\LuaHelpers.h" />
+    <ClInclude Include="LuaBridge\detail\LuaRef.h" />
+    <ClInclude Include="LuaBridge\detail\Namespace.h" />
+    <ClInclude Include="LuaBridge\detail\Stack.h" />
+    <ClInclude Include="LuaBridge\detail\TypeList.h" />
+    <ClInclude Include="LuaBridge\detail\TypeTraits.h" />
+    <ClInclude Include="LuaBridge\detail\Userdata.h" />
+    <ClInclude Include="LuaBridge\LuaBridge.h" />
+    <ClInclude Include="LuaBridge\RefCountedObject.h" />
+    <ClInclude Include="LuaBridge\RefCountedPtr.h" />
+    <ClInclude Include="LuaFunc.h" />
+    <ClInclude Include="md5.h" />
+    <ClInclude Include="MMap.h" />
+    <ClInclude Include="NETAddr.h" />
+    <ClInclude Include="InitSock.h" />
+    <ClInclude Include="Log.h" />
+    <ClInclude Include="Macros.h" />
+    <ClInclude Include="Mutex.h" />
+    <ClInclude Include="OSFunc.h" />
+    <ClInclude Include="pugixml\pugiconfig.hpp" />
+    <ClInclude Include="pugixml\pugixml.hpp" />
+    <ClInclude Include="QBase.h" />
+    <ClInclude Include="QMySQL.h" />
+    <ClInclude Include="QRSA.h" />
+    <ClInclude Include="QString.h" />
+    <ClInclude Include="QTime.h" />
+    <ClInclude Include="rijndael\rijndael.h" />
+    <ClInclude Include="RSAEuro\des.h" />
+    <ClInclude Include="RSAEuro\global.h" />
+    <ClInclude Include="RSAEuro\md2.h" />
+    <ClInclude Include="RSAEuro\md4.h" />
+    <ClInclude Include="RSAEuro\md5.h" />
+    <ClInclude Include="RSAEuro\nn.h" />
+    <ClInclude Include="RSAEuro\prime.h" />
+    <ClInclude Include="RSAEuro\rsa.h" />
+    <ClInclude Include="RSAEuro\rsaeuro.h" />
+    <ClInclude Include="RSAEuro\rsaref.h" />
+    <ClInclude Include="RSAEuro\r_random.h" />
+    <ClInclude Include="RSAEuro\shs.h" />
+    <ClInclude Include="RSAKey.h" />
+    <ClInclude Include="RWLock.h" />
+    <ClInclude Include="SampleLoger.h" />
+    <ClInclude Include="Server.h" />
+    <ClInclude Include="ServerLinker.h" />
+    <ClInclude Include="Session.h" />
+    <ClInclude Include="SessionManager.h" />
+    <ClInclude Include="SnowflakeID.h" />
+    <ClInclude Include="SockPair.h" />
+    <ClInclude Include="SockPairEvent.h" />
+    <ClInclude Include="SockPairEventParam.h" />
+    <ClInclude Include="Sqlite.h" />
+    <ClInclude Include="Sqlite\sqlite3.h" />
+    <ClInclude Include="SysLog.h" />
+    <ClInclude Include="TableFile.h" />
+    <ClInclude Include="Thread.h" />
+    <ClInclude Include="ThreadPool.h" />
+    <ClInclude Include="Timer.h" />
+    <ClInclude Include="TimerTask.h" />
+    <ClInclude Include="uchardet\CharDistribution.h" />
+    <ClInclude Include="uchardet\JpCntx.h" />
+    <ClInclude Include="uchardet\nsBig5Prober.h" />
+    <ClInclude Include="uchardet\nsCharSetProber.h" />
+    <ClInclude Include="uchardet\nsCodingStateMachine.h" />
+    <ClInclude Include="uchardet\nscore.h" />
+    <ClInclude Include="uchardet\nsEscCharsetProber.h" />
+    <ClInclude Include="uchardet\nsEUCJPProber.h" />
+    <ClInclude Include="uchardet\nsEUCKRProber.h" />
+    <ClInclude Include="uchardet\nsEUCTWProber.h" />
+    <ClInclude Include="uchardet\nsGB2312Prober.h" />
+    <ClInclude Include="uchardet\nsHebrewProber.h" />
+    <ClInclude Include="uchardet\nsLatin1Prober.h" />
+    <ClInclude Include="uchardet\nsMBCSGroupProber.h" />
+    <ClInclude Include="uchardet\nsPkgInt.h" />
+    <ClInclude Include="uchardet\nsSBCharSetProber.h" />
+    <ClInclude Include="uchardet\nsSBCSGroupProber.h" />
+    <ClInclude Include="uchardet\nsSJISProber.h" />
+    <ClInclude Include="uchardet\nsUniversalDetector.h" />
+    <ClInclude Include="uchardet\nsUTF8Prober.h" />
+    <ClInclude Include="uchardet\prmem.h" />
+    <ClInclude Include="uchardet\uchardet.h" />
+    <ClInclude Include="UUID.h" />
+    <ClInclude Include="Version.h" />
+    <ClInclude Include="WorkThreadEvent.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="AES.cpp" />
+    <ClCompile Include="Base64.cpp" />
+    <ClCompile Include="Buffer.cpp" />
+    <ClCompile Include="Charset.cpp" />
+    <ClCompile Include="Cond.cpp" />
+    <ClCompile Include="CoreDump.cpp" />
+    <ClCompile Include="DataBase.cpp" />
+    <ClCompile Include="DBPool.cpp" />
+    <ClCompile Include="EventBuffer.cpp" />
+    <ClCompile Include="Exception.cpp" />
+    <ClCompile Include="File.cpp" />
+    <ClCompile Include="Filter.cpp" />
+    <ClCompile Include="Ini.cpp" />
+    <ClCompile Include="Library.cpp" />
+    <ClCompile Include="lua5.2\dtoa.c" />
+    <ClCompile Include="lua5.2\g_fmt.c" />
+    <ClCompile Include="lua5.2\lapi.c" />
+    <ClCompile Include="lua5.2\lauxlib.c" />
+    <ClCompile Include="lua5.2\lbaselib.c" />
+    <ClCompile Include="lua5.2\lbitlib.c" />
+    <ClCompile Include="lua5.2\lcode.c" />
+    <ClCompile Include="lua5.2\lcorolib.c" />
+    <ClCompile Include="lua5.2\lctype.c" />
+    <ClCompile Include="lua5.2\ldblib.c" />
+    <ClCompile Include="lua5.2\ldebug.c" />
+    <ClCompile Include="lua5.2\ldo.c" />
+    <ClCompile Include="lua5.2\ldump.c" />
+    <ClCompile Include="lua5.2\lfunc.c" />
+    <ClCompile Include="lua5.2\lgc.c" />
+    <ClCompile Include="lua5.2\linit.c" />
+    <ClCompile Include="lua5.2\liolib.c" />
+    <ClCompile Include="lua5.2\llex.c" />
+    <ClCompile Include="lua5.2\lmathlib.c" />
+    <ClCompile Include="lua5.2\lmem.c" />
+    <ClCompile Include="lua5.2\loadlib.c" />
+    <ClCompile Include="lua5.2\lobject.c" />
+    <ClCompile Include="lua5.2\lopcodes.c" />
+    <ClCompile Include="lua5.2\loslib.c" />
+    <ClCompile Include="lua5.2\lparser.c" />
+    <ClCompile Include="lua5.2\lstate.c" />
+    <ClCompile Include="lua5.2\lstring.c" />
+    <ClCompile Include="lua5.2\lstrlib.c" />
+    <ClCompile Include="lua5.2\ltable.c" />
+    <ClCompile Include="lua5.2\ltablib.c" />
+    <ClCompile Include="lua5.2\ltm.c" />
+    <ClCompile Include="lua5.2\lua_cjson.c" />
+    <ClCompile Include="lua5.2\lundump.c" />
+    <ClCompile Include="lua5.2\lvm.c" />
+    <ClCompile Include="lua5.2\lzio.c" />
+    <ClCompile Include="lua5.2\strbuf.c" />
+    <ClCompile Include="md5.cpp" />
+    <ClCompile Include="NETAddr.cpp" />
+    <ClCompile Include="InitSock.cpp" />
+    <ClCompile Include="Log.cpp" />
+    <ClCompile Include="Mutex.cpp" />
+    <ClCompile Include="OSFunc.cpp" />
+    <ClCompile Include="pugixml\pugixml.cpp" />
+    <ClCompile Include="QBase.cpp" />
+    <ClCompile Include="QMySQL.cpp" />
+    <ClCompile Include="QRSA.cpp" />
+    <ClCompile Include="QString.cpp" />
+    <ClCompile Include="QTime.cpp" />
+    <ClCompile Include="rijndael\rijndael.cpp" />
+    <ClCompile Include="RSAEuro\desc.c" />
+    <ClCompile Include="RSAEuro\md2c.c" />
+    <ClCompile Include="RSAEuro\md4c.c" />
+    <ClCompile Include="RSAEuro\md5c.c" />
+    <ClCompile Include="RSAEuro\nn.c" />
+    <ClCompile Include="RSAEuro\prime.c" />
+    <ClCompile Include="RSAEuro\rsa.c" />
+    <ClCompile Include="RSAEuro\r_dh.c" />
+    <ClCompile Include="RSAEuro\r_encode.c" />
+    <ClCompile Include="RSAEuro\r_enhanc.c" />
+    <ClCompile Include="RSAEuro\r_keygen.c" />
+    <ClCompile Include="RSAEuro\r_random.c" />
+    <ClCompile Include="RSAEuro\r_stdlib.c" />
+    <ClCompile Include="RSAEuro\shsc.c" />
+    <ClCompile Include="RSAKey.cpp" />
+    <ClCompile Include="RWLock.cpp" />
+    <ClCompile Include="SampleLoger.cpp" />
+    <ClCompile Include="Server.cpp" />
+    <ClCompile Include="ServerLinker.cpp" />
+    <ClCompile Include="Session.cpp" />
+    <ClCompile Include="SessionManager.cpp" />
+    <ClCompile Include="SnowflakeID.cpp" />
+    <ClCompile Include="SockPair.cpp" />
+    <ClCompile Include="SockPairEvent.cpp" />
+    <ClCompile Include="Sqlite.cpp" />
+    <ClCompile Include="Sqlite\sqlite3.c" />
+    <ClCompile Include="SysLog.cpp" />
+    <ClCompile Include="TableFile.cpp" />
+    <ClCompile Include="Thread.cpp" />
+    <ClCompile Include="ThreadPool.cpp" />
+    <ClCompile Include="Timer.cpp" />
+    <ClCompile Include="TimerTask.cpp" />
+    <ClCompile Include="uchardet\CharDistribution.cpp" />
+    <ClCompile Include="uchardet\JpCntx.cpp" />
+    <ClCompile Include="uchardet\LangBulgarianModel.cpp" />
+    <ClCompile Include="uchardet\LangCyrillicModel.cpp" />
+    <ClCompile Include="uchardet\LangGreekModel.cpp" />
+    <ClCompile Include="uchardet\LangHebrewModel.cpp" />
+    <ClCompile Include="uchardet\LangHungarianModel.cpp" />
+    <ClCompile Include="uchardet\LangThaiModel.cpp" />
+    <ClCompile Include="uchardet\nsBig5Prober.cpp" />
+    <ClCompile Include="uchardet\nsCharSetProber.cpp" />
+    <ClCompile Include="uchardet\nsEscCharsetProber.cpp" />
+    <ClCompile Include="uchardet\nsEscSM.cpp" />
+    <ClCompile Include="uchardet\nsEUCJPProber.cpp" />
+    <ClCompile Include="uchardet\nsEUCKRProber.cpp" />
+    <ClCompile Include="uchardet\nsEUCTWProber.cpp" />
+    <ClCompile Include="uchardet\nsGB2312Prober.cpp" />
+    <ClCompile Include="uchardet\nsHebrewProber.cpp" />
+    <ClCompile Include="uchardet\nsLatin1Prober.cpp" />
+    <ClCompile Include="uchardet\nsMBCSGroupProber.cpp" />
+    <ClCompile Include="uchardet\nsMBCSSM.cpp" />
+    <ClCompile Include="uchardet\nsSBCharSetProber.cpp" />
+    <ClCompile Include="uchardet\nsSBCSGroupProber.cpp" />
+    <ClCompile Include="uchardet\nsSJISProber.cpp" />
+    <ClCompile Include="uchardet\nsUniversalDetector.cpp" />
+    <ClCompile Include="uchardet\nsUTF8Prober.cpp" />
+    <ClCompile Include="uchardet\uchardet.cpp" />
+    <ClCompile Include="UUID.cpp" />
+    <ClCompile Include="WorkThreadEvent.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="RSAEuro\des386.s" />
+    <None Include="RSAEuro\rsa386.s" />
+    <None Include="RSAEuro\rsa68k.s" />
+    <None Include="RSAEuro\rsasparc.s" />
+    <None Include="uchardet\Big5Freq.tab" />
+    <None Include="uchardet\EUCKRFreq.tab" />
+    <None Include="uchardet\EUCTWFreq.tab" />
+    <None Include="uchardet\GB2312Freq.tab" />
+    <None Include="uchardet\JISFreq.tab" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{3408BBED-EF62-488B-AC43-89C73C962E5A}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>QBase</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>../Bin</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>../Bin</OutDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>../QBase;../QBase/mysql;../QBase/Sqlite;../QBase/lua5.2;../QBase/pugixml;../QBase/rijndael;../QBase/rapidjson;../QBase/RSAEuro;../QBase/uchardet;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>../QBase;../QBase/mysql;../QBase/Sqlite;../QBase/lua5.2;../QBase/pugixml;../QBase/rijndael;../QBase/rapidjson;../QBase/RSAEuro;../QBase/uchardet;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

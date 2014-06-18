@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="TestDataBase.cpp" />
+    <ClCompile Include="TestEncypt.cpp" />
+    <ClCompile Include="TestFile.cpp" />
+    <ClCompile Include="TestLog.cpp" />
+    <ClCompile Include="TestLua.cpp" />
+    <ClCompile Include="TestArithmetic.cpp" />
+    <ClCompile Include="TestCharset.cpp" />
+    <ClCompile Include="TestSnowflakeID.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="TestDataBase.h" />
+    <ClInclude Include="TestEncypt.h" />
+    <ClInclude Include="TestFile.h" />
+    <ClInclude Include="TestLog.h" />
+    <ClInclude Include="TestLua.h" />
+    <ClInclude Include="TestInclude.h" />
+    <ClInclude Include="TestArithmetic.h" />
+    <ClInclude Include="TestCharset.h" />
+    <ClInclude Include="TestSnowflakeID.h" />
+  </ItemGroup>
+</Project>

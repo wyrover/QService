@@ -1,0 +1,44 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QService", "QService\QService.vcxproj", "{72281FCF-0330-49FC-B00F-A57AFD24DA5B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{3408BBED-EF62-488B-AC43-89C73C962E5A} = {3408BBED-EF62-488B-AC43-89C73C962E5A}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QBase", "QBase\QBase.vcxproj", "{3408BBED-EF62-488B-AC43-89C73C962E5A}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestQBase", "TestQBase\TestQBase.vcxproj", "{8EEC4BE9-854E-4ED1-8BC6-5AC1EC3CBE33}"
+	ProjectSection(ProjectDependencies) = postProject
+		{3408BBED-EF62-488B-AC43-89C73C962E5A} = {3408BBED-EF62-488B-AC43-89C73C962E5A}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "StreeTesting", "StreeTesting\StreeTesting.vcxproj", "{42A2C103-2946-457E-BE03-BB105A39D1CF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{72281FCF-0330-49FC-B00F-A57AFD24DA5B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{72281FCF-0330-49FC-B00F-A57AFD24DA5B}.Debug|Win32.Build.0 = Debug|Win32
+		{72281FCF-0330-49FC-B00F-A57AFD24DA5B}.Release|Win32.ActiveCfg = Release|Win32
+		{72281FCF-0330-49FC-B00F-A57AFD24DA5B}.Release|Win32.Build.0 = Release|Win32
+		{3408BBED-EF62-488B-AC43-89C73C962E5A}.Debug|Win32.ActiveCfg = Debug|Win32
+		{3408BBED-EF62-488B-AC43-89C73C962E5A}.Debug|Win32.Build.0 = Debug|Win32
+		{3408BBED-EF62-488B-AC43-89C73C962E5A}.Release|Win32.ActiveCfg = Release|Win32
+		{3408BBED-EF62-488B-AC43-89C73C962E5A}.Release|Win32.Build.0 = Release|Win32
+		{8EEC4BE9-854E-4ED1-8BC6-5AC1EC3CBE33}.Debug|Win32.ActiveCfg = Debug|Win32
+		{8EEC4BE9-854E-4ED1-8BC6-5AC1EC3CBE33}.Debug|Win32.Build.0 = Debug|Win32
+		{8EEC4BE9-854E-4ED1-8BC6-5AC1EC3CBE33}.Release|Win32.ActiveCfg = Release|Win32
+		{8EEC4BE9-854E-4ED1-8BC6-5AC1EC3CBE33}.Release|Win32.Build.0 = Release|Win32
+		{42A2C103-2946-457E-BE03-BB105A39D1CF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{42A2C103-2946-457E-BE03-BB105A39D1CF}.Debug|Win32.Build.0 = Debug|Win32
+		{42A2C103-2946-457E-BE03-BB105A39D1CF}.Release|Win32.ActiveCfg = Release|Win32
+		{42A2C103-2946-457E-BE03-BB105A39D1CF}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,910 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Config">
+      <UniqueIdentifier>{5898aaee-4557-4207-9e27-af7cd05052cd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Log">
+      <UniqueIdentifier>{b3df48a5-bdca-4ac2-b522-16c115184e62}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Base">
+      <UniqueIdentifier>{f9e9e308-f9f1-45b8-a080-d3d711659b03}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="File">
+      <UniqueIdentifier>{2d933d4f-c040-4e56-961c-36b99d6194a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="String">
+      <UniqueIdentifier>{cd1f3bc0-240f-4192-ae93-4c3327275d88}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Encrypt">
+      <UniqueIdentifier>{eb462928-4c57-4e40-a854-a6cf3c0e9229}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Xml">
+      <UniqueIdentifier>{f105553c-0760-42a5-ba63-508fdead5be6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TimerTask">
+      <UniqueIdentifier>{b5a56e40-212a-4351-9e84-876f3fbfc165}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DataBase">
+      <UniqueIdentifier>{308debb4-45c8-4962-90ca-f71013c9ce31}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DataBase\MySQL">
+      <UniqueIdentifier>{7262e064-13d0-49ff-84a4-9993247a7778}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DataBase\Sqlite3">
+      <UniqueIdentifier>{2398bb8b-978b-4e4a-9cea-fbc3e27faed9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lua">
+      <UniqueIdentifier>{07e962fb-d36f-4b24-a3f9-965efaa12fad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Encrypt\RSA">
+      <UniqueIdentifier>{b8c098ef-c0fc-433b-9ea2-23e3c5840b9d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Encrypt\AES">
+      <UniqueIdentifier>{7678bc8b-2e13-4b18-b148-de955e7cd35f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Encrypt\AES\rijndael">
+      <UniqueIdentifier>{d70695a5-72c0-4c44-bfaf-43e84b06513e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Encrypt\MD5">
+      <UniqueIdentifier>{a9592930-a07e-44cc-8d92-750d782c48c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Encrypt\Base64">
+      <UniqueIdentifier>{15675f69-4db2-48c0-88d7-48064afa894e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Encrypt\RSA\RSAEuro">
+      <UniqueIdentifier>{50273d25-6062-4753-a3f0-8328a40ae0c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Base\Thread">
+      <UniqueIdentifier>{153b3991-da49-47f9-8c2d-a7f566a46335}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Base\NetWorlk">
+      <UniqueIdentifier>{235cf100-e459-4b53-97e8-2239e611a770}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Base\OS">
+      <UniqueIdentifier>{448db666-d984-45e5-9408-0c6d1f273a15}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Service">
+      <UniqueIdentifier>{404438f3-ebef-4875-892f-fc55bf3556c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Service\Session">
+      <UniqueIdentifier>{253f895c-a984-435e-9251-e88f62fd05df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Service\WorkThread">
+      <UniqueIdentifier>{b96add17-3e73-4002-a1ad-6b525a6de1f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Arithmetic">
+      <UniqueIdentifier>{f286f5fc-5259-461c-8132-39c66b01a145}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lua\LuaBridge">
+      <UniqueIdentifier>{51697bb9-54b9-43f8-83ec-f050bb0797ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lua\LuaBridge\detail">
+      <UniqueIdentifier>{7c7bb3c1-1a41-4d2e-bd46-f158a2e8ed1c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="String\uchardet">
+      <UniqueIdentifier>{fd4f9b32-6eb8-4a84-aae0-be5e5d4fcf6a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lua\lua5.2">
+      <UniqueIdentifier>{de1fdfaa-7eab-48f9-8388-c871adab3338}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lua\lua5.2\cjson">
+      <UniqueIdentifier>{44a13b37-48d3-4262-912a-8ac266d7177f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Config.h">
+      <Filter>Config</Filter>
+    </ClInclude>
+    <ClInclude Include="ErrorCode.h">
+      <Filter>Config</Filter>
+    </ClInclude>
+    <ClInclude Include="Include.h">
+      <Filter>Config</Filter>
+    </ClInclude>
+    <ClInclude Include="Macros.h">
+      <Filter>Config</Filter>
+    </ClInclude>
+    <ClInclude Include="Version.h">
+      <Filter>Config</Filter>
+    </ClInclude>
+    <ClInclude Include="Log.h">
+      <Filter>Log</Filter>
+    </ClInclude>
+    <ClInclude Include="Exception.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="QString.h">
+      <Filter>String</Filter>
+    </ClInclude>
+    <ClInclude Include="File.h">
+      <Filter>File</Filter>
+    </ClInclude>
+    <ClInclude Include="Ini.h">
+      <Filter>File</Filter>
+    </ClInclude>
+    <ClInclude Include="TableFile.h">
+      <Filter>File</Filter>
+    </ClInclude>
+    <ClInclude Include="pugixml\pugiconfig.hpp">
+      <Filter>Xml</Filter>
+    </ClInclude>
+    <ClInclude Include="pugixml\pugixml.hpp">
+      <Filter>Xml</Filter>
+    </ClInclude>
+    <ClInclude Include="DataBase.h">
+      <Filter>DataBase</Filter>
+    </ClInclude>
+    <ClInclude Include="Sqlite\sqlite3.h">
+      <Filter>DataBase\Sqlite3</Filter>
+    </ClInclude>
+    <ClInclude Include="Sqlite.h">
+      <Filter>DataBase\Sqlite3</Filter>
+    </ClInclude>
+    <ClInclude Include="QMySQL.h">
+      <Filter>DataBase\MySQL</Filter>
+    </ClInclude>
+    <ClInclude Include="QBase.h" />
+    <ClInclude Include="TimerTask.h">
+      <Filter>TimerTask</Filter>
+    </ClInclude>
+    <ClInclude Include="SampleLoger.h">
+      <Filter>Log</Filter>
+    </ClInclude>
+    <ClInclude Include="Loger.h">
+      <Filter>Log</Filter>
+    </ClInclude>
+    <ClInclude Include="DBPool.h">
+      <Filter>DataBase</Filter>
+    </ClInclude>
+    <ClInclude Include="rijndael\rijndael.h">
+      <Filter>Encrypt\AES\rijndael</Filter>
+    </ClInclude>
+    <ClInclude Include="Server.h">
+      <Filter>Service</Filter>
+    </ClInclude>
+    <ClInclude Include="Session.h">
+      <Filter>Service\Session</Filter>
+    </ClInclude>
+    <ClInclude Include="SessionManager.h">
+      <Filter>Service\Session</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerLinker.h">
+      <Filter>Service\WorkThread</Filter>
+    </ClInclude>
+    <ClInclude Include="WorkThreadEvent.h">
+      <Filter>Service\WorkThread</Filter>
+    </ClInclude>
+    <ClInclude Include="RSAEuro\des.h">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </ClInclude>
+    <ClInclude Include="RSAEuro\global.h">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </ClInclude>
+    <ClInclude Include="RSAEuro\md2.h">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </ClInclude>
+    <ClInclude Include="RSAEuro\md4.h">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </ClInclude>
+    <ClInclude Include="RSAEuro\md5.h">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </ClInclude>
+    <ClInclude Include="RSAEuro\nn.h">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </ClInclude>
+    <ClInclude Include="RSAEuro\prime.h">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </ClInclude>
+    <ClInclude Include="RSAEuro\r_random.h">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </ClInclude>
+    <ClInclude Include="RSAEuro\rsa.h">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </ClInclude>
+    <ClInclude Include="RSAEuro\rsaeuro.h">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </ClInclude>
+    <ClInclude Include="RSAEuro\rsaref.h">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </ClInclude>
+    <ClInclude Include="RSAEuro\shs.h">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </ClInclude>
+    <ClInclude Include="RSAKey.h">
+      <Filter>Encrypt\RSA</Filter>
+    </ClInclude>
+    <ClInclude Include="AES.h">
+      <Filter>Encrypt\AES</Filter>
+    </ClInclude>
+    <ClInclude Include="md5.h">
+      <Filter>Encrypt\MD5</Filter>
+    </ClInclude>
+    <ClInclude Include="Base64.h">
+      <Filter>Encrypt\Base64</Filter>
+    </ClInclude>
+    <ClInclude Include="Cond.h">
+      <Filter>Base\Thread</Filter>
+    </ClInclude>
+    <ClInclude Include="Mutex.h">
+      <Filter>Base\Thread</Filter>
+    </ClInclude>
+    <ClInclude Include="RWLock.h">
+      <Filter>Base\Thread</Filter>
+    </ClInclude>
+    <ClInclude Include="Thread.h">
+      <Filter>Base\Thread</Filter>
+    </ClInclude>
+    <ClInclude Include="ThreadPool.h">
+      <Filter>Base\Thread</Filter>
+    </ClInclude>
+    <ClInclude Include="EventBuffer.h">
+      <Filter>Base\NetWorlk</Filter>
+    </ClInclude>
+    <ClInclude Include="InitSock.h">
+      <Filter>Base\NetWorlk</Filter>
+    </ClInclude>
+    <ClInclude Include="NETAddr.h">
+      <Filter>Base\NetWorlk</Filter>
+    </ClInclude>
+    <ClInclude Include="SockPair.h">
+      <Filter>Base\NetWorlk</Filter>
+    </ClInclude>
+    <ClInclude Include="SockPairEvent.h">
+      <Filter>Base\NetWorlk</Filter>
+    </ClInclude>
+    <ClInclude Include="SockPairEventParam.h">
+      <Filter>Base\NetWorlk</Filter>
+    </ClInclude>
+    <ClInclude Include="QTime.h">
+      <Filter>Base\OS</Filter>
+    </ClInclude>
+    <ClInclude Include="OSFunc.h">
+      <Filter>Base\OS</Filter>
+    </ClInclude>
+    <ClInclude Include="Library.h">
+      <Filter>Base\OS</Filter>
+    </ClInclude>
+    <ClInclude Include="CoreDump.h">
+      <Filter>Base\OS</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.h">
+      <Filter>Base\OS</Filter>
+    </ClInclude>
+    <ClInclude Include="UUID.h">
+      <Filter>Base\OS</Filter>
+    </ClInclude>
+    <ClInclude Include="CTask.h">
+      <Filter>Base\Thread</Filter>
+    </ClInclude>
+    <ClInclude Include="QRSA.h">
+      <Filter>Encrypt\RSA</Filter>
+    </ClInclude>
+    <ClInclude Include="Filter.h">
+      <Filter>Arithmetic</Filter>
+    </ClInclude>
+    <ClInclude Include="Buffer.h">
+      <Filter>Base\OS</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaBridge\detail\CFunctions.h">
+      <Filter>Lua\LuaBridge\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaBridge\detail\ClassInfo.h">
+      <Filter>Lua\LuaBridge\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaBridge\detail\Constructor.h">
+      <Filter>Lua\LuaBridge\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaBridge\detail\dump.h">
+      <Filter>Lua\LuaBridge\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaBridge\detail\FuncTraits.h">
+      <Filter>Lua\LuaBridge\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaBridge\detail\Iterator.h">
+      <Filter>Lua\LuaBridge\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaBridge\detail\LuaException.h">
+      <Filter>Lua\LuaBridge\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaBridge\detail\LuaHelpers.h">
+      <Filter>Lua\LuaBridge\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaBridge\detail\LuaRef.h">
+      <Filter>Lua\LuaBridge\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaBridge\detail\Namespace.h">
+      <Filter>Lua\LuaBridge\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaBridge\detail\Stack.h">
+      <Filter>Lua\LuaBridge\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaBridge\detail\TypeList.h">
+      <Filter>Lua\LuaBridge\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaBridge\detail\TypeTraits.h">
+      <Filter>Lua\LuaBridge\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaBridge\detail\Userdata.h">
+      <Filter>Lua\LuaBridge\detail</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaBridge\LuaBridge.h">
+      <Filter>Lua\LuaBridge</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaBridge\RefCountedObject.h">
+      <Filter>Lua\LuaBridge</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaBridge\RefCountedPtr.h">
+      <Filter>Lua\LuaBridge</Filter>
+    </ClInclude>
+    <ClInclude Include="SysLog.h">
+      <Filter>Base\OS</Filter>
+    </ClInclude>
+    <ClInclude Include="Enum.h">
+      <Filter>Config</Filter>
+    </ClInclude>
+    <ClInclude Include="EventInterface.h">
+      <Filter>Service\WorkThread</Filter>
+    </ClInclude>
+    <ClInclude Include="MMap.h">
+      <Filter>Base\OS</Filter>
+    </ClInclude>
+    <ClInclude Include="uchardet\CharDistribution.h">
+      <Filter>String\uchardet</Filter>
+    </ClInclude>
+    <ClInclude Include="uchardet\JpCntx.h">
+      <Filter>String\uchardet</Filter>
+    </ClInclude>
+    <ClInclude Include="uchardet\nsBig5Prober.h">
+      <Filter>String\uchardet</Filter>
+    </ClInclude>
+    <ClInclude Include="uchardet\nsCharSetProber.h">
+      <Filter>String\uchardet</Filter>
+    </ClInclude>
+    <ClInclude Include="uchardet\nsCodingStateMachine.h">
+      <Filter>String\uchardet</Filter>
+    </ClInclude>
+    <ClInclude Include="uchardet\nscore.h">
+      <Filter>String\uchardet</Filter>
+    </ClInclude>
+    <ClInclude Include="uchardet\nsEscCharsetProber.h">
+      <Filter>String\uchardet</Filter>
+    </ClInclude>
+    <ClInclude Include="uchardet\nsEUCJPProber.h">
+      <Filter>String\uchardet</Filter>
+    </ClInclude>
+    <ClInclude Include="uchardet\nsEUCKRProber.h">
+      <Filter>String\uchardet</Filter>
+    </ClInclude>
+    <ClInclude Include="uchardet\nsEUCTWProber.h">
+      <Filter>String\uchardet</Filter>
+    </ClInclude>
+    <ClInclude Include="uchardet\nsGB2312Prober.h">
+      <Filter>String\uchardet</Filter>
+    </ClInclude>
+    <ClInclude Include="uchardet\nsHebrewProber.h">
+      <Filter>String\uchardet</Filter>
+    </ClInclude>
+    <ClInclude Include="uchardet\nsLatin1Prober.h">
+      <Filter>String\uchardet</Filter>
+    </ClInclude>
+    <ClInclude Include="uchardet\nsMBCSGroupProber.h">
+      <Filter>String\uchardet</Filter>
+    </ClInclude>
+    <ClInclude Include="uchardet\nsPkgInt.h">
+      <Filter>String\uchardet</Filter>
+    </ClInclude>
+    <ClInclude Include="uchardet\nsSBCharSetProber.h">
+      <Filter>String\uchardet</Filter>
+    </ClInclude>
+    <ClInclude Include="uchardet\nsSBCSGroupProber.h">
+      <Filter>String\uchardet</Filter>
+    </ClInclude>
+    <ClInclude Include="uchardet\nsSJISProber.h">
+      <Filter>String\uchardet</Filter>
+    </ClInclude>
+    <ClInclude Include="uchardet\nsUniversalDetector.h">
+      <Filter>String\uchardet</Filter>
+    </ClInclude>
+    <ClInclude Include="uchardet\nsUTF8Prober.h">
+      <Filter>String\uchardet</Filter>
+    </ClInclude>
+    <ClInclude Include="uchardet\prmem.h">
+      <Filter>String\uchardet</Filter>
+    </ClInclude>
+    <ClInclude Include="uchardet\uchardet.h">
+      <Filter>String\uchardet</Filter>
+    </ClInclude>
+    <ClInclude Include="Charset.h">
+      <Filter>String</Filter>
+    </ClInclude>
+    <ClInclude Include="lua5.2\lapi.h">
+      <Filter>Lua\lua5.2</Filter>
+    </ClInclude>
+    <ClInclude Include="lua5.2\lauxlib.h">
+      <Filter>Lua\lua5.2</Filter>
+    </ClInclude>
+    <ClInclude Include="lua5.2\lcode.h">
+      <Filter>Lua\lua5.2</Filter>
+    </ClInclude>
+    <ClInclude Include="lua5.2\lctype.h">
+      <Filter>Lua\lua5.2</Filter>
+    </ClInclude>
+    <ClInclude Include="lua5.2\ldebug.h">
+      <Filter>Lua\lua5.2</Filter>
+    </ClInclude>
+    <ClInclude Include="lua5.2\ldo.h">
+      <Filter>Lua\lua5.2</Filter>
+    </ClInclude>
+    <ClInclude Include="lua5.2\lfunc.h">
+      <Filter>Lua\lua5.2</Filter>
+    </ClInclude>
+    <ClInclude Include="lua5.2\lgc.h">
+      <Filter>Lua\lua5.2</Filter>
+    </ClInclude>
+    <ClInclude Include="lua5.2\llex.h">
+      <Filter>Lua\lua5.2</Filter>
+    </ClInclude>
+    <ClInclude Include="lua5.2\llimits.h">
+      <Filter>Lua\lua5.2</Filter>
+    </ClInclude>
+    <ClInclude Include="lua5.2\lmem.h">
+      <Filter>Lua\lua5.2</Filter>
+    </ClInclude>
+    <ClInclude Include="lua5.2\lobject.h">
+      <Filter>Lua\lua5.2</Filter>
+    </ClInclude>
+    <ClInclude Include="lua5.2\lopcodes.h">
+      <Filter>Lua\lua5.2</Filter>
+    </ClInclude>
+    <ClInclude Include="lua5.2\lparser.h">
+      <Filter>Lua\lua5.2</Filter>
+    </ClInclude>
+    <ClInclude Include="lua5.2\lstate.h">
+      <Filter>Lua\lua5.2</Filter>
+    </ClInclude>
+    <ClInclude Include="lua5.2\lstring.h">
+      <Filter>Lua\lua5.2</Filter>
+    </ClInclude>
+    <ClInclude Include="lua5.2\ltable.h">
+      <Filter>Lua\lua5.2</Filter>
+    </ClInclude>
+    <ClInclude Include="lua5.2\ltm.h">
+      <Filter>Lua\lua5.2</Filter>
+    </ClInclude>
+    <ClInclude Include="lua5.2\lua.h">
+      <Filter>Lua\lua5.2</Filter>
+    </ClInclude>
+    <ClInclude Include="lua5.2\lua.hpp">
+      <Filter>Lua\lua5.2</Filter>
+    </ClInclude>
+    <ClInclude Include="lua5.2\luaconf.h">
+      <Filter>Lua\lua5.2</Filter>
+    </ClInclude>
+    <ClInclude Include="lua5.2\lualib.h">
+      <Filter>Lua\lua5.2</Filter>
+    </ClInclude>
+    <ClInclude Include="lua5.2\lundump.h">
+      <Filter>Lua\lua5.2</Filter>
+    </ClInclude>
+    <ClInclude Include="lua5.2\lvm.h">
+      <Filter>Lua\lua5.2</Filter>
+    </ClInclude>
+    <ClInclude Include="lua5.2\lzio.h">
+      <Filter>Lua\lua5.2</Filter>
+    </ClInclude>
+    <ClInclude Include="lua5.2\dtoa_config.h">
+      <Filter>Lua\lua5.2\cjson</Filter>
+    </ClInclude>
+    <ClInclude Include="lua5.2\fpconv.h">
+      <Filter>Lua\lua5.2\cjson</Filter>
+    </ClInclude>
+    <ClInclude Include="lua5.2\strbuf.h">
+      <Filter>Lua\lua5.2\cjson</Filter>
+    </ClInclude>
+    <ClInclude Include="SnowflakeID.h">
+      <Filter>Arithmetic</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaFunc.h">
+      <Filter>Lua</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Log.cpp">
+      <Filter>Log</Filter>
+    </ClCompile>
+    <ClCompile Include="Exception.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="QString.cpp">
+      <Filter>String</Filter>
+    </ClCompile>
+    <ClCompile Include="File.cpp">
+      <Filter>File</Filter>
+    </ClCompile>
+    <ClCompile Include="Ini.cpp">
+      <Filter>File</Filter>
+    </ClCompile>
+    <ClCompile Include="TableFile.cpp">
+      <Filter>File</Filter>
+    </ClCompile>
+    <ClCompile Include="pugixml\pugixml.cpp">
+      <Filter>Xml</Filter>
+    </ClCompile>
+    <ClCompile Include="DataBase.cpp">
+      <Filter>DataBase</Filter>
+    </ClCompile>
+    <ClCompile Include="Sqlite\sqlite3.c">
+      <Filter>DataBase\Sqlite3</Filter>
+    </ClCompile>
+    <ClCompile Include="Sqlite.cpp">
+      <Filter>DataBase\Sqlite3</Filter>
+    </ClCompile>
+    <ClCompile Include="QMySQL.cpp">
+      <Filter>DataBase\MySQL</Filter>
+    </ClCompile>
+    <ClCompile Include="TimerTask.cpp">
+      <Filter>TimerTask</Filter>
+    </ClCompile>
+    <ClCompile Include="SampleLoger.cpp">
+      <Filter>Log</Filter>
+    </ClCompile>
+    <ClCompile Include="DBPool.cpp">
+      <Filter>DataBase</Filter>
+    </ClCompile>
+    <ClCompile Include="rijndael\rijndael.cpp">
+      <Filter>Encrypt\AES\rijndael</Filter>
+    </ClCompile>
+    <ClCompile Include="Server.cpp">
+      <Filter>Service</Filter>
+    </ClCompile>
+    <ClCompile Include="Session.cpp">
+      <Filter>Service\Session</Filter>
+    </ClCompile>
+    <ClCompile Include="SessionManager.cpp">
+      <Filter>Service\Session</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerLinker.cpp">
+      <Filter>Service\WorkThread</Filter>
+    </ClCompile>
+    <ClCompile Include="WorkThreadEvent.cpp">
+      <Filter>Service\WorkThread</Filter>
+    </ClCompile>
+    <ClCompile Include="RSAEuro\desc.c">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </ClCompile>
+    <ClCompile Include="RSAEuro\md2c.c">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </ClCompile>
+    <ClCompile Include="RSAEuro\md4c.c">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </ClCompile>
+    <ClCompile Include="RSAEuro\md5c.c">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </ClCompile>
+    <ClCompile Include="RSAEuro\nn.c">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </ClCompile>
+    <ClCompile Include="RSAEuro\prime.c">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </ClCompile>
+    <ClCompile Include="RSAEuro\r_dh.c">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </ClCompile>
+    <ClCompile Include="RSAEuro\r_encode.c">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </ClCompile>
+    <ClCompile Include="RSAEuro\r_enhanc.c">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </ClCompile>
+    <ClCompile Include="RSAEuro\r_keygen.c">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </ClCompile>
+    <ClCompile Include="RSAEuro\r_random.c">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </ClCompile>
+    <ClCompile Include="RSAEuro\r_stdlib.c">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </ClCompile>
+    <ClCompile Include="RSAEuro\rsa.c">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </ClCompile>
+    <ClCompile Include="RSAEuro\shsc.c">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </ClCompile>
+    <ClCompile Include="QBase.cpp" />
+    <ClCompile Include="RSAKey.cpp">
+      <Filter>Encrypt\RSA</Filter>
+    </ClCompile>
+    <ClCompile Include="AES.cpp">
+      <Filter>Encrypt\AES</Filter>
+    </ClCompile>
+    <ClCompile Include="md5.cpp">
+      <Filter>Encrypt\MD5</Filter>
+    </ClCompile>
+    <ClCompile Include="Base64.cpp">
+      <Filter>Encrypt\Base64</Filter>
+    </ClCompile>
+    <ClCompile Include="Cond.cpp">
+      <Filter>Base\Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="Mutex.cpp">
+      <Filter>Base\Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="RWLock.cpp">
+      <Filter>Base\Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="Thread.cpp">
+      <Filter>Base\Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="ThreadPool.cpp">
+      <Filter>Base\Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="EventBuffer.cpp">
+      <Filter>Base\NetWorlk</Filter>
+    </ClCompile>
+    <ClCompile Include="InitSock.cpp">
+      <Filter>Base\NetWorlk</Filter>
+    </ClCompile>
+    <ClCompile Include="NETAddr.cpp">
+      <Filter>Base\NetWorlk</Filter>
+    </ClCompile>
+    <ClCompile Include="SockPair.cpp">
+      <Filter>Base\NetWorlk</Filter>
+    </ClCompile>
+    <ClCompile Include="SockPairEvent.cpp">
+      <Filter>Base\NetWorlk</Filter>
+    </ClCompile>
+    <ClCompile Include="QTime.cpp">
+      <Filter>Base\OS</Filter>
+    </ClCompile>
+    <ClCompile Include="OSFunc.cpp">
+      <Filter>Base\OS</Filter>
+    </ClCompile>
+    <ClCompile Include="Library.cpp">
+      <Filter>Base\OS</Filter>
+    </ClCompile>
+    <ClCompile Include="CoreDump.cpp">
+      <Filter>Base\OS</Filter>
+    </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>Base\OS</Filter>
+    </ClCompile>
+    <ClCompile Include="UUID.cpp">
+      <Filter>Base\OS</Filter>
+    </ClCompile>
+    <ClCompile Include="QRSA.cpp">
+      <Filter>Encrypt\RSA</Filter>
+    </ClCompile>
+    <ClCompile Include="Filter.cpp">
+      <Filter>Arithmetic</Filter>
+    </ClCompile>
+    <ClCompile Include="Buffer.cpp">
+      <Filter>Base\OS</Filter>
+    </ClCompile>
+    <ClCompile Include="SysLog.cpp">
+      <Filter>Base\OS</Filter>
+    </ClCompile>
+    <ClCompile Include="uchardet\CharDistribution.cpp">
+      <Filter>String\uchardet</Filter>
+    </ClCompile>
+    <ClCompile Include="uchardet\JpCntx.cpp">
+      <Filter>String\uchardet</Filter>
+    </ClCompile>
+    <ClCompile Include="uchardet\LangBulgarianModel.cpp">
+      <Filter>String\uchardet</Filter>
+    </ClCompile>
+    <ClCompile Include="uchardet\LangCyrillicModel.cpp">
+      <Filter>String\uchardet</Filter>
+    </ClCompile>
+    <ClCompile Include="uchardet\LangGreekModel.cpp">
+      <Filter>String\uchardet</Filter>
+    </ClCompile>
+    <ClCompile Include="uchardet\LangHebrewModel.cpp">
+      <Filter>String\uchardet</Filter>
+    </ClCompile>
+    <ClCompile Include="uchardet\LangHungarianModel.cpp">
+      <Filter>String\uchardet</Filter>
+    </ClCompile>
+    <ClCompile Include="uchardet\LangThaiModel.cpp">
+      <Filter>String\uchardet</Filter>
+    </ClCompile>
+    <ClCompile Include="uchardet\nsBig5Prober.cpp">
+      <Filter>String\uchardet</Filter>
+    </ClCompile>
+    <ClCompile Include="uchardet\nsCharSetProber.cpp">
+      <Filter>String\uchardet</Filter>
+    </ClCompile>
+    <ClCompile Include="uchardet\nsEscCharsetProber.cpp">
+      <Filter>String\uchardet</Filter>
+    </ClCompile>
+    <ClCompile Include="uchardet\nsEscSM.cpp">
+      <Filter>String\uchardet</Filter>
+    </ClCompile>
+    <ClCompile Include="uchardet\nsEUCJPProber.cpp">
+      <Filter>String\uchardet</Filter>
+    </ClCompile>
+    <ClCompile Include="uchardet\nsEUCKRProber.cpp">
+      <Filter>String\uchardet</Filter>
+    </ClCompile>
+    <ClCompile Include="uchardet\nsEUCTWProber.cpp">
+      <Filter>String\uchardet</Filter>
+    </ClCompile>
+    <ClCompile Include="uchardet\nsGB2312Prober.cpp">
+      <Filter>String\uchardet</Filter>
+    </ClCompile>
+    <ClCompile Include="uchardet\nsHebrewProber.cpp">
+      <Filter>String\uchardet</Filter>
+    </ClCompile>
+    <ClCompile Include="uchardet\nsLatin1Prober.cpp">
+      <Filter>String\uchardet</Filter>
+    </ClCompile>
+    <ClCompile Include="uchardet\nsMBCSGroupProber.cpp">
+      <Filter>String\uchardet</Filter>
+    </ClCompile>
+    <ClCompile Include="uchardet\nsMBCSSM.cpp">
+      <Filter>String\uchardet</Filter>
+    </ClCompile>
+    <ClCompile Include="uchardet\nsSBCharSetProber.cpp">
+      <Filter>String\uchardet</Filter>
+    </ClCompile>
+    <ClCompile Include="uchardet\nsSBCSGroupProber.cpp">
+      <Filter>String\uchardet</Filter>
+    </ClCompile>
+    <ClCompile Include="uchardet\nsSJISProber.cpp">
+      <Filter>String\uchardet</Filter>
+    </ClCompile>
+    <ClCompile Include="uchardet\nsUniversalDetector.cpp">
+      <Filter>String\uchardet</Filter>
+    </ClCompile>
+    <ClCompile Include="uchardet\nsUTF8Prober.cpp">
+      <Filter>String\uchardet</Filter>
+    </ClCompile>
+    <ClCompile Include="uchardet\uchardet.cpp">
+      <Filter>String\uchardet</Filter>
+    </ClCompile>
+    <ClCompile Include="Charset.cpp">
+      <Filter>String</Filter>
+    </ClCompile>
+    <ClCompile Include="lua5.2\lapi.c">
+      <Filter>Lua\lua5.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua5.2\lauxlib.c">
+      <Filter>Lua\lua5.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua5.2\lbaselib.c">
+      <Filter>Lua\lua5.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua5.2\lbitlib.c">
+      <Filter>Lua\lua5.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua5.2\lcode.c">
+      <Filter>Lua\lua5.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua5.2\lcorolib.c">
+      <Filter>Lua\lua5.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua5.2\lctype.c">
+      <Filter>Lua\lua5.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua5.2\ldblib.c">
+      <Filter>Lua\lua5.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua5.2\ldebug.c">
+      <Filter>Lua\lua5.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua5.2\ldo.c">
+      <Filter>Lua\lua5.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua5.2\ldump.c">
+      <Filter>Lua\lua5.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua5.2\lfunc.c">
+      <Filter>Lua\lua5.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua5.2\lgc.c">
+      <Filter>Lua\lua5.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua5.2\linit.c">
+      <Filter>Lua\lua5.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua5.2\liolib.c">
+      <Filter>Lua\lua5.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua5.2\llex.c">
+      <Filter>Lua\lua5.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua5.2\lmathlib.c">
+      <Filter>Lua\lua5.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua5.2\lmem.c">
+      <Filter>Lua\lua5.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua5.2\loadlib.c">
+      <Filter>Lua\lua5.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua5.2\lobject.c">
+      <Filter>Lua\lua5.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua5.2\lopcodes.c">
+      <Filter>Lua\lua5.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua5.2\loslib.c">
+      <Filter>Lua\lua5.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua5.2\lparser.c">
+      <Filter>Lua\lua5.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua5.2\lstate.c">
+      <Filter>Lua\lua5.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua5.2\lstring.c">
+      <Filter>Lua\lua5.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua5.2\lstrlib.c">
+      <Filter>Lua\lua5.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua5.2\ltable.c">
+      <Filter>Lua\lua5.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua5.2\ltablib.c">
+      <Filter>Lua\lua5.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua5.2\ltm.c">
+      <Filter>Lua\lua5.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua5.2\lundump.c">
+      <Filter>Lua\lua5.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua5.2\lvm.c">
+      <Filter>Lua\lua5.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua5.2\lzio.c">
+      <Filter>Lua\lua5.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua5.2\dtoa.c">
+      <Filter>Lua\lua5.2\cjson</Filter>
+    </ClCompile>
+    <ClCompile Include="lua5.2\g_fmt.c">
+      <Filter>Lua\lua5.2\cjson</Filter>
+    </ClCompile>
+    <ClCompile Include="lua5.2\strbuf.c">
+      <Filter>Lua\lua5.2\cjson</Filter>
+    </ClCompile>
+    <ClCompile Include="lua5.2\lua_cjson.c">
+      <Filter>Lua\lua5.2\cjson</Filter>
+    </ClCompile>
+    <ClCompile Include="SnowflakeID.cpp">
+      <Filter>Arithmetic</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="RSAEuro\des386.s">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </None>
+    <None Include="RSAEuro\rsa68k.s">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </None>
+    <None Include="RSAEuro\rsa386.s">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </None>
+    <None Include="RSAEuro\rsasparc.s">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </None>
+    <None Include="uchardet\Big5Freq.tab">
+      <Filter>String\uchardet</Filter>
+    </None>
+    <None Include="uchardet\EUCKRFreq.tab">
+      <Filter>String\uchardet</Filter>
+    </None>
+    <None Include="uchardet\EUCTWFreq.tab">
+      <Filter>String\uchardet</Filter>
+    </None>
+    <None Include="uchardet\GB2312Freq.tab">
+      <Filter>String\uchardet</Filter>
+    </None>
+    <None Include="uchardet\JISFreq.tab">
+      <Filter>String\uchardet</Filter>
+    </None>
+  </ItemGroup>
+</Project>
