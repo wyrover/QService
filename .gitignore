@@ -8,14 +8,49 @@
 *.so
 *.dylib
 *.dll
+!dbghelp.dll
+!libmysql.dll
+!msvcp100.dll
+!msvcr100.dll
 
 # Compiled Static libraries
 *.lai
 *.la
 *.a
+!libmysqlclient.a
 *.lib
+!cppunit.lib
+!cppunitd.lib
+!libevent_core.lib
+!libevent_extras.lib
+!libmysql.lib
+!vld.lib
 
 # Executables
 *.exe
 *.out
 *.app
+
+#vs file
+*.sdf
+*.opensdf
+!ipch
+!QBase/Debug
+!QBase/Release
+!QService/Debug
+!QService/Release
+!StreeTesting/Debug
+!StreeTesting/Release
+!TestQBase/Debug
+!TestQBase/Release
+*.exp
+*.ilk
+*.pdb
+*.manifest
+!Microsoft.DTfW.DHL.manifest
+*.txt
+!itemstrengthen.txt
+*.xml
+!config.xml
+*.user
+*.syslog
