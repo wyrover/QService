@@ -1,7 +1,7 @@
 ﻿/*****************************************************************************
  * Copyright (c) 2011-2012. Qifu Luo All Rights Reserved.200309129@163.com 
  * svn:http://asuraserver.googlecode.com/svn/
- *
+ * github:https://github.com/QService/QService
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
