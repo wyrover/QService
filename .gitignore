@@ -33,16 +33,17 @@
 
 #vs file
 *.sdf
+*.suo
 *.opensdf
-!ipch
-!QBase/Debug
-!QBase/Release
-!QService/Debug
-!QService/Release
-!StreeTesting/Debug
-!StreeTesting/Release
-!TestQBase/Debug
-!TestQBase/Release
+ipch
+QBase/Debug
+QBase/Release
+QService/Debug
+QService/Release
+StreeTesting/Debug
+StreeTesting/Release
+TestQBase/Debug
+TestQBase/Release
 *.exp
 *.ilk
 *.pdb
@@ -54,3 +55,14 @@
 !config.xml
 *.user
 *.syslog
+
+*.bak
+*.tlog
+*.lastbuildstate
+*.log
+*.unsuccessfulbuild
+*.idb
+*.res
+*.pch
+*.cache
+*.rc
