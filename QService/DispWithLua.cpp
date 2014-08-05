@@ -46,7 +46,20 @@ CDisposeEvent::CDisposeEvent(const char *pszLuaFile) : m_pLua(NULL)
 
     m_objReg2Lua.setLState(m_pLua);
     m_objReg2Lua.Register();
-    luaL_dofile(m_pLua, pszLuaFile);
+
+    int iRtn = luaL_dofile(m_pLua, pszLuaFile);
+	if (Q_RTN_OK != iRtn)
+	{
+		const char *pError = lua_tostring(m_pLua, -1);
+		std::string strLuaError = ((NULL == pError) ? "" : pError);
+		if (NULL != m_pLua)
+		{
+			lua_close(m_pLua);
+			m_pLua = NULL;
+		}
+
+		Q_EXCEPTION(Q_RTN_FAILE, strLuaError.c_str());      
+	}
 }
 
 CDisposeEvent::~CDisposeEvent(void)
