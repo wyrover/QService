@@ -2,9 +2,12 @@
 加载业务模块
 --]]
 
-local InitModule = {}
+Macros = require("Public/Macros")
+OpCodes = require("Public/OpCodes")
+ErrorCodes = require("Public/ErrorCodes")
+cjson = require("cjson")
+require("Public/Utile")
+RegFuncs = require("Public/RegFuncs")
 
-require("Echo1")
-require("Echo2")
-
-return InitModule
+require("GameUtile")
+require("LogIn")

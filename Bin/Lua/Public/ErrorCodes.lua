@@ -1,10 +1,9 @@
 --[[
-·µ»ØÖµ,´íÎóÂë
+é”™è¯¯ç 
 --]]
 
 local ErrorCodes = {}
 
---·µ»ØÖµ
 ErrorCodes.Q_RTN_OK = 0
 ErrorCodes.Q_RTN_FAILE = -1
 ErrorCodes.Q_RTN_ERROR = 1

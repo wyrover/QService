@@ -90,4 +90,7 @@ extern CCond g_objExitCond;
 /*程序所在路径*/
 extern char g_acModulPath[Q_FILEPATH_LENS];
 
+/*服务器ID*/
+extern int g_iServerID;
+
 #endif//Q_QBASE_H_

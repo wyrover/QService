@@ -16,12 +16,12 @@ void CTestCharset::TestCharset(void)
     std::string strMsg = "가";
     std::string strCharset;
     
-    strCharset = objCharset.getCharset(strMsg.c_str(), strMsg.size());
+    strCharset = objCharset.getStrCharset(strMsg.c_str(), strMsg.size());
     Q_Printf("%s charset is %s", strMsg.c_str(), strCharset.c_str());
     CPPUNIT_ASSERT_EQUAL(std::string("windows-1252"), strCharset);
 
     strMsg = "this is string test가가가*∼∼&%∼∼＄";
-    strCharset = objCharset.getCharset(strMsg.c_str(), strMsg.size());
+    strCharset = objCharset.getStrCharset(strMsg.c_str(), strMsg.size());
     Q_Printf("%s charset is %s", strMsg.c_str(), strCharset.c_str());
     CPPUNIT_ASSERT_EQUAL(std::string("windows-1252"), strCharset);
 

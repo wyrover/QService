@@ -75,12 +75,13 @@ void CDisposeEvent::onSerciveStartUp(void)
 {
     try
     {
+        getSessionManager()->setLua(m_pLua);
         luabridge::getGlobal(m_pLua, LUA_EVENT_ONSTARTUP)(getSessionManager());
     }
     catch(luabridge::LuaException &e)
     {
-        Q_Printf("lua exception: %s", e.what());
-        Q_SYSLOG(LOGLV_ERROR, "lua exception: %s", e.what());
+        Q_Printf("%s", e.what());
+        Q_SYSLOG(LOGLV_ERROR, "%s", e.what());
     }
     catch(CException &e)
     {
@@ -99,8 +100,8 @@ void CDisposeEvent::onSerciveShutDown(void)
     }
     catch(luabridge::LuaException &e)
     {
-        Q_Printf("lua exception: %s", e.what());
-        Q_SYSLOG(LOGLV_ERROR, "lua exception: %s", e.what());
+        Q_Printf("%s", e.what());
+        Q_SYSLOG(LOGLV_ERROR, "%s", e.what());
     }
     catch(CException &e)
     {
@@ -119,8 +120,8 @@ void CDisposeEvent::onSocketClose(void)
     }
     catch(luabridge::LuaException &e)
     {
-        Q_Printf("lua exception: %s", e.what());
-        Q_SYSLOG(LOGLV_ERROR, "lua exception: %s", e.what());
+        Q_Printf("%s", e.what());
+        Q_SYSLOG(LOGLV_ERROR, "%s", e.what());
     }
     catch(CException &e)
     {
@@ -139,8 +140,8 @@ void CDisposeEvent::onTimerEvent(void)
     }
     catch(luabridge::LuaException &e)
     {
-        Q_Printf("lua exception: %s", e.what());
-        Q_SYSLOG(LOGLV_ERROR, "lua exception: %s", e.what());
+        Q_Printf("%s", e.what());
+        Q_SYSLOG(LOGLV_ERROR, "%s", e.what());
     }
     catch(CException &e)
     {
@@ -159,8 +160,8 @@ void CDisposeEvent::onSocketRead(const char *pszMsg, const size_t uilens)
     }
     catch(luabridge::LuaException &e)
     {
-        Q_Printf("lua exception: %s", e.what());
-        Q_SYSLOG(LOGLV_ERROR, "lua exception: %s", e.what());
+        Q_Printf("%s", e.what());
+        Q_SYSLOG(LOGLV_ERROR, "%s", e.what());
     }
     catch(CException &e)
     {
@@ -179,8 +180,8 @@ void CDisposeEvent::onLinkedServer(class CSession *pSession)
     }
     catch(luabridge::LuaException &e)
     {
-        Q_Printf("lua exception: %s", e.what());
-        Q_SYSLOG(LOGLV_ERROR, "lua exception: %s", e.what());
+        Q_Printf("%s", e.what());
+        Q_SYSLOG(LOGLV_ERROR, "%s", e.what());
     }
     catch(CException &e)
     {

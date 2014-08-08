@@ -45,7 +45,7 @@ public:
     bool checkHave(const char *pszWord, const size_t uiLens);
     /*ºÏ≤È√Ù∏–¥ ≤¢ÃÊªª*/
     void checkAndModify(char *pWord, const size_t uiLens, const char cReplace = '*');
-
+    const char *Filter(const char *pWord, const size_t uiLens);
 private:
     struct FilterMap
     {

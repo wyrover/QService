@@ -42,28 +42,35 @@ public:
     int getSessionID(void);
 
     /*关联的ID*/
-    void setAssociatedID(const int64_t &iID);
-    int64_t getAssociatedID(void);
+    void setID(const char *pszID);
+    const char * getID(void);
+
+    /*关联的账号*/
+    void setAccount(const char *pszAccount);
+    const char * getAccount(void);
 
     /*状态*/
-    void setStatus(const char &cStatus);
-    char getStatus(void);
+    void setStatus(const int iStatus);
+    int getStatus(void);
+
+    /*是否为连接到其他服务器的*/
+    bool getServerLinker(void);
 
     void Clear(void);
 
     CEventBuffer *getBuffer(void);
     
     void setServerLinker(bool bLinker);
-    bool getServerLinker(void);
     void setHandle(void *pHandle);
     void *getHandle(void);
 
-private:
-    char m_cStatus;
+private:    
     bool m_bLinker;
-    void *m_pHandle;    
+    void *m_pHandle;
+    int m_iStatus;
     int m_iSessionID;//session id  
-    int64_t m_iAssociatedID;//关联的ID
+    std::string m_strID;//关联的ID
+    std::string m_strAccount;//关联的账号
     CEventBuffer m_objBuffer;
 };
 

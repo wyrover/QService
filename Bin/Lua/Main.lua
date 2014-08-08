@@ -7,7 +7,8 @@ local luaDir = Q_GetModulPath() .. "Lua" .. Q_GetPathSeparator()
 package.path = package.path .. ";" .. luaDir .. "?.lua"
 
 require("InitModule")
-local RegFunc = require("RegFunc")
+
+local tNowDay = os.date("*t", time)
 
 --[[
 描述：服务启动成功后调用
@@ -15,7 +16,7 @@ local RegFunc = require("RegFunc")
 返回值： 无
 --]]
 function Lua_OnStartUp(objSessionManager)
-	print("Lua_OnStartUp")
+	RegFuncs:OnGameEvent(Macros.GameEvent_StartUp)
 end
 
 --[[
@@ -24,7 +25,7 @@ end
 返回值：无
 --]]
 function Lua_OnShutDown(objSessionManager)
-	print("Lua_OnShutDown")
+	RegFuncs:OnGameEvent(Macros.GameEvent_ShutDown)	
 end
 
 --[[
@@ -33,14 +34,43 @@ end
 返回值：无
 --]]
 function Lua_OnRead(objSessionManager, pszMessage, uiLens)
-	local iOpCode = 1
-	local Func = RegFunc.Reg_Func[iOpCode]
-	if Func then
-		Func(objSessionManager, pszMessage, uiLens)
-	else
-	    print("unknown opcode " .. iOpCode .." close this link.")
+	Debug(string.sub(pszMessage, 1, uiLens))
+	local tbMessage = cjson.decode(string.sub(pszMessage, 1, uiLens))
+	local iOpCode = tbMessage[Macros.Protocol_Request]
+	if not iOpCode then
+		Debug("can't find protocol, close this link.")
 		objSessionManager:closeCurClint()
+		
+		return
 	end
+	
+	local objCurSession = objSessionManager:getCurSession()
+	if not objCurSession then
+		Debug("current session is nil.")
+		return
+	end
+	
+	local bServerLinker = objCurSession:isServerLinker()
+	if not bServerLinker then
+		--[[local iStatus = objCurSession:getStatus()
+		
+		--如果为登陆，则除了登陆请求，其他的都不处理
+		if (Macros.LinkStatus_LogIned ~= iStatus) 
+			and (OpCodes.CS_LogIn ~= iOpCode) then
+				Debug("not logined.")
+				return
+		end
+		
+		--如果已经登陆成功，再发送登陆请求则不处理
+		if (Macros.LinkStatus_LogIned == iStatus) 
+			and (OpCodes.CS_LogIn == iOpCode) then
+				Debug("already logined.")
+				return
+		end--]]
+	end
+	
+	Debug("protocol is " .. iOpCode)	
+	RegFuncs:OnNetEvent(objSessionManager, iOpCode, tbMessage)	
 end
 
 --[[
@@ -49,9 +79,55 @@ end
 返回值：无
 --]]
 function Lua_OnTimer(objSessionManager)
-	print("Lua_OnTimer count "..objSessionManager:getCount().."  timer "..objSessionManager:getTimer())
-	local strMsg = "this is timer.."
-	objSessionManager:sendToAll(strMsg, string.len(strMsg))
+	local uiCount = objSessionManager:getCount()
+	local uiClick = objSessionManager:getTimer()
+	local uiElapseTime = uiClick * uiCount
+	local uiOneSecond = 1000
+	
+	--每帧处理
+	RegFuncs:OnGameEvent(Macros.GameEvent_FPS, uiClick)
+	
+	--1秒
+	if 0 == (uiElapseTime % uiOneSecond) then
+		RegFuncs:OnGameEvent(Macros.GameEvent_1Second)
+		
+		--检查变天
+		local tDay = os.date("*t", time)
+		if (tDay.year ~= tNowDay.year) 
+			or (tDay.month ~= tNowDay.month) 
+			or (tDay.day ~= tNowDay.day) then
+				--变天事件
+				tNowDay = tDay
+				Debug("day changed.")
+				
+				RegFuncs:OnGameEvent(Macros.GameEvent_DayChange)
+		end
+	end
+	
+	--5秒
+	if 0 == (uiElapseTime % (uiOneSecond * 5)) then
+		RegFuncs:OnGameEvent(Macros.GameEvent_5Second)
+	end
+	
+	--10秒
+	if 0 == (uiElapseTime % (uiOneSecond * 10)) then
+		RegFuncs:OnGameEvent(Macros.GameEvent_10Second)
+	end
+	
+	--1分钟
+	if 0 == (uiElapseTime % (uiOneSecond * 60)) then
+		RegFuncs:OnGameEvent(Macros.GameEvent_1Minute)
+	end
+	
+	--5分钟
+	if 0 == (uiElapseTime % (uiOneSecond * 60 * 5)) then
+		RegFuncs:OnGameEvent(Macros.GameEvent_5Minute)
+	end
+	
+	--10分钟
+	if 0 == (uiElapseTime % (uiOneSecond * 60 * 10)) then
+		RegFuncs:OnGameEvent(Macros.GameEvent_10Minute)
+	end	
 end
 
 --[[
@@ -60,7 +136,10 @@ end
 返回值：无
 --]]
 function Lua_OnClose(objSessionManager)
-	print("Lua_OnClose")
+	local bServerLinker = objSessionManager:getCurSession():isServerLinker()
+	if not bServerLinker then
+		RegFuncs:OnGameEvent(Macros.GameEvent_LogOut)
+	end
 end
 
 --[[
@@ -69,5 +148,5 @@ end
 返回值：无
 --]]
 function Lua_OnLinkedServer(objSessionManager, objSession)
-	print("Lua_OnLinkedServer")
+	Debug("Lua_OnLinkedServer")
 end

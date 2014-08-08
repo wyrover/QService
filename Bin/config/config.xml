@@ -3,6 +3,8 @@
     <LocalServer>
         <!--服务器节点-->
         <ServerInfo>
+		    <!--服务器ID(最大1024)-->
+			<ServerID>100</ServerID>
             <!--绑定的IP-->
             <BindIP>0.0.0.0</BindIP>
             <!--绑定端口-->
@@ -10,14 +12,14 @@
             <!--线程数-->
             <ThreadNum>1</ThreadNum>
             <!--定时器触发间隔时间 0 不触发(毫秒)-->
-            <Timer>10000</Timer>
+            <Timer>50</Timer>
             <!--脚本文件-->
             <Script>Main.lua</Script> 
             <!--连接到其他服务器 可以多个节点--> 
 			<!--
             <ServerLinker>
-                <LinkerName>timeserver</LinkerName>
-				<Type>0</Type>
+                <LinkerName>accountsv</LinkerName>
+				<Type>1</Type>
                 <IP>127.0.0.1</IP>
                 <Port>15001</Port>
             </ServerLinker>

@@ -31,6 +31,7 @@
 #include "Session.h"
 #include "Buffer.h"
 #include "EventInterface.h"
+#include "LuaBridge/LuaBridge.h"
 
 /*session管理*/
 class CSessionManager
@@ -41,6 +42,8 @@ public:
 
     /*获取session数量*/
     size_t getSessionSize(void);
+    /*获取服务器间连接数*/
+    int getGetSVLinkerNum(void);
     /*根据ID关闭连接*/
     void closeClintByID(const int iID);
     /*关闭当前连接*/
@@ -88,17 +91,17 @@ public:
     /*定时器触发次数*/
     void addCount(void);
     unsigned int getCount(void);
+    /*设置lua虚拟机*/
+    void setLua(struct lua_State *pLua);
 
     std::map<int, CSession *> *getAllSession(void)
     {
         return &m_mapSession;
     };
     /*返回指定类型的服务器连接*/
-    std::vector<std::string> getServerLinkerByType(const int iType);
+    luabridge::LuaRef getSVLinkerNameByType(const int iType);
     /*判断是否为指定类型的服务器连接*/
-    bool checkType(const int iType, const int iClientID);
-    /*获取服务器间连接数*/
-    int getGetSVLinkerNum(void);
+    bool checkType(const int iType, const int iClientID);    
 
 private:
     /*释放所有session*/
@@ -112,6 +115,7 @@ private:
     short m_sThreadIndex;
     unsigned int m_uiTimer;
     unsigned int m_uiCount;
+    struct lua_State *m_pLua;
     CSession *m_pCurrent; //当前Session
     class CEventInterface *m_pInterface;
     std::map<int, CSession *> m_mapSession;//所有Session

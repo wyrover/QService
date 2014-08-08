@@ -30,7 +30,7 @@
 #include "ServerLinker.h"
 
 CSessionManager::CSessionManager(void) : m_sThreadIndex(-1), m_uiTimer(Q_INIT_NUMBER),
-    m_uiCount(Q_INIT_NUMBER), m_pCurrent(NULL), m_pInterface(NULL)
+    m_uiCount(Q_INIT_NUMBER), m_pLua(NULL), m_pCurrent(NULL), m_pInterface(NULL)
 {
 
 }
@@ -58,6 +58,11 @@ void CSessionManager::addCount(void)
 unsigned int CSessionManager::getCount(void)
 {
     return m_uiCount;
+}
+
+void CSessionManager::setLua(struct lua_State *pLua)
+{
+    m_pLua = pLua;
 }
 
 void CSessionManager::setThreadIndex(const short &sIndex)
@@ -378,6 +383,11 @@ bool CSessionManager::sendToAll(const char *pszData, const size_t uiLens)
 
     for (itSession = m_mapSession.begin(); m_mapSession.end() != itSession; itSession++)
     {
+        if (itSession->second->getServerLinker())
+        {
+            continue;
+        }
+
         (void)sendWithHead(itSession->second, pszData, uiLens);
     }
 
@@ -420,11 +430,13 @@ void CSessionManager::Clear(void)
     m_objBuffer.reSet();
 }
 
-std::vector<std::string> CSessionManager::getServerLinkerByType(const int iType)
+luabridge::LuaRef CSessionManager::getSVLinkerNameByType(const int iType)
 {
+    assert(NULL != m_pLua);
+
     CServerLinker *pLinker = NULL;
     CSession *pSession = NULL;
-    std::vector<std::string> vcTmp;
+    luabridge::LuaRef luaTable = luabridge::newTable(m_pLua);
     std::map<std::string, bufferevent* >::iterator itServerLinker;
 
     for (itServerLinker = m_mapServerLinker.begin(); m_mapServerLinker.end() != itServerLinker; itServerLinker++)
@@ -437,13 +449,13 @@ std::vector<std::string> CSessionManager::getServerLinkerByType(const int iType)
             {
                 if (iType == pLinker->getType())
                 {
-                    vcTmp.push_back(std::string(pLinker->getLinkerName()));
+                    luaTable.append(pLinker->getLinkerName());
                 }
             }
         }
     }
 
-    return vcTmp;
+    return luaTable;
 }
 
 bool CSessionManager::checkType(const int iType, const int iClientID)

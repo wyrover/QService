@@ -64,7 +64,7 @@ public:
     /*socket读取到完整包时执行*/
     virtual void onSocketRead(const char *, const size_t){};
     /*服务器连接启动*/
-    virtual void onLinkedServer(class CSession *pSession){};
+    virtual void onLinkedServer(class CSession *){};
 
 private:
     class CSessionManager *m_pSessionManager;

@@ -27,9 +27,8 @@
 
 #include "Session.h"
 
-CSession::CSession(void) : m_cStatus(Q_INVALID_STATUS), m_bLinker(false), 
-    m_pHandle(NULL),  m_iSessionID(Q_INVALID_ID), 
-    m_iAssociatedID(Q_INVALID_ID)    
+CSession::CSession(void) : m_iStatus(Q_INVALID_STATUS), m_bLinker(false), 
+    m_pHandle(NULL),  m_iSessionID(Q_INVALID_ID)
 {
     (void)m_objBuffer.setBuffer(NULL);
 }
@@ -59,24 +58,38 @@ int CSession::getSessionID(void)
     return m_iSessionID;
 }
 
-void CSession::setAssociatedID(const int64_t &iID)
+void CSession::setID(const char *pszID)
 {
-    m_iAssociatedID = iID;
+    assert(NULL != pszID);
+
+    m_strID = pszID;
 }
 
-int64_t CSession::getAssociatedID(void)
+const char * CSession::getID(void)
 {
-    return m_iAssociatedID;
+    return m_strID.c_str();
 }
 
-void CSession::setStatus(const char &cStatus)
+void CSession::setAccount(const char *pszAccount)
 {
-    m_cStatus = cStatus;
+    assert(NULL != pszAccount);
+
+    m_strAccount = pszAccount;
 }
 
-char CSession::getStatus(void)
+const char * CSession::getAccount(void)
 {
-    return m_cStatus;
+    return m_strAccount.c_str();
+}
+
+void CSession::setStatus(const int iStatus)
+{
+    m_iStatus = iStatus;
+}
+
+int CSession::getStatus(void)
+{
+    return m_iStatus;
 }
 
 CEventBuffer *CSession::getBuffer(void)
@@ -97,9 +110,10 @@ void *CSession::getHandle(void)
 void CSession::Clear(void)
 {
     m_bLinker = false;
-    m_pHandle = NULL;
-    m_iAssociatedID = Q_INVALID_ID;
+    m_pHandle = NULL;    
     m_iSessionID = Q_INVALID_ID;
-    m_cStatus = Q_INVALID_STATUS;
+    m_iStatus = Q_INVALID_STATUS;
+    m_strID.clear();
+    m_strAccount.clear();
     (void)m_objBuffer.setBuffer(NULL);
 }

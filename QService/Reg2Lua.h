@@ -46,6 +46,12 @@ public:
 
 private:
     void reg_Func(void);
+    void reg_Timer(void);
+    void reg_SnowflakeID(void);
+    void reg_Filter(void);
+    void reg_Charset(void);
+    void reg_Ini(void);
+    void reg_TableFile(void);
     void reg_Session(void);
     void reg_SessionManager(void);
 

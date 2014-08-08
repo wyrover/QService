@@ -166,6 +166,7 @@ bool CServerInit::readConfig(void)
 
     itNode = objNodeSet.begin();
 
+    g_iServerID =  atoi(itNode->node().child_value("ServerID"));
     m_stServerConfig.strBindIP = itNode->node().child_value("BindIP");
     m_stServerConfig.usThreadNum = atoi(itNode->node().child_value("ThreadNum"));
     m_stServerConfig.strScript = std::string(g_acModulPath) + std::string("Lua") +

@@ -231,3 +231,10 @@ void CFilter::checkAndModify(char *pWord, const size_t uiLens, const char cRepla
 
     return;
 }
+
+const char * CFilter::Filter(const char *pWord, const size_t uiLens)
+{
+    checkAndModify((char*)pWord, uiLens);
+
+    return pWord;
+}
