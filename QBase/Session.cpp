@@ -70,6 +70,18 @@ const char * CSession::getID(void)
     return m_strID.c_str();
 }
 
+void CSession::setCheckID(const char *pszID)
+{
+    assert(NULL != pszID);
+
+    m_strCheckID = pszID;
+}
+
+const char * CSession::getCheckID(void)
+{
+    return m_strCheckID.c_str();
+}
+
 void CSession::setAccount(const char *pszAccount)
 {
     assert(NULL != pszAccount);
@@ -114,6 +126,7 @@ void CSession::Clear(void)
     m_iSessionID = Q_INVALID_ID;
     m_iStatus = Q_INVALID_STATUS;
     m_strID.clear();
+    m_strCheckID.clear();
     m_strAccount.clear();
     (void)m_objBuffer.setBuffer(NULL);
 }

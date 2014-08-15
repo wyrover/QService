@@ -230,7 +230,7 @@ void CSessionManager::freeAllSession(void)
     return;
 }
 
-void CSessionManager::closeClintByID(const int iID)
+void CSessionManager::closeLinkByID(const int iID)
 {
     std::map<int, CSession *>::iterator itSession;
 
@@ -249,14 +249,14 @@ void CSessionManager::closeClintByID(const int iID)
     return;
 }
 
-void CSessionManager::closeCurClint(void)
+void CSessionManager::closeCurLink(void)
 {
     if (NULL == m_pCurrent)
     {
         return;
     }
 
-    closeClintByID(m_pCurrent->getSessionID());
+    closeLinkByID(m_pCurrent->getSessionID());
 }
 
 void CSessionManager::setInterface(class CEventInterface *pInterface)

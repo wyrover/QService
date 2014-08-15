@@ -56,6 +56,10 @@ public:
     /*是否为连接到其他服务器的*/
     bool getServerLinker(void);
 
+    /*校验ID*/
+    void setCheckID(const char *pszID);
+    const char * getCheckID(void);
+
     void Clear(void);
 
     CEventBuffer *getBuffer(void);
@@ -71,6 +75,7 @@ private:
     int m_iSessionID;//session id  
     std::string m_strID;//关联的ID
     std::string m_strAccount;//关联的账号
+    std::string m_strCheckID;//校验ID
     CEventBuffer m_objBuffer;
 };
 

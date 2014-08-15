@@ -45,9 +45,9 @@ public:
     /*获取服务器间连接数*/
     int getGetSVLinkerNum(void);
     /*根据ID关闭连接*/
-    void closeClintByID(const int iID);
+    void closeLinkByID(const int iID);
     /*关闭当前连接*/
-    void closeCurClint(void);
+    void closeCurLink(void);
     /*获取当前连接session*/
     CSession *getCurSession(void);
     /*根据ID获取session*/

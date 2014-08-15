@@ -157,6 +157,9 @@ void CReg2Lua::reg_Session(void)
             .addFunction("setID", &CSession::setID)
             .addFunction("getID", &CSession::getID)
 
+            .addFunction("setCheckID", &CSession::setCheckID)
+            .addFunction("getCheckID", &CSession::getCheckID)
+
             .addFunction("setAccount", &CSession::setAccount)
             .addFunction("getAccount", &CSession::getAccount)
 
@@ -173,8 +176,8 @@ void CReg2Lua::reg_SessionManager(void)
         .beginClass<CSessionManager>("CSessionManager")
             .addFunction("getSessionSize", &CSessionManager::getSessionSize)
             .addFunction("getGetSVLinkerNum", &CSessionManager::getGetSVLinkerNum)
-            .addFunction("closeClintByID", &CSessionManager::closeClintByID)
-            .addFunction("closeCurClint", &CSessionManager::closeCurClint)
+            .addFunction("closeLinkByID", &CSessionManager::closeLinkByID)
+            .addFunction("closeCurLink", &CSessionManager::closeCurLink)
 
             .addFunction("getCurSession", &CSessionManager::getCurSession)
             .addFunction("getSessionByID", &CSessionManager::getSessionByID)

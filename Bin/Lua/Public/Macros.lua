@@ -13,6 +13,9 @@ Macros.SVType_Fight = 3
 --最大用户数
 Macros.MaxClintNum = 2000
 
+--延迟关闭时间
+Macros.DelayCloseTime = 2
+
 --日志级别
 Macros.LOGLV_NOLOG  = 0
 Macros.LOGLV_ERROR  = 300

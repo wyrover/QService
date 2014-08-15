@@ -99,3 +99,29 @@
 [2014-08-08 15:14:19][qservice.cpp startSV 59][INFO] get signal to stop service.
 [2014-08-08 15:16:54][serviceinit.cpp CServerInit::Start 142][INFO] start service successful!
 [2014-08-08 15:18:47][serviceinit.cpp CServerInit::Start 142][INFO] start service successful!
+[2014-08-11 09:42:08][serviceinit.cpp CServerInit::Start 142][INFO] start service successful!
+[2014-08-11 09:42:32][qservice.cpp startSV 59][INFO] get signal to stop service.
+[2014-08-11 09:48:56][serviceinit.cpp CServerInit::Start 142][INFO] start service successful!
+[2014-08-11 16:35:23][serviceinit.cpp CServerInit::Start 142][INFO] start service successful!
+[2014-08-15 10:37:07][serviceinit.cpp CServerInit::Start 142][INFO] start service successful!
+[2014-08-15 10:44:07][serviceinit.cpp CServerInit::Start 142][INFO] start service successful!
+[2014-08-15 11:02:59][serviceinit.cpp CServerInit::Start 142][INFO] start service successful!
+[2014-08-15 11:04:41][serviceinit.cpp CServerInit::Start 142][INFO] start service successful!
+[2014-08-15 11:04:53][qservice.cpp startSV 59][INFO] get signal to stop service.
+[2014-08-15 11:04:59][serviceinit.cpp CServerInit::Start 142][INFO] start service successful!
+[2014-08-15 11:05:32][qservice.cpp startSV 59][INFO] get signal to stop service.
+[2014-08-15 11:06:03][serviceinit.cpp CServerInit::Start 142][INFO] start service successful!
+[2014-08-15 11:39:06][serviceinit.cpp CServerInit::Start 142][INFO] start service successful!
+[2014-08-15 11:39:19][reg2lua.cpp Q_LuaLog 32][ERROR] E:\googlecode\trunk\QService\Bin\lua\LogIn.lua:31: attempt to index global 'objCurSession' (a nil value)
+[2014-08-15 11:39:19][reg2lua.cpp Q_LuaLog 32][ERROR] stack traceback:
+	E:\googlecode\trunk\QService\Bin\lua\Public/Utile.lua:122: in function 'CallFunc'
+	E:\googlecode\trunk\QService\Bin\lua\Public/RegFuncs.lua:115: in function 'OnNetEvent'
+	E:\googlecode\trunk\QService\Bin\Lua\Main.lua:75: in function <E:\googlecode\trunk\QService\Bin\Lua\Main.lua:36>
+[2014-08-15 11:40:22][serviceinit.cpp CServerInit::Start 142][INFO] start service successful!
+[2014-08-15 11:41:15][serviceinit.cpp CServerInit::Start 142][INFO] start service successful!
+[2014-08-15 11:43:14][serviceinit.cpp CServerInit::Start 142][INFO] start service successful!
+[2014-08-15 14:14:02][serviceinit.cpp CServerInit::Start 142][INFO] start service successful!
+[2014-08-15 14:25:09][serviceinit.cpp CServerInit::Start 142][INFO] start service successful!
+[2014-08-15 15:30:27][serviceinit.cpp CServerInit::Start 142][INFO] start service successful!
+[2014-08-15 15:47:52][serviceinit.cpp CServerInit::Start 142][INFO] start service successful!
+[2014-08-15 15:47:56][qservice.cpp startSV 59][INFO] get signal to stop service.
