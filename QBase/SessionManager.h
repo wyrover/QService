@@ -54,6 +54,8 @@ public:
     CSession *getSessionByID(const int iID);
     /*获取服务器间连接的Session*/
     CSession *getServerLinkerSession(const char *pszName);
+    /*获取在线玩家ID*/
+    luabridge::LuaRef getOnLineID(void);
 
     /*直接发送 格式 unsigned short(消息长度) + 消息*/
     bool sendToCur(const char *pszData, const size_t uiLens);

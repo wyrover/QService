@@ -2,21 +2,23 @@
 函数注册
 --]]
 
-local RegFuncs = {}
-
---网络消息
-RegFuncs.NetEvent = {}
---游戏事件
-RegFuncs.GameEvent = {}
---延迟事件
-RegFuncs.DelayEvent = {}
+if not RegFuncs then
+    RegFuncs = {}
+    
+    --网络消息
+    RegFuncs.NetEvent = {}
+    --游戏事件
+    RegFuncs.GameEvent = {}
+    --延迟事件
+    RegFuncs.DelayEvent = {}
+end
 
 --[[
 描述：延迟事件回调,执行后便删除
 参数：
 返回值：无
 --]]
-function RegFuncs:OnDelayEvent()
+function OnDelayEvent()
     if IsTableEmpty(RegFuncs.DelayEvent) then
         return
     end
@@ -45,8 +47,12 @@ end
 参数：iTime --延后时间（秒）
 返回值：无
 --]]
-function RegFuncs:RegDelayEvent(iTime, Func, ...)
+function RegDelayEvent(iTime, Func, ...)
     if "function" ~= type(Func) then
+        return
+    end
+    
+    if 0 >= iTime then
         return
     end
     
@@ -65,7 +71,7 @@ end
 参数：iEvent --事件编号
 返回值：无
 --]]
-function RegFuncs:OnGameEvent(iEvent, ...)
+function OnGameEvent(iEvent, ...)
     if not RegFuncs.GameEvent[iEvent] then
         return
     end
@@ -87,7 +93,7 @@ end
 参数：
 返回值：无
 --]]
-function RegFuncs:RegGameEvent(iEvent, strFunc, Func)
+function RegGameEvent(iEvent, strFunc, Func)
     if "function" ~= type(Func) then
         return
     end
@@ -100,6 +106,12 @@ function RegFuncs:RegGameEvent(iEvent, strFunc, Func)
         RegFuncs.GameEvent[iEvent] = {}
     end
     
+    for _, val in pairs(RegFuncs.GameEvent[iEvent]) do
+        if val[1] == strFunc then
+            return
+        end
+    end
+    
     table.insert(RegFuncs.GameEvent[iEvent], {strFunc, Func})
 end
 
@@ -108,15 +120,15 @@ end
 参数：
 返回值：无
 --]]
-function RegFuncs:OnNetEvent(objSessionManager, iOpCode, tbMessage)
+function OnNetEvent(iOpCode, tbMessage)
     local Func = RegFuncs.NetEvent[iOpCode]
     if Func then
         TimerReStart()
-        CallFunc(Func, objSessionManager, tbMessage)
+        CallFunc(Func, tbMessage)
         Debug("protocol "..iOpCode.." elapsed time:"..tostring(TimerElapsed()).. " ms")        
     else
         Debug("unknown protocol " .. iOpCode ..", close this link.")
-        objSessionManager:closeCurLink()
+        g_objSessionManager:closeCurLink()
     end
 end
 
@@ -125,18 +137,11 @@ end
 参数：
 返回值：无
 --]]
-function RegFuncs:RegNetEvent(iOpCode, Func)
+function RegNetEvent(iOpCode, Func)
     if "function" ~= type(Func) then
-        return
-    end
-    
-    if RegFuncs.NetEvent[iOpCode] then
-        Debug("protocol "..iOpCode.." already register.")
         return
     end
     
     RegFuncs.NetEvent[iOpCode] = Func
     Debug("register protocol "..iOpCode)
 end
-
-return RegFuncs

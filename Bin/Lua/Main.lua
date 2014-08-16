@@ -10,13 +10,18 @@ require("InitModule")
 
 local tNowDay = os.date("*t", time)
 
+if not g_objSessionManager then
+    g_objSessionManager = nil
+end
+
 --[[
 描述：服务启动成功后调用
 参数：
 返回值： 无
 --]]
 function Lua_OnStartUp(objSessionManager)
-    RegFuncs:OnGameEvent(Macros.GameEvent_StartUp)
+    g_objSessionManager = objSessionManager
+    OnGameEvent(GameEvent_StartUp)
 end
 
 --[[
@@ -24,8 +29,8 @@ end
 参数：
 返回值：无
 --]]
-function Lua_OnShutDown(objSessionManager)
-    RegFuncs:OnGameEvent(Macros.GameEvent_ShutDown)    
+function Lua_OnShutDown()
+    OnGameEvent(GameEvent_ShutDown)    
 end
 
 --[[
@@ -33,21 +38,21 @@ end
 参数：
 返回值：无
 --]]
-function Lua_OnRead(objSessionManager, pszMessage, uiLens)
+function Lua_OnRead(pszMessage, uiLens)
     Debug(string.sub(pszMessage, 1, uiLens))
     local tbMessage = cjson.decode(string.sub(pszMessage, 1, uiLens))
-    local iOpCode = tbMessage[Macros.Protocol_Request]
+    local iOpCode = tbMessage[Protocol_Request]
     if not iOpCode then
         Debug("can't find protocol, close this link.")
-        objSessionManager:closeCurLink()
+        g_objSessionManager:closeCurLink()
 
         return
     end
     
-    local objCurSession = objSessionManager:getCurSession()
+    local objCurSession = g_objSessionManager:getCurSession()
     if not objCurSession then
         Debug("current session is nil.")
-        objSessionManager:closeCurLink()
+        g_objSessionManager:closeCurLink()
 
         return
     end
@@ -57,22 +62,22 @@ function Lua_OnRead(objSessionManager, pszMessage, uiLens)
         local iStatus = objCurSession:getStatus()
 
         --如果为登陆，则除了登陆请求，其他的都不处理
-        if (Macros.LinkStatus_LogIned ~= iStatus) 
-            and (OpCodes.CS_LogIn ~= iOpCode) then
+        if (LinkStatus_LogIned ~= iStatus) 
+            and (CS_LogIn ~= iOpCode) then
                 Debug("not logined.")
                 return
         end
         
         --如果已经登陆成功，再发送登陆请求则不处理
-        if (Macros.LinkStatus_LogIned == iStatus) 
-            and (OpCodes.CS_LogIn == iOpCode) then
+        if (LinkStatus_LogIned == iStatus) 
+            and (CS_LogIn == iOpCode) then
                 Debug("already logined.")
                 return
         end
     end
     
     Debug("protocol is " .. iOpCode)    
-    RegFuncs:OnNetEvent(objSessionManager, iOpCode, tbMessage)    
+    OnNetEvent(iOpCode, tbMessage)    
 end
 
 --[[
@@ -80,19 +85,19 @@ end
 参数：
 返回值：无
 --]]
-function Lua_OnTimer(objSessionManager)
-    local uiCount = objSessionManager:getCount()
-    local uiClick = objSessionManager:getTimer()
+function Lua_OnTimer()
+    local uiCount = g_objSessionManager:getCount()
+    local uiClick = g_objSessionManager:getTimer()
     local uiElapseTime = uiClick * uiCount
     local uiOneSecond = 1000
     
     --每帧处理
-    RegFuncs:OnGameEvent(Macros.GameEvent_FPS, uiClick)
+    OnGameEvent(GameEvent_FPS, uiClick)
     
     --1秒
     if 0 == (uiElapseTime % uiOneSecond) then
-        RegFuncs:OnDelayEvent()
-        RegFuncs:OnGameEvent(Macros.GameEvent_1Second)        
+        OnDelayEvent()
+        OnGameEvent(GameEvent_1Second)        
         
         --检查变天
         local tDay = os.date("*t", time)
@@ -103,33 +108,34 @@ function Lua_OnTimer(objSessionManager)
                 tNowDay = tDay
                 Debug("day changed.")
                 
-                RegFuncs:OnGameEvent(Macros.GameEvent_DayChange)
+                OnGameEvent(GameEvent_DayChange)
         end
     end
     
     --5秒
     if 0 == (uiElapseTime % (uiOneSecond * 5)) then
-        RegFuncs:OnGameEvent(Macros.GameEvent_5Second)
+        OnGameEvent(GameEvent_5Second)
     end
     
     --10秒
     if 0 == (uiElapseTime % (uiOneSecond * 10)) then
-        RegFuncs:OnGameEvent(Macros.GameEvent_10Second)
+        OnGameEvent(GameEvent_10Second)
     end
     
     --1分钟
     if 0 == (uiElapseTime % (uiOneSecond * 60)) then
-        RegFuncs:OnGameEvent(Macros.GameEvent_1Minute)
+        OnGameEvent(GameEvent_1Minute)
     end
     
     --5分钟
     if 0 == (uiElapseTime % (uiOneSecond * 60 * 5)) then
-        RegFuncs:OnGameEvent(Macros.GameEvent_5Minute)
+        OnGameEvent(GameEvent_5Minute)
+        collectgarbage("collect")
     end
     
     --10分钟
     if 0 == (uiElapseTime % (uiOneSecond * 60 * 10)) then
-        RegFuncs:OnGameEvent(Macros.GameEvent_10Minute)
+        OnGameEvent(GameEvent_10Minute)
     end    
 end
 
@@ -138,10 +144,11 @@ end
 参数：
 返回值：无
 --]]
-function Lua_OnClose(objSessionManager)
-    local bServerLinker = objSessionManager:getCurSession():isServerLinker()
+function Lua_OnClose()
+    local objCurSession = g_objSessionManager:getCurSession()
+    local bServerLinker = objCurSession:isServerLinker()
     if not bServerLinker then
-        RegFuncs:OnGameEvent(Macros.GameEvent_LogOut)
+        OnGameEvent(GameEvent_LogOut, objCurSession:getID())
     end
 end
 
@@ -150,6 +157,6 @@ end
 参数：
 返回值：无
 --]]
-function Lua_OnLinkedServer(objSessionManager, objSession)
+function Lua_OnLinkedServer(objSession)
     Debug("Lua_OnLinkedServer")
 end

@@ -184,6 +184,7 @@ void CReg2Lua::reg_SessionManager(void)
             .addFunction("checkType", &CSessionManager::checkType)
             .addFunction("getSVLinkerNameByType", &CSessionManager::getSVLinkerNameByType)
             .addFunction("getServerLinkerSession", &CSessionManager::getServerLinkerSession)
+            .addFunction("getOnLineID", &CSessionManager::getOnLineID)
 
             .addFunction("sendToCur", &CSessionManager::sendToCur)
             .addFunction("sendToByID", &CSessionManager::sendToByID)

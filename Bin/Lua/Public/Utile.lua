@@ -19,7 +19,9 @@ local objSnowflakeID = CSnowflakeID()
 objSnowflakeID:setMachineID(getServerID())
 
 --过滤敏感字
-local objFilter = CFilter()
+if not objFilter then
+    objFilter = CFilter()
+end
 
 --字符集
 local objCharset = CCharset()
@@ -107,6 +109,21 @@ function TimerElapsed()
 end
 
 --[[
+描述：写文件
+参数：
+返回值：无
+--]]
+function FileWrite(strFile, strFormat, ...)
+    local pFile = io.open(strFile, "a")
+    if not pFile then
+        return
+    end
+    
+    pFile:write(string.format(strFormat, table.unpack({...})))
+    pFile:close()
+end
+
+--[[
 描述：保护模式中调用函数
 参数：
 返回值：无
@@ -122,9 +139,11 @@ function CallFunc(Func, ...)
         local strStack = debug.traceback()
         Debug(strMsg)
         Debug(strStack)
-        Q_LOG(Macros.LOGLV_ERROR, strMsg)
-        Q_LOG(Macros.LOGLV_ERROR, strStack)
+        Q_LOG(LOGLV_ERROR, strMsg)
+        Q_LOG(LOGLV_ERROR, strStack)
     end
+    
+    return bRtn, strMsg
 end
 
 --[[

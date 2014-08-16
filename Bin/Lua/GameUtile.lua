@@ -7,8 +7,8 @@
 参数：
 返回值：无
 --]]
-function GetOnLineNum(objSessionManager)
-    return objSessionManager:getSessionSize() - objSessionManager:getGetSVLinkerNum()
+function GetOnLineNum()
+    return g_objSessionManager:getSessionSize() - g_objSessionManager:getGetSVLinkerNum()
 end
 
 --[[
@@ -16,6 +16,15 @@ end
 参数：
 返回值： 无
 --]]
-function CloseLink(objSessionManager, iClentID)
-    objSessionManager:closeLinkByID(iClentID)
+function CloseLink(iClentID)
+    g_objSessionManager:closeLinkByID(iClentID)
+end
+
+--[[
+描述：获取在线玩家ID
+参数：
+返回值： 无
+--]]
+function GetOnLineID()
+    return g_objSessionManager:getOnLineID()
 end

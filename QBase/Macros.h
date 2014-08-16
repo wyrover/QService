@@ -66,6 +66,7 @@ typedef unsigned short Q_PackHeadType;
 #define Q_INVALID_SOCK -1
 #define Q_INVALID_ID   -1
 #define Q_INVALID_STATUS   -1
+#define Q_LogIned  1
 
 #ifndef Q_OS_WIN32
     #ifdef Q_OS_SOLARIS

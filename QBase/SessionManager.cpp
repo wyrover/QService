@@ -202,6 +202,32 @@ CSession *CSessionManager::getServerLinkerSession(const char *pszName)
     return getSession(itServerLinker->second);
 }
 
+luabridge::LuaRef CSessionManager::getOnLineID(void)
+{
+    luabridge::LuaRef objOnLineID = luabridge::newTable(m_pLua);
+    std::map<int, CSession *>::iterator itSesson;
+
+    for (itSesson = m_mapSession.begin(); m_mapSession.end() != itSesson; itSesson++)
+    {
+        if (itSesson->second->getServerLinker())
+        {
+            continue;
+        }
+        if (Q_LogIned != itSesson->second->getStatus())
+        {
+            continue;
+        }
+        if (0 == strlen(itSesson->second->getID()))
+        {
+            continue;
+        }
+
+        objOnLineID.append(itSesson->second->getID());
+    }
+
+    return objOnLineID;
+}
+
 size_t CSessionManager::getSessionSize(void)
 {
     return m_mapSession.size();

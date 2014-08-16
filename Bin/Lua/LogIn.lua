@@ -7,13 +7,36 @@
 参数：
 返回值： 无
 --]]
-local function sendLogInRst(objSessionManager, iClientID, iRst)
+local function sendLogInRst(iClientID, iRst)
     local tRtn = {}
-    tRtn[Macros.Protocol_Request] = OpCodes.SC_LogIn
-    tRtn[Macros.Protocol_RTN] = iRst
+    tRtn[Protocol_Request] = SC_LogIn
+    tRtn[Protocol_RTN] = iRst
     
     local strMsg = cjson.encode(tRtn)
-    objSessionManager:sendToByID(iClientID, strMsg, string.len(strMsg))
+    g_objSessionManager:sendToByID(iClientID, strMsg, string.len(strMsg))
+end
+
+--[[
+描述：登陆超时处理
+参数：
+返回值： 无
+--]]
+local function loginTimeOut(iClientID, strCheckID)
+    local objSession = g_objSessionManager:getSessionByID(iClientID)
+    if not objSession then
+        return
+    end
+    
+    if objSession:getCheckID() ~= strCheckID then
+        return
+    end
+    
+    if LinkStatus_LogIning ~= objSession:getStatus() then
+        return
+    end
+    
+    sendLogInRst(iClientID, Game_LoginTimeOut)
+    RegDelayEvent(DelayCloseTime, CloseLink, iClientID)
 end
 
 --[[
@@ -21,53 +44,55 @@ end
 参数：
 返回值： 无
 --]]
-function CSLogIn(objSessionManager, tbMessage)
-    if not tbMessage[Macros.Protocol_Account] then
+function CSLogIn(tbMessage)
+    if not tbMessage[Protocol_Account] then
         Debug("CSLogIn account is nil")
-        objSessionManager:closeCurLink()
+        g_objSessionManager:closeCurLink()
+        
         return
     end
     
-    local objCurSession = objSessionManager:getCurSession()
+    local objCurSession = g_objSessionManager:getCurSession()
     local iSessionID = objCurSession:getSessionID()
     Debug("CSLogIn current session id:".. iSessionID)
     
     --是否超过最大承载
-    local iOnLineNum = GetOnLineNum(objSessionManager)
-    if iOnLineNum >= Macros.MaxClintNum then
+    local iOnLineNum = GetOnLineNum()
+    if iOnLineNum >= MaxClintNum then
         Debug("CSLogIn server busy")
-        sendLogInRst(objSessionManager, iSessionID, ErrorCodes.Game_ServerBusy)
-        RegFuncs:RegDelayEvent(Macros.DelayCloseTime, CloseLink, objSessionManager, iSessionID)
+        sendLogInRst(iSessionID, Game_ServerBusy)
+        RegDelayEvent(DelayCloseTime, CloseLink, iSessionID)
         
         return
     end
     
     --获取账号服务器连接名称
-    local tAccountSVName = objSessionManager:getSVLinkerNameByType(Macros.SVType_Account)
+    local tAccountSVName = g_objSessionManager:getSVLinkerNameByType(SVType_Account)
     local iAccountCount = TableLens(tAccountSVName)
     if 0 ==  iAccountCount then
         Debug("CSLogIn not linked to any account server.")
-        sendLogInRst(objSessionManager, iSessionID, ErrorCodes.Q_RTN_ERROR)
-        RegFuncs:RegDelayEvent(Macros.DelayCloseTime, CloseLink, objSessionManager, iSessionID)
+        sendLogInRst(iSessionID, Q_RTN_ERROR)
+        RegDelayEvent(DelayCloseTime, CloseLink, iSessionID)
         
         return
     end
     
     --设置相关信息    
-    objCurSession:setAccount(tbMessage[Macros.Protocol_Account])
+    objCurSession:setAccount(tbMessage[Protocol_Account])
     Debug("CSLogIn current session account:".. objCurSession:getAccount())
     
     local strCheckID = GetID()
     objCurSession:setCheckID(strCheckID)
     Debug("CSLogIn current session login check id:".. objCurSession:getCheckID())
+    objCurSession:setStatus(LinkStatus_LogIning)
     
     --构造数据    
     local tSALogIn = {}
-    tSALogIn[Macros.Protocol_Request] = OpCodes.SA_LogIn
-    tSALogIn[Macros.Protocol_ClientID] = iSessionID
-    tSALogIn[Macros.Protocol_CheckID] = strCheckID
-    tSALogIn[Macros.Protocol_Account] = tbMessage[Macros.Protocol_Account]
-    tSALogIn[Macros.Protocol_PSW] = tbMessage[Macros.Protocol_PSW]
+    tSALogIn[Protocol_Request] = SA_LogIn
+    tSALogIn[Protocol_ClientID] = iSessionID
+    tSALogIn[Protocol_CheckID] = strCheckID
+    tSALogIn[Protocol_Account] = tbMessage[Protocol_Account]
+    tSALogIn[Protocol_PSW] = tbMessage[Protocol_PSW]
     
     local strMsg = cjson.encode(tSALogIn)
     Debug("CSLogIn send message "..strMsg.." to account server")
@@ -76,49 +101,54 @@ function CSLogIn(objSessionManager, tbMessage)
     local iRand = math.random(iAccountCount)
     Debug("send login request to account server:"..tAccountSVName[iRand])
     
-    iSessionID = objSessionManager:getServerLinkerSession(tAccountSVName[iRand]):getSessionID()
-    objSessionManager:sendToByID(iSessionID, strMsg, string.len(strMsg))
+    local iAccSessionID = g_objSessionManager:getServerLinkerSession(tAccountSVName[iRand]):getSessionID()
+    g_objSessionManager:sendToByID(iAccSessionID, strMsg, string.len(strMsg))
+    
+    RegDelayEvent(LoginTimeOut, loginTimeOut, iSessionID, strCheckID)
 end
-RegFuncs:RegNetEvent(OpCodes.CS_LogIn, CSLogIn)
+RegNetEvent(CS_LogIn, CSLogIn)
 
 --[[
 描述：账号服务器登陆验证返回
 参数：
 返回值： 无
 --]]
-function ASLogIn(objSessionManager, tbMessage)
-    local iClinetID = tbMessage[Macros.Protocol_ClientID]
-    local iCheckID = tbMessage[Macros.Protocol_CheckID]
-    local iRtn = tbMessage[Macros.Protocol_RTN]
+function ASLogIn(tbMessage)
+    local iClientID = tbMessage[Protocol_ClientID]
+    local strCheckID = tbMessage[Protocol_CheckID]
+    local iRtn = tbMessage[Protocol_RTN]
     
     --判断请求session是否还在
-    local objSession = objSessionManager:getSessionByID(iClinetID)
+    local objSession = g_objSessionManager:getSessionByID(iClientID)
     if not objSession then
-        Debug("ASLogIn not find session:" .. iClinetID)
+        Debug("ASLogIn not find session:" .. iClientID)
         return
     end
     
     --检查校验码
-    if objSession:getCheckID() ~= iCheckID then
+    if objSession:getCheckID() ~= strCheckID then
         Debug("ASLogIn check id not equal.")
         return
     end
     
     --如果已经登陆则不处理
-    if Macros.LinkStatus_LogIned == objSession:getStatus() then
+    if LinkStatus_LogIned == objSession:getStatus() then
         Debug("ASLogIn already logined.")
         return
     end
     
-    sendLogInRst(objSessionManager, iClinetID, iRtn)
+    sendLogInRst(iClientID, iRtn)
     
-    if ErrorCodes.Q_RTN_OK ~= iRtn then
+    if Q_RTN_OK ~= iRtn then
         Debug("ASLogIn login error")
         return
     end
     
-    objSession:setStatus(Macros.LinkStatus_LogIned)
+    objSession:setStatus(LinkStatus_LogIned)
     
     --根据该账号下玩家数据信息执行操作
+    --无角色
+    --1个角色
+    --多角色
 end
-RegFuncs:RegNetEvent(OpCodes.AS_LogIn, ASLogIn)
+RegNetEvent(AS_LogIn, ASLogIn)

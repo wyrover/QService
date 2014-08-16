@@ -96,7 +96,7 @@ void CDisposeEvent::onSerciveShutDown(void)
 {
     try
     {
-        luabridge::getGlobal(m_pLua, LUA_EVENT_ONSHUTDOWN)(getSessionManager());
+        luabridge::getGlobal(m_pLua, LUA_EVENT_ONSHUTDOWN)();
     }
     catch(luabridge::LuaException &e)
     {
@@ -116,7 +116,7 @@ void CDisposeEvent::onSocketClose(void)
 {
     try
     {
-        luabridge::getGlobal(m_pLua, LUA_EVENT_ONCLOSE)(getSessionManager());
+        luabridge::getGlobal(m_pLua, LUA_EVENT_ONCLOSE)();
     }
     catch(luabridge::LuaException &e)
     {
@@ -136,7 +136,7 @@ void CDisposeEvent::onTimerEvent(void)
 {
     try
     {
-        luabridge::getGlobal(m_pLua, LUA_EVENT_ONTIMER)(getSessionManager());
+        luabridge::getGlobal(m_pLua, LUA_EVENT_ONTIMER)();
     }
     catch(luabridge::LuaException &e)
     {
@@ -156,7 +156,7 @@ void CDisposeEvent::onSocketRead(const char *pszMsg, const size_t uilens)
 {
     try
     {
-        luabridge::getGlobal(m_pLua, LUA_EVENT_ONREAD)(getSessionManager(), pszMsg, uilens);
+        luabridge::getGlobal(m_pLua, LUA_EVENT_ONREAD)(pszMsg, uilens);
     }
     catch(luabridge::LuaException &e)
     {
@@ -176,7 +176,7 @@ void CDisposeEvent::onLinkedServer(class CSession *pSession)
 {
     try
     {
-        luabridge::getGlobal(m_pLua, LUA_EVENT_ONSVLINKED)(getSessionManager(), pSession);
+        luabridge::getGlobal(m_pLua, LUA_EVENT_ONSVLINKED)(pSession);
     }
     catch(luabridge::LuaException &e)
     {
