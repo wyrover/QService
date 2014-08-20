@@ -32,7 +32,6 @@
 #define Q_CONFIGFILE      "config.xml"
 #define Q_CONFIGFOLDER    "config"
 #define LOG_FOLDER        "log"
-#define LOG_FILENAME      "Log.log"
 
 CServerInit m_objServerInit;
 
@@ -169,8 +168,7 @@ bool CServerInit::readConfig(void)
     g_iServerID =  atoi(itNode->node().child_value("ServerID"));
     m_stServerConfig.strBindIP = itNode->node().child_value("BindIP");
     m_stServerConfig.usThreadNum = atoi(itNode->node().child_value("ThreadNum"));
-    m_stServerConfig.strScript = std::string(g_acModulPath) + std::string("Lua") +
-        std::string(Q_PATH_SEPARATOR) + std::string(itNode->node().child_value("Script"));
+    m_stServerConfig.strScript = std::string(g_acModulPath) + std::string(itNode->node().child_value("Script"));
     m_stServerConfig.uiTimer = atoi(itNode->node().child_value("Timer"));
     m_stServerConfig.usPort = atoi(itNode->node().child_value("Port"));
     
@@ -342,6 +340,7 @@ void CServerInit::destroyServer(void)
 void CServerInit::initSampleLog(void)
 {
     std::string strLogPath;
+    std::string strLogName;
     int iMaxSize = 5*1024*1024;
     int iPriority = 600;
 
@@ -358,6 +357,8 @@ void CServerInit::initSampleLog(void)
     m_objXmlNode = m_objXmlDoc.child("QServer").child("LogConfig");
     if (!m_objXmlNode.empty())
     {
+        strLogName = m_objXmlNode.child_value("LogName");
+
         iMaxSize = atoi(m_objXmlNode.child_value("MaxSize"));
         Q_Printf("log file size %d.", iMaxSize);
 
@@ -367,7 +368,7 @@ void CServerInit::initSampleLog(void)
 
     g_pSampleLoger->setLogMaxSize(iMaxSize);    
     g_pSampleLoger->setPriority((LOG_LEVEL)iPriority);
-    g_pSampleLoger->setLogFile(std::string(strLogPath + LOG_FILENAME).c_str());
+    g_pSampleLoger->setLogFile(std::string(strLogPath + strLogName).c_str());
     g_pSampleLoger->Open();
 
     g_SampleLogerFD = m_objLog.addLoger(g_pSampleLoger);

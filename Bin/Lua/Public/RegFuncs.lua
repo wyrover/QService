@@ -18,11 +18,7 @@ end
 参数：
 返回值：无
 --]]
-function OnDelayEvent()
-    if IsTableEmpty(RegFuncs.DelayEvent) then
-        return
-    end
-    
+function OnDelayEvent()   
     local iNow = os.time()
     local tDel = {}
     

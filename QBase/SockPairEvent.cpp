@@ -184,6 +184,12 @@ int CSockPairEvent::Start(void)
 
         Q_SYSLOG(LOGLV_ERROR, "happen error on loop. error code %d, message %s", 
             iRtn, evutil_socket_error_to_string(iRtn));
+
+        setError(true);
+
+        g_objExitMutex.Lock();
+        g_objExitCond.Signal();
+        g_objExitMutex.unLock();
     }
     m_bRun = false;
     Q_Printf("%s", "exit sock pair loop");

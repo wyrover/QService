@@ -124,6 +124,11 @@ public:
         return iNullValue;
     };
 
+    std::string getStrInt64Field(const char* pszField)
+    {
+        return Q_ToString(getInt64Field(pszField));
+    };
+
     virtual double getFloatField(const char* pszField, const double fNullValue = 0.0)
     {
         return fNullValue;
@@ -161,6 +166,12 @@ public:
     virtual void bindString(const int iField, const char* pszValue){};
     virtual void bindInt(const int iField, const int iValue){};
     virtual void bindInt64(const int iField, const int64_t iValue){};
+    void bindStrInt64(const int iField, const char *pszValue)
+    {
+        assert(NULL != pszValue);
+
+        bindInt64(iField, Q_ToNumber<int64_t>(pszValue));
+    };
     virtual void bindFloat(const int iField, const double dValue){};
     virtual void bindBlob(const int iField, const unsigned char* blobValue, const size_t iLen){};
     virtual void bindNull(const int iField){};
@@ -175,7 +186,7 @@ public:
     CDBLink(void):m_bUsed(false){};
     virtual ~CDBLink(void){};
 
-    virtual void open(CDBUrl &objDBUrl){};
+    virtual void open(CDBUrl objDBUrl){};
     virtual void close(void){};
 
     virtual void Transaction(void){};

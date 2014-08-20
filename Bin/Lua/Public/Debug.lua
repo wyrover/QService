@@ -7,7 +7,7 @@
 参数：
 返回值：无
 --]]
-function lua_DoStr(tbMessage)
+local function lua_DoStr(tbMessage)
     local Func = load(tbMessage[Protocol_DebugStr])
     local tRtn = {}
     tRtn[Protocol_Request] = Debug_DoStringRtn

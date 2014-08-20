@@ -266,6 +266,10 @@ void CSessionManager::closeLinkByID(const int iID)
         return;
     }
 
+    setCurSession(itSession->second);
+    m_pInterface->onSocketClose();
+    setCurSession(NULL);
+
     bufferevent_free(itSession->second->getBuffer()->getBuffer());
     itSession->second->Clear();
 

@@ -4,7 +4,8 @@
 
 --路径添加
 local luaDir = Q_GetModulPath() .. "Lua" .. Q_GetPathSeparator()
-package.path = package.path .. ";" .. luaDir .. "?.lua"
+package.path = package.path .. ";" .. luaDir .. "Public"..Q_GetPathSeparator().."?.lua"
+package.path = package.path .. ";" .. luaDir .. "Game"..Q_GetPathSeparator().."?.lua"
 
 require("InitModule")
 
@@ -145,11 +146,7 @@ end
 返回值：无
 --]]
 function Lua_OnClose()
-    local objCurSession = g_objSessionManager:getCurSession()
-    local bServerLinker = objCurSession:isServerLinker()
-    if not bServerLinker then
-        OnGameEvent(GameEvent_LogOut, objCurSession:getID())
-    end
+    OnGameEvent(GameEvent_LogOut)
 end
 
 --[[
@@ -158,5 +155,10 @@ end
 返回值：无
 --]]
 function Lua_OnLinkedServer(objSession)
-    Debug("Lua_OnLinkedServer")
+    local tRegSV = {}
+    tRegSV[Protocol_Request] = Server_RegServer
+    tRegSV[Protocol_ServerID] = getServerID()
+    
+    local strMsg = cjson.encode(tRegSV)
+    g_objSessionManager:sendToByID(objSession:getSessionID(), strMsg, string.len(strMsg))
 end

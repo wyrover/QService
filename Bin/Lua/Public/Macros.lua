@@ -52,3 +52,4 @@ Protocol_ClientID = "cid" --客户端session id
 Protocol_CheckID = "ckid" --验证id
 Protocol_DebugStr = "dstr" --命令字符
 Protocol_DebugStrRtn = "drtnstr" --命令字符执行返回
+Protocol_ServerID = "svid" --服务器ID

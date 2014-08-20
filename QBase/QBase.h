@@ -83,10 +83,6 @@ extern Q_SOCK g_SampleLogerFD;
     g_pSampleLoger->writeLog(emLogLV, __FILE__, __FUNCTION__, __LINE__, \
     g_SampleLogerFD, acFormat, ##__VA_ARGS__)
 
-/*程序退出信号量*/
-extern CMutex g_objExitMutex;
-extern CCond g_objExitCond;
-
 /*程序所在路径*/
 extern char g_acModulPath[Q_FILEPATH_LENS];
 

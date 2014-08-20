@@ -56,6 +56,15 @@ function GetID()
 end
 
 --[[
+描述：关闭
+参数：
+返回值： 无
+--]]
+function CloseLink(iClentID)
+    g_objSessionManager:closeLinkByID(iClentID)
+end
+
+--[[
 描述：添加敏感词
 参数：
 返回值：无

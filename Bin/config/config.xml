@@ -4,7 +4,7 @@
         <!--服务器节点-->
         <ServerInfo>
 		    <!--服务器ID(最大1024)-->
-			<ServerID>100</ServerID>
+			<ServerID>3</ServerID>
             <!--绑定的IP-->
             <BindIP>0.0.0.0</BindIP>
             <!--绑定端口-->
@@ -14,7 +14,7 @@
             <!--定时器触发间隔时间 0 不触发(毫秒)-->
             <Timer>50</Timer>
             <!--脚本文件-->
-            <Script>Main.lua</Script> 
+            <Script>Lua/Game/Main.lua</Script> 
             <!--连接到其他服务器 可以多个节点--> 
             <ServerLinker>
                 <LinkerName>accountsv</LinkerName>
@@ -22,11 +22,19 @@
                 <IP>127.0.0.1</IP>
                 <Port>15001</Port>
             </ServerLinker> 
+			<ServerLinker>
+                <LinkerName>paymentsv</LinkerName>
+				<Type>2</Type>
+                <IP>127.0.0.1</IP>
+                <Port>15002</Port>
+            </ServerLinker> 
         </ServerInfo>
     </LocalServer>
 
     <!-- 日志参数配置 --> 
     <LogConfig>
+		<!--日志文件名称-->
+		<LogName>Game.log</LogName>
 	    <!--日志文件大小限制-->
         <MaxSize>5242880</MaxSize>
         <!--LOGLV_NOLOG  = 0,

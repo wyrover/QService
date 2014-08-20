@@ -54,6 +54,12 @@ private:
     void reg_TableFile(void);
     void reg_Session(void);
     void reg_SessionManager(void);
+    void reg_DBUrl(void);
+    void reg_DBLink(void);
+    void reg_MySQLLink(void);
+    void reg_SQLite3Link(void);
+    void reg_DBStatement(void);
+    void reg_DBQuery(void);
 
 private:
     struct lua_State *m_pstLState;

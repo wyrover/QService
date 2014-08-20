@@ -44,7 +44,7 @@ end
 参数：
 返回值： 无
 --]]
-function CSLogIn(tbMessage)
+local function CSLogIn(tbMessage)
     if not tbMessage[Protocol_Account] then
         Debug("CSLogIn account is nil")
         g_objSessionManager:closeCurLink()
@@ -113,7 +113,7 @@ RegNetEvent(CS_LogIn, CSLogIn)
 参数：
 返回值： 无
 --]]
-function ASLogIn(tbMessage)
+local function ASLogIn(tbMessage)
     local iClientID = tbMessage[Protocol_ClientID]
     local strCheckID = tbMessage[Protocol_CheckID]
     local iRtn = tbMessage[Protocol_RTN]

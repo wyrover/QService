@@ -27,8 +27,8 @@
 
 #include "Session.h"
 
-CSession::CSession(void) : m_iStatus(Q_INVALID_STATUS), m_bLinker(false), 
-    m_pHandle(NULL),  m_iSessionID(Q_INVALID_ID)
+CSession::CSession(void) : m_bLinker(false), m_pHandle(NULL),
+    m_iStatus(Q_INVALID_STATUS), m_iSessionID(Q_INVALID_ID)
 {
     (void)m_objBuffer.setBuffer(NULL);
 }

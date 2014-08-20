@@ -495,7 +495,7 @@ CSQLite3Link::~CSQLite3Link(void)
     }    
 }
 
-void CSQLite3Link::open(CDBUrl &objDBUrl)
+void CSQLite3Link::open(CDBUrl objDBUrl)
 {
     int iRtn =  0;
 

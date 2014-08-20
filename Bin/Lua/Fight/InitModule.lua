@@ -6,16 +6,13 @@ cjson = require("cjson")
 
 local tLoad = 
 {
-    {"Public/Macros", true},
-    {"Public/OpCodes", true},
-    {"Public/ErrorCodes", true},
-    {"Public/Utile", true},
-    {"Public/RegFuncs", true}, 
-    {"Public/Debug", true},
-    
-    {"GameUtile", true},    
-    {"LogIn", true},
-    {"Player", true},
+    {"Macros", true},
+    {"OpCodes", true},
+    {"ErrorCodes", true},
+    {"Utile", true},
+    {"RegFuncs", true}, 
+    {"Debug", true},
+    {"RegSV", true},
 }
 
 local function LoadAllFile()

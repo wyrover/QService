@@ -285,6 +285,15 @@ int CServerLinker::Link(void)
     }
 
     m_Sock = socket(AF_INET, SOCK_STREAM, 0);
+    if (Q_INVALID_SOCK == m_Sock)
+    {
+        iRtn = Q_SockError();
+        Q_Printf("create socket error. error code %d, message %s", 
+            iRtn, Q_SockError2Str(iRtn));
+
+        return iRtn;
+    }
+
     iRtn = connect(m_Sock, objAddr.getAddr(), objAddr.getAddrSize());
     if (Q_RTN_OK != iRtn)
     {

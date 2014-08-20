@@ -12,15 +12,6 @@ function GetOnLineNum()
 end
 
 --[[
-描述：关闭
-参数：
-返回值： 无
---]]
-function CloseLink(iClentID)
-    g_objSessionManager:closeLinkByID(iClentID)
-end
-
---[[
 描述：获取在线玩家ID
 参数：
 返回值： 无

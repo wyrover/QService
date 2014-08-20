@@ -118,6 +118,10 @@ extern class CSysLoger g_SysLoger;
     g_SysLoger.sysLog(emLogLV, __FILE__, __FUNCTION__, __LINE__, \
     acFormat, ##__VA_ARGS__)
 
+/*程序退出信号量*/
+extern class CMutex g_objExitMutex;
+extern class CCond g_objExitCond;
+
 /*连结x,y的内容*/
 #define Q_Concatenate(x, y) x##y
 /*数组大小*/#define Q_Array_Size(a) (sizeof(a)/sizeof(a[0]))
