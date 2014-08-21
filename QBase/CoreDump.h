@@ -55,17 +55,6 @@ private:
     static CCoreDump* s_pMiniDumper;
     static LPCRITICAL_SECTION s_pCriticalSection;
 };
-#else
-//ulimit -c unlimited
-//gdb  xxx.exe  xxx.core
-//bt
-class CCoreDump
-{
-public:
-    explicit CCoreDump(bool bPromptUserForMiniDump);
-    ~CCoreDump(void){};
-};
-
 #endif
 
 #endif//Q_COREDUMP_H_

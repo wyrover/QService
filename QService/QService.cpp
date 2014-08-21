@@ -27,8 +27,6 @@
 
 #include "ServiceInit.h"
 
-CCoreDump g_objDump(true);
-
 /************************************************************************
 * Function name:startSV
 * Description  :启动服务
@@ -80,6 +78,8 @@ static SERVICE_STATUS m_ServiceStatus;
 static HANDLE m_hStopEvent = NULL;
 int m_UnhandelExceptionHappen = 0;
 char m_serviceDescription[] = {QService};
+
+CCoreDump g_objDump(true);
 
 typedef int (*InitAppEntry)();
 typedef int (*ExitAppEntry)();
@@ -772,6 +772,13 @@ int main(int argc, char *argv[])
     //signal(SIGFPE, SigHandEntry);//执行了一个错误的算术操作
     //signal(SIGBUS, SigHandEntry);//硬件异常,通常由内存访问引起
     signal(Q_SIGNAL_EXIT, SigHandEntry);
+
+    //可以生产dump文件
+    struct rlimit stLimit;
+
+    getrlimit(RLIMIT_CORE, &stLimit);
+    stLimit.rlim_cur = stLimit.rlim_max;
+    setrlimit(RLIMIT_CORE, &stLimit);
 
     iRtn = Q_GetProPath(strDir);
     if (Q_RTN_OK != iRtn)

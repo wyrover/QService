@@ -41,7 +41,6 @@
 #pragma warning(disable:4995)
 
 #define DBGHELP "dbghelp.dll"
-const int USER_DATA_BUFFER_SIZE = 4096;
 CCoreDump* CCoreDump::s_pMiniDumper = NULL;
 LPCRITICAL_SECTION CCoreDump::s_pCriticalSection = NULL;
 
@@ -250,16 +249,6 @@ LONG CCoreDump::writeMiniDump( _EXCEPTION_POINTERS *pExceptionInfo )
     TerminateProcess(GetCurrentProcess(), 0);
 
     return bRetval;
-}
-
-#else
-
-CCoreDump::CCoreDump(bool bPromptUserForMiniDump)
-{
-    if (bPromptUserForMiniDump)
-    {
-        system("ulimit -c unlimited");
-    }
 }
 
 #endif
