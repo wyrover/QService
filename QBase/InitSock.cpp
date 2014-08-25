@@ -77,7 +77,7 @@ void CSockInit::Destroy(void)
 * Modification 
 * ......record :first program
 ************************************************************************/
-int Q_SockRead(Q_SOCK &fd, char *pBuf, const size_t iLens)
+int Q_SockRead(Q_SOCK &fd, char *pBuf, const size_t &iLens)
 {
     int iRecvSize = Q_INIT_NUMBER;
     size_t iRecvTotalSize = Q_INIT_NUMBER;
@@ -111,7 +111,7 @@ int Q_SockRead(Q_SOCK &fd, char *pBuf, const size_t iLens)
 * Modification 
 * ......record :first program
 ************************************************************************/
-int Q_SockWrite(Q_SOCK &fd, const char *pBuf, const size_t iLens)
+int Q_SockWrite(Q_SOCK &fd, const char *pBuf, const size_t &iLens)
 {
     int iSendSize = Q_INIT_NUMBER;
     size_t iSendTotalSize = Q_INIT_NUMBER;

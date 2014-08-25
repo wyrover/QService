@@ -152,11 +152,11 @@ void CDisposeEvent::onTimerEvent(void)
     }
 }
 
-void CDisposeEvent::onSocketRead(const char *pszMsg, const size_t uilens)
+void CDisposeEvent::onSocketRead(const char *pszMsg, const Q_PackHeadType &iLens)
 {
     try
     {
-        luabridge::getGlobal(m_pLua, LUA_EVENT_ONREAD)(pszMsg, uilens);
+        luabridge::getGlobal(m_pLua, LUA_EVENT_ONREAD)(pszMsg, iLens);
     }
     catch(luabridge::LuaException &e)
     {

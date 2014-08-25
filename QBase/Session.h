@@ -45,14 +45,6 @@ public:
     void setID(const char *pszID);
     const char * getID(void);
 
-    /*关联的账号*/
-    void setAccount(const char *pszAccount);
-    const char * getAccount(void);
-
-    /*状态*/
-    void setStatus(const int iStatus);
-    int getStatus(void);
-
     /*是否为连接到其他服务器的*/
     bool getServerLinker(void);
 
@@ -71,10 +63,8 @@ public:
 private:    
     bool m_bLinker;
     void *m_pHandle;
-    int m_iStatus;
     int m_iSessionID;//session id  
     std::string m_strID;//关联的ID
-    std::string m_strAccount;//关联的账号
     std::string m_strCheckID;//校验ID
     CEventBuffer m_objBuffer;
 };

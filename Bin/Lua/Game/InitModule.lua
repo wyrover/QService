@@ -2,21 +2,14 @@
 加载业务模块
 --]]
 
-cjson = require("cjson")
-
 local tLoad = 
 {
-    {"Macros", true},
-    {"OpCodes", true},
-    {"ErrorCodes", true},
-    {"Utile", true},
-    {"RegFuncs", true}, 
-    {"Debug", true},
-    {"RegSV", true},
-    
-    {"GameUtile", true},
-    {"LogIn", true},
-    {"Player", true},
+    {"Public/Macros", true},
+    {"Public/Protocol", true},
+    {"Public/ErrorCodes", true},
+    {"Public/Utile", true},
+    {"Public/RegFuncs", true}, 
+    {"Public/Debug", true},
 }
 
 local function LoadAllFile()

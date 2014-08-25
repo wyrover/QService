@@ -44,14 +44,14 @@ public:
     void setKey(CRSAKey *pRSAKey);
 
     /*公钥加密,需要R_RANDOM_STRUCT结构体*/
-    const char * publicKeyEncrypt(const char* pszData, const size_t iDataLens, size_t &iOutLens);
+    const char * publicKeyEncrypt(const char* pszData, const size_t &iDataLens, size_t &iOutLens);
     /*私钥解密*/
-    const char * privateKeyDecrypt(const char* pszData, const size_t iDataLens, size_t &iOutLens);
+    const char * privateKeyDecrypt(const char* pszData, const size_t &iDataLens, size_t &iOutLens);
 
     /*私钥加密*/
-    const char * privateKeyEncrypt(const char* pszData, const size_t iDataLens, size_t &iOutLens);
+    const char * privateKeyEncrypt(const char* pszData, const size_t &iDataLens, size_t &iOutLens);
     /*公钥解密*/
-    const char * publicKeyDecrypt(const char* pszData, const size_t iDataLens, size_t &iOutLens);
+    const char * publicKeyDecrypt(const char* pszData, const size_t &iDataLens, size_t &iOutLens);
 
 private:
     /*加密方式*/
@@ -70,9 +70,9 @@ private:
 
 private:
     const char *RSAEncrypt(RSAEncryptType emEnType, const char* pszData, 
-        const size_t iDataLens, size_t &iOutLens);
+        const size_t &iDataLens, size_t &iOutLens);
     const char *RSADecrypt(RSADecryptType emEnType, const char* pszData, 
-        const size_t iDataLens, size_t &iOutLens);
+        const size_t &iDataLens, size_t &iOutLens);
 
 private:
     CRSAKey *m_pRSAKey;//key

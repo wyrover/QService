@@ -42,7 +42,7 @@ CFilter::~CFilter(void)
 
 void CFilter::freeNode(FilterMap *pFilterMap)
 {
-    std::map<char, FilterMap*>::iterator itFilter;
+    std::tr1::unordered_map<char, FilterMap*>::iterator itFilter;
 
     for (itFilter = pFilterMap->mapFilterMap.begin(); pFilterMap->mapFilterMap.end() != itFilter; 
         itFilter++)
@@ -84,7 +84,7 @@ bool CFilter::addSensitiveWord(const char *pszWord, const size_t uiLens)
     }
 
     FilterMap *pSearchMap = m_pmapFilter;
-    std::map<char, FilterMap*>::iterator itVal;
+    std::tr1::unordered_map<char, FilterMap*>::iterator itVal;
 
     //¹¹Ôì×Öµä
     for (size_t i = 0; i < uiLens; i++)
@@ -133,7 +133,7 @@ bool CFilter::checkHave(const char *pszWord, const size_t uiLens)
     }
 
     FilterMap *pSearchMap = m_pmapFilter;
-    std::map<char, FilterMap*>::iterator itVal;
+    std::tr1::unordered_map<char, FilterMap*>::iterator itVal;
 
     for (size_t i = 0; i < uiLens; i++)
     {
@@ -186,7 +186,7 @@ void CFilter::checkAndModify(char *pWord, const size_t uiLens, const char cRepla
 
     int iBegain = -1;
     FilterMap *pSearchMap = m_pmapFilter;
-    std::map<char, FilterMap*>::iterator itVal;
+    std::tr1::unordered_map<char, FilterMap*>::iterator itVal;
 
     for (size_t i = 0; i < uiLens; i++)
     {

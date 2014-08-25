@@ -28,12 +28,24 @@
 #ifndef Q_ENUM_H_
 #define Q_ENUM_H_
 
+/*aes key类型*/
 enum AESKeyType
 {
     KeyNone = 0,
     Key128 = 128,
     Key192 = 192,
     Key256 = 256,
+};
+
+/*加解密方式*/
+enum EncryptType
+{
+    EncryptType_None = 0,
+    EncryptType_AES,
+    EncryptType_Base64,
+    EncryptType_RSA,
+
+    EncryptType_Count,
 };
 
 /*日志级别,越小越高*/

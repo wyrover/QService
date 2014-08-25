@@ -763,14 +763,12 @@ int main(int argc, char *argv[])
     std::string strDir;
 
     signal(SIGPIPE, SIG_IGN);//若某一端关闭连接，而另一端仍然向它写数据，第一次写数据后会收到RST响应，此后再写数据，内核将向进程发出SIGPIPE信号
-    signal(SIGINT, SigHandEntry);//ctrl+C
-    signal(SIGTSTP, SigHandEntry);//ctrl+Z   
-    //signal(SIGQUIT, SigHandEntry);
-    //signal(SIGTERM, SigHandEntry);//终止一个进程
-    //signal(SIGSEGV, SigHandEntry);//无效的内存引用，或发生段错误
-    //signal(SIGABRT, SigHandEntry);//中止一个程序
-    //signal(SIGFPE, SigHandEntry);//执行了一个错误的算术操作
-    //signal(SIGBUS, SigHandEntry);//硬件异常,通常由内存访问引起
+    signal(SIGINT, SigHandEntry);//终止进程
+    signal(SIGHUP, SigHandEntry);//终止进程
+    signal(SIGTSTP, SigHandEntry);//ctrl+Z
+    signal(SIGTERM, SigHandEntry);//终止一个进程
+    signal(SIGKILL, SigHandEntry);//立即结束程序
+    signal(SIGABRT, SigHandEntry);//中止一个程序
     signal(Q_SIGNAL_EXIT, SigHandEntry);
 
     //可以生产dump文件

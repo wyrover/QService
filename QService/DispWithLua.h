@@ -45,7 +45,7 @@ public:
     /*定时器触发时执行*/
     void onTimerEvent(void);
     /*socket读取到完整包时执行*/
-    void onSocketRead(const char *pszMsg, const size_t uilens);
+    void onSocketRead(const char *pszMsg, const Q_PackHeadType &iLens);
     /*服务器连接启动*/
     void onLinkedServer(class CSession *pSession);
 

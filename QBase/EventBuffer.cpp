@@ -146,7 +146,7 @@ size_t CEventBuffer::getTotalLens(void)
 * Modification 
 * ......record :first program
 ************************************************************************/
-char *CEventBuffer::readBuffer(const size_t iLens)
+char *CEventBuffer::readBuffer(const size_t &iLens)
 {
     if (NULL == m_pReadBuffer)
     {
@@ -167,7 +167,7 @@ char *CEventBuffer::readBuffer(const size_t iLens)
 * Modification 
 * ......record :first program
 ************************************************************************/
-int CEventBuffer::delBuffer(const size_t iLens)
+int CEventBuffer::delBuffer(const size_t &iLens)
 {
     if (NULL == m_pReadBuffer)
     {
@@ -188,7 +188,7 @@ int CEventBuffer::delBuffer(const size_t iLens)
 * Modification 
 * ......record :first program
 ************************************************************************/
-int CEventBuffer::writeBuffer(const char *pszBuffer, const size_t iLens)
+int CEventBuffer::writeBuffer(const char *pszBuffer, const size_t &iLens)
 {
     if (NULL == pszBuffer
         || NULL == m_pWriteBuffer)

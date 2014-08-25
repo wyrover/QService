@@ -62,7 +62,7 @@ public:
     /*定时器触发时执行*/
     virtual void onTimerEvent(void){};
     /*socket读取到完整包时执行*/
-    virtual void onSocketRead(const char *, const size_t){};
+    virtual void onSocketRead(const char *, const Q_PackHeadType &){};
     /*服务器连接启动*/
     virtual void onLinkedServer(class CSession *){};
 

@@ -45,9 +45,9 @@ private:
 };
 
 /*从socket中读取内容*/
-int Q_SockRead(Q_SOCK &fd, char *pBuf, const size_t iLens);
+int Q_SockRead(Q_SOCK &fd, char *pBuf, const size_t &iLens);
 
 /*向socket中写入发送的内容*/
-int Q_SockWrite(Q_SOCK &fd, const char *pBuf, const size_t iLens);
+int Q_SockWrite(Q_SOCK &fd, const char *pBuf, const size_t &iLens);
 
 #endif//Q_INITSOCK_H_

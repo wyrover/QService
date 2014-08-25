@@ -162,25 +162,25 @@ CWorkThreadEvent *CServer::getServerThreadEvent(void)
 void CServer::listenerAcceptCB(struct evconnlistener *, Q_SOCK sock, struct sockaddr *, 
     int iSockLen, void *arg)
 {
-    unsigned short usIndex = Q_INIT_NUMBER;
-    unsigned int uiTmp = Q_INIT_NUMBER;
-    unsigned int uiCount = Q_INIT_NUMBER;
-
+    unsigned short usIndex = Q_INIT_NUMBER;  
     CServer *pServer = (CServer *)arg;
     CWorkThreadEvent *pThreadEvent = pServer->getServerThreadEvent();
 
     //取得最小连接数的线程号
-    uiTmp = pThreadEvent[0].getSessionManager()->getSessionSize();
-    for (unsigned short usI = Q_INIT_NUMBER;  usI < pServer->getThreadNum(); 
-        usI++)
+    if (pServer->getThreadNum() > 1)
     {
-        uiCount = pThreadEvent[usI].getSessionManager()->getSessionSize();
-        if (uiTmp > uiCount)
+        unsigned int uiCount = Q_INIT_NUMBER;
+        unsigned int uiTmp = pThreadEvent[0].getSessionManager()->getSessionSize();
+        for (unsigned short usI = Q_INIT_NUMBER; usI < pServer->getThreadNum(); usI++)
         {
-            uiTmp = uiCount;
-            usIndex = usI;
+            uiCount = pThreadEvent[usI].getSessionManager()->getSessionSize();
+            if (uiTmp > uiCount)
+            {
+                uiTmp = uiCount;
+                usIndex = usI;
+            }
         }
-    }
+    }    
 
     if (Q_RTN_OK != pThreadEvent[usIndex].sendMainMsg((const char*)&sock, sizeof(sock)))
     {

@@ -47,6 +47,11 @@ int getServerID(void)
     return g_iServerID;
 }
 
+int getEncryptTypeCount(void)
+{
+    return (EncryptType_Count - 1);
+}
+
 void CReg2Lua::Register(void)
 {
     reg_Func();
@@ -72,7 +77,8 @@ void CReg2Lua::reg_Func(void)
         .addFunction("Q_GetModulPath", Q_GetModulPath)
         .addFunction("Q_GetPathSeparator", Q_GetPathSeparator)
         .addFunction("Q_LOG", Q_LuaLog)
-        .addFunction("getServerID", getServerID);
+        .addFunction("getServerID", getServerID)
+        .addFunction("getEncryptTypeCount", getEncryptTypeCount);
 }
 
 void CReg2Lua::reg_Timer(void)
@@ -166,12 +172,6 @@ void CReg2Lua::reg_Session(void)
             .addFunction("setCheckID", &CSession::setCheckID)
             .addFunction("getCheckID", &CSession::getCheckID)
 
-            .addFunction("setAccount", &CSession::setAccount)
-            .addFunction("getAccount", &CSession::getAccount)
-
-            .addFunction("setStatus", &CSession::setStatus)
-            .addFunction("getStatus", &CSession::getStatus)
-
             .addFunction("isServerLinker", &CSession::getServerLinker)
         .endClass();
 }
@@ -190,7 +190,6 @@ void CReg2Lua::reg_SessionManager(void)
             .addFunction("checkType", &CSessionManager::checkType)
             .addFunction("getSVLinkerNameByType", &CSessionManager::getSVLinkerNameByType)
             .addFunction("getServerLinkerSession", &CSessionManager::getServerLinkerSession)
-            .addFunction("getOnLineID", &CSessionManager::getOnLineID)
 
             .addFunction("sendToCur", &CSessionManager::sendToCur)
             .addFunction("sendToByID", &CSessionManager::sendToByID)

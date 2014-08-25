@@ -73,6 +73,7 @@
     #include <process.h>
     #include <ObjBase.h>
     #include <Windows.h>
+    #include <unordered_map>
 #else
     #include <pthread.h>
     #include <unistd.h>
@@ -102,6 +103,7 @@
     #include <net/if.h>
     #include <sys/syscall.h>
     #include <net/if_arp.h>
+    #include <tr1/unordered_map>
 #ifdef Q_UUID
     #include <uuid/uuid.h>
 #endif

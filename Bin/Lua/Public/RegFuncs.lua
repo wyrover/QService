@@ -116,14 +116,14 @@ end
 参数：
 返回值：无
 --]]
-function OnNetEvent(iOpCode, tbMessage)
-    local Func = RegFuncs.NetEvent[iOpCode]
+function OnNetEvent(iProtocol, tbMessage)
+    local Func = RegFuncs.NetEvent[iProtocol]
     if Func then
         TimerReStart()
         CallFunc(Func, tbMessage)
-        Debug("protocol "..iOpCode.." elapsed time:"..tostring(TimerElapsed()).. " ms")        
+        Debug("protocol "..iProtocol.." elapsed time:"..tostring(TimerElapsed()).. " ms")        
     else
-        Debug("unknown protocol " .. iOpCode ..", close this link.")
+        Debug("unknown protocol " .. iProtocol ..", close this link.")
         g_objSessionManager:closeCurLink()
     end
 end
@@ -133,11 +133,11 @@ end
 参数：
 返回值：无
 --]]
-function RegNetEvent(iOpCode, Func)
+function RegNetEvent(iProtocol, Func)
     if "function" ~= type(Func) then
         return
     end
     
-    RegFuncs.NetEvent[iOpCode] = Func
-    Debug("register protocol "..iOpCode)
+    RegFuncs.NetEvent[iProtocol] = Func
+    Debug("register protocol "..iProtocol)
 end

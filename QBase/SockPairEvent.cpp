@@ -340,12 +340,12 @@ int CSockPairEvent::initEvent(void)
     return Q_RTN_OK;
 }
 
-int CSockPairEvent::sendOrderMsg(const char *pszBuff, const size_t iSize)
+int CSockPairEvent::sendOrderMsg(const char *pszBuff, const size_t &iSize)
 {
     return m_pSockPairs[TYPE_ORDER].Write(pszBuff, iSize);
 }
 
-int CSockPairEvent::sendMainMsg(const char *pszBuff, const size_t iSize)
+int CSockPairEvent::sendMainMsg(const char *pszBuff, const size_t &iSize)
 {
     return m_pSockPairs[TYPE_MAIN].Write(pszBuff, iSize);
 }

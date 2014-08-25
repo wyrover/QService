@@ -222,7 +222,7 @@ int CSockPair::Init(void)
 * Modification 
 * ......record :first program
 ************************************************************************/
-int CSockPair::Read(char *pBuf, const size_t iLens)
+int CSockPair::Read(char *pBuf, const size_t &iLens)
 {
     if (NULL == pBuf)
     {
@@ -243,7 +243,7 @@ int CSockPair::Read(char *pBuf, const size_t iLens)
 * Modification 
 * ......record :first program
 ************************************************************************/
-int CSockPair::Write(const char *pBuf, const size_t iLens)
+int CSockPair::Write(const char *pBuf, const size_t &iLens)
 {
     if (NULL == pBuf)
     {

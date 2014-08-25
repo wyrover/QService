@@ -49,7 +49,7 @@ public:
 private:
     struct FilterMap
     {
-        std::map<char, FilterMap*> mapFilterMap;
+        std::tr1::unordered_map<char, FilterMap*> mapFilterMap;
     };
 
     FilterMap *m_pmapFilter;

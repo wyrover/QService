@@ -166,12 +166,14 @@ bool CServerInit::readConfig(void)
     itNode = objNodeSet.begin();
 
     g_iServerID =  atoi(itNode->node().child_value("ServerID"));
+    Q_Printf("service id %d.", g_iServerID);
     m_stServerConfig.strBindIP = itNode->node().child_value("BindIP");
     m_stServerConfig.usThreadNum = atoi(itNode->node().child_value("ThreadNum"));
     m_stServerConfig.strScript = std::string(g_acModulPath) + std::string(itNode->node().child_value("Script"));
     m_stServerConfig.uiTimer = atoi(itNode->node().child_value("Timer"));
     m_stServerConfig.usPort = atoi(itNode->node().child_value("Port"));
-    
+    Q_Printf("bind port %d.", m_stServerConfig.usPort);
+
     //ServerLinker
     objTmpNodeSet = itNode->node().select_nodes("ServerLinker");        
     for (itTmpNode = objTmpNodeSet.begin(); objTmpNodeSet.end() != itTmpNode; ++itTmpNode)
@@ -358,6 +360,7 @@ void CServerInit::initSampleLog(void)
     if (!m_objXmlNode.empty())
     {
         strLogName = m_objXmlNode.child_value("LogName");
+        Q_Printf("log file %s.", strLogName.c_str());
 
         iMaxSize = atoi(m_objXmlNode.child_value("MaxSize"));
         Q_Printf("log file size %d.", iMaxSize);
@@ -445,6 +448,7 @@ void SigHandEntry(int iSigNum)
 {
 #ifndef Q_OS_WIN32
     Q_LOG(LOGLV_INFO, "catch signal %d.", iSigNum);
+    Q_Printf("catch signal %d.", iSigNum);
 
     g_objExitMutex.Lock();
     g_objExitCond.Signal();

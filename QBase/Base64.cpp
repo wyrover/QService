@@ -46,7 +46,7 @@ CBase64::~CBase64(void)
 * Modification 
 * ......record :first program
 **************************************************/
-std::string CBase64::Encode(const unsigned char *pszData, const size_t iLens)
+std::string CBase64::Encode(const unsigned char *pszData, const size_t &iLens)
 {
     //±àÂë±í
     static const char EncodeTable[] = 
@@ -111,7 +111,7 @@ std::string CBase64::Encode(const unsigned char *pszData, const size_t iLens)
 * Modification 
 * ......record :first program
 **************************************************/
-const char *CBase64::Decode(const char* pszData, const size_t iLens, size_t &iOutLens)
+const char *CBase64::Decode(const char* pszData, const size_t &iLens, size_t &iOutLens)
 {
     //½âÂë±í
     static const char acDecodeTable[] =

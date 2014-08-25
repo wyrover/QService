@@ -2,7 +2,7 @@
 一些常用函数
 --]]
 
---调试开关
+--Debug打印开关
 local bDebugSwitch = true
 
 --打印调用耗时开关

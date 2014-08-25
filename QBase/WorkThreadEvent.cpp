@@ -109,10 +109,8 @@ int CWorkThreadEvent::setTimer(unsigned int uiMS)
 void CWorkThreadEvent::onMainRead(struct SockPairEventParam *pParam)
 {
     struct bufferevent *pBev = NULL;
-    CSessionManager *pSessionManager = NULL;
-    Q_SOCK iFD = NULL;
-
-    pSessionManager = (CSessionManager *)(pParam->pUserDate);
+    Q_SOCK iFD = Q_INVALID_SOCK;
+    CSessionManager *pSessionManager = (CSessionManager *)(pParam->pUserDate);
 
     while(Q_GetEventValue<Q_SOCK>(pParam->pEventBuf, iFD))
     {
@@ -160,10 +158,8 @@ void CWorkThreadEvent::onMainRead(struct SockPairEventParam *pParam)
 
 void CWorkThreadEvent::onOrderRead(struct SockPairEventParam *pParam)
 {
-    CSessionManager *pSessionManager = NULL;
     OrderMsg stOrderMsg;
-
-    pSessionManager = (CSessionManager *)(pParam->pUserDate);
+    CSessionManager *pSessionManager = (CSessionManager *)(pParam->pUserDate);
 
     while(Q_GetEventValue<OrderMsg>(pParam->pEventBuf, stOrderMsg))
     {
@@ -182,11 +178,10 @@ void CWorkThreadEvent::onOrderRead(struct SockPairEventParam *pParam)
 void CWorkThreadEvent::addServerLinker(struct event_base *pMainBase, 
     CSessionManager *pSessionManager, OrderMsg &stOrderMsg)
 {
-    CServerLinker *pServerLinker = NULL;
     struct bufferevent *pBev = NULL;
     CSession *pSession = NULL;
+    CServerLinker *pServerLinker = (CServerLinker *)stOrderMsg.pHandle;
 
-    pServerLinker = (CServerLinker *)stOrderMsg.pHandle;
     if (NULL == pServerLinker)
     {
         Q_Printf("%s", Q_EXCEPTION_NULLPOINTER);
@@ -243,9 +238,7 @@ void CWorkThreadEvent::addServerLinker(struct event_base *pMainBase,
 
 void CWorkThreadEvent::onStop(struct SockPairEventParam *pParam)
 {
-    CSessionManager *pSessionManager = NULL;
-
-    pSessionManager = (CSessionManager *)(pParam->pUserDate);
+    CSessionManager *pSessionManager = (CSessionManager *)(pParam->pUserDate);
 
     pSessionManager->getInterface()->onSerciveShutDown();
 }
@@ -253,38 +246,36 @@ void CWorkThreadEvent::onStop(struct SockPairEventParam *pParam)
 char *CWorkThreadEvent::getDataPack(CSession *pSession, Q_PackHeadType &usSize)
 {
     char *pTmp = NULL;
-    Q_PackHeadType usPackLens = Q_INIT_NUMBER;
-    size_t iTotalLens = Q_INIT_NUMBER;
-
     usSize = Q_INIT_NUMBER;
+    size_t iHeadSize = sizeof(Q_PackHeadType);
 
-    iTotalLens = pSession->getBuffer()->getTotalLens();
-    if (sizeof(usPackLens) > iTotalLens)
+    size_t iTotalLens = pSession->getBuffer()->getTotalLens();
+    if (iHeadSize > iTotalLens)
     {
         return NULL;
     }
 
-    pTmp = pSession->getBuffer()->readBuffer(sizeof(usPackLens));
+    pTmp = pSession->getBuffer()->readBuffer(iHeadSize);
     if (NULL == pTmp)
     {
         return NULL;
     }
 
-    usPackLens = *((Q_PackHeadType*)pTmp);
+    Q_PackHeadType usPackLens = *((Q_PackHeadType*)pTmp);
     usPackLens = Q_NTOH(usPackLens);
     if (0 == usPackLens)
     {
-        pSession->getBuffer()->delBuffer(sizeof(usPackLens));
+        pSession->getBuffer()->delBuffer(iHeadSize);
 
         return NULL;
     }
 
-    if (usPackLens > iTotalLens - sizeof(usPackLens))
+    if (usPackLens > (iTotalLens - iHeadSize))
     {
         return NULL;
     }
     
-    pTmp = pSession->getBuffer()->readBuffer(usPackLens + sizeof(usPackLens));
+    pTmp = pSession->getBuffer()->readBuffer(usPackLens + iHeadSize);
     if (NULL == pTmp)
     {
         return NULL;
@@ -292,18 +283,16 @@ char *CWorkThreadEvent::getDataPack(CSession *pSession, Q_PackHeadType &usSize)
     
     usSize = usPackLens;
 
-    return pTmp + sizeof(usPackLens);
+    return pTmp + iHeadSize;
 }
 
 void CWorkThreadEvent::workThreadReadCB(struct bufferevent *bev, void *arg)
 {
     char *pTmp = NULL;
     Q_PackHeadType packLens = Q_INIT_NUMBER;
-    CSession *pSession = NULL;
-    CSessionManager *pSessionManager = NULL;
+    CSessionManager *pSessionManager = (CSessionManager *)arg;
+    CSession *pSession = pSessionManager->getSession(bev);
 
-    pSessionManager = (CSessionManager *)arg;
-    pSession = pSessionManager->getSession(bev);
     if (NULL == pSession)
     {
         Q_Printf("%s", "get session error.");
@@ -323,11 +312,8 @@ void CWorkThreadEvent::workThreadReadCB(struct bufferevent *bev, void *arg)
 
 void CWorkThreadEvent::workThreadEventCB(struct bufferevent *bev, short event, void *arg)
 {
-    CSessionManager *pSessionManager = NULL;
-    CSession *pSession = NULL;    
-
-    pSessionManager = (CSessionManager *)arg;
-    pSession = pSessionManager->getSession(bev);
+    CSessionManager *pSessionManager = (CSessionManager *)arg;
+    CSession *pSession = pSessionManager->getSession(bev);
     if (NULL == pSession)
     {
         bufferevent_free(bev);
@@ -355,9 +341,8 @@ void CWorkThreadEvent::workThreadEventCB(struct bufferevent *bev, short event, v
 
 void CWorkThreadEvent::workThreadTimerCB(evutil_socket_t, short event, void *arg)
 {
-    CSessionManager *pSessionManager = NULL;
+    CSessionManager *pSessionManager = (CSessionManager *)arg;
 
-    pSessionManager = (CSessionManager *)arg;
     pSessionManager->addCount();
 
     pSessionManager->getInterface()->onTimerEvent();

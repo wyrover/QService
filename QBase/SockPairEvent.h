@@ -76,9 +76,9 @@ public:
     /*命令sock参数*/
     void setOrderParam(void *pArg = NULL);
     /*向主读写sock写入数据*/
-    int sendMainMsg(const char *pszBuff, const size_t iSize);
+    int sendMainMsg(const char *pszBuff, const size_t &iSize);
     /*向命令sock写入数据*/
-    int sendOrderMsg(const char *pszBuff, const size_t iSize);
+    int sendOrderMsg(const char *pszBuff, const size_t &iSize);
     /*获取event_base*/
     struct event_base *getBase(void)
     {
@@ -117,18 +117,15 @@ private:
 template<class T>
 T *Q_GetEventValue(CEventBuffer *pBuffer)
 {
-    char *pTmp = NULL;
-    size_t iTotalSize = Q_INIT_NUMBER;
-    T *pDate = NULL;
     size_t iSize = sizeof(T);
 
-    iTotalSize = pBuffer->getTotalLens();
+    size_t iTotalSize = pBuffer->getTotalLens();
     if (iSize > iTotalSize)
     {
         return NULL;
     }
 
-    pDate = new(std::nothrow) T();
+    T *pDate = new(std::nothrow) T();
     if (NULL == pDate)
     {
         Q_Printf("%s", Q_EXCEPTION_ALLOCMEMORY);
@@ -136,7 +133,7 @@ T *Q_GetEventValue(CEventBuffer *pBuffer)
         return NULL;
     }
 
-    pTmp = pBuffer->readBuffer(iSize);
+    char *pTmp = pBuffer->readBuffer(iSize);
     *pDate = *((T *)pTmp);
     pBuffer->delBuffer(iSize);
 
@@ -147,17 +144,15 @@ T *Q_GetEventValue(CEventBuffer *pBuffer)
 template<class T>
 bool Q_GetEventValue(CEventBuffer *pBuffer, T &Date)
 {
-    char *pTmp = NULL;
-    size_t iTotalSize = Q_INIT_NUMBER;
     size_t iSize = sizeof(T);
 
-    iTotalSize = pBuffer->getTotalLens();
+    size_t iTotalSize = pBuffer->getTotalLens();
     if (iSize > iTotalSize)
     {
         return false;
     }
 
-    pTmp = pBuffer->readBuffer(iSize);
+    char *pTmp = pBuffer->readBuffer(iSize);
     Date = *((T*)pTmp);
     pBuffer->delBuffer(iSize);
 

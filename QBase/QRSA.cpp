@@ -41,7 +41,7 @@ void CRSA::setKey(CRSAKey *pRSAKey)
 }
 
 const char *CRSA::RSAEncrypt(RSAEncryptType emEnType, const char* pszData, 
-    const size_t iDataLens, size_t &iOutLens)
+    const size_t &iDataLens, size_t &iOutLens)
 {
     int iRtn = Q_RTN_OK;
     size_t iStep = Q_INIT_NUMBER;
@@ -112,7 +112,7 @@ const char *CRSA::RSAEncrypt(RSAEncryptType emEnType, const char* pszData,
 * Modification 
 * ......record :first program
 ************************************************************************/
-const char *  CRSA::publicKeyEncrypt(const char* pszData, const size_t iDataLens, size_t &iOutLens)
+const char *  CRSA::publicKeyEncrypt(const char* pszData, const size_t &iDataLens, size_t &iOutLens)
 {
     return RSAEncrypt(RSAEncryptType_Public, pszData, iDataLens, iOutLens);
 }
@@ -128,13 +128,13 @@ const char *  CRSA::publicKeyEncrypt(const char* pszData, const size_t iDataLens
 * Modification 
 * ......record :first program
 ************************************************************************/
-const char *  CRSA::privateKeyEncrypt(const char* pszData, const size_t iDataLens, size_t &iOutLens)
+const char *  CRSA::privateKeyEncrypt(const char* pszData, const size_t &iDataLens, size_t &iOutLens)
 {
     return RSAEncrypt(RSAEncryptType_Private, pszData, iDataLens, iOutLens);
 }
 
 const char *CRSA::RSADecrypt(RSADecryptType emEnType, const char* pszData, 
-    const size_t iDataLens, size_t &iOutLens)
+    const size_t &iDataLens, size_t &iOutLens)
 {
     int iRtn = Q_RTN_OK;
     size_t iStep = Q_INIT_NUMBER;
@@ -204,7 +204,7 @@ const char *CRSA::RSADecrypt(RSADecryptType emEnType, const char* pszData,
 * Modification 
 * ......record :first program
 ************************************************************************/
-const char *  CRSA::publicKeyDecrypt(const char* pszData, const size_t iDataLens, size_t &iOutLens)
+const char *  CRSA::publicKeyDecrypt(const char* pszData, const size_t &iDataLens, size_t &iOutLens)
 {
     return RSADecrypt(RSADecryptType_Public, pszData, iDataLens, iOutLens);
 }
@@ -220,7 +220,7 @@ const char *  CRSA::publicKeyDecrypt(const char* pszData, const size_t iDataLens
 * Modification 
 * ......record :first program
 ************************************************************************/
-const char *  CRSA::privateKeyDecrypt(const char* pszData, const size_t iDataLens, size_t &iOutLens)
+const char *  CRSA::privateKeyDecrypt(const char* pszData, const size_t &iDataLens, size_t &iOutLens)
 {
     return RSADecrypt(RSADecryptType_Private, pszData, iDataLens, iOutLens);
 }

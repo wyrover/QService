@@ -51,9 +51,9 @@ public:
     };
     
     /*从读句柄读取数据*/
-    int Read(char *pBuf, const size_t iLens);
+    int Read(char *pBuf, const size_t &iLens);
     /*向写句柄写入数据*/
-    int Write(const char *pBuf, const size_t iLens);
+    int Write(const char *pBuf, const size_t &iLens);
 
 private:
     int Init(void);

@@ -53,9 +53,7 @@ public:
     /*根据ID获取session*/
     CSession *getSessionByID(const int iID);
     /*获取服务器间连接的Session*/
-    CSession *getServerLinkerSession(const char *pszName);
-    /*获取在线玩家ID*/
-    luabridge::LuaRef getOnLineID(void);
+    CSession *getServerLinkerSession(const char *pszName);    
 
     /*直接发送 格式 unsigned short(消息长度) + 消息*/
     bool sendToCur(const char *pszData, const size_t uiLens);
@@ -96,10 +94,6 @@ public:
     /*设置lua虚拟机*/
     void setLua(struct lua_State *pLua);
 
-    std::map<int, CSession *> *getAllSession(void)
-    {
-        return &m_mapSession;
-    };
     /*返回指定类型的服务器连接*/
     luabridge::LuaRef getSVLinkerNameByType(const int iType);
     /*判断是否为指定类型的服务器连接*/
@@ -120,9 +114,9 @@ private:
     struct lua_State *m_pLua;
     CSession *m_pCurrent; //当前Session
     class CEventInterface *m_pInterface;
-    std::map<int, CSession *> m_mapSession;//所有Session
-    std::vector<CSession *> m_vcFreeSession;//空闲的session
-    std::map<std::string, bufferevent* > m_mapServerLinker;
+    std::tr1::unordered_map<int, CSession *> m_unmapSession;//所有Session
+    std::queue<CSession *> m_quFreeSession;//空闲的session
+    std::tr1::unordered_map<std::string, bufferevent* > m_mapServerLinker;
     CBuffer m_objBuffer;
 };
 

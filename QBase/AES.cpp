@@ -108,7 +108,7 @@ int CAESEncode::setKey(const char *pszKey, AESKeyType emKeyType)
 * Modification 
 * ......record :first program
 ************************************************************************/
-const char *CAESEncode::Encode(const char *pszPlaint, const size_t iLens, size_t &iOutLes)
+const char *CAESEncode::Encode(const char *pszPlaint, const size_t &iLens, size_t &iOutLes)
 {    
     size_t iCopyLen = Q_INIT_NUMBER;
     bool bFill = false;
@@ -230,7 +230,7 @@ int CAESDecode::setKey(const char *pszKey, AESKeyType emKeyType)
 * Modification 
 * ......record :first program
 ************************************************************************/
-const char *CAESDecode::Decode(const char *pszCipher, const size_t iLens, size_t &iOutLes)
+const char *CAESDecode::Decode(const char *pszCipher, const size_t &iLens, size_t &iOutLes)
 {
     iOutLes = Q_INIT_NUMBER;
     m_objBuffer.reSet();

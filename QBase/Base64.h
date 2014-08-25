@@ -38,9 +38,9 @@ public:
     ~CBase64(void);
 
     /*base64±àÂë*/
-    std::string Encode(const unsigned char *pszData, const size_t iLens);
+    std::string Encode(const unsigned char *pszData, const size_t &iLens);
     /*base64½âÂë*/
-    const char *Decode(const char* pszData, const size_t iLens, size_t &iOutLens);
+    const char *Decode(const char* pszData, const size_t &iLens, size_t &iOutLens);
 
 private:
     CBuffer m_objBuffer;
