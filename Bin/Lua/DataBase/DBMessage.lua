@@ -38,34 +38,34 @@ RegNetEvent(DB_Log, DBLog)
 返回值： 无
 --]]
 local function DBLoadPlayer(tbMessage)
-	local strAccount = tbMessage[ProtocolStr_Account]
-	if (not strAccount) or (0 == string.len(strAccount)) then
-		return
-	end
+    local strAccount = tbMessage[ProtocolStr_Account]
+    if (not strAccount) or (0 == string.len(strAccount)) then
+        return
+    end
 
-	local objLinker = DBMgr:getLinker(DBType_Game)
-	if not objLinker then
-		return
-	end
-		
-	local strSql = string.format("SELECT id,name FROM player where account = '%s'", 
-		strAccount)
-	tbMessage[ProtocolStr_Info] = {}
-	local objQuery = objLinker:execQuery(strSql)
-	while not objQuery:eof() do
-		local  tInfo = {}
-		--读取玩家信息
-		tInfo[ProtocolStr_ID] = objQuery:getStrInt64Field("id", 0)
-		tInfo[ProtocolStr_Name] = objQuery:getStringField("name", "")
+    local objLinker = DBMgr:getLinker(DBType_Game)
+    if not objLinker then
+        return
+    end
+        
+    local strSql = string.format("SELECT id,name FROM player where account = '%s'", 
+        strAccount)
+    tbMessage[ProtocolStr_Info] = {}
+    local objQuery = objLinker:execQuery(strSql)
+    while not objQuery:eof() do
+        local  tInfo = {}
+        --读取玩家信息
+        tInfo[ProtocolStr_ID] = objQuery:getStrInt64Field("id", 0)
+        tInfo[ProtocolStr_Name] = objQuery:getStringField("name", "")
 
-		table.insert(tbMessage[ProtocolStr_Info], tInfo)
-		
-		objQuery:nextRow()
-	end
+        table.insert(tbMessage[ProtocolStr_Info], tInfo)
+        
+        objQuery:nextRow()
+    end
     
-	objQuery:finalize()
-	
-	local strMsg = cjson.encode(tbMessage)
+    objQuery:finalize()
+    
+    local strMsg = cjson.encode(tbMessage)
     g_objSessionManager:sendToCur(strMsg, string.len(strMsg))
 end
 RegNetEvent(DB_LoadPlayer, DBLoadPlayer)
@@ -78,7 +78,7 @@ RegNetEvent(DB_LoadPlayer, DBLoadPlayer)
 local function checkNameExist(objLinker, strName)
     local bHave = false
     local strSql = string.format("SELECT id FROM player where name = '%s'", 
-		strName)
+        strName)
     local objQuery = objLinker:execQuery(strSql)
     if not objQuery:eof() then        
         bHave = true
@@ -95,11 +95,11 @@ end
 返回值： 无
 --]]
 local function DBCreatePlayer(tbMessage)
-	local objLinker = DBMgr:getLinker(DBType_Game)
-	if not objLinker then
-		return
-	end
-	
+    local objLinker = DBMgr:getLinker(DBType_Game)
+    if not objLinker then
+        return
+    end
+    
     tbMessage[ProtocolStr_Rtn] = Q_RTN_OK
     
     if not checkNameExist(objLinker, tbMessage[ProtocolStr_Name]) then

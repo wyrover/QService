@@ -27,10 +27,10 @@ end
 ∑µªÿ÷µ£∫ Œﬁ
 --]]
 function DBManager:addLinker(DBType, strHost, strDBName, strUser, strPSW, usPort)
-	local dbUrl = CDBUrl()
+    local dbUrl = CDBUrl()
     dbUrl:setUrl(string.format("DB=%s;UserName=%s;PassWord=%s;Port=%d;Host=%s", 
     strDBName, strUser, strPSW, usPort, strHost))
-	
+    
     local Linker = CMySQLLink()
     Linker:open(dbUrl)
         

@@ -8,10 +8,10 @@ local tLoad =
     {"Public/Protocol", true},
     {"Public/ErrorCodes", true},
     {"Public/Utile", true},
-    {"Public/RegFuncs", true}, 
-    {"Public/Debug", true},	
-    {"Public/RegSV", true},	
-	
+    {"Public/RegFuncs", true},
+    {"Public/Debug", true},
+    {"Public/RegSV", true},
+    
     {"DataBase/DBMgr", true},
     {"DataBase/InitDB", true},
     {"DataBase/DBMessage", true},
