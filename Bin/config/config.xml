@@ -16,20 +16,18 @@
             <!--脚本文件-->
             <Script>Lua/Main.lua</Script>			
             <!--连接到其他服务器 可以多个节点--> 
-			<!--
-            <ServerLinker>				
+            <ServerLinker>			
                 <LinkerName>accountsv</LinkerName>
-				<Type>1</Type>
+				<Type>0</Type>
                 <IP>127.0.0.1</IP>
                 <Port>15001</Port>
             </ServerLinker> 
-			<ServerLinker>
-                <LinkerName>paymentsv</LinkerName>
-				<Type>2</Type>
+			<ServerLinker>			
+                <LinkerName>dbsv</LinkerName>
+				<Type>4</Type>
                 <IP>127.0.0.1</IP>
-                <Port>15002</Port>
-            </ServerLinker> 
-			-->
+                <Port>15005</Port>
+            </ServerLinker>
         </ServerInfo>
     </LocalServer>
 

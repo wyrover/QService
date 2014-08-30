@@ -53,7 +53,9 @@ public:
     /*根据ID获取session*/
     CSession *getSessionByID(const int iID);
     /*获取服务器间连接的Session*/
-    CSession *getServerLinkerSession(const char *pszName);    
+    CSession *getServerLinkerSession(const char *pszName);
+    /*ping 检查(uiTime 超时时间(ms))*/
+    void checkPing(const unsigned int uiTime);
 
     /*直接发送 格式 unsigned short(消息长度) + 消息*/
     bool sendToCur(const char *pszData, const size_t uiLens);

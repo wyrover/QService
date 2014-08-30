@@ -151,6 +151,7 @@ int CSessionManager::addSession(struct bufferevent *bev)
 
     Q_SOCK fd = pSession->getBuffer()->getFD();
     pSession->setSessionID(fd);
+    pSession->setPing(getCount());
 
     m_unmapSession[fd] = pSession;
 
@@ -215,6 +216,31 @@ CSession *CSessionManager::getServerLinkerSession(const char *pszName)
     return getSession(itServerLinker->second);
 }
 
+void CSessionManager::checkPing(const unsigned int uiTime)
+{
+    std::tr1::unordered_map<int, CSession *>::iterator itMap;
+    std::vector<int> vcTimeOut;
+    std::vector<int>::iterator itTimeOut;
+
+    for (itMap = m_unmapSession.begin(); m_unmapSession.end() != itMap; itMap++)
+    {
+        if (itMap->second->getServerLinker())
+        {
+            continue;
+        }
+
+        if ((getCount() - itMap->second->getPing())*getTimer() >= uiTime)
+        {
+            vcTimeOut.push_back(itMap->first);
+        }
+    }
+
+    for (itTimeOut = vcTimeOut.begin(); vcTimeOut.end() != itTimeOut; itTimeOut++)
+    {
+        closeLinkByID(*itTimeOut);
+    }
+}
+
 size_t CSessionManager::getSessionSize(void)
 {
     return m_unmapSession.size();
@@ -257,11 +283,22 @@ void CSessionManager::closeLinkByID(const int iID)
     m_pInterface->onSocketClose();
     setCurSession(NULL);
 
+    CServerLinker *pLink = NULL;
+    if (itSession->second->getServerLinker())
+    {
+        pLink = (CServerLinker *)(itSession->second->getHandle());
+    }
+
     bufferevent_free(itSession->second->getBuffer()->getBuffer());
     itSession->second->Clear();
 
     m_quFreeSession.push(itSession->second);
     m_unmapSession.erase(itSession);
+
+    if (NULL != pLink)
+    {
+        pLink->setLinked(false);
+    }
 
     return;
 }

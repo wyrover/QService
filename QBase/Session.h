@@ -52,6 +52,18 @@ public:
     void setCheckID(const char *pszID);
     const char * getCheckID(void);
 
+    /*ping*/
+    void setPing(const unsigned int uiPing);
+    unsigned int getPing(void);
+
+    /*账号*/
+    void setAccount(const char *pszAccount);
+    const char *getAccount(void);
+
+    /*状态*/
+    void setStatus(const int iStatus);
+    int getStatus(void);
+
     void Clear(void);
 
     CEventBuffer *getBuffer(void);
@@ -64,8 +76,11 @@ private:
     bool m_bLinker;
     void *m_pHandle;
     int m_iSessionID;//session id  
+    int m_iStatus;
+    unsigned int m_uiPing;
     std::string m_strID;//关联的ID
     std::string m_strCheckID;//校验ID
+    std::string m_strAccount;
     CEventBuffer m_objBuffer;
 };
 

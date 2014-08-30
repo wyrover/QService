@@ -10,16 +10,8 @@ local tLoad =
     {"Public/Utile", true},
     {"Public/RegFuncs", true}, 
     {"Public/Debug", true},
-    {"Public/RegSV", true},
     
-    {"Game/Ping", true},
-    {"Game/LoadPlayer", true},
-    {"Game/LogIn", true},
-    {"Game/Player", true},
-    {"Game/PlayerMgr", true},
-    
-    {"Game/World", true},
-    {"Game/GameUtile", true},
+    {"Account/LogIn", true},
 }
 
 local function LoadAllFile()

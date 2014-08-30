@@ -4,6 +4,7 @@
 *.o
 *.obj
 *.log
+*.luaprj
 
 # Compiled Dynamic libraries
 *.so

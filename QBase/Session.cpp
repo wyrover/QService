@@ -28,7 +28,8 @@
 #include "Session.h"
 
 CSession::CSession(void) : m_bLinker(false), m_pHandle(NULL),
-    m_iSessionID(Q_INVALID_ID)
+    m_iSessionID(Q_INVALID_ID), m_iStatus(SessionStatus_Unknown), 
+    m_uiPing(Q_INIT_NUMBER)
 {
     (void)m_objBuffer.setBuffer(NULL);
 }
@@ -82,6 +83,37 @@ const char * CSession::getCheckID(void)
     return m_strCheckID.c_str();
 }
 
+void CSession::setPing(const unsigned int uiPing)
+{
+    m_uiPing = uiPing;
+}
+
+unsigned int CSession::getPing(void)
+{
+    return m_uiPing;
+}
+
+void CSession::setAccount(const char *pszAccount)
+{
+    assert(NULL != pszAccount);
+    m_strAccount = pszAccount;
+}
+
+const char *CSession::getAccount(void)
+{
+    return m_strAccount.c_str();
+}
+
+void CSession::setStatus(const int iStatus)
+{
+    m_iStatus = iStatus;
+}
+
+int CSession::getStatus(void)
+{
+    return m_iStatus;
+}
+
 CEventBuffer *CSession::getBuffer(void)
 {
     return &m_objBuffer;
@@ -102,7 +134,10 @@ void CSession::Clear(void)
     m_bLinker = false;
     m_pHandle = NULL;    
     m_iSessionID = Q_INVALID_ID;
+    m_iStatus = SessionStatus_Unknown;
+    m_uiPing = Q_INIT_NUMBER;
     m_strID.clear();
     m_strCheckID.clear();
+    m_strAccount.clear();
     (void)m_objBuffer.setBuffer(NULL);
 }

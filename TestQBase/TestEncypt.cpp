@@ -100,7 +100,7 @@ void CTestEncypt::Test_AES(void)
     stbs.us1 = 4;
 
     int iRtn = Q_RTN_OK;
-    AESKeyType emType = Key256;
+    AESKeyType emType = Key128;
     std::string strKey = "aaaaaaaaaaaaaaaa";
     char *pEncodeRst = NULL;
     char *pDecodeRst = NULL;
@@ -108,32 +108,39 @@ void CTestEncypt::Test_AES(void)
     CAESDecode objDecode;
 
     size_t iOutLens = 0;
+    size_t iInLens = 0;
 
     iRtn = objEncode.setKey(strKey.c_str(), emType);
     pEncodeRst = (char *)objEncode.Encode(str.c_str(), str.size(), iOutLens);
 
     iRtn = objDecode.setKey(strKey.c_str(), emType);
-    pDecodeRst = (char *)objDecode.Decode((const char*)pEncodeRst, iOutLens, iOutLens);
+    iInLens = iOutLens;
+    pDecodeRst = (char *)objDecode.Decode((const char*)pEncodeRst, iInLens, iOutLens);
 
     CPPUNIT_ASSERT_EQUAL(str.size() , iOutLens);
     CPPUNIT_ASSERT_EQUAL(str , std::string(pDecodeRst, iOutLens));
 
     str = "111111";
     pEncodeRst = (char *)objEncode.Encode(str.c_str(), str.size(), iOutLens);
-    pDecodeRst = (char *)objDecode.Decode((const char*)pEncodeRst, iOutLens, iOutLens);
+    iInLens = iOutLens;
+    pDecodeRst = (char *)objDecode.Decode((const char*)pEncodeRst, iInLens, iOutLens);
 
     CPPUNIT_ASSERT_EQUAL(str.size() , iOutLens);
     CPPUNIT_ASSERT_EQUAL(str , std::string(pDecodeRst, iOutLens));
 
     str = "111111111111111";
     pEncodeRst = (char *)objEncode.Encode(str.c_str(), str.size(), iOutLens);
-    pDecodeRst = (char *)objDecode.Decode((const char*)pEncodeRst, iOutLens, iOutLens);
+    iInLens = iOutLens;
+    pDecodeRst = (char *)objDecode.Decode((const char*)pEncodeRst, iInLens, iOutLens);
 
     CPPUNIT_ASSERT_EQUAL(str.size() , iOutLens);
     CPPUNIT_ASSERT_EQUAL(str , std::string(pDecodeRst, iOutLens));
 
     pEncodeRst = (char *)objEncode.Encode((const char*)(&stbs), sizeof(stbs), iOutLens);
-    pDecodeRst = (char *)objDecode.Decode((const char*)pEncodeRst, iOutLens, iOutLens);
+    iInLens = iOutLens;
+    pDecodeRst = (char *)objDecode.Decode((const char*)pEncodeRst, iInLens, iOutLens);
+
+    
     CPPUNIT_ASSERT_EQUAL(sizeof(stbs) , iOutLens);
 
     char *pTmp = (char*)&stbs;
@@ -240,6 +247,7 @@ void CTestEncypt::Test_RSA(void)
 
     pRtn1 = (char*)objRSAEncrypt.publicKeyEncrypt((const char*)(&stRSATest), sizeof(stRSATest), iEncryptOutLens);
     pRtn2 = (char*)objRSADecrypt.privateKeyDecrypt(pRtn1, iEncryptOutLens, iDecryptOutLens);
+
     CPPUNIT_ASSERT_EQUAL(sizeof(stTestRSA) , iDecryptOutLens);
 
     stTestRSA *pstRSATmp = (stTestRSA *)pRtn2;

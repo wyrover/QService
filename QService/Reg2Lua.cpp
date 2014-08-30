@@ -172,6 +172,14 @@ void CReg2Lua::reg_Session(void)
             .addFunction("setCheckID", &CSession::setCheckID)
             .addFunction("getCheckID", &CSession::getCheckID)
 
+            .addFunction("setPing", &CSession::setPing)
+
+            .addFunction("setAccount", &CSession::setAccount)
+            .addFunction("getAccount", &CSession::getAccount)
+
+            .addFunction("setStatus", &CSession::setStatus)
+            .addFunction("getStatus", &CSession::getStatus)
+
             .addFunction("isServerLinker", &CSession::getServerLinker)
         .endClass();
 }
@@ -194,6 +202,8 @@ void CReg2Lua::reg_SessionManager(void)
             .addFunction("sendToCur", &CSessionManager::sendToCur)
             .addFunction("sendToByID", &CSessionManager::sendToByID)
             .addFunction("sendToAll", &CSessionManager::sendToAll)
+
+            .addFunction("checkPing", &CSessionManager::checkPing)
 
             .addFunction("pushMsg", &CSessionManager::pushMsg)
             .addFunction("sendPushMsgToCur", &CSessionManager::sendPushMsgToCur)

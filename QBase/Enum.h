@@ -82,4 +82,17 @@ enum EventPriority
     Priority_Count,
 };
 
+/*session״̬*/
+enum SessionStatus
+{
+    SessionStatus_Unknown = -1,
+    SessionStatus_Loging,
+    SessionStatus_Logined,
+    SessionStatus_Loading,
+    SessionStatus_Loaded,
+    SessionStatus_Createing,
+    SessionStatus_Created,
+    SessionStatus_Playing,
+};
+
 #endif//Q_ENUM_H_

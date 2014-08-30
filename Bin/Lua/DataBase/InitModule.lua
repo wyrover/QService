@@ -9,17 +9,12 @@ local tLoad =
     {"Public/ErrorCodes", true},
     {"Public/Utile", true},
     {"Public/RegFuncs", true}, 
-    {"Public/Debug", true},
-    {"Public/RegSV", true},
-    
-    {"Game/Ping", true},
-    {"Game/LoadPlayer", true},
-    {"Game/LogIn", true},
-    {"Game/Player", true},
-    {"Game/PlayerMgr", true},
-    
-    {"Game/World", true},
-    {"Game/GameUtile", true},
+    {"Public/Debug", true},	
+    {"Public/RegSV", true},	
+	
+    {"DataBase/DBMgr", true},
+    {"DataBase/InitDB", true},
+    {"DataBase/DBMessage", true},
 }
 
 local function LoadAllFile()

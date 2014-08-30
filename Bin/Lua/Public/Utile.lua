@@ -49,7 +49,7 @@ end
 --[[
 描述：获取一不重复的ID
 参数：
-返回值：无
+返回值：ID
 --]]
 function GetID()
     return objSnowflakeID:getSnowflakeID()
@@ -65,6 +65,26 @@ function CloseLink(iClentID)
 end
 
 --[[
+描述：随机获取一指的类型的服务器
+参数：
+返回值： session id
+--]]
+function RandOneSV(iType)
+    local tSVName = g_objSessionManager:getSVLinkerNameByType(iType)
+    local iCount = TableLens(tSVName)
+    if 0 == iCount then
+        return Q_INVALID_ID
+    end
+    
+    local iRand = 1
+    if iCount > 1  then
+        iRand = math.random(iCount)
+    end
+    
+    return g_objSessionManager:getServerLinkerSession(tSVName[iRand]):getSessionID()
+end
+
+--[[
 描述：添加敏感词
 参数：
 返回值：无
@@ -76,7 +96,7 @@ end
 --[[
 描述：是否包含敏感词
 参数：
-返回值：无
+返回值：bool
 --]]
 function CheckFilterWord(strWord)
     return objFilter:checkHave(strWord, string.len(strWord))
@@ -85,7 +105,7 @@ end
 --[[
 描述：过滤敏感词
 参数：
-返回值：无
+返回值：过滤后的结果
 --]]
 function Filter(strWord)
     return objFilter:Filter(strWord, string.len(strWord))
@@ -107,7 +127,7 @@ end
 --[[
 描述：获取耗时
 参数：
-返回值：无
+返回值：double
 --]]
 function TimerElapsed()
     if not btElapsedTime then
@@ -135,7 +155,7 @@ end
 --[[
 描述：保护模式中调用函数
 参数：
-返回值：无
+返回值：bool 函数返回值
 --]]
 function CallFunc(Func, ...)
     if "function" ~= type(Func) then
@@ -195,7 +215,7 @@ end
 --[[
 描述：table是否为空
 参数：
-返回值：无
+返回值：bool
 --]]
 function IsTableEmpty(lua_table)
     if "table" ~= type(lua_table) then
@@ -212,7 +232,7 @@ end
 --[[
 描述：table长度
 参数：
-返回值：无
+返回值：int
 --]]
 function TableLens(lua_table)
     if "table" ~= type(lua_table) then
@@ -230,7 +250,7 @@ end
 --[[
 描述：table拷贝,不考虑带环的
 参数：
-返回值：无
+返回值：table
 --]]
 function CopyTable(tTable)
     if "table" ~= type(tTable)  then  
