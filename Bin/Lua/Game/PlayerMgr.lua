@@ -17,6 +17,7 @@ function PlayerManager:new()
         self.MapAccountID = {} --存储玩家账号、ID对应信息
         self.MapNameID = {} --存储玩家名称、ID对应信息
         self.OnLine = {} --储存在线玩家
+        self.SavePlayerCheckID = {}--验证ID
         
         return self
 end
@@ -161,4 +162,161 @@ function PlayerManager:getRoleNum(strAccount)
     end
     
     return TableLens(self.MapAccountID[strAccount])
+end
+
+--[[
+描述: 移除保存验证码
+参数: 
+返回值: 无
+--]]
+function PlayerManager:removSaveCheckID(strCheckID)
+    for key, val in pairs(self.SavePlayerCheckID) do
+        if val == strCheckID then
+            table.remove(self.SavePlayerCheckID, key)
+            return
+        end
+    end
+end
+
+--[[
+描述: 保存验证码是否为空
+参数: 
+返回值: 无
+--]]
+function PlayerManager:saveCheckIDEmpty(strCheckID)
+    return IsTableEmpty(self.SavePlayerCheckID)
+end
+
+--[[
+描述: 保存验证码清空
+参数: 
+返回值: 无
+--]]
+function PlayerManager:saveCheckIDEmpty(strCheckID)
+    self.SavePlayerCheckID = {}
+end
+
+--[[
+描述: 广播
+参数: 
+返回值: 无
+--]]
+function PlayerManager:broadCast(tbMessage)
+    local objPlayer = nil
+    
+    local strMsg = cjson.encode(tbMessage)
+    
+    for key, _ in pairs(self.OnLine) do
+        objPlayer = self.getPlayerByID(key)
+        if objPlayer then
+            objPlayer:sendStrMessage(strMsg)
+        end
+    end
+end
+
+--[[
+描述: 保存
+参数: strPlayerID nill:所有玩家 tAttr --nil或为{} 为所有属性
+返回值: 无
+--]]
+function PlayerManager:Save(strPlayerID, tAttr)
+    local iDBSessionID = RandOneSV(SVType_DataBase)    
+    if Q_INVALID_ID == iDBSessionID then
+        Debug("save player error,not linked to any database server")
+        Q_LOG(LOGLV_ERROR, "save player error,not linked to any database server") 
+        
+        return
+    end
+    
+    --是否为保存所有属性
+    local bSaveAll = false
+    if (not tAttr) or (IsTableEmpty(tAttr)) then
+        bSaveAll = true
+    end
+    
+    local tSaveMsg = {}
+    local strCheckID = nil
+    local strMsg = nil
+    
+    tSaveMsg[ProtocolStr_Request] = DB_SavePlayer
+    tSaveMsg[ProtocolStr_Info] = {}
+    
+    --保存单个
+    if strPlayerID then
+        if 0 == string.len(strPlayerID) then
+            return
+        end
+        
+        local objPlayer = self.getPlayerByID(strPlayerID)
+        if not objPlayer then
+            return
+        end
+        
+        local Info = objPlayer:getAttr(tAttr)
+        if (not Info) or (IsTableEmpty(Info)) then
+            return
+        end
+        
+        strCheckID = GetID()
+        tSaveMsg[ProtocolStr_CheckID] = strCheckID
+        tSaveMsg[ProtocolStr_Info][strPlayerID] = Info
+        
+        table.insert(self.SavePlayerCheckID, strCheckID)
+        
+        strMsg = cjson.encode(tSaveMsg)        
+        g_objSessionManager:sendToByID(iDBSessionID, strMsg, string.len(strMsg))
+        
+        if not self:checkOnLineStatus(strPlayerID) then
+            if bSaveAll then
+                objPlayer:setSave(false)
+            end
+        end
+        
+        return
+    end
+    
+    --保存多个
+    local iCount = 0
+    for key, val in pairs(self.Player) do
+        if val:getSave() then
+            local Info = val:getAttr(tAttr)
+            if (Info) and (not IsTableEmpty(Info)) then
+                iCount = iCount + 1
+                
+                tSaveMsg[ProtocolStr_Info][key] = Info
+                
+                if not self:checkOnLineStatus(key) then
+                    if bSaveAll then
+                        self.Player[key]:setSave(false)
+                    end
+                end
+                
+                --每SavePlayer_PreNum个玩家请求次保存
+                if iCount >= SavePlayer_PreNum then
+                    strCheckID = GetID()
+                    tSaveMsg[ProtocolStr_CheckID] = strCheckID
+                    table.insert(self.SavePlayerCheckID, strCheckID)
+        
+                    strMsg = cjson.encode(tSaveMsg)
+                    g_objSessionManager:sendToByID(iDBSessionID, strMsg, string.len(strMsg))
+                        
+                    iCount = 0
+                    tSaveMsg[ProtocolStr_Info] = {}
+                end
+            else
+                Debug("get player"..key.." attribute error.")
+            end
+        else
+            Debug("player "..key.." not need save")
+        end
+    end
+    
+    if iCount > 0 then
+        strCheckID = GetID()
+        tSaveMsg[ProtocolStr_CheckID] = strCheckID
+        table.insert(self.SavePlayerCheckID, strCheckID)
+        
+        strMsg = cjson.encode(tSaveMsg)
+        g_objSessionManager:sendToByID(iDBSessionID, strMsg, string.len(strMsg))
+    end
 end

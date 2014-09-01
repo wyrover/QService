@@ -10,6 +10,9 @@ DBLogType_CreatePlayer = DBLogType_LogOut + 1
 --无效ID
 Q_INVALID_ID = -1
 
+--保存玩家每次发送数量
+SavePlayer_PreNum  = 100
+
 --session状态 与c++中enum SessionStatus对应
 SessionStatus_Unknown = -1 --未知
 SessionStatus_Logining = SessionStatus_Unknown + 1 --登陆中

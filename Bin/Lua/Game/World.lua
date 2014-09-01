@@ -62,3 +62,29 @@ local function ShutDownWorld()
     World:shutDown()
 end
 RegGameEvent(GameEvent_ShutDown, "ShutDownWorld", ShutDownWorld)
+
+local function On10Minute()
+    World:getPlayerMgr():Save(nil, nil)
+end
+RegGameEvent(GameEvent_10Second, "On10Minute", On10Minute)
+
+local function OnPlayerEnterGame(objPlayer)
+    --add your code
+end
+RegGameEvent(GameEvent_LogIned, "OnPlayerEnterGame", OnPlayerEnterGame)
+
+local function OnPlayerLogOut()
+    local objPlayer = getCurPlayer()
+    if not objPlayer then
+        return
+    end
+    
+    --add your code
+    
+    World:getPlayerMgr():setOnLineStatus(objPlayer:getID(), false)    
+    objPlayer:setSessionID(Q_INVALID_ID)
+    
+    DBLog(DBLogType_LogOut, objPlayer:getID())
+    Debug(string.format("player logout,id %s, name %s", objPlayer:getID(), objPlayer:getName()))
+end
+RegGameEvent(GameEvent_Close, "OnPlayerLogOut", OnPlayerLogOut)

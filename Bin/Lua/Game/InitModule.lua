@@ -18,6 +18,7 @@ local tLoad =
     {"Game/Player", true},
     {"Game/PlayerMgr", true},
     
+    {"Game/DBMessage", true},
     {"Game/World", true},
     {"Game/GameUtile", true},
 }

@@ -22,6 +22,10 @@ local strLogTableTemplate = "logs"
 if not g_LogTableName then
     g_LogTableName = nil
 end
+--玩家表字段
+if not g_PlayerField then
+    g_PlayerField = {}
+end
 
 --[[
 描述：创建日志表
@@ -42,6 +46,27 @@ local function CreateLogTable()
     objLinker:execDML(strSql)
 end
 
+--[[
+描述：获取玩家表字段名
+参数：
+返回值： 无
+--]]
+local function getPlayerField()
+    local objLinker = DBMgr:getLinker(DBType_Game)
+    if not objLinker then
+        return
+    end
+    
+    local strSql = "show columns from player"
+    local objQuery = objLinker:execQuery(strSql)
+    while not objQuery:eof() do
+        table.insert(g_PlayerField, objQuery:getStringField("Field", ""))        
+        objQuery:nextRow()
+    end
+    
+    objQuery:finalize()
+end
+
 --事件注册
 local function OnSVStartUp()
     for _,val in ipairs(tDBConfig) do
@@ -49,6 +74,8 @@ local function OnSVStartUp()
         Debug(string.format("open database %s.", val.DB))
     end
     
+    --获取玩家表字段
+    getPlayerField()    
     --logs表处理   
     CreateLogTable()
 end

@@ -411,6 +411,7 @@ local function EnterGame(objPlayer, objSession)
     objSession:setID(strPlayerID)
     objSession:setStatus(SessionStatus_Playing)
     objPlayer:setSessionID(iSessionID)
+    objPlayer:setSave(true)
     objPlayerMgr:setOnLineStatus(strPlayerID, true)
     
     sendSelectPlayerRst(iSessionID, Q_RTN_OK)
