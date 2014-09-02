@@ -1,7 +1,7 @@
 #define _CRT_SECURE_NO_DEPRECATE
 #include "TestDataBase.h"
 
-#define MYSQL_HOST "192.168.3.61"
+#define MYSQL_HOST "127.0.0.1"
 #define MYSQL_PORT 3306
 #define MYSQL_USER "root"
 #define MYSQL_PSW  "123456"
@@ -100,6 +100,17 @@ int CTestDataBase::TestDB(CDBPool *pPool)
         }
         pLink->commitTransaction();
 
+        pStatement->bindString(0, ("this is vchar --- " + Q_ToString(123)).c_str());
+        pStatement->bindInt(1, 123);
+        pStatement->bindFloat(2, 123 + 0.2);
+        pStatement->bindInt(3, 123 + 3);
+        pStatement->bindFloat(4, 123 + 0.4);
+        pStatement->bindBlob(5, (const unsigned char*)m_pFileBuf, m_iFileLens);
+        i64 = objID.generate();
+        lstInt64.push_back(i64);
+        pStatement->bindInt64(6, i64);
+        pStatement->execDML();
+
         pStatement->finalize();
 
         objBuf.Format("select * from test where intll >= ?;");
@@ -133,6 +144,36 @@ int CTestDataBase::TestDB(CDBPool *pPool)
         }
 
         pQuery->finalize();
+
+        pQuery = pStatement->execQuery();
+        iBlobLens = 0;
+        pBlob = NULL;
+        while(!pQuery->eof())
+        {
+            bCheckBuf = false;
+            pBlob = (char*)pQuery->getBlobField("blob1", iBlobLens);
+            if (iBlobLens == (int)m_iFileLens)
+            {
+                bCheckBuf = Q_CheckBuff(m_pFileBuf, pBlob, iBlobLens);
+            }
+
+            i64 = pQuery->getInt64Field("int64");
+            if (lstInt64.end() == find(lstInt64.begin(), lstInt64.end(), i64))
+            {
+                Q_EXCEPTION(Q_RTN_FAILE, "not find value.");
+            }
+
+            Q_Printf("vchar %s, int %d, float %f, smallint %d, double %f, blob equ %d, int64 %s",
+                pQuery->getStringField("vchar1"), pQuery->getIntField("intll"),
+                pQuery->getFloatField("float1"), pQuery->getIntField("smallint1"), 
+                pQuery->getFloatField("double1"), bCheckBuf, 
+                Q_ToString(i64).c_str());
+
+            pQuery->nextRow();
+        }
+
+        pQuery->finalize();
+
         pStatement->finalize();
 
         objBuf.Format("select * from test where intll >= %d;", 3);
@@ -162,9 +203,37 @@ int CTestDataBase::TestDB(CDBPool *pPool)
 
         pQuery->finalize();
 
+        pQuery = pLink->execQuery(objBuf);
+        while(!pQuery->eof())
+        {
+            bCheckBuf = false;
+            pBlob = (char*)pQuery->getBlobField("blob1", iBlobLens);
+            if (iBlobLens == (int)m_iFileLens)
+            {
+                bCheckBuf = Q_CheckBuff(m_pFileBuf, pBlob, iBlobLens);
+            }
+
+            i64 = pQuery->getInt64Field("int64");
+            if (lstInt64.end() == find(lstInt64.begin(), lstInt64.end(), i64))
+            {
+                Q_EXCEPTION(Q_RTN_FAILE, "not find value.");
+            }
+
+            Q_Printf("vchar %s, int %d, float %f, smallint %d, double %f, blob equ %d, int64 %s",
+                pQuery->getStringField("vchar1"), pQuery->getIntField("intll"),
+                pQuery->getFloatField("float1"), pQuery->getIntField("smallint1"), 
+                pQuery->getFloatField("double1"), bCheckBuf,
+                Q_ToString(i64).c_str());
+            pQuery->nextRow();
+        }
+
+        pQuery->finalize();
+
         pLink->Transaction();
         pLink->execDML("delete from test");
         pLink->commitTransaction();
+
+        pLink->execDML("delete from test");
 
         pPool->freeLinker(pLink);
     }

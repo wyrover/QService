@@ -423,6 +423,27 @@ local function EnterGame(objPlayer, objSession)
 end
 
 --[[
+描述：踢出在线的
+参数：
+返回值： 无
+--]]
+local function KickPlayer(strAccount)
+    local objPlayerMgr = World:getPlayerMgr()
+    local tAllPlayer = objPlayerMgr:getPlayerByAccount(strAccount)
+    
+    --判断是否在线,如果在线则踢除
+    for _, val in pairs(tAllPlayer) do
+        if objPlayerMgr:checkOnLineStatus(val:getID()) then
+            local tKickPlayer = {}
+            tKickPlayer[ProtocolStr_Request] = SC_KickPlayer
+            
+            val:sendMessage(tKickPlayer)
+            RegDelayEvent(1, CloseLink, val:getSessionID())
+        end
+    end
+end
+
+--[[
 描述：选择角色进入游戏
 参数：
 返回值： 无
@@ -446,6 +467,7 @@ local function CSSelectPlayer(tbMessage)
         return
     end
     
+    KickPlayer(strAccount)
     EnterGame(objPlayer, objCurSession)
 end
 RegNetEvent(CS_SelectPlayer, CSSelectPlayer)

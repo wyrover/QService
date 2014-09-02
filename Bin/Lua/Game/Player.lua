@@ -84,7 +84,7 @@ end
 参数：iSessionID --session id
 返回值:
 --]]
-function Player:getSessionID(iSessionID)
+function Player:getSessionID()
     return self.iSessionID
 end
 

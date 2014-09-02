@@ -8,7 +8,7 @@ class CTestDataBase : public CPPUNIT_NS::TestFixture
     CPPUNIT_TEST_SUITE(CTestDataBase);   
 
     CPPUNIT_TEST(Test_MySql);
-    CPPUNIT_TEST(Test_Sqlite);    
+    //CPPUNIT_TEST(Test_Sqlite);    
 
     CPPUNIT_TEST_SUITE_END();
 

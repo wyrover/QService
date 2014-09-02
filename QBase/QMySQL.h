@@ -196,6 +196,7 @@ public:
 
 private:
     void checkDB(void);
+    void freeResult(void);
 
 private:
     MYSQL* m_pDb_Ptr;

@@ -32,7 +32,7 @@ end
 参数：
 返回值： 无
 --]]
-local function CreateLogTable()
+local function createLogTable()
     local tNow = os.date("*t", time)
     g_LogTableName = string.format("logs_%d_%d", tNow.year, tNow.month)
     Debug("log table name:"..g_LogTableName)
@@ -77,7 +77,7 @@ local function OnSVStartUp()
     --获取玩家表字段
     getPlayerField()    
     --logs表处理   
-    CreateLogTable()
+    createLogTable()
 end
 RegGameEvent(GameEvent_StartUp, "OnSVStartUp", OnSVStartUp)
 
@@ -94,7 +94,7 @@ end
 RegGameEvent(GameEvent_ShutDown, "OnSVShutDown", OnSVShutDown)
 
 local function OnDayChange()
-    CreateLogTable()
+    createLogTable()
 end
 RegGameEvent(GameEvent_DayChange, "OnDayChange", OnDayChange)
 

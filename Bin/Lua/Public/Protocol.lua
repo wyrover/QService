@@ -22,6 +22,7 @@ CS_SelectPlayer = SC_CreatPlayer + 1                         --选择角色进入游戏
 SC_SelectPlayer = CS_SelectPlayer + 1                        --选择角色进入游戏返回
 DB_Log          = SC_SelectPlayer + 1                        --数据库日志
 DB_SavePlayer   = DB_Log + 1                                 --保存玩家信息
+SC_KickPlayer   = DB_SavePlayer + 1                          --剔除玩家
 
 --协议字符
 ProtocolStr_Request     = "rq"                               --请求码

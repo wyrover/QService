@@ -1023,11 +1023,13 @@ void CMySQLStatement::reSet(void)
 {
     if (NULL != m_pStmt)
     {
+        (void)mysql_stmt_free_result(m_pStmt);
+
         int iRtn = mysql_stmt_reset(m_pStmt);
         if (iRtn != Q_RTN_OK)
         {
             Q_EXCEPTION(mysql_stmt_errno(m_pStmt), "%s", mysql_stmt_error(m_pStmt));
-        }
+        }        
     }
 }
 
@@ -1130,6 +1132,8 @@ CDBQuery* CMySQLLink::execQuery(const char* szSQL)
 
     CMySQLQuery *pobj = NULL;
 
+    freeResult();
+
     int iRtn = mysql_real_query(m_pDb_Ptr, szSQL, strlen(szSQL));    
     if (Q_RTN_OK == iRtn)
     {
@@ -1210,6 +1214,8 @@ int CMySQLLink::execDML(const char* szSQL)
         Q_EXCEPTION(Q_ERROR_NULLPOINTER, "%s", Q_EXCEPTION_NULLPOINTER);
     }
 
+    freeResult();
+
     int iRtn = mysql_real_query(m_pDb_Ptr, szSQL, strlen(szSQL));    
     if (Q_RTN_OK == iRtn)
     {
@@ -1254,6 +1260,18 @@ void CMySQLLink::setBusyTimeout(int nMillisecs)
     m_pDb_Ptr->options.read_timeout = nMillisecs;
     m_pDb_Ptr->options.write_timeout = nMillisecs;
     m_pDb_Ptr->options.connect_timeout = nMillisecs;
+}
+
+void CMySQLLink::freeResult(void)
+{
+    do 
+    {
+        MYSQL_RES *Mysql_Res = mysql_store_result(m_pDb_Ptr);
+        if(NULL != Mysql_Res)
+        {
+            mysql_free_result(Mysql_Res);
+        }
+    }while(!mysql_next_result(m_pDb_Ptr));
 }
 
 void CMySQLLink::checkDB(void)
