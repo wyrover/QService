@@ -173,7 +173,7 @@ local function DBSavePlayer(tbMessage)
                 elseif ("boolean" == strType) then
                     strAddFiledSql = string.format("ALTER TABLE player ADD COLUMN `%s` CHAR(1) NOT NULL DEFAULT 0", strAttr)
                 elseif("string" == strType) or ("table" == strType) then
-                    strAddFiledSql = string.format("ALTER TABLE player ADD COLUMN `%s` TEXT NOT NULL DEFAULT ''", strAttr)
+                    strAddFiledSql = string.format("ALTER TABLE player ADD COLUMN `%s` TEXT", strAttr)
                 else
                     Debug("unknown field type")
                     objLinker:rollBack()                   
