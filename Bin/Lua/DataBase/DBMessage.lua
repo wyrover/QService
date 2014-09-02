@@ -173,7 +173,7 @@ local function DBSavePlayer(tbMessage)
                 elseif ("boolean" == strType) then
                     strAddFiledSql = string.format("ALTER TABLE player ADD COLUMN `%s` CHAR(1) NOT NULL DEFAULT 0", strAttr)
                 elseif("string" == strType) or ("table" == strType) then
-                    strAddFiledSql = string.format("ALTER TABLE player ADD COLUMN `%s` TEXT NOT NULL", strAttr)
+                    strAddFiledSql = string.format("ALTER TABLE player ADD COLUMN `%s` TEXT NOT NULL DEFAULT ''", strAttr)
                 else
                     Debug("unknown field type")
                     objLinker:rollBack()                   
@@ -199,7 +199,7 @@ local function DBSavePlayer(tbMessage)
                 strSql = string.format("%s %s='%s',", strSql, strAttr, cjson.encode(AttrInfo))
             else
                 Debug("unknown field type")
-                objLinker:rollBack()                   
+                objLinker:rollBack()
                 return
             end
         end

@@ -10,6 +10,7 @@ local tLoad =
     {"Public/Utile", true},
     {"Public/RegFuncs", true}, 
     {"Public/Debug", true},
+    {"Public/RegSV", true},
     
     {"Account/LogIn", true},
 }

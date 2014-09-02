@@ -80,6 +80,15 @@ function Player:setSessionID(iSessionID)
 end
 
 --[[
+描述：获取玩家对应的session id
+参数：iSessionID --session id
+返回值:
+--]]
+function Player:getSessionID(iSessionID)
+    return self.iSessionID
+end
+
+--[[
 描述：向该玩家发送消息
 参数：
 返回值:

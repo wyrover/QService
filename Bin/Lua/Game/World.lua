@@ -66,7 +66,7 @@ RegGameEvent(GameEvent_ShutDown, "ShutDownWorld", ShutDownWorld)
 local function On10Minute()
     World:getPlayerMgr():Save(nil, nil)
 end
-RegGameEvent(GameEvent_10Second, "On10Minute", On10Minute)
+RegGameEvent(GameEvent_10Minute, "On10Minute", On10Minute)
 
 local function OnPlayerEnterGame(objPlayer)
     --add your code
