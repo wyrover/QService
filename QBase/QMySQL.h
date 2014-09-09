@@ -68,7 +68,6 @@ public:
     void finalize(void);
 
 private:
-    void freeRes(void);
     void checkVM(void);
     int fieldIndex(const char* pszField);
     void setMysqlRst(MYSQL_RES *mysql_res);
@@ -196,7 +195,6 @@ public:
 
 private:
     void checkDB(void);
-    void freeResult(void);
 
 private:
     MYSQL* m_pDb_Ptr;

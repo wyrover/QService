@@ -5,8 +5,8 @@
 Player = {}
 Player.__index = Player
 
---属性列表
-g_PlayerAttr = {}
+PlayerAttr_ID = "id"
+PlayerAttr_Name = "name"
 
 --[[
 描述：新建一玩家对象
@@ -14,13 +14,14 @@ g_PlayerAttr = {}
 返回值： 玩家对象
 --]]
 function Player:new(ID, strAccount, strName)
-        local self = {}        
+        local self = {}
         setmetatable(self, Player)
         self.ID = ID --唯一ID
-        self.strAccount = strAccount --账号
-        self.strName = strName --名称
-        self.iSessionID = Q_INVALID_ID --session id
-        self.bSave = false
+        self.Account = strAccount --账号
+        self.Name = strName --名称
+        
+        self.SessionID = Q_INVALID_ID --session id
+        self.Save = false
         
         return self
 end
@@ -31,7 +32,7 @@ end
 返回值： 无
 --]]
 function Player:setSave(bSave)
-    self.bSave = bSave
+    self.Save = bSave
 end
 
 --[[
@@ -40,7 +41,7 @@ end
 返回值： bool
 --]]
 function Player:getSave()
-    return self.bSave
+    return self.Save
 end
 
 --[[
@@ -58,7 +59,7 @@ end
 返回值： 账号
 --]]
 function Player:getAccount()
-    return self.strAccount
+    return self.Account
 end
 
 --[[
@@ -67,7 +68,7 @@ end
 返回值： 名称
 --]]
 function Player:getName()
-    return self.strName
+    return self.Name
 end
 
 --[[
@@ -76,7 +77,7 @@ end
 返回值:
 --]]
 function Player:setSessionID(iSessionID)
-    self.iSessionID = iSessionID
+    self.SessionID = iSessionID
 end
 
 --[[
@@ -85,7 +86,7 @@ end
 返回值:
 --]]
 function Player:getSessionID()
-    return self.iSessionID
+    return self.SessionID
 end
 
 --[[
@@ -102,12 +103,12 @@ function Player:sendMessage(tMessage)
         return
     end
     
-    if Q_INVALID_ID == self.iSessionID then
+    if Q_INVALID_ID == self.SessionID then
         return
     end
     
     local strMsg = cjson.encode(tMessage)
-    g_objSessionManager:sendToByID(self.iSessionID, strMsg, string.len(strMsg))
+    g_objSessionManager:sendToByID(self.SessionID, strMsg, string.len(strMsg))
 end
 
 --[[
@@ -116,11 +117,17 @@ end
 返回值:
 --]]
 function Player:sendStrMessage(strMsg)
-    if Q_INVALID_ID == self.iSessionID then
+    if Q_INVALID_ID == self.SessionID then
         return
     end
     
-    g_objSessionManager:sendToByID(self.iSessionID, strMsg, string.len(strMsg))
+    g_objSessionManager:sendToByID(self.SessionID, strMsg, string.len(strMsg))
+end
+
+function Player:setAttr(tAttr)
+    if not tAttr then
+        return
+    end
 end
 
 --[[
@@ -129,12 +136,14 @@ end
 返回值:table{Attr=val,...}
 --]]
 function Player:getAttr(tAttr)
-    local tInfo = {}
+    local tTmpAttr = tAttr
+    local tRtnAttr = {}
     
-    tInfo.test1 = 12
-    tInfo.test2 = true
-    tInfo.test3 = "string"
-    tInfo.test4 = {"1", 2, "3", true}
+    if (not tAttr) or (IsTableEmpty(tAttr)) then
+        Debug("get all attr")
+    else
+        Debug("get some attr")
+    end
     
-    return tInfo
+    return tRtnAttr
 end

@@ -336,12 +336,22 @@ local function CSCreatePlayer(tbMessage)
     
     --向数据库请求
     local tReqMsg = {}
+    local strPlayerID = GetID()
     tReqMsg[ProtocolStr_Request] = DB_CreatPlayer
     tReqMsg[ProtocolStr_Account] = strAccount
-    tReqMsg[ProtocolStr_ID] = GetID()
+    tReqMsg[ProtocolStr_ID] = strPlayerID
     tReqMsg[ProtocolStr_Name] = strName
     tReqMsg[ProtocolStr_ClientID] = iSessionID
     tReqMsg[ProtocolStr_CheckID] = strCheckID
+    tReqMsg[ProtocolStr_Info] = {}
+    
+    ---
+    local tPlayerInitAttr = {}
+    tPlayerInitAttr[PlayerAttr_ID] = strPlayerID
+    tPlayerInitAttr[PlayerAttr_Account] = strAccount
+    tPlayerInitAttr[PlayerAttr_Name] = strName
+    
+    table.insert(tReqMsg[ProtocolStr_Info], tPlayerInitAttr)
     
     local strMsg = cjson.encode(tReqMsg)
     g_objSessionManager:sendToByID(iDBSessionID, strMsg, string.len(strMsg))

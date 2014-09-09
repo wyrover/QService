@@ -12,9 +12,10 @@ local tLoad =
     {"Public/Debug", true},
     {"Public/RegSV", true},
     
-    {"DataBase/DBMgr", true},
+    {"DataBase/LinkerMgr", true},
     {"DataBase/InitDB", true},
     {"DataBase/DBMessage", true},
+    {"DataBase/DBMgr", true},
 }
 
 local function LoadAllFile()

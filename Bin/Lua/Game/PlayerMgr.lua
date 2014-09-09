@@ -281,10 +281,9 @@ function PlayerManager:Save(strPlayerID, tAttr)
         if val:getSave() then
             local Info = val:getAttr(tAttr)
             if (Info) and (not IsTableEmpty(Info)) then
-                iCount = iCount + 1
-                
+                iCount = iCount + 1                
+               
                 tSaveMsg[ProtocolStr_Info][key] = Info
-                
                 if not self:checkOnLineStatus(key) then
                     if bSaveAll then
                         self.Player[key]:setSave(false)

@@ -81,7 +81,7 @@ local function OnPlayerLogOut()
     
     --add your code
     
-    World:getPlayerMgr():setOnLineStatus(objPlayer:getID(), false)    
+    World:getPlayerMgr():setOnLineStatus(objPlayer:getID(), false) 
     objPlayer:setSessionID(Q_INVALID_ID)
     
     DBLog(DBLogType_LogOut, objPlayer:getID())

@@ -24,11 +24,15 @@ local function InitPlayerFromDB(tbMessage)
     end
     
     for _, val in pairs(tInfo) do
-        local ID = val[ProtocolStr_ID]
-        local strName = val[ProtocolStr_Name]        
-        local objPlayer = Player:new(ID, strAccount, strName)
-        
-        World:getPlayerMgr():addPlayer(objPlayer)
+        local ID = val[PlayerAttr_ID]
+        local strName = val[PlayerAttr_Name]
+        Debug(string.format("player id %s account %s name %s", ID, strAccount, strName))
+        if ID then
+            local objPlayer = Player:new(ID, strAccount, strName)
+            --≥ı ºªØ Ù–‘
+            objPlayer:setAttr(val)
+            World:getPlayerMgr():addPlayer(objPlayer)
+        end
     end
 end
 

@@ -61,6 +61,7 @@ TestQBase/Release
 *.bak
 *.tlog
 *.lastbuildstate
+!log
 *.log
 *.unsuccessfulbuild
 *.idb

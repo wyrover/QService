@@ -166,10 +166,13 @@ function CallFunc(Func, ...)
     local bRtn, strMsg = pcall(Func, table.unpack({...}))
     if not bRtn then
         local strStack = debug.traceback()
-        Debug(strMsg)
-        Debug(strStack)
-        Q_LOG(LOGLV_ERROR, strMsg)
-        Q_LOG(LOGLV_ERROR, strStack)
+        local strParam = cjson.encode({...})
+        Debug("error message:" .. strMsg)
+        Debug("stack:" .. strStack)
+        Debug("param:" .. strParam)
+        Q_LOG(LOGLV_ERROR, "error message:" .. strMsg)
+        Q_LOG(LOGLV_ERROR, "stack:" .. strStack)
+        Q_LOG(LOGLV_ERROR, "param:" .. strParam)
     end
     
     return bRtn, strMsg

@@ -39,52 +39,59 @@ function DBLog(LogType, PlayerID, Param0, Param1, Param2, Param3, Param4, Descri
     local tLog = {}
     
     tLog[ProtocolStr_Request] = DB_Log
-    tLog[ProtocolStr_Log_Type] = LogType
-    tLog[ProtocolStr_ServerID] = getServerID()
+    tLog[ProtocolStr_Info] = {}
+    
+    local tLogAttr = {}
+    
+    tLogAttr.logtype = LogType
+    tLogAttr.serverid = getServerID()
     
     if PlayerID then
-        tLog[ProtocolStr_ID] = PlayerID
+        tLogAttr.playerid = PlayerID
     else
-        tLog[ProtocolStr_ID] = tostring(Q_INVALID_ID)
+        tLogAttr.playerid = tostring(Q_INVALID_ID)
     end
     
     if Param0 then
-        tLog[ProtocolStr_Log_Param0] = Param0
+        tLogAttr.param0 = Param0
     else
-        tLog[ProtocolStr_Log_Param0] = -1
+        tLogAttr.param0 = -1
     end
     
     if Param1 then
-        tLog[ProtocolStr_Log_Param1] = Param1
+        tLogAttr.param1 = Param1
     else
-        tLog[ProtocolStr_Log_Param1] = -1
+        tLogAttr.param1 = -1
     end
     
     if Param2 then
-        tLog[ProtocolStr_Log_Param2] = Param2
+        tLogAttr.param2 = Param2
     else
-        tLog[ProtocolStr_Log_Param2] = -1
+        tLogAttr.param2 = -1
     end
     
     if Param3 then
-        tLog[ProtocolStr_Log_Param3] = Param3
+        tLogAttr.param3 = Param3
     else
-        tLog[ProtocolStr_Log_Param3] = -1
+        tLogAttr.param3 = -1
     end
     
     if Param4 then
-        tLog[ProtocolStr_Log_Param4] = Param4
+        tLogAttr.param4 = Param4
     else
-        tLog[ProtocolStr_Log_Param4] = -1
+        tLogAttr.param4 = -1
     end
     
     if Description then
-        tLog[ProtocolStr_Log_Memo] = Description
+        tLogAttr.description = Description
     else
-        tLog[ProtocolStr_Log_Memo] = ""
+        tLogAttr.description = ""
     end
     
-    local strMsg = cjson.encode(tLog)    
+    tLogAttr.logtime = os.date()
+    
+    table.insert(tLog[ProtocolStr_Info], tLogAttr)
+    
+    local strMsg = cjson.encode(tLog)
     g_objSessionManager:sendToByID(iDBSessionID, strMsg, string.len(strMsg))
 end
-

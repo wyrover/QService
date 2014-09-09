@@ -88,27 +88,10 @@ CMySQLQuery::CMySQLQuery(MYSQL_RES *mysql_res, MYSQL *pDB)
 
 CMySQLQuery::~CMySQLQuery(void)
 {
-    freeRes();
-}
-
-void CMySQLQuery::freeRes(void)
-{
     if (m_Mysql_Res != NULL)
     {
         mysql_free_result(m_Mysql_Res);
         m_Mysql_Res = NULL;
-    }
-
-    if (NULL != m_pDB)
-    {
-        do
-        {
-            MYSQL_RES *pResult = mysql_store_result(m_pDB);
-            if (NULL != pResult)
-            {
-                mysql_free_result(pResult);
-            }
-        }while(!mysql_next_result(m_pDB));
     }
 }
 
@@ -331,35 +314,22 @@ void CMySQLStmtQuery::freeRes(void)
 
     for (unsigned int i = 0; i < m_uiCol; i++)
     {
-        if (MYSQL_TYPE_TINY_BLOB == m_pRstBinder[i].buffer_type
-            || MYSQL_TYPE_MEDIUM_BLOB == m_pRstBinder[i].buffer_type
-            || MYSQL_TYPE_LONG_BLOB == m_pRstBinder[i].buffer_type
-            || MYSQL_TYPE_BLOB == m_pRstBinder[i].buffer_type)
+        if (NULL != m_pRstBinder[i].length)
         {
             Q_SafeDelete(m_pRstBinder[i].length);
         }
-        
-        pTmp = (char*)m_pRstBinder[i].buffer;
-        Q_SafeDelete(pTmp);
-        m_pRstBinder[i].buffer = NULL;
+        if (NULL != m_pRstBinder[i].buffer)
+        {
+            pTmp = (char*)m_pRstBinder[i].buffer;
+            Q_SafeDelete(pTmp);
+            m_pRstBinder[i].buffer = NULL;
+        }
     }
 
     Q_SafeDelete_Array(m_pStBindInfo);
     Q_SafeDelete_Array(m_pRstBinder);
 
     (void)mysql_stmt_free_result(m_pStmt);
-
-    if (NULL != m_pDB)
-    {
-        do
-        {
-            MYSQL_RES *pResult = mysql_store_result(m_pDB);
-            if (NULL != pResult)
-            {
-                mysql_free_result(pResult);
-            }
-        }while(!mysql_next_result(m_pDB));
-    }
 }
 
 void CMySQLStmtQuery::finalize(void)
@@ -615,6 +585,8 @@ void CMySQLStatement::getFiledInfo(void)
     {
         m_pField = mysql_fetch_fields(m_pMysql_Res);
         m_uiCol = mysql_num_fields(m_pMysql_Res);
+
+        mysql_free_result(m_pMysql_Res);
     }
 }
 
@@ -704,31 +676,6 @@ void CMySQLStatement::BindParam(void)
     {
         Q_EXCEPTION(mysql_stmt_errno(m_pStmt), "%s", mysql_stmt_error(m_pStmt));
     }
-
-    size_t iCopyLens = Q_INIT_NUMBER;
-    char *pData = NULL;
-    for (int i = 0; i < (int)m_uiParamNum; i++)
-    {
-        MYSQL_BIND &stBinder = m_pBinder_Param[i];
-
-        if (MYSQL_TYPE_TINY_BLOB == stBinder.buffer_type
-            || MYSQL_TYPE_MEDIUM_BLOB == stBinder.buffer_type
-            || MYSQL_TYPE_LONG_BLOB == stBinder.buffer_type
-            || MYSQL_TYPE_BLOB == stBinder.buffer_type)
-        {
-            pData = (char*)stBinder.buffer;
-
-            for (size_t offset = 0; offset < stBinder.buffer_length; offset += Q_ONEK)
-            {
-                iCopyLens = ((offset + Q_ONEK) > stBinder.buffer_length) ? 
-                    (stBinder.buffer_length - offset) : Q_ONEK;
-                if (Q_RTN_OK != mysql_stmt_send_long_data(m_pStmt, i, pData + offset, iCopyLens))
-                {
-                    Q_EXCEPTION(mysql_stmt_errno(m_pStmt), "%s", mysql_stmt_error(m_pStmt));
-                }
-            }            
-        }
-    }
 }
 
 int CMySQLStatement::execDML(void)
@@ -747,6 +694,8 @@ int CMySQLStatement::execDML(void)
     }
 
     iChangeVal = (int)mysql_stmt_affected_rows(m_pStmt);
+    mysql_stmt_store_result(m_pStmt);
+    mysql_stmt_free_result(m_pStmt);
 
     return iChangeVal;
 }
@@ -771,8 +720,6 @@ CDBQuery *CMySQLStatement::execQuery(void)
     getFiledInfo();
     if (0 >= m_uiCol)
     {
-        clearExecQuery(pRstBinder, pStBindInfo);
-
         Q_EXCEPTION(Q_ERROR_DATABASE, "%s", "no field");
     }
 
@@ -819,14 +766,14 @@ CDBQuery *CMySQLStatement::execQuery(void)
         else
         {
             pQuery = new CMySQLStmtQuery(pRstBinder, pStBindInfo, m_pStmt, m_uiCol, NULL);
-        }        
+        }
     }
     catch(std::bad_alloc &)
     {
         clearExecQuery(pRstBinder, pStBindInfo);
 
         Q_EXCEPTION(Q_ERROR_ALLOCMEMORY, "%s", Q_EXCEPTION_ALLOCMEMORY);
-    }    
+    }
 
     return pQuery;
 }
@@ -852,16 +799,10 @@ void CMySQLStatement::clearExecQuery(MYSQL_BIND *pBinder, BindInfo *pStBindInfo)
         }
     }
 
-    if (NULL != m_pMysql_Res)
-    {
-        mysql_free_result(m_pMysql_Res);
-        m_pMysql_Res = NULL;
-    }
-
-    (void)mysql_stmt_free_result(m_pStmt);
-
     Q_SafeDelete_Array(pBinder);
     Q_SafeDelete_Array(pStBindInfo);
+
+    (void)mysql_stmt_free_result(m_pStmt);
 }
 
 void CMySQLStatement::getRstBinderInfo(MYSQL_BIND *pBinder, BindInfo *pStBindInfo)
@@ -877,7 +818,7 @@ void CMySQLStatement::getRstBinderInfo(MYSQL_BIND *pBinder, BindInfo *pStBindInf
 
         stBinder.buffer_type = stField.type;
         stBinder.buffer_length = stField.length;
-
+        
         if (MYSQL_TYPE_TINY_BLOB == stBinder.buffer_type
             || MYSQL_TYPE_MEDIUM_BLOB == stBinder.buffer_type
             || MYSQL_TYPE_LONG_BLOB == stBinder.buffer_type
@@ -892,7 +833,7 @@ void CMySQLStatement::getRstBinderInfo(MYSQL_BIND *pBinder, BindInfo *pStBindInf
             }
 
             *(stBinder.length) = 0;
-        }        
+        }
 
         stBinder.buffer = new(std::nothrow) char[stBinder.buffer_length];
         if (NULL == stBinder.buffer)
@@ -1023,8 +964,6 @@ void CMySQLStatement::reSet(void)
 {
     if (NULL != m_pStmt)
     {
-        (void)mysql_stmt_free_result(m_pStmt);
-
         int iRtn = mysql_stmt_reset(m_pStmt);
         if (iRtn != Q_RTN_OK)
         {
@@ -1132,8 +1071,6 @@ CDBQuery* CMySQLLink::execQuery(const char* szSQL)
 
     CMySQLQuery *pobj = NULL;
 
-    freeResult();
-
     int iRtn = mysql_real_query(m_pDb_Ptr, szSQL, strlen(szSQL));    
     if (Q_RTN_OK == iRtn)
     {
@@ -1214,13 +1151,16 @@ int CMySQLLink::execDML(const char* szSQL)
         Q_EXCEPTION(Q_ERROR_NULLPOINTER, "%s", Q_EXCEPTION_NULLPOINTER);
     }
 
-    freeResult();
-
     int iRtn = mysql_real_query(m_pDb_Ptr, szSQL, strlen(szSQL));    
     if (Q_RTN_OK == iRtn)
     {
         //得到受影响的行数
         iRtn = (int)mysql_affected_rows(m_pDb_Ptr);
+        MYSQL_RES *Mysql_Res = mysql_store_result(m_pDb_Ptr);
+        if(NULL != Mysql_Res)
+        {
+            mysql_free_result(Mysql_Res);
+        }
 
         return iRtn;
     }
@@ -1260,18 +1200,6 @@ void CMySQLLink::setBusyTimeout(int nMillisecs)
     m_pDb_Ptr->options.read_timeout = nMillisecs;
     m_pDb_Ptr->options.write_timeout = nMillisecs;
     m_pDb_Ptr->options.connect_timeout = nMillisecs;
-}
-
-void CMySQLLink::freeResult(void)
-{
-    do 
-    {
-        MYSQL_RES *Mysql_Res = mysql_store_result(m_pDb_Ptr);
-        if(NULL != Mysql_Res)
-        {
-            mysql_free_result(Mysql_Res);
-        }
-    }while(!mysql_next_result(m_pDb_Ptr));
 }
 
 void CMySQLLink::checkDB(void)

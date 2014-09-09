@@ -54,7 +54,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../QBase;../QBase/mysql;../QBase/Sqlite;../QBase/lua5.2;../QBase/pugixml;../QBase/rijndael;../QBase/rapidjson;../QBase/RSAEuro;../QBase/uchardet;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../QBase;../QBase/mysql;../QBase/Sqlite;../QBase/lua5.2;../QBase/pugixml;../QBase/rijndael;../QBase/RSAEuro;../QBase/uchardet;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -72,7 +72,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../QBase;../QBase/mysql;../QBase/Sqlite;../QBase/lua5.2;../QBase/pugixml;../QBase/rijndael;../QBase/rapidjson;../QBase/RSAEuro;../QBase/uchardet;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../QBase;../QBase/mysql;../QBase/Sqlite;../QBase/lua5.2;../QBase/pugixml;../QBase/rijndael;../QBase/RSAEuro;../QBase/uchardet;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

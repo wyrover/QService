@@ -39,6 +39,7 @@ ProtocolStr_CheckID     = "ckid"                             --校验ID
 ProtocolStr_Number      = "num"                              --数量
 ProtocolStr_Info        = "info"                             --详细信息
 ProtocolStr_Name        = "nam"                              --名称
+ProtocolStr_Attr        = "attr"                             --属性
 
 ProtocolStr_Log_Type    = "logtype"                          --日志类型
 ProtocolStr_Log_Param0  = "p0"                               --日志参数0
