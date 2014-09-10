@@ -5,6 +5,7 @@
 *.obj
 *.log
 *.luaprj
+*.dmp
 
 # Compiled Dynamic libraries
 *.so
