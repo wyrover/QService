@@ -6,6 +6,7 @@ Player = {}
 Player.__index = Player
 
 PlayerAttr_ID = "id"
+PlayerAttr_Account = "account"
 PlayerAttr_Name = "name"
 
 --[[
