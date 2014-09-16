@@ -355,6 +355,26 @@ void CSockPairEvent::sockPairEventCB(struct bufferevent *bev, short event, void 
     SockPairEventParam *pParam = (SockPairEventParam*)arg;
     int iSockError = EVUTIL_SOCKET_ERROR();
 
+    if (event & BEV_EVENT_TIMEOUT)
+    {
+        return;
+    }
+
+    if (event & BEV_EVENT_ERROR)
+    {
+#ifdef Q_OS_WIN32
+        if (WSA_IO_PENDING == iSockError) // WSAEWOULDBLOCK
+        {
+            return;
+        }
+#else
+        if (EAGAIN == iSockError)
+        {
+            return;
+        }
+#endif
+    }
+
     pParam->pFun->onStop(pParam);
     event_base_loopbreak(pParam->pMainBase);
     Q_SYSLOG(LOGLV_ERROR, 

@@ -58,9 +58,6 @@
     <Filter Include="Base\Thread">
       <UniqueIdentifier>{153b3991-da49-47f9-8c2d-a7f566a46335}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Base\NetWorlk">
-      <UniqueIdentifier>{235cf100-e459-4b53-97e8-2239e611a770}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Base\OS">
       <UniqueIdentifier>{448db666-d984-45e5-9408-0c6d1f273a15}</UniqueIdentifier>
     </Filter>
@@ -90,6 +87,9 @@
     </Filter>
     <Filter Include="Lua\lua5.2\cjson">
       <UniqueIdentifier>{44a13b37-48d3-4262-912a-8ac266d7177f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Base\NetWork">
+      <UniqueIdentifier>{235cf100-e459-4b53-97e8-2239e611a770}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -239,22 +239,22 @@
       <Filter>Base\Thread</Filter>
     </ClInclude>
     <ClInclude Include="EventBuffer.h">
-      <Filter>Base\NetWorlk</Filter>
+      <Filter>Base\NetWork</Filter>
     </ClInclude>
     <ClInclude Include="InitSock.h">
-      <Filter>Base\NetWorlk</Filter>
+      <Filter>Base\NetWork</Filter>
     </ClInclude>
     <ClInclude Include="NETAddr.h">
-      <Filter>Base\NetWorlk</Filter>
+      <Filter>Base\NetWork</Filter>
     </ClInclude>
     <ClInclude Include="SockPair.h">
-      <Filter>Base\NetWorlk</Filter>
+      <Filter>Base\NetWork</Filter>
     </ClInclude>
     <ClInclude Include="SockPairEvent.h">
-      <Filter>Base\NetWorlk</Filter>
+      <Filter>Base\NetWork</Filter>
     </ClInclude>
     <ClInclude Include="SockPairEventParam.h">
-      <Filter>Base\NetWorlk</Filter>
+      <Filter>Base\NetWork</Filter>
     </ClInclude>
     <ClInclude Include="QTime.h">
       <Filter>Base\OS</Filter>
@@ -641,19 +641,19 @@
       <Filter>Base\Thread</Filter>
     </ClCompile>
     <ClCompile Include="EventBuffer.cpp">
-      <Filter>Base\NetWorlk</Filter>
+      <Filter>Base\NetWork</Filter>
     </ClCompile>
     <ClCompile Include="InitSock.cpp">
-      <Filter>Base\NetWorlk</Filter>
+      <Filter>Base\NetWork</Filter>
     </ClCompile>
     <ClCompile Include="NETAddr.cpp">
-      <Filter>Base\NetWorlk</Filter>
+      <Filter>Base\NetWork</Filter>
     </ClCompile>
     <ClCompile Include="SockPair.cpp">
-      <Filter>Base\NetWorlk</Filter>
+      <Filter>Base\NetWork</Filter>
     </ClCompile>
     <ClCompile Include="SockPairEvent.cpp">
-      <Filter>Base\NetWorlk</Filter>
+      <Filter>Base\NetWork</Filter>
     </ClCompile>
     <ClCompile Include="QTime.cpp">
       <Filter>Base\OS</Filter>
