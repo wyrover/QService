@@ -65,6 +65,7 @@ int startSV(void)
 
 #include "../vld/vld.h"
 #pragma comment(lib, "ws2_32.lib")
+#pragma comment(lib, "../Bin/libmysql.lib")
 #pragma comment(lib, "../Bin/libevent_core.lib")
 #pragma comment(lib, "../Bin/libevent_extras.lib")
 #pragma comment(lib, "../Bin/QBase.lib")

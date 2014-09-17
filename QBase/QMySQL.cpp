@@ -29,10 +29,6 @@
 
 #ifdef Q_WITHMYSQL
 
-#ifdef Q_OS_WIN32
-#pragma comment(lib, "../Bin/libmysql.lib")
-#endif
-
 class CMySqlLibInit
 {
 public:

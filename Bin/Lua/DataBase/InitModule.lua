@@ -2,6 +2,8 @@
 加载业务模块
 --]]
 
+require ("mysql")
+
 local tLoad = 
 {
     {"Public/Macros", true},
@@ -12,10 +14,9 @@ local tLoad =
     {"Public/Debug", true},
     {"Public/RegSV", true},
     
-    {"DataBase/LinkerMgr", true},
+    {"DataBase/DBManager", true},
     {"DataBase/InitDB", true},
     {"DataBase/DBMessage", true},
-    {"DataBase/DBMgr", true},
 }
 
 local function LoadAllFile()

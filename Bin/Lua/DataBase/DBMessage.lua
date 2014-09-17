@@ -7,7 +7,7 @@
 参数：
 返回值： 无
 --]]
-local function DBLog(tbMessage)    
+local function DBLog(tbMessage)
     DBMgr:insert(DBType_Log, g_LogTableName, tbMessage[ProtocolStr_Info])
 end
 RegNetEvent(DB_Log, DBLog)
@@ -31,21 +31,33 @@ local function DBLoadPlayer(tbMessage)
     tbMessage[ProtocolStr_Info] = {}
     
     local strSql = string.format("SELECT id FROM %s where account = '%s'", 
-        g_PlayerTable, strAccount)    
-    local objQuery = objLinker:execQuery(strSql)
-    while not objQuery:eof() do
-        local strID = objQuery:getStrInt64Field("id", 0)
-        local tInfo = DBMgr:loadInfo(DBType_Game, g_PlayerTable, strID)
-        if tInfo then
-            for _, val in pairs(tInfo) do
-                table.insert(tbMessage[ProtocolStr_Info], val)
-            end
-        end
-        
-        objQuery:nextRow()
+        g_PlayerTable, strAccount)
+    
+    local objQuery = objLinker:execute(strSql)
+    if not objQuery then
+        Debug(string.format("execute sql: %s error.", strSql))
+        return
     end
     
-    objQuery:finalize()
+    local objPlayerQuery = nil
+    local objPlayerInfo = nil
+    local tCurRow = objQuery:fetch({},"a")
+    while tCurRow do
+        strSql = string.format("SELECT * FROM %s where id = %s", g_PlayerTable, tCurRow.id)
+        objPlayerQuery = objLinker:execute(strSql)
+        if not objPlayerQuery then
+            Debug(string.format("execute sql: %s error.", strSql))
+            return
+        end
+        
+        objPlayerInfo = objPlayerQuery:fetch({},"a")
+        while objPlayerInfo do
+            table.insert(tbMessage[ProtocolStr_Info], objPlayerInfo)
+            objPlayerInfo = objPlayerQuery:fetch(objPlayerInfo, "a")
+        end
+        
+        tCurRow = objQuery:fetch(tCurRow, "a")
+    end
     
     local strMsg = cjson.encode(tbMessage)
     g_objSessionManager:sendToCur(strMsg, string.len(strMsg))
@@ -62,12 +74,16 @@ local function checkNameExist(objLinker, strName)
     local bHave = false
     local strSql = string.format("SELECT id FROM %s where name = '%s'", 
         g_PlayerTable, strName)
-    local objQuery = objLinker:execQuery(strSql)
-    if not objQuery:eof() then        
-        bHave = true
+    local objQuery = objLinker:execute(strSql)
+    if not objQuery then
+        Debug(string.format("execute sql: %s error.", strSql))
+        return true
     end
     
-    objQuery:finalize()
+    local tCurRow = objQuery:fetch({},"a")
+    if tCurRow then
+        bHave = true
+    end
     
     return bHave
 end

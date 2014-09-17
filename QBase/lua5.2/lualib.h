@@ -41,8 +41,14 @@ LUAMOD_API int (luaopen_debug) (lua_State *L);
 #define LUA_LOADLIBNAME	"package"
 LUAMOD_API int (luaopen_package) (lua_State *L);
 
-#define LUA_CJSONLIBNAME    "cjson"  
+#define LUA_CJSONLIBNAME "cjson"  
 LUALIB_API int (luaopen_cjson) (lua_State *L);
+
+#define LUA_MYSQLLIBNAME "mysql"  
+LUALIB_API int (luaopen_luasql_mysql) (lua_State *L);
+
+#define LUA_SQLITE3LIBNAME "sqlite3"
+LUALIB_API int (luaopen_luasql_sqlite3) (lua_State *L);
 
 
 /* open all previous libraries */

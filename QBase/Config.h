@@ -57,33 +57,6 @@
     #endif
 #endif
 
-/*for hash map*/
-//#ifdef Q_OS_WIN32
-//    #include <hash_map>
-//    #if _MSC_VER >= 1300
-//        using stdext::hash_map;
-//    #else
-//        #pragma error "ms vc version must big than 1300!"
-//    #endif
-//#elif __GNUC__ >= 3 
-//    #include <ext/hash_map>
-//    using __gnu_cxx::hash_map;
-//    namespace __gnu_cxx
-//    {
-//        template<> struct hash<unsigned long long>
-//        {
-//            size_t operator()(const unsigned long long &__x) const { return (size_t)__x; }
-//        };
-//        template<typename T> struct hash<T *>
-//        {
-//            size_t operator()(T * const &__x) const { return (size_t)__x; }
-//        };
-//    };
-//#else
-//    #include <hash_map>
-//    using std::hash_map;
-//#endif
-
 //#define Q_UUID
 
 #define Q_WITHMYSQL

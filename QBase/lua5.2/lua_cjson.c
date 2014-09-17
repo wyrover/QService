@@ -1239,7 +1239,7 @@ static void json_process_value(lua_State *l, json_parse_t *json,
         break;
     case T_BOOLEAN:
         lua_pushboolean(l, token->value.boolean);
-        break;;
+        break;
     case T_OBJ_BEGIN:
         json_parse_object_context(l, json);
         break;

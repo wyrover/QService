@@ -56,6 +56,7 @@
     <ClInclude Include="lua5.2\lua.hpp" />
     <ClInclude Include="lua5.2\luaconf.h" />
     <ClInclude Include="lua5.2\lualib.h" />
+    <ClInclude Include="lua5.2\luasql.h" />
     <ClInclude Include="lua5.2\lundump.h" />
     <ClInclude Include="lua5.2\lvm.h" />
     <ClInclude Include="lua5.2\lzio.h" />
@@ -194,9 +195,12 @@
     <ClCompile Include="lua5.2\lstate.c" />
     <ClCompile Include="lua5.2\lstring.c" />
     <ClCompile Include="lua5.2\lstrlib.c" />
+    <ClCompile Include="lua5.2\ls_mysql.c" />
+    <ClCompile Include="lua5.2\ls_sqlite3.c" />
     <ClCompile Include="lua5.2\ltable.c" />
     <ClCompile Include="lua5.2\ltablib.c" />
     <ClCompile Include="lua5.2\ltm.c" />
+    <ClCompile Include="lua5.2\luasql.c" />
     <ClCompile Include="lua5.2\lua_cjson.c" />
     <ClCompile Include="lua5.2\lundump.c" />
     <ClCompile Include="lua5.2\lvm.c" />

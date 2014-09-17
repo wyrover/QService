@@ -37,7 +37,9 @@ static const luaL_Reg loadedlibs[] = {
   {LUA_BITLIBNAME, luaopen_bit32},
   {LUA_MATHLIBNAME, luaopen_math},
   {LUA_DBLIBNAME, luaopen_debug},
-  {LUA_CJSONLIBNAME, luaopen_cjson}, 
+  {LUA_CJSONLIBNAME, luaopen_cjson},
+  {LUA_MYSQLLIBNAME, luaopen_luasql_mysql},
+  {LUA_SQLITE3LIBNAME, luaopen_luasql_sqlite3},
   {NULL, NULL}
 };
 

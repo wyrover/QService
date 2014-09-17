@@ -63,12 +63,6 @@ void CReg2Lua::Register(void)
     reg_TableFile();
     reg_Session();
     reg_SessionManager();
-    reg_DBUrl();
-    reg_DBLink();
-    reg_MySQLLink();
-    reg_SQLite3Link();
-    reg_DBStatement();
-    reg_DBQuery();
 }
 
 void CReg2Lua::reg_Func(void)
@@ -213,81 +207,5 @@ void CReg2Lua::reg_SessionManager(void)
 
             .addFunction("getTimer", &CSessionManager::getTimer)
             .addFunction("getCount", &CSessionManager::getCount)
-        .endClass();
-}
-
-void CReg2Lua::reg_DBUrl(void)
-{
-    luabridge::getGlobalNamespace(m_pstLState)
-        .beginClass<CDBUrl>("CDBUrl")
-            .addConstructor<void (*) (void)>()
-
-            .addFunction("setUrl", &CDBUrl::setUrl)
-        .endClass();
-}
-
-void CReg2Lua::reg_DBLink(void)
-{
-    luabridge::getGlobalNamespace(m_pstLState)
-        .beginClass<CDBLink>("CDBLink")
-            .addConstructor<void (*) (void)>()
-
-            .addFunction("open", &CDBLink::open)
-            .addFunction("close", &CDBLink::close)
-            .addFunction("Transaction", &CDBLink::Transaction)
-            .addFunction("commitTransaction", &CDBLink::commitTransaction)
-            .addFunction("rollBack", &CDBLink::rollBack)
-            .addFunction("execDML", &CDBLink::execDML)
-            .addFunction("execQuery", &CDBLink::execQuery)
-            .addFunction("compileStatement", &CDBLink::compileStatement)
-            .addFunction("reLink", &CDBLink::reLink)
-        .endClass();
-}
-
-void CReg2Lua::reg_MySQLLink(void)
-{
-    luabridge::getGlobalNamespace(m_pstLState)
-        .deriveClass <CMySQLLink, CDBLink> ("CMySQLLink")
-            .addConstructor<void (*) (void)>()
-        .endClass();
-}
-
-void CReg2Lua::reg_SQLite3Link(void)
-{
-    luabridge::getGlobalNamespace(m_pstLState)
-        .deriveClass <CSQLite3Link, CDBLink> ("CSQLite3Link")
-            .addConstructor<void (*) (void)>()
-        .endClass();
-}
-
-void CReg2Lua::reg_DBStatement(void)
-{
-    luabridge::getGlobalNamespace(m_pstLState)
-        .beginClass<CDBStatement>("CDBStatement")
-            .addFunction("execDML", &CDBStatement::execDML)
-            .addFunction("execQuery", &CDBStatement::execQuery)
-
-            .addFunction("bindString", &CDBStatement::bindString)
-            .addFunction("bindInt", &CDBStatement::bindInt)
-            .addFunction("bindStrInt64", &CDBStatement::bindStrInt64)
-            .addFunction("bindFloat", &CDBStatement::bindFloat)
-            //.addFunction("bindBlob", &CDBStatement::bindBlob)
-            .addFunction("bindNull", &CDBStatement::bindNull)
-            .addFunction("finalize", &CDBStatement::finalize)
-        .endClass();
-}
-
-void CReg2Lua::reg_DBQuery(void)
-{
-    luabridge::getGlobalNamespace(m_pstLState)
-        .beginClass<CDBQuery>("CDBQuery")
-            .addFunction("getIntField", &CDBQuery::getIntField)
-            .addFunction("getStrInt64Field", &CDBQuery::getStrInt64Field)
-            .addFunction("getFloatField", &CDBQuery::getFloatField)
-            .addFunction("getStringField", &CDBQuery::getStringField)
-            //.addFunction("getBlobField", &CDBQuery::getBlobField)
-            .addFunction("eof", &CDBQuery::eof)
-            .addFunction("nextRow", &CDBQuery::nextRow)
-            .addFunction("finalize", &CDBQuery::finalize)
         .endClass();
 }

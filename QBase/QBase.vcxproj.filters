@@ -91,6 +91,9 @@
     <Filter Include="Base\NetWork">
       <UniqueIdentifier>{235cf100-e459-4b53-97e8-2239e611a770}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Lua\lua5.2\luasql">
+      <UniqueIdentifier>{4fbbfc2a-ad28-4b5e-ac9b-8d08ef3a2036}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Config.h">
@@ -508,6 +511,9 @@
     <ClInclude Include="LuaFunc.h">
       <Filter>Lua</Filter>
     </ClInclude>
+    <ClInclude Include="lua5.2\luasql.h">
+      <Filter>Lua\lua5.2\luasql</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Log.cpp">
@@ -876,6 +882,15 @@
     </ClCompile>
     <ClCompile Include="SnowflakeID.cpp">
       <Filter>Arithmetic</Filter>
+    </ClCompile>
+    <ClCompile Include="lua5.2\ls_mysql.c">
+      <Filter>Lua\lua5.2\luasql</Filter>
+    </ClCompile>
+    <ClCompile Include="lua5.2\ls_sqlite3.c">
+      <Filter>Lua\lua5.2\luasql</Filter>
+    </ClCompile>
+    <ClCompile Include="lua5.2\luasql.c">
+      <Filter>Lua\lua5.2\luasql</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

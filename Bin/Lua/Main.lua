@@ -6,6 +6,7 @@
 local luaDir = Q_GetModulPath() .. "Lua" .. Q_GetPathSeparator()
 package.path = package.path .. ";" .. luaDir .. "?.lua"
 
+cjson = require("cjson")
 require("Game/InitModule")
 
 local tNowDay = os.date("*t", time)
