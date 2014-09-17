@@ -22,18 +22,13 @@ local function DBLoadPlayer(tbMessage)
     if (not strAccount) or (0 == string.len(strAccount)) then
         return
     end
-
-    local objLinker = DBMgr:getLinker(DBType_Game)
-    if not objLinker then
-        return
-    end
     
     tbMessage[ProtocolStr_Info] = {}
     
     local strSql = string.format("SELECT id FROM %s where account = '%s'", 
         g_PlayerTable, strAccount)
     
-    local objQuery = objLinker:execute(strSql)
+    local objQuery = DBMgr:executeSql(DBType_Game, strSql)
     if not objQuery then
         Debug(string.format("execute sql: %s error.", strSql))
         return
@@ -44,7 +39,7 @@ local function DBLoadPlayer(tbMessage)
     local tCurRow = objQuery:fetch({},"a")
     while tCurRow do
         strSql = string.format("SELECT * FROM %s where id = %s", g_PlayerTable, tCurRow.id)
-        objPlayerQuery = objLinker:execute(strSql)
+        objPlayerQuery = DBMgr:executeSql(DBType_Game, strSql)
         if not objPlayerQuery then
             Debug(string.format("execute sql: %s error.", strSql))
             return
@@ -70,11 +65,12 @@ RegNetEvent(DB_LoadPlayer, DBLoadPlayer)
 参数：
 返回值： bool
 --]]
-local function checkNameExist(objLinker, strName)
+local function checkNameExist(strName)
     local bHave = false
     local strSql = string.format("SELECT id FROM %s where name = '%s'", 
         g_PlayerTable, strName)
-    local objQuery = objLinker:execute(strSql)
+        
+    local objQuery = DBMgr:executeSql(DBType_Game, strSql)
     if not objQuery then
         Debug(string.format("execute sql: %s error.", strSql))
         return true
@@ -93,14 +89,10 @@ end
 参数：
 返回值： 无
 --]]
-local function DBCreatePlayer(tbMessage)
-    local objLinker = DBMgr:getLinker(DBType_Game)
-    if not objLinker then
-        return
-    end
+local function DBCreatePlayer(tbMessage)    
+    tbMessage[ProtocolStr_Rtn] = Q_RTN_OK
     
-    tbMessage[ProtocolStr_Rtn] = Q_RTN_OK    
-    if not checkNameExist(objLinker, tbMessage[ProtocolStr_Name]) then
+    if not checkNameExist(tbMessage[ProtocolStr_Name]) then
         DBMgr:insert(DBType_Game, g_PlayerTable, tbMessage[ProtocolStr_Info])
     else
         tbMessage[ProtocolStr_Rtn] = GameError_NameRepeat

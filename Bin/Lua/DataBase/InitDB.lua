@@ -37,13 +37,8 @@ local function createLogTable()
     g_LogTableName = string.format("logs_%d_%d", tNow.year, tNow.month)
     Debug("log table name:"..g_LogTableName)
     
-    local objLinker = DBMgr:getLinker(DBType_Log)
-    if not objLinker then
-        return
-    end
-    
     local strSql = string.format("CREATE TABLE IF NOT EXISTS %s like %s", g_LogTableName, strLogTableTemplate)    
-    objLinker:execute(strSql)
+    DBMgr:executeSql(DBType_Log, strSql)
 end
 
 --事件注册
@@ -68,17 +63,8 @@ local function OnDayChange()
 end
 RegGameEvent(GameEvent_DayChange, "OnDayChange", OnDayChange)
 
-local function On1Hour()
-    local objLinker = nil
-    
-    objLinker = DBMgr:getLinker(DBType_Game)
-    if objLinker then
-        objLinker:execute(string.format("SELECT id FROM %s limit 1", g_PlayerTable))        
-    end
-    
-    objLinker = DBMgr:getLinker(DBType_Log)
-    if objLinker then
-        objLinker:execute(string.format("SELECT id FROM %s limit 1", strLogTableTemplate))
-    end
+local function On1Hour()    
+    DBMgr:executeSql(DBType_Game, string.format("SELECT id FROM %s limit 1", g_PlayerTable))
+    DBMgr:executeSql(DBType_Log, string.format("SELECT id FROM %s limit 1", strLogTableTemplate))
 end
 RegGameEvent(GameEvent_1Hour, "On1Hour", On1Hour)

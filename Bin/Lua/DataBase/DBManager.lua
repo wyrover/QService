@@ -24,7 +24,6 @@ function DBManager:new()
     setmetatable(self, DBManager)
         
     self.Linker = {}
-    self.DBName = {}
         
     return self
 end
@@ -36,7 +35,6 @@ end
 --]]
 function DBManager:addLinker(DBType, strDBName, strUser, strPSW, strHost, usPort)
     self.Linker[DBType] = assert(g_MysqlENV:connect(strDBName, strUser, strPSW, strHost,usPort))
-    self.DBName[DBType] = strDBName
 end
 
 --[[
@@ -64,11 +62,30 @@ function DBManager:closeAll()
 end
 
 --[[
+描述: 执行sql
+参数: 
+返回值: 执行结果
+--]]
+function DBManager:executeSql(DBType, strSql)
+    local objLinker = self:getLinker(DBType)
+    if not objLinker then
+        return nil
+    end
+    
+    return assert(objLinker:execute(strSql))
+end
+
+--[[
 描述: 批量执行sql
 参数: 
 返回值: 
 --]]
-function DBManager:executeAll(objLinker, tSqls)
+function DBManager:executeAll(DBType, tSqls)
+    local objLinker = self:getLinker(DBType)
+    if not objLinker then
+        return
+    end
+    
     if IsTableEmpty(tSqls) then
         return
     end
@@ -76,14 +93,7 @@ function DBManager:executeAll(objLinker, tSqls)
     local bRtn = objLinker:setautocommit(false)
     if bRtn then
         for _, sql in pairs(tSqls) do
-            if 0 == objLinker:execute(sql) then
-                Debug(string.format("execute sql:%s error.", sql))
-                
-                objLinker:rollback()
-                objLinker:setautocommit(true)
-                
-                return
-            end
+            assert(objLinker:execute(sql))
         end
             
         objLinker:commit()
@@ -91,15 +101,11 @@ function DBManager:executeAll(objLinker, tSqls)
         
         return
     end
-            
+  
     Debug("setautocommit error.")
     for _, sql in pairs(tSqls) do
-        if 0 == objLinker:execute(sql) then
-            Debug(string.format("execute sql:%s error.", sql))
-            return
-        end
+        assert(objLinker:execute(sql))
     end
-        
 end
 
 --[[
@@ -109,11 +115,6 @@ end
 --]]
 function DBManager:insert(DBType, strTable, tAttrs)
     if IsTableEmpty(tAttrs) then
-        return
-    end
-    
-    local objLinker = self:getLinker(DBType)
-    if not objLinker then
         return
     end
     
@@ -150,12 +151,11 @@ function DBManager:insert(DBType, strTable, tAttrs)
         end
         
         strSql = string.sub(strSql, 1, string.len(strSql) - 1)
-        strSql = string.format("%s )", strSql)
-        Debug(strSql)
+        strSql = string.format("%s )", strSql)        
         table.insert(tSqls, strSql)
     end
     
-    self:executeAll(objLinker, tSqls)
+    self:executeAll(DBType, tSqls)
 end
 
 --[[
@@ -165,11 +165,6 @@ end
 --]]
 function DBManager:update(DBType, strTable, tAttrs)
     if IsTableEmpty(tAttrs) then
-        return
-    end
-    
-    local objLinker = self:getLinker(DBType)
-    if not objLinker then
         return
     end
     
@@ -200,9 +195,8 @@ function DBManager:update(DBType, strTable, tAttrs)
         --去掉最后个,号
         strSql = string.sub(strSql, 1, string.len(strSql) - 1)
         strSql = string.format("%s WHERE id=%s", strSql, id)
-        Debug(strSql)
         table.insert(tSqls, strSql)
     end
     
-    self:executeAll(objLinker, tSqls)
+    self:executeAll(DBType, tSqls)
 end
