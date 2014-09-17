@@ -146,10 +146,5 @@ function Player:getAttr(tAttr)
         Debug("get some attr")
     end
     
-    tRtnAttr[PlayerAttr_ID] = self.ID
-    tRtnAttr[PlayerAttr_Account] = self.Account
-    tRtnAttr[PlayerAttr_Name] = self.Name
-    tRtnAttr.test = {1,2,3}
-    
     return tRtnAttr
 end
