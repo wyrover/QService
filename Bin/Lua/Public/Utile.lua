@@ -277,3 +277,19 @@ function CopyTable(tTable)
     
     return tNewTab
 end
+
+--[[
+描述：返回类似enum的table
+参数：
+返回值：table
+--]]
+function CreatEnumTable(tMsg, iBegin) 
+    assert("table" == type(tMsg)) 
+    local tEnum = {} 
+    local iEnumIndex = iBegin or 0 
+    for key, val in pairs(tMsg) do 
+        tEnum[val] = iEnumIndex + key - 1
+    end 
+    
+    return tEnum 
+end 

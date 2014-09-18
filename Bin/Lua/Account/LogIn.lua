@@ -10,7 +10,7 @@
 local function SALogIn(tbMessage)    
     --构造数据    
     local tSALogIn = {}
-    tSALogIn[ProtocolStr_Request] = AS_LogIn
+    tSALogIn[ProtocolStr_Request] = Protocol.AS_LogIn
     tSALogIn[ProtocolStr_Rtn] = 0
     tSALogIn[ProtocolStr_ClientID] = tbMessage[ProtocolStr_ClientID]
     tSALogIn[ProtocolStr_CheckID] = tbMessage[ProtocolStr_CheckID]
@@ -20,4 +20,4 @@ local function SALogIn(tbMessage)
     
     g_objSessionManager:sendToCur(strMsg, string.len(strMsg))
 end
-RegNetEvent(SA_LogIn, SALogIn)
+RegNetEvent(Protocol.SA_LogIn, SALogIn)

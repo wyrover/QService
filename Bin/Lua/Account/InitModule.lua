@@ -4,10 +4,10 @@
 
 local tLoad = 
 {
-    {"Public/Macros", true},
-    {"Public/Protocol", true},
-    {"Public/ErrorCodes", true},
     {"Public/Utile", true},
+    {"Public/Macros", true},    
+    {"Public/Protocol", true},
+    {"Public/ErrorCodes", true},    
     {"Public/RegFuncs", true}, 
     {"Public/Debug", true},
     {"Public/RegSV", true},

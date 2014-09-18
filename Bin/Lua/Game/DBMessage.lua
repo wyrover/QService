@@ -22,4 +22,4 @@ local function DBSavePlayer(tbMessage)
     Debug("all save task finished.")
     --do something
 end
-RegNetEvent(DB_SavePlayer, DBSavePlayer)
+RegNetEvent(Protocol.DB_SavePlayer, DBSavePlayer)

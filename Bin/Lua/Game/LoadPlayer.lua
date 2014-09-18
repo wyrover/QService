@@ -42,7 +42,7 @@ end
 ∑µªÿ÷µ£∫ bool
 --]]
 function RequestLoadPlayer(strAccount, iClientID, strCheckID)
-    local iDBSessionID = RandOneSV(SVType_DataBase)
+    local iDBSessionID = RandOneSV(SVType.DataBase)
     if Q_INVALID_ID == iDBSessionID then
         Debug("RequestLoadPlayer not linked to any database server.")
         return false
@@ -50,7 +50,7 @@ function RequestLoadPlayer(strAccount, iClientID, strCheckID)
     
     local tLoadPlayer = {}
     
-    tLoadPlayer[ProtocolStr_Request] = DB_LoadPlayer
+    tLoadPlayer[ProtocolStr_Request] = Protocol.DB_LoadPlayer
     tLoadPlayer[ProtocolStr_Account] = strAccount
     tLoadPlayer[ProtocolStr_ClientID] = iClientID
     tLoadPlayer[ProtocolStr_CheckID] = strCheckID

@@ -15,30 +15,30 @@ local MaxNameLens = 32
 返回值： bool
 --]]
 local function FilterProtocol(iProtocol, iStatus)
-    if SessionStatus_Unknown == iStatus then
-        if CS_LogIn ~= iProtocol then
+    if SessionStatus.Unknown == iStatus then
+        if Protocol.CS_LogIn ~= iProtocol then
             return false
         end
-    elseif SessionStatus_Logining == iStatus then
+    elseif SessionStatus.Logining == iStatus then
         return false
-    elseif SessionStatus_Logined == iStatus then
-        if (CS_CreatPlayer ~= iProtocol) and (CS_SelectPlayer ~= iProtocol) then
+    elseif SessionStatus.Logined == iStatus then
+        if (Protocol.CS_CreatPlayer ~= iProtocol) and (Protocol.CS_SelectPlayer ~= iProtocol) then
             return false
         end
-    elseif SessionStatus_Loading == iStatus then
+    elseif SessionStatus.Loading == iStatus then
         return false
-    elseif SessionStatus_Loaded == iStatus then
-        if (CS_CreatPlayer ~= iProtocol) and (CS_SelectPlayer ~= iProtocol) then
+    elseif SessionStatus.Loaded == iStatus then
+        if (Protocol.CS_CreatPlayer ~= iProtocol) and (Protocol.CS_SelectPlayer ~= iProtocol) then
             return false
         end
-    elseif SessionStatus_Createing == iStatus then
+    elseif SessionStatus.Createing == iStatus then
         return false
-    elseif SessionStatus_Created == iStatus then
-        if (CS_CreatPlayer ~= iProtocol) and (CS_SelectPlayer ~= iProtocol) then
+    elseif SessionStatus.Created == iStatus then
+        if (Protocol.CS_CreatPlayer ~= iProtocol) and (Protocol.CS_SelectPlayer ~= iProtocol) then
             return false
         end
     else
-        if CS_LogIn == iProtocol then
+        if Protocol.CS_LogIn == iProtocol then
             return false
         end
     end
@@ -54,7 +54,7 @@ g_ProtocolFilterFun = FilterProtocol
 --]]
 local function sendLogInRst(iClientID, iRst)
     local tRtn = {}
-    tRtn[ProtocolStr_Request] = SC_LogIn
+    tRtn[ProtocolStr_Request] = Protocol.SC_LogIn
     tRtn[ProtocolStr_Rtn] = iRst
     
     local strMsg = cjson.encode(tRtn)
@@ -100,17 +100,17 @@ local function CSLogIn(tbMessage)
         Q_LOG(LOGLV_ERROR, 
             string.format("login error,server busy, online number %d, max number %d",
             iOnLineNum, MaxClientNum))
-        sendLogInRst(iSessionID, GameError_ServerBusy)
+        sendLogInRst(iSessionID, ErrorCode.ServerBusy)
         
         return
     end
     
     --获取账号服务器连接ID
-    local iAccSessionID = RandOneSV(SVType_Account)
+    local iAccSessionID = RandOneSV(SVType.Account)
     if Q_INVALID_ID ==  iAccSessionID then
         Debug("CSLogIn not linked to any account server.")
         Q_LOG(LOGLV_ERROR, "login error,not linked to any account server")
-        sendLogInRst(iSessionID, Q_RTN_ERROR)
+        sendLogInRst(iSessionID, ErrorCode.ERROR)
         
         return
     end
@@ -119,11 +119,11 @@ local function CSLogIn(tbMessage)
     local strCheckID = GetID()
     objCurSession:setAccount(strAccount)
     objCurSession:setCheckID(strCheckID)
-    objCurSession:setStatus(SessionStatus_Logining)
+    objCurSession:setStatus(SessionStatus.Logining)
     
     --构造数据    
     local tSALogIn = {}
-    tSALogIn[ProtocolStr_Request] = SA_LogIn
+    tSALogIn[ProtocolStr_Request] = Protocol.SA_LogIn
     tSALogIn[ProtocolStr_ClientID] = iSessionID
     tSALogIn[ProtocolStr_CheckID] = strCheckID
     tSALogIn[ProtocolStr_Account] = strAccount
@@ -132,7 +132,7 @@ local function CSLogIn(tbMessage)
     local strMsg = cjson.encode(tSALogIn)
     g_objSessionManager:sendToByID(iAccSessionID, strMsg, string.len(strMsg))
 end
-RegNetEvent(CS_LogIn, CSLogIn)
+RegNetEvent(Protocol.CS_LogIn, CSLogIn)
 
 --[[
 描述：发送账号下玩家概要信息
@@ -147,7 +147,7 @@ local function SendAccountInfo(iClientID, tAllPlayer)
         iNum = TableLens(tAllPlayer)
     end
     
-    tMsg[ProtocolStr_Request] = SC_AccountInfo
+    tMsg[ProtocolStr_Request] = Protocol.SC_AccountInfo
     tMsg[ProtocolStr_Number] = iNum
     
     if 0 ~= iNum then
@@ -188,7 +188,7 @@ local function Login_OnPlayerLoad(tbMessage)
         return
     end
     
-    objSession:setStatus(SessionStatus_Loaded)
+    objSession:setStatus(SessionStatus.Loaded)
     
     local strAccount = objSession:getAccount()
     local tAllPlayer = World:getPlayerMgr():getPlayerByAccount(strAccount)
@@ -221,8 +221,8 @@ local function ASLogIn(tbMessage)
     
     sendLogInRst(iClientID, iRtn)
     
-    if Q_RTN_OK ~= iRtn then
-        objSession:setStatus(SessionStatus_Unknown)
+    if ErrorCode.OK ~= iRtn then
+        objSession:setStatus(SessionStatus.Unknown)
         Debug("ASLogIn login error")
         
         return
@@ -238,7 +238,7 @@ local function ASLogIn(tbMessage)
         strCheckID = GetID()
         objSession:setCheckID(strCheckID)
         if RequestLoadPlayer(strAccount, iClientID, strCheckID) then
-            objSession:setStatus(SessionStatus_Loading)
+            objSession:setStatus(SessionStatus.Loading)
             RegPlayerLoaded(strCheckID, Login_OnPlayerLoad)
         end
         
@@ -246,10 +246,10 @@ local function ASLogIn(tbMessage)
     end
     
     --已经在内存中
-    objSession:setStatus(SessionStatus_Logined)
+    objSession:setStatus(SessionStatus.Logined)
     SendAccountInfo(iClientID, tAllPlayer)
 end
-RegNetEvent(AS_LogIn, ASLogIn)
+RegNetEvent(Protocol.AS_LogIn, ASLogIn)
 
 --[[
 描述：请求加载玩家，数据库返回
@@ -259,7 +259,7 @@ RegNetEvent(AS_LogIn, ASLogIn)
 local function DBLoadPlayer(tbMessage)
     OnPlayerLoaded(tbMessage)
 end
-RegNetEvent(DB_LoadPlayer, DBLoadPlayer)
+RegNetEvent(Protocol.DB_LoadPlayer, DBLoadPlayer)
 
 --[[
 描述：角色名称检测
@@ -296,7 +296,7 @@ end
 --]]
 local function sendCreatePlayerRst(iClientID, iRst)
     local tRtn = {}
-    tRtn[ProtocolStr_Request] = SC_CreatPlayer
+    tRtn[ProtocolStr_Request] = Protocol.SC_CreatPlayer
     tRtn[ProtocolStr_Rtn] = iRst
     
     local strMsg = cjson.encode(tRtn)
@@ -313,32 +313,32 @@ local function CSCreatePlayer(tbMessage)
     local iSessionID = objCurSession:getSessionID()
     local strName = tbMessage[ProtocolStr_Name]
     
-    local iDBSessionID = RandOneSV(SVType_DataBase)    
+    local iDBSessionID = RandOneSV(SVType.DataBase)    
     if Q_INVALID_ID == iDBSessionID then
         Q_LOG(LOGLV_ERROR, "create player error,not linked to any database server")
-        sendCreatePlayerRst(iSessionID, Q_RTN_FAILE)
+        sendCreatePlayerRst(iSessionID, ErrorCode.FAILE)
         return
     end
     
     if not checkName(strName) then
-        sendCreatePlayerRst(iSessionID, GameError_CheckName)
+        sendCreatePlayerRst(iSessionID, ErrorCode.FAILE)
         return
     end
     
     local strAccount = objCurSession:getAccount()  
     if World:getPlayerMgr():getRoleNum(strAccount) >= MaxRoleNum then
-        sendCreatePlayerRst(iSessionID, Q_RTN_FAILE)
+        sendCreatePlayerRst(iSessionID, ErrorCode.FAILE)
         return
     end
     
     local strCheckID = GetID()
     objCurSession:setCheckID(strCheckID)
-    objCurSession:setStatus(SessionStatus_Createing)
+    objCurSession:setStatus(SessionStatus.Createing)
     
     --向数据库请求
     local tReqMsg = {}
     local strPlayerID = GetID()
-    tReqMsg[ProtocolStr_Request] = DB_CreatPlayer
+    tReqMsg[ProtocolStr_Request] = Protocol.DB_CreatPlayer
     tReqMsg[ProtocolStr_Account] = strAccount
     tReqMsg[ProtocolStr_ID] = strPlayerID
     tReqMsg[ProtocolStr_Name] = strName
@@ -357,7 +357,7 @@ local function CSCreatePlayer(tbMessage)
     local strMsg = cjson.encode(tReqMsg)
     g_objSessionManager:sendToByID(iDBSessionID, strMsg, string.len(strMsg))
 end
-RegNetEvent(CS_CreatPlayer, CSCreatePlayer)
+RegNetEvent(Protocol.CS_CreatPlayer, CSCreatePlayer)
 
 --[[
 描述：创建角色数据库返回
@@ -372,11 +372,11 @@ local function DBCreatePlayer(tbMessage)
     local strName = tbMessage[ProtocolStr_Name]
     local iRtn = tbMessage[ProtocolStr_Rtn]
     
-    if Q_RTN_OK == iRtn then
+    if ErrorCode.OK == iRtn then
         local objPlayer = Player:new(strPlayerID, strAccount, strName)
         World:getPlayerMgr():addPlayer(objPlayer)
         
-        DBLog(DBLogType_CreatePlayer, strPlayerID)
+        DBLog(DBLogType.CreatePlayer, strPlayerID)
     end
     
     --判断请求session是否还在
@@ -390,10 +390,10 @@ local function DBCreatePlayer(tbMessage)
         return
     end
     
-    objSession:setStatus(SessionStatus_Created)
+    objSession:setStatus(SessionStatus.Created)
     sendCreatePlayerRst(iClientID, iRtn)
 end
-RegNetEvent(DB_CreatPlayer, DBCreatePlayer)
+RegNetEvent(Protocol.DB_CreatPlayer, DBCreatePlayer)
 
 --[[
 描述：选择角色结果返回
@@ -402,7 +402,7 @@ RegNetEvent(DB_CreatPlayer, DBCreatePlayer)
 --]]
 local function sendSelectPlayerRst(iClientID, iRst)
     local tRtn = {}
-    tRtn[ProtocolStr_Request] = SC_SelectPlayer
+    tRtn[ProtocolStr_Request] = Protocol.SC_SelectPlayer
     tRtn[ProtocolStr_Rtn] = iRst
     
     local strMsg = cjson.encode(tRtn)
@@ -420,16 +420,16 @@ local function EnterGame(objPlayer, objSession)
     local iSessionID = objSession:getSessionID()
     
     objSession:setID(strPlayerID)
-    objSession:setStatus(SessionStatus_Playing)
+    objSession:setStatus(SessionStatus.Playing)
     objPlayer:setSessionID(iSessionID)
     objPlayer:setSave(true)
     objPlayerMgr:setOnLineStatus(strPlayerID, true)
     
-    sendSelectPlayerRst(iSessionID, Q_RTN_OK)
+    sendSelectPlayerRst(iSessionID, ErrorCode.OK)
     
-    OnGameEvent(GameEvent_LogIned, objPlayer)
+    OnGameEvent(GameEvent.LogIned, objPlayer)
     
-    DBLog(DBLogType_LogIn, strPlayerID)
+    DBLog(DBLogType.LogIn, strPlayerID)
     Debug(string.format("player enter game,id %s, name %s", strPlayerID, objPlayer:getName()))
 end
 
@@ -448,7 +448,7 @@ local function KickPlayer(strAccount, iSessionID)
             and (iSessionID ~= val:getSessionID()) then
             
             local tKickPlayer = {}
-            tKickPlayer[ProtocolStr_Request] = SC_KickPlayer
+            tKickPlayer[ProtocolStr_Request] = Protocol.SC_KickPlayer
             
             val:sendMessage(tKickPlayer)
             CloseLink(val:getSessionID())
@@ -484,4 +484,4 @@ local function CSSelectPlayer(tbMessage)
     KickPlayer(strAccount, iSessionID)
     EnterGame(objPlayer, objCurSession)
 end
-RegNetEvent(CS_SelectPlayer, CSSelectPlayer)
+RegNetEvent(Protocol.CS_SelectPlayer, CSSelectPlayer)

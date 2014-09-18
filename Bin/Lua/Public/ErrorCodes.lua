@@ -2,10 +2,12 @@
 错误码
 --]]
 
-Q_RTN_OK = 0
-Q_RTN_FAILE = -1
-Q_RTN_ERROR = 1
+ErrorCode = {
+    "FAILE",
+    "OK",
+    "ERROR",
 
-GameError_ServerBusy = 10
-GameError_CheckName = GameError_ServerBusy + 1
-GameError_NameRepeat = GameError_CheckName + 1
+    "ServerBusy",--服务器忙
+    "NameRepeat",--名称重复
+}
+ErrorCode = CreatEnumTable(ErrorCode, -1)

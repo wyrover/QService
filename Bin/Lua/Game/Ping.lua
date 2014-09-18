@@ -17,7 +17,7 @@ local function CSPing(tbMessage)
     
     objCurSession:setPing(g_objSessionManager:getCount())
 end
-RegNetEvent(CS_Ping, CSPing)
+RegNetEvent(Protocol.CS_Ping, CSPing)
 
 --[[
 √Ë ˆ£∫pingºÏ≤È
@@ -27,4 +27,4 @@ RegNetEvent(CS_Ping, CSPing)
 local function CheckPing()
     g_objSessionManager:checkPing(PingTimeOut)
 end
-RegGameEvent(GameEvent_5Minute, "CheckPing", CheckPing)
+RegGameEvent(GameEvent.FiveMinute, "CheckPing", CheckPing)

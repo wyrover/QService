@@ -2,52 +2,64 @@
 宏定义
 --]]
 
---数据库日志类型
-DBLogType_LogIn = 0
-DBLogType_LogOut = DBLogType_LogIn + 1
-DBLogType_CreatePlayer = DBLogType_LogOut + 1
-
 --无效ID
 Q_INVALID_ID = -1
 
 --保存玩家每次发送数量
 SavePlayer_PreNum  = 100
 
+--数据库日志类型
+DBLogType = {
+    "LogIn",
+    "LogOut",
+    "CreatePlayer",
+}
+DBLogType = CreatEnumTable(DBLogType)
+
 --session状态 与c++中enum SessionStatus对应
-SessionStatus_Unknown = -1 --未知
-SessionStatus_Logining = SessionStatus_Unknown + 1 --登陆中
-SessionStatus_Logined = SessionStatus_Logining + 1 --已经登陆
-SessionStatus_Loading = SessionStatus_Logined + 1 --加载玩家信息中
-SessionStatus_Loaded = SessionStatus_Loading + 1 --加载玩家信息完成
-SessionStatus_Createing = SessionStatus_Loaded + 1 --创建玩家中
-SessionStatus_Created = SessionStatus_Createing + 1 --创建玩家完成
-SessionStatus_Playing = SessionStatus_Created + 1 --游戏中
+SessionStatus = {
+    "Unknown",  --未知
+    "Logining",  --登陆中
+    "Logined",  --已经登陆
+    "Loading",  --加载玩家信息中
+    "Loaded",  --加载玩家信息完成
+    "Createing",  --创建玩家中
+    "Created",  --创建玩家完成
+    "Playing",  --游戏中
+}
+SessionStatus = CreatEnumTable(SessionStatus, -1)
 
 --服务器类型
-SVType_Account = 0
-SVType_Payment = SVType_Account + 1
-SVType_Game = SVType_Payment + 1
-SVType_Fight = SVType_Game + 1
-SVType_DataBase = SVType_Fight + 1
+SVType = {
+    "Account",
+    "Payment",
+    "Game",
+    "Fight",
+    "DataBase",
+}
+SVType = CreatEnumTable(SVType)
 
 --游戏事件
-GameEvent_StartUp = 0
-GameEvent_ShutDown = GameEvent_StartUp + 1
+GameEvent = {
+    "StartUp",
+    "ShutDown",
 
-GameEvent_FPS = GameEvent_ShutDown + 1
-GameEvent_DayChange = GameEvent_FPS + 1
+    "FPS",
+    "DayChange",
 
-GameEvent_1Second = GameEvent_DayChange + 1
-GameEvent_5Second = GameEvent_1Second + 1
-GameEvent_10Second = GameEvent_5Second + 1
-GameEvent_1Minute = GameEvent_10Second + 1
-GameEvent_5Minute = GameEvent_1Minute + 1
-GameEvent_10Minute = GameEvent_5Minute + 1
-GameEvent_1Hour = GameEvent_10Minute + 1
+    "OneSecond",
+    "FiveSecond",
+    "TenSecond",
+    "OneMinute",
+    "FiveMinute",
+    "TenMinute",
+    "OneHour",
 
-GameEvent_Close = GameEvent_1Hour + 1
+    "Close",
 
-GameEvent_LogIned = GameEvent_Close + 1
+    "LogIned",
+}
+GameEvent = CreatEnumTable(GameEvent)
 
 --日志级别
 LOGLV_NOLOG  = 0

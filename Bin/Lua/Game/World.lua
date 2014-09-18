@@ -56,27 +56,27 @@ end
 local function InitWorld()
     World:initWorld()
 end
-RegGameEvent(GameEvent_StartUp, "InitWorld", InitWorld)
+RegGameEvent(GameEvent.StartUp, "InitWorld", InitWorld)
 
 local function ShutDownWorld()
     World:shutDown()
 end
-RegGameEvent(GameEvent_ShutDown, "ShutDownWorld", ShutDownWorld)
+RegGameEvent(GameEvent.ShutDown, "ShutDownWorld", ShutDownWorld)
 
 local function On1Minute()
     Debug(string.format("online player number:%d.", World:getPlayerMgr():getOnLineNum()))
 end
-RegGameEvent(GameEvent_1Minute, "On1Minute", On1Minute)
+RegGameEvent(GameEvent.OneMinute, "On1Minute", On1Minute)
 
 local function On10Minute()
     World:getPlayerMgr():Save(nil, nil)
 end
-RegGameEvent(GameEvent_10Minute, "On10Minute", On10Minute)
+RegGameEvent(GameEvent.TenMinute, "On10Minute", On10Minute)
 
 local function OnPlayerEnterGame(objPlayer)
     --add your code
 end
-RegGameEvent(GameEvent_LogIned, "OnPlayerEnterGame", OnPlayerEnterGame)
+RegGameEvent(GameEvent.LogIned, "OnPlayerEnterGame", OnPlayerEnterGame)
 
 local function OnPlayerLogOut()
     local objPlayer = getCurPlayer()
@@ -89,7 +89,7 @@ local function OnPlayerLogOut()
     World:getPlayerMgr():setOnLineStatus(objPlayer:getID(), false) 
     objPlayer:setSessionID(Q_INVALID_ID)
     
-    DBLog(DBLogType_LogOut, objPlayer:getID())
+    DBLog(DBLogType.LogOut, objPlayer:getID())
     Debug(string.format("player logout,id %s, name %s", objPlayer:getID(), objPlayer:getName()))
 end
-RegGameEvent(GameEvent_Close, "OnPlayerLogOut", OnPlayerLogOut)
+RegGameEvent(GameEvent.Close, "OnPlayerLogOut", OnPlayerLogOut)

@@ -10,8 +10,8 @@ end
 --连接配置
 local tDBConfig = 
 {
-    {Type = DBType_Game, Host = "127.0.0.1", Port = 3306, DB = "game", User = "root", PSW = "123456"},--游戏数据库
-    {Type = DBType_Log, Host = "127.0.0.1", Port = 3306, DB = "log", User = "root", PSW = "123456"},--日志数据库
+    {Type = DBType.Game, Host = "127.0.0.1", Port = 3306, DB = "game", User = "root", PSW = "123456"},--游戏数据库
+    {Type = DBType.Log, Host = "127.0.0.1", Port = 3306, DB = "log", User = "root", PSW = "123456"},--日志数据库
 }
 
 --服务器注册检查
@@ -38,7 +38,7 @@ local function createLogTable()
     Debug("log table name:"..g_LogTableName)
     
     local strSql = string.format("CREATE TABLE IF NOT EXISTS %s like %s", g_LogTableName, strLogTableTemplate)    
-    DBMgr:executeSql(DBType_Log, strSql)
+    DBMgr:executeSql(DBType.Log, strSql)
 end
 
 --事件注册
@@ -51,20 +51,20 @@ local function OnSVStartUp()
     --logs表处理   
     createLogTable()
 end
-RegGameEvent(GameEvent_StartUp, "OnSVStartUp", OnSVStartUp)
+RegGameEvent(GameEvent.StartUp, "OnSVStartUp", OnSVStartUp)
 
 local function OnSVShutDown()
     DBMgr:closeAll()
 end
-RegGameEvent(GameEvent_ShutDown, "OnSVShutDown", OnSVShutDown)
+RegGameEvent(GameEvent.ShutDown, "OnSVShutDown", OnSVShutDown)
 
 local function OnDayChange()
     createLogTable()
 end
-RegGameEvent(GameEvent_DayChange, "OnDayChange", OnDayChange)
+RegGameEvent(GameEvent.DayChange, "OnDayChange", OnDayChange)
 
 local function On1Hour()    
-    DBMgr:executeSql(DBType_Game, string.format("SELECT id FROM %s limit 1", g_PlayerTable))
-    DBMgr:executeSql(DBType_Log, string.format("SELECT id FROM %s limit 1", strLogTableTemplate))
+    DBMgr:executeSql(DBType.Game, string.format("SELECT id FROM %s limit 1", g_PlayerTable))
+    DBMgr:executeSql(DBType.Log, string.format("SELECT id FROM %s limit 1", strLogTableTemplate))
 end
-RegGameEvent(GameEvent_1Hour, "On1Hour", On1Hour)
+RegGameEvent(GameEvent.OneHour, "On1Hour", On1Hour)

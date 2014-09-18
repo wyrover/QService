@@ -3,8 +3,11 @@
 --]]
 
 --数据库类型
-DBType_Game = 0
-DBType_Log = DBType_Game + 1
+DBType = {
+    "Game",
+    "Log",
+}
+DBType = CreatEnumTable(DBType)
 
 --mysql初始化
 if not g_MysqlENV then

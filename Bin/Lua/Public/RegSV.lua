@@ -37,22 +37,22 @@ local function RegServer(tbMessage)
     
     local tRegRtn = {}
     
-    tRegRtn[ProtocolStr_Request] = System_RegSVRtn
+    tRegRtn[ProtocolStr_Request] = Protocol.System_RegSVRtn
     tRegRtn[ProtocolStr_CheckID] = tbMessage[ProtocolStr_CheckID]
     tRegRtn[ProtocolStr_ClientID] = tbMessage[ProtocolStr_ClientID]
     tRegRtn[ProtocolStr_ServerID] = iSVID
     
     if g_RegService[iSVID] then
-        tRegRtn[ProtocolStr_Rtn] = Q_RTN_FAILE
+        tRegRtn[ProtocolStr_Rtn] = ErrorCode.FAILE
     else
         g_RegService[iSVID] = iSessionID
-        tRegRtn[ProtocolStr_Rtn] = Q_RTN_OK
+        tRegRtn[ProtocolStr_Rtn] = ErrorCode.OK
     end
     
     local strMsg = cjson.encode(tRegRtn)
     g_objSessionManager:sendToCur(strMsg, string.len(strMsg))
 end
-RegNetEvent(System_RegSV, RegServer)
+RegNetEvent(Protocol.System_RegSV, RegServer)
 
 --[[
 描述：注册服务器返回
@@ -75,7 +75,7 @@ local function RegServerRtn(tbMessage)
     end
     
     objSession:setCheckID("")
-    if Q_RTN_OK == iRtn then
+    if ErrorCode.OK == iRtn then
         Debug("register service ".. tonumber(iSVID) .. " successfully.")
         return
     end
@@ -83,7 +83,7 @@ local function RegServerRtn(tbMessage)
     Debug("register service ".. tonumber(iSVID) .. " error.")
     CloseLink(iClientID)
 end
-RegNetEvent(System_RegSVRtn, RegServerRtn)
+RegNetEvent(Protocol.System_RegSVRtn, RegServerRtn)
 
 --[[
 描述：连接断开时
@@ -102,7 +102,7 @@ local function OnRegSVClose()
         end
     end
 end
-RegGameEvent(GameEvent_Close, "OnRegSVClose", OnRegSVClose)
+RegGameEvent(GameEvent.Close, "OnRegSVClose", OnRegSVClose)
 
 --[[
 描述：移除服务器注册,用于强制移除

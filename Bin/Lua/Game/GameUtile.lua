@@ -31,14 +31,14 @@ function DBLog(LogType, PlayerID, Param0, Param1, Param2, Param3, Param4, Descri
         return
     end
     
-    local iDBSessionID = RandOneSV(SVType_DataBase)
+    local iDBSessionID = RandOneSV(SVType.DataBase)
     if Q_INVALID_ID == iDBSessionID then
         return
     end
     
     local tLog = {}
     
-    tLog[ProtocolStr_Request] = DB_Log
+    tLog[ProtocolStr_Request] = Protocol.DB_Log
     tLog[ProtocolStr_Info] = {}
     
     local tLogAttr = {}

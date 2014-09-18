@@ -220,7 +220,7 @@ end
 返回值: 无
 --]]
 function PlayerManager:Save(strPlayerID, tAttr)
-    local iDBSessionID = RandOneSV(SVType_DataBase)    
+    local iDBSessionID = RandOneSV(SVType.DataBase)    
     if Q_INVALID_ID == iDBSessionID then
         Debug("save player error,not linked to any database server")
         Q_LOG(LOGLV_ERROR, "save player error,not linked to any database server") 
@@ -238,7 +238,7 @@ function PlayerManager:Save(strPlayerID, tAttr)
     local strCheckID = nil
     local strMsg = nil
     
-    tSaveMsg[ProtocolStr_Request] = DB_SavePlayer
+    tSaveMsg[ProtocolStr_Request] = Protocol.DB_SavePlayer
     tSaveMsg[ProtocolStr_Info] = {}
     
     --保存单个

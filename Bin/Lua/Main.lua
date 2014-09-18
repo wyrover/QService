@@ -32,7 +32,7 @@ end
 --]]
 function Lua_OnStartUp(objSessionManager)
     g_objSessionManager = objSessionManager
-    OnGameEvent(GameEvent_StartUp)
+    OnGameEvent(GameEvent.StartUp)
 end
 
 --[[
@@ -41,7 +41,7 @@ end
 返回值：无
 --]]
 function Lua_OnShutDown()
-    OnGameEvent(GameEvent_ShutDown)    
+    OnGameEvent(GameEvent.ShutDown)    
 end
 
 --[[
@@ -71,7 +71,7 @@ function Lua_OnRead(pszMessage, uiLens)
         end
     end
     
-    if g_CheckSVRegFun and (System_RegSV ~= iProtocol) then
+    if g_CheckSVRegFun and (Protocol.System_RegSV ~= iProtocol) then
         if not g_CheckSVRegFun(objCurSession:getSessionID()) then
             Debug(string.format("client id %d not register.", objCurSession:getSessionID()))
             g_objSessionManager:closeCurLink()
@@ -95,12 +95,12 @@ function Lua_OnTimer()
     local uiOneSecond = 1000
     
     --每帧处理
-    OnGameEvent(GameEvent_FPS, uiClick)
+    OnGameEvent(GameEvent.FPS, uiClick)
     
     --1秒
     if 0 == (uiElapseTime % uiOneSecond) then
         OnDelayEvent()
-        OnGameEvent(GameEvent_1Second)        
+        OnGameEvent(GameEvent.OneSecond)        
         
         --检查变天
         local tDay = os.date("*t", time)
@@ -111,39 +111,39 @@ function Lua_OnTimer()
                 tNowDay = tDay
                 Debug("day changed.")
                 
-                OnGameEvent(GameEvent_DayChange)
+                OnGameEvent(GameEvent.DayChange)
         end
     end
     
     --5秒
     if 0 == (uiElapseTime % (uiOneSecond * 5)) then
-        OnGameEvent(GameEvent_5Second)
+        OnGameEvent(GameEvent.FiveSecond)
     end
     
     --10秒
     if 0 == (uiElapseTime % (uiOneSecond * 10)) then
-        OnGameEvent(GameEvent_10Second)
+        OnGameEvent(GameEvent.TenSecond)
     end
     
     --1分钟
     if 0 == (uiElapseTime % (uiOneSecond * 60)) then
-        OnGameEvent(GameEvent_1Minute)
+        OnGameEvent(GameEvent.OneMinute)
     end
     
     --5分钟
     if 0 == (uiElapseTime % (uiOneSecond * 60 * 5)) then
-        OnGameEvent(GameEvent_5Minute)
+        OnGameEvent(GameEvent.FiveMinute)
         collectgarbage("collect")
     end
     
     --10分钟
     if 0 == (uiElapseTime % (uiOneSecond * 60 * 10)) then
-        OnGameEvent(GameEvent_10Minute)
+        OnGameEvent(GameEvent.TenMinute)
     end
 	
     --1小时
     if 0 == (uiElapseTime % (uiOneSecond * 60 * 60)) then
-        OnGameEvent(GameEvent_1Hour)
+        OnGameEvent(GameEvent.OneHour)
     end
 end
 
@@ -153,7 +153,7 @@ end
 返回值：无
 --]]
 function Lua_OnClose()
-    OnGameEvent(GameEvent_Close)
+    OnGameEvent(GameEvent.Close)
 end
 
 --[[
@@ -168,7 +168,7 @@ local function RequireRegSV(objSession)
     
     objSession:setCheckID(strCheckID)
     
-    tRegSV[ProtocolStr_Request] = System_RegSV
+    tRegSV[ProtocolStr_Request] = Protocol.System_RegSV
     tRegSV[ProtocolStr_ServerID] = getServerID()
     tRegSV[ProtocolStr_CheckID] = strCheckID
     tRegSV[ProtocolStr_ClientID] = iClientID
