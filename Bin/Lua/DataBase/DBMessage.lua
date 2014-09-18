@@ -28,24 +28,13 @@ local function DBLoadPlayer(tbMessage)
     local strSql = string.format("SELECT id FROM %s where account = '%s'", 
         g_PlayerTable, strAccount)
     
-    local objQuery = DBMgr:executeSql(DBType_Game, strSql)
-    if not objQuery then
-        Debug(string.format("execute sql: %s error.", strSql))
-        return
-    end
-    
-    local objPlayerQuery = nil
-    local objPlayerInfo = nil
+    local objQuery = DBMgr:executeSql(DBType_Game, strSql)    
     local tCurRow = objQuery:fetch({},"a")
     while tCurRow do
         strSql = string.format("SELECT * FROM %s where id = %s", g_PlayerTable, tCurRow.id)
-        objPlayerQuery = DBMgr:executeSql(DBType_Game, strSql)
-        if not objPlayerQuery then
-            Debug(string.format("execute sql: %s error.", strSql))
-            return
-        end
         
-        objPlayerInfo = objPlayerQuery:fetch({},"a")
+        local objPlayerQuery = DBMgr:executeSql(DBType_Game, strSql)        
+        local objPlayerInfo = objPlayerQuery:fetch({},"a")
         while objPlayerInfo do
             table.insert(tbMessage[ProtocolStr_Info], objPlayerInfo)
             objPlayerInfo = objPlayerQuery:fetch(objPlayerInfo, "a")
@@ -70,12 +59,7 @@ local function checkNameExist(strName)
     local strSql = string.format("SELECT id FROM %s where name = '%s'", 
         g_PlayerTable, strName)
         
-    local objQuery = DBMgr:executeSql(DBType_Game, strSql)
-    if not objQuery then
-        Debug(string.format("execute sql: %s error.", strSql))
-        return true
-    end
-    
+    local objQuery = DBMgr:executeSql(DBType_Game, strSql)    
     local tCurRow = objQuery:fetch({},"a")
     if tCurRow then
         bHave = true

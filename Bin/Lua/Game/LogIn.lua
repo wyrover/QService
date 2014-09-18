@@ -98,7 +98,8 @@ local function CSLogIn(tbMessage)
     if iOnLineNum >= MaxClientNum then
         Debug("CSLogIn server busy")
         Q_LOG(LOGLV_ERROR, 
-        string.format("login error,server busy, online number %d, max number %d", iOnLineNum, MaxClientNum))
+            string.format("login error,server busy, online number %d, max number %d",
+            iOnLineNum, MaxClientNum))
         sendLogInRst(iSessionID, GameError_ServerBusy)
         
         return
@@ -437,18 +438,20 @@ end
 参数：
 返回值： 无
 --]]
-local function KickPlayer(strAccount)
+local function KickPlayer(strAccount, iSessionID)
     local objPlayerMgr = World:getPlayerMgr()
     local tAllPlayer = objPlayerMgr:getPlayerByAccount(strAccount)
     
     --判断是否在线,如果在线则踢除
     for _, val in pairs(tAllPlayer) do
-        if objPlayerMgr:checkOnLineStatus(val:getID()) then
+        if objPlayerMgr:checkOnLineStatus(val:getID())
+            and (iSessionID ~= val:getSessionID()) then
+            
             local tKickPlayer = {}
             tKickPlayer[ProtocolStr_Request] = SC_KickPlayer
             
             val:sendMessage(tKickPlayer)
-            RegDelayEvent(1, CloseLink, val:getSessionID())
+            CloseLink(val:getSessionID())
         end
     end
 end
@@ -466,6 +469,7 @@ local function CSSelectPlayer(tbMessage)
     
     local objCurSession = g_objSessionManager:getCurSession()
     local strAccount = objCurSession:getAccount()
+    local iSessionID = objCurSession:getSessionID()
     
     local objPlayerMgr = World:getPlayerMgr()
     local objPlayer = objPlayerMgr:getPlayerByName(strName)
@@ -477,7 +481,7 @@ local function CSSelectPlayer(tbMessage)
         return
     end
     
-    KickPlayer(strAccount)
+    KickPlayer(strAccount, iSessionID)
     EnterGame(objPlayer, objCurSession)
 end
 RegNetEvent(CS_SelectPlayer, CSSelectPlayer)

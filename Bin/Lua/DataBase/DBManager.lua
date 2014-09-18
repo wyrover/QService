@@ -68,9 +68,7 @@ end
 --]]
 function DBManager:executeSql(DBType, strSql)
     local objLinker = self:getLinker(DBType)
-    if not objLinker then
-        return nil
-    end
+    assert(objLinker, string.format("get linker by type %d error.", DBType))
     
     return assert(objLinker:execute(strSql))
 end
@@ -83,6 +81,7 @@ end
 function DBManager:executeAll(DBType, tSqls)
     local objLinker = self:getLinker(DBType)
     if not objLinker then
+        Debug(string.format("get linker by type %d error.", DBType))
         return
     end
     
@@ -93,7 +92,14 @@ function DBManager:executeAll(DBType, tSqls)
     local bRtn = objLinker:setautocommit(false)
     if bRtn then
         for _, sql in pairs(tSqls) do
-            assert(objLinker:execute(sql))
+            local Rtn, strError = objLinker:execute(sql)
+            if not Rtn then
+                objLinker:rollback()
+                objLinker:setautocommit(true)
+                assert(Rtn, strError)
+                
+                return
+            end
         end
             
         objLinker:commit()

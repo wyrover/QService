@@ -63,6 +63,11 @@ local function ShutDownWorld()
 end
 RegGameEvent(GameEvent_ShutDown, "ShutDownWorld", ShutDownWorld)
 
+local function On1Minute()
+    Debug(string.format("online player number:%d.", World:getPlayerMgr():getOnLineNum()))
+end
+RegGameEvent(GameEvent_1Minute, "On1Minute", On1Minute)
+
 local function On10Minute()
     World:getPlayerMgr():Save(nil, nil)
 end

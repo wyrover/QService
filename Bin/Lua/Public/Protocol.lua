@@ -40,11 +40,3 @@ ProtocolStr_Number      = "num"                              --数量
 ProtocolStr_Info        = "info"                             --详细信息
 ProtocolStr_Name        = "nam"                              --名称
 ProtocolStr_Attr        = "attr"                             --属性
-
-ProtocolStr_Log_Type    = "logtype"                          --日志类型
-ProtocolStr_Log_Param0  = "p0"                               --日志参数0
-ProtocolStr_Log_Param1  = "p1"                               --日志参数1
-ProtocolStr_Log_Param2  = "p2"                               --日志参数2
-ProtocolStr_Log_Param3  = "p3"                               --日志参数3
-ProtocolStr_Log_Param4  = "p4"                               --日志参数4
-ProtocolStr_Log_Memo    = "memo"                             --日志description
