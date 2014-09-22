@@ -45,6 +45,15 @@ function Lua_OnShutDown()
 end
 
 --[[
+描述: 连接成功时调用
+参数：
+返回值：无
+--]]
+function Lua_OnConnected(objSession)
+    OnGameEvent(GameEvent.Connected, objSession)
+end
+
+--[[
 描述：连接可读事件
 参数：
 返回值：无
@@ -65,7 +74,8 @@ function Lua_OnRead(pszMessage, uiLens)
         if g_ProtocolFilterFun then
             local iStatus = objCurSession:getStatus()
             if not g_ProtocolFilterFun(iProtocol, iStatus) then
-                Q_LOG(LOGLV_WARN, string.format("session status %d, protocol %d was ignored.", iStatus, iProtocol))
+                Q_LOG(LOGLV_WARN, string.format("session status %d, protocol %d was ignored.", 
+                    iStatus, iProtocol))
                 return
             end
         end
@@ -154,28 +164,6 @@ end
 --]]
 function Lua_OnClose()
     OnGameEvent(GameEvent.Close)
-end
-
---[[
-描述：服务器注册
-参数：
-返回值：无
---]]
-local function RequireRegSV(objSession)
-    local iClientID = objSession:getSessionID()
-    local tRegSV = {}
-    local strCheckID = GetID()
-    
-    objSession:setCheckID(strCheckID)
-    
-    tRegSV[ProtocolStr_Request] = Protocol.System_RegSV
-    tRegSV[ProtocolStr_ServerID] = getServerID()
-    tRegSV[ProtocolStr_CheckID] = strCheckID
-    tRegSV[ProtocolStr_ClientID] = iClientID
-    
-    
-    local strMsg = cjson.encode(tRegSV)
-    g_objSessionManager:sendToByID(iClientID, strMsg, string.len(strMsg))
 end
 
 --[[

@@ -22,6 +22,28 @@ function checkSVReg(iSessionID)
 end
 
 --[[
+描述：服务器注册
+参数：
+返回值：无
+--]]
+function RequireRegSV(objSession)
+    local iClientID = objSession:getSessionID()
+    local tRegSV = {}
+    local strCheckID = GetID()
+    
+    objSession:setCheckID(strCheckID)
+    
+    tRegSV[ProtocolStr_Request] = Protocol.System_RegSV
+    tRegSV[ProtocolStr_ServerID] = getServerID()
+    tRegSV[ProtocolStr_CheckID] = strCheckID
+    tRegSV[ProtocolStr_ClientID] = iClientID
+    
+    
+    local strMsg = cjson.encode(tRegSV)
+    g_objSessionManager:sendToByID(iClientID, strMsg, string.len(strMsg))
+end
+
+--[[
 描述：注册服务器
 参数：
 返回值： 无

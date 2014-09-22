@@ -43,6 +43,7 @@ SVType = CreatEnumTable(SVType)
 GameEvent = {
     "StartUp",
     "ShutDown",
+    "Connected",
 
     "FPS",
     "DayChange",
@@ -61,7 +62,7 @@ GameEvent = {
 }
 GameEvent = CreatEnumTable(GameEvent)
 
---日志级别
+--文本日志级别
 LOGLV_NOLOG  = 0
 LOGLV_ERROR  = 300
 LOGLV_WARN   = 400

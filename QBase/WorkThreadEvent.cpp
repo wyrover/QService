@@ -153,6 +153,8 @@ void CWorkThreadEvent::onMainRead(struct SockPairEventParam *pParam)
 
             continue;
         }
+
+        pSessionManager->getInterface()->onConnected(pSessionManager->getSession(pBev));
     }
 }
 

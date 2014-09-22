@@ -57,6 +57,8 @@ public:
     virtual void onSerciveStartUp(void){};
     /*工作线程关闭时执行*/
     virtual void onSerciveShutDown(void){};
+    /*socket连接成功时执行*/
+    virtual void onConnected(class CSession *){};
     /*socket断开时执行*/
     virtual void onSocketClose(void){};
     /*定时器触发时执行*/

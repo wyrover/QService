@@ -27,12 +27,13 @@
 
 #include "DispWithLua.h"
 
-#define LUA_EVENT_ONSTARTUP  "Lua_OnStartUp"
-#define LUA_EVENT_ONSHUTDOWN "Lua_OnShutDown"
-#define LUA_EVENT_ONCLOSE    "Lua_OnClose"
-#define LUA_EVENT_ONTIMER    "Lua_OnTimer"
-#define LUA_EVENT_ONREAD     "Lua_OnRead"
-#define LUA_EVENT_ONSVLINKED "Lua_OnLinkedServer"
+#define LUA_EVENT_ONSTARTUP   "Lua_OnStartUp"
+#define LUA_EVENT_ONSHUTDOWN  "Lua_OnShutDown"
+#define LUA_EVENT_ONCONNECTED "Lua_OnConnected"
+#define LUA_EVENT_ONCLOSE     "Lua_OnClose"
+#define LUA_EVENT_ONTIMER     "Lua_OnTimer"
+#define LUA_EVENT_ONREAD      "Lua_OnRead"
+#define LUA_EVENT_ONSVLINKED  "Lua_OnLinkedServer"
 
 CDisposeEvent::CDisposeEvent(const char *pszLuaFile) : m_pLua(NULL)
 {
@@ -97,6 +98,26 @@ void CDisposeEvent::onSerciveShutDown(void)
     try
     {
         luabridge::getGlobal(m_pLua, LUA_EVENT_ONSHUTDOWN)();
+    }
+    catch(luabridge::LuaException &e)
+    {
+        Q_Printf("%s", e.what());
+        Q_SYSLOG(LOGLV_ERROR, "%s", e.what());
+    }
+    catch(CException &e)
+    {
+        Q_Printf("exception. code %d, message %s", 
+            e.getErrorCode(), e.getErrorMsg());
+        Q_SYSLOG(LOGLV_ERROR, "exception. code %d, message %s", 
+            e.getErrorCode(), e.getErrorMsg());
+    }
+}
+
+void CDisposeEvent::onConnected(class CSession *pSession)
+{
+    try
+    {
+        luabridge::getGlobal(m_pLua, LUA_EVENT_ONCONNECTED)(pSession);
     }
     catch(luabridge::LuaException &e)
     {
