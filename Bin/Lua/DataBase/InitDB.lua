@@ -63,7 +63,7 @@ local function OnDayChange()
 end
 RegGameEvent(GameEvent.DayChange, "OnDayChange", OnDayChange)
 
-local function On1Hour()    
+local function On1Hour()
     DBMgr:executeSql(DBType.Game, string.format("SELECT id FROM %s limit 1", g_PlayerTable))
     DBMgr:executeSql(DBType.Log, string.format("SELECT id FROM %s limit 1", strLogTableTemplate))
 end

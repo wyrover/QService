@@ -47,6 +47,11 @@ int getServerID(void)
     return g_iServerID;
 }
 
+int getServerType(void)
+{
+    return g_iServerType;
+}
+
 int getEncryptTypeCount(void)
 {
     return (EncryptType_Count - 1);
@@ -72,6 +77,7 @@ void CReg2Lua::reg_Func(void)
         .addFunction("Q_GetPathSeparator", Q_GetPathSeparator)
         .addFunction("Q_LOG", Q_LuaLog)
         .addFunction("getServerID", getServerID)
+        .addFunction("getServerType", getServerType)
         .addFunction("getEncryptTypeCount", getEncryptTypeCount);
 }
 

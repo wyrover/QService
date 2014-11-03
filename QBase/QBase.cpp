@@ -41,3 +41,5 @@ CCond g_objExitCond;
 char g_acModulPath[Q_FILEPATH_LENS] = {0};
 /*服务器ID*/
 int g_iServerID = 0;
+/*服务器类型*/
+int g_iServerType = 0;

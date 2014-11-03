@@ -33,6 +33,7 @@ ProtocolStr_Rtn         = "rtn"                              --返回码
 ProtocolStr_DebugStr    = "dstr"                             --命令字符
 ProtocolStr_DebugStrRtn = "drtnstr"                          --命令字符执行返回
 ProtocolStr_ServerID    = "svid"                             --服务器ID
+ProtocolStr_ServerType  = "svtype"                           --服务器类型
 ProtocolStr_Flag        = "flag"                             --标志
 ProtocolStr_Account     = "acc"                              --账号
 ProtocolStr_PSW         = "psw"                              --密码

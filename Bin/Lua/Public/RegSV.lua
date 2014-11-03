@@ -1,28 +1,13 @@
 --[[
 服务器注册
 --]]
-
+--{svid{ProtocolStr_ClientID = ,ProtocolStr_ServerType = }}
 if not g_RegService then
     g_RegService = {}
 end
 
 --[[
-描述：检查是否注册
-参数：
-返回值： bool
---]]
-function checkSVReg(iSessionID)
-    for _, val in pairs(g_RegService) do
-        if val == iSessionID then
-            return true
-        end
-    end
-    
-    return false
-end
-
---[[
-描述：服务器注册
+描述：请求服务器注册
 参数：
 返回值：无
 --]]
@@ -35,6 +20,7 @@ function RequireRegSV(objSession)
     
     tRegSV[ProtocolStr_Request] = Protocol.System_RegSV
     tRegSV[ProtocolStr_ServerID] = getServerID()
+    tRegSV[ProtocolStr_ServerType] = getServerType()
     tRegSV[ProtocolStr_CheckID] = strCheckID
     tRegSV[ProtocolStr_ClientID] = iClientID
     
@@ -54,6 +40,11 @@ local function RegServer(tbMessage)
         return
     end
     
+    local iSVType = tbMessage[ProtocolStr_ServerType]
+    if not iSVType then
+        return
+    end
+    
     local objCurSession = g_objSessionManager:getCurSession()
     local iSessionID = objCurSession:getSessionID()
     
@@ -63,11 +54,19 @@ local function RegServer(tbMessage)
     tRegRtn[ProtocolStr_CheckID] = tbMessage[ProtocolStr_CheckID]
     tRegRtn[ProtocolStr_ClientID] = tbMessage[ProtocolStr_ClientID]
     tRegRtn[ProtocolStr_ServerID] = iSVID
+    tRegRtn[ProtocolStr_ServerType] = iSVType
     
     if g_RegService[iSVID] then
         tRegRtn[ProtocolStr_Rtn] = ErrorCode.FAILE
     else
-        g_RegService[iSVID] = iSessionID
+        local tInfo = {}
+        tInfo[ProtocolStr_ClientID] = iSessionID
+        tInfo[ProtocolStr_ServerType] = iSVType
+        
+        g_RegService[iSVID] = tInfo
+        
+        Debug(string.format("register server id %d, server type %d, client id %d.",
+        iSVID, iSVType, iSessionID))
         tRegRtn[ProtocolStr_Rtn] = ErrorCode.OK
     end
     
@@ -117,7 +116,7 @@ local function OnRegSVClose()
     local iSessionID = objCurSession:getSessionID()
     
     for key, val in pairs(g_RegService) do
-        if val == iSessionID then
+        if iSessionID == val[ProtocolStr_ClientID] then
             g_RegService[key] = nil
             Debug("remove register server "..tonumber(key))
             break
@@ -136,7 +135,23 @@ function RemoveRegSV(iSVID)
         return
     end
     
-    local iSessionID = g_RegService[iSVID]
+    local iSessionID = g_RegService[iSVID][ProtocolStr_ClientID]
     CloseLink(iSessionID)
     g_RegService[iSVID] = nil
+end
+
+--[[
+描述：根据类型获取服务器连接ID
+参数：
+返回值： table
+--]]
+function GetRegSV(iSVType)
+    local tRtn = {}
+    for key, val in pairs(g_RegService) do
+        if iSVType == val[ProtocolStr_ServerType] then
+            table.insert(tRtn, val[ProtocolStr_ClientID])
+        end
+    end
+    
+    return tRtn
 end

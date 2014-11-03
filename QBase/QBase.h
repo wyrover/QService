@@ -88,5 +88,7 @@ extern char g_acModulPath[Q_FILEPATH_LENS];
 
 /*服务器ID*/
 extern int g_iServerID;
+/*服务器类型*/
+extern int g_iServerType;
 
 #endif//Q_QBASE_H_

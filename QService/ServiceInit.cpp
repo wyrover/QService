@@ -166,7 +166,8 @@ bool CServerInit::readConfig(void)
     itNode = objNodeSet.begin();
 
     g_iServerID =  atoi(itNode->node().child_value("ServerID"));
-    Q_Printf("service id %d.", g_iServerID);
+    g_iServerType = atoi(itNode->node().child_value("Type"));
+    Q_Printf("service id %d, type %d.", g_iServerID, g_iServerType);
     m_stServerConfig.strBindIP = itNode->node().child_value("BindIP");
     m_stServerConfig.usThreadNum = atoi(itNode->node().child_value("ThreadNum"));
     m_stServerConfig.strScript = std::string(g_acModulPath) + std::string(itNode->node().child_value("Script"));
