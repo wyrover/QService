@@ -542,6 +542,6 @@ void CSessionManager::Flush(void)
     for (itSession = m_unmapSession.begin(); m_unmapSession.end() != itSession; itSession++)
     {
         pBufEvent = itSession->second->getBuffer()->getBuffer();
-        bufferevent_flush(pBufEvent, EV_WRITE, BEV_FINISHED);
+        (void)bufferevent_flush(pBufEvent, EV_WRITE, BEV_FINISHED);
     }
 }
