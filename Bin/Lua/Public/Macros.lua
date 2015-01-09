@@ -43,8 +43,7 @@ GameEvent = {
     "OneMinute",--1分钟
     "FiveMinute",--5分钟
     "TenMinute",--10分钟
-    "OneHour",--1小时    
-    "Connected",--新连接，连接成功
+    "OneHour",--1小时
     "Close",--连接关闭
 }
 GameEvent = creatEnumTable(GameEvent, 1)
