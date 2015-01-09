@@ -18,17 +18,16 @@ end
 参数：
 返回值：无
 --]]
-function OnDelayEvent()   
+function onDelayEvent()   
     local iNow = os.time()
     local tDel = {}
     
     for key, val in pairs(RegFuncs.DelayEvent) do
-        if  math.abs(iNow - val.RegTime) >= val.Time then
+        if math.abs(iNow - val.RegTime) >= val.Time then
             table.insert(tDel, key)
             
-            local Func = val.Func
-            if Func then
-                CallFunc(Func, table.unpack(val.Param))
+            if val.Func then
+                callFunc(val.Func, table.unpack(val.Param))
             end
         end
     end
@@ -43,7 +42,7 @@ end
 参数：iTime --延后时间（秒）
 返回值：无
 --]]
-function RegDelayEvent(iTime, Func, ...)
+function regDelayEvent(iTime, Func, ...)
     if "function" ~= type(Func) then
         return
     end
@@ -59,7 +58,7 @@ function RegDelayEvent(iTime, Func, ...)
     tInfo.Func = Func
     tInfo.Param = {...}
     
-    RegFuncs.DelayEvent[GetID()] = tInfo
+    RegFuncs.DelayEvent[getID()] = tInfo
 end
 
 --[[
@@ -67,19 +66,14 @@ end
 参数：iEvent --事件编号
 返回值：无
 --]]
-function OnGameEvent(iEvent, ...)
+function onGameEvent(iEvent, ...)
     if not RegFuncs.GameEvent[iEvent] then
         return
     end
     
-    for _, val in pairs(RegFuncs.GameEvent[iEvent]) do
-        local strFunc = val[1]
-        local Func = val[2]
-        
-        if Func then
-            TimerReStart()
-            CallFunc(Func, table.unpack{...})
-            Debug("function "..strFunc.." elapsed time:"..tostring(TimerElapsed()).. " ms")
+    for _, val in pairs(RegFuncs.GameEvent[iEvent]) do     
+        if val then
+            callFunc(val, table.unpack{...})
         end
     end
 end
@@ -89,12 +83,8 @@ end
 参数：
 返回值：无
 --]]
-function RegGameEvent(iEvent, strFunc, Func)
+function regGameEvent(iEvent, Func)
     if "function" ~= type(Func) then
-        return
-    end
-    
-    if not strFunc then
         return
     end
     
@@ -102,13 +92,7 @@ function RegGameEvent(iEvent, strFunc, Func)
         RegFuncs.GameEvent[iEvent] = {}
     end
     
-    for _, val in pairs(RegFuncs.GameEvent[iEvent]) do
-        if val[1] == strFunc then
-            return
-        end
-    end
-    
-    table.insert(RegFuncs.GameEvent[iEvent], {strFunc, Func})
+    table.insert(RegFuncs.GameEvent[iEvent], Func)
 end
 
 --[[
@@ -116,14 +100,11 @@ end
 参数：
 返回值：无
 --]]
-function OnNetEvent(iProtocol, tbMessage)
+function onNetEvent(iProtocol, ...)
     local Func = RegFuncs.NetEvent[iProtocol]
     if Func then
-        TimerReStart()
-        CallFunc(Func, tbMessage)
-        Debug("protocol "..iProtocol.." elapsed time:"..tostring(TimerElapsed()).. " ms")        
+        callFunc(Func, table.unpack{...})      
     else
-        Debug("unknown protocol " .. iProtocol ..", close this link.")
         g_objSessionManager:closeCurLink()
     end
 end
@@ -133,7 +114,7 @@ end
 参数：
 返回值：无
 --]]
-function RegNetEvent(iProtocol, Func)
+function regNetEvent(iProtocol, Func)
     if "function" ~= type(Func) then
         return
     end

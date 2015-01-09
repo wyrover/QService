@@ -78,6 +78,7 @@ void CDisposeEvent::onSerciveStartUp(void)
     {
         getSessionManager()->setLua(m_pLua);
         luabridge::getGlobal(m_pLua, LUA_EVENT_ONSTARTUP)(getSessionManager());
+        startSVLinker();
     }
     catch(luabridge::LuaException &e)
     {
@@ -177,6 +178,9 @@ void CDisposeEvent::onSocketRead(const char *pszMsg, const Q_PackHeadType &iLens
 {
     try
     {
+        m_stMessageTrans.iLens = iLens;
+        m_stMessageTrans.pBuffer = (char*)pszMsg;
+
         luabridge::getGlobal(m_pLua, LUA_EVENT_ONREAD)(pszMsg, iLens);
     }
     catch(luabridge::LuaException &e)

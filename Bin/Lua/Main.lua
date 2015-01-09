@@ -15,16 +15,6 @@ if not g_objSessionManager then
     g_objSessionManager = nil
 end
 
---操作码过滤
-if not g_ProtocolFilterFun then
-    g_ProtocolFilterFun = nil
-end
-
---检查服务器注册
-if not g_CheckSVRegFun then
-    g_CheckSVRegFun = nil
-end
-
 --[[
 描述：服务启动成功后调用
 参数：
@@ -32,7 +22,10 @@ end
 --]]
 function Lua_OnStartUp(objSessionManager)
     g_objSessionManager = objSessionManager
-    OnGameEvent(GameEvent.StartUp)
+    math.randomseed(tonumber(tostring(os.time()):reverse():sub(1,6)))
+    
+    onGameEvent(GameEvent.Start)
+    onGameEvent(GameEvent.Started)
 end
 
 --[[
@@ -41,7 +34,7 @@ end
 返回值：无
 --]]
 function Lua_OnShutDown()
-    OnGameEvent(GameEvent.ShutDown)    
+    onGameEvent(GameEvent.ShutDown)    
 end
 
 --[[
@@ -50,7 +43,7 @@ end
 返回值：无
 --]]
 function Lua_OnConnected(objSession)
-    OnGameEvent(GameEvent.Connected, objSession)
+    onGameEvent(GameEvent.Connected, objSession)
 end
 
 --[[
@@ -58,7 +51,9 @@ end
 参数：
 返回值：无
 --]]
-function Lua_OnRead(pszMessage, uiLens)
+function Lua_OnRead(objMessageTrans)
+    Debug(string.format("recv message lens %d", objMessageTrans:getLens()))
+    --[[
     Debug(string.sub(pszMessage, 1, uiLens))
     local tbMessage = cjson.decode(string.sub(pszMessage, 1, uiLens))
     local iProtocol = tbMessage[ProtocolStr_Request]
@@ -89,8 +84,9 @@ function Lua_OnRead(pszMessage, uiLens)
         end
     end
     
-    Debug("protocol is " .. iProtocol)    
-    OnNetEvent(iProtocol, tbMessage)    
+    Debug("protocol is " .. iProtocol)  
+--]]    
+    --onNetEvent(iProtocol, tbMessage)
 end
 
 --[[
@@ -105,12 +101,12 @@ function Lua_OnTimer()
     local uiOneSecond = 1000
     
     --每帧处理
-    OnGameEvent(GameEvent.FPS, uiClick)
+    onGameEvent(GameEvent.FPS, uiClick)
     
     --1秒
     if 0 == (uiElapseTime % uiOneSecond) then
-        OnDelayEvent()
-        OnGameEvent(GameEvent.OneSecond)        
+        onDelayEvent()
+        onGameEvent(GameEvent.OneSecond)        
         
         --检查变天
         local tDay = os.date("*t", time)
@@ -119,41 +115,51 @@ function Lua_OnTimer()
             or (tDay.day ~= tNowDay.day) then
                 --变天事件
                 tNowDay = tDay
-                Debug("day changed.")
+                Debug("day changed.")                
+                onGameEvent(GameEvent.DayChange)
                 
-                OnGameEvent(GameEvent.DayChange)
+                local iNewWeek = tonumber(os.date("%U", os.time(tDay)))
+                local iOldWeek = tonumber(os.date("%U", os.time(tNowDay)))
+                if iNewWeek ~= iOldWeek then
+                    onGameEvent(GameEvent.WeekChange)
+                end            
+                if tDay.month ~= tNowDay.month then
+                    onGameEvent(GameEvent.MonthChange)
+                end
+                
+                tNowDay = tDay
         end
     end
     
     --5秒
     if 0 == (uiElapseTime % (uiOneSecond * 5)) then
-        OnGameEvent(GameEvent.FiveSecond)
+        onGameEvent(GameEvent.FiveSecond)
     end
     
     --10秒
     if 0 == (uiElapseTime % (uiOneSecond * 10)) then
-        OnGameEvent(GameEvent.TenSecond)
+        onGameEvent(GameEvent.TenSecond)
     end
     
     --1分钟
     if 0 == (uiElapseTime % (uiOneSecond * 60)) then
-        OnGameEvent(GameEvent.OneMinute)
+        onGameEvent(GameEvent.OneMinute)
     end
     
     --5分钟
     if 0 == (uiElapseTime % (uiOneSecond * 60 * 5)) then
-        OnGameEvent(GameEvent.FiveMinute)
+        onGameEvent(GameEvent.FiveMinute)
         collectgarbage("collect")
     end
     
     --10分钟
     if 0 == (uiElapseTime % (uiOneSecond * 60 * 10)) then
-        OnGameEvent(GameEvent.TenMinute)
+        onGameEvent(GameEvent.TenMinute)
     end
 	
     --1小时
     if 0 == (uiElapseTime % (uiOneSecond * 60 * 60)) then
-        OnGameEvent(GameEvent.OneHour)
+        onGameEvent(GameEvent.OneHour)
     end
 end
 
@@ -163,7 +169,7 @@ end
 返回值：无
 --]]
 function Lua_OnClose()
-    OnGameEvent(GameEvent.Close)
+    onGameEvent(GameEvent.Close)
 end
 
 --[[
@@ -172,5 +178,5 @@ end
 返回值：无
 --]]
 function Lua_OnLinkedServer(objSession)
-    RequireRegSV(objSession)
+    --RequireRegSV(objSession)
 end

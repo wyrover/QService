@@ -5,17 +5,6 @@
 --无效ID
 Q_INVALID_ID = -1
 
---保存玩家每次发送数量
-SavePlayer_PreNum  = 100
-
---数据库日志类型
-DBLogType = {
-    "LogIn",
-    "LogOut",
-    "CreatePlayer",
-}
-DBLogType = CreatEnumTable(DBLogType)
-
 --session状态 与c++中enum SessionStatus对应
 SessionStatus = {
     "Unknown",  --未知
@@ -27,40 +16,38 @@ SessionStatus = {
     "Created",  --创建玩家完成
     "Playing",  --游戏中
 }
-SessionStatus = CreatEnumTable(SessionStatus, -1)
+SessionStatus = creatEnumTable(SessionStatus, -1)
 
 --服务器类型
 SVType = {
-    "Account",
-    "Payment",
-    "Game",
-    "Fight",
-    "DataBase",
+    "Account",--账号
+    "Payment",--支付
+    "Game",   --游戏
+    "Fight",  --战斗
+    "DataBase",--数据库
 }
-SVType = CreatEnumTable(SVType)
+SVType = creatEnumTable(SVType, 1)
 
 --游戏事件
 GameEvent = {
-    "StartUp",
-    "ShutDown",
-    "Connected",
-
-    "FPS",
-    "DayChange",
-
-    "OneSecond",
-    "FiveSecond",
-    "TenSecond",
-    "OneMinute",
-    "FiveMinute",
-    "TenMinute",
-    "OneHour",
-
-    "Close",
-
-    "LogIned",
+    "Start",--启动
+    "Started",--启动完成
+    "ShutDown",--关闭
+    "FPS",--每帧
+    "DayChange",--天变
+    "WeekChange",--周变
+    "MonthChange",--月变
+    "OneSecond",--1秒
+    "FiveSecond",--5秒
+    "TenSecond",--10秒
+    "OneMinute",--1分钟
+    "FiveMinute",--5分钟
+    "TenMinute",--10分钟
+    "OneHour",--1小时    
+    "Connected",--新连接，连接成功
+    "Close",--连接关闭
 }
-GameEvent = CreatEnumTable(GameEvent)
+GameEvent = creatEnumTable(GameEvent, 1)
 
 --文本日志级别
 LOGLV_NOLOG  = 0

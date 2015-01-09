@@ -20,6 +20,9 @@ DepLib=DependLib
 cppunit_tar=cppunit-1.12.1.tar.gz
 cppunit_path=cppunit-1.12.1
 
+curl_tar=curl-7.38.0.tar.gz
+curl_path=curl-7.38.0
+
 libevent_tar=libevent-2.0.21-stable.tar.gz
 libevent_path=libevent-2.0.21-stable
 
@@ -85,4 +88,24 @@ mv $LibPath$DepLib/$libevent_path/.libs/libevent_core.a $LibPath$RstPath/libeven
 mv $LibPath$DepLib/$libevent_path/.libs/libevent_extra.a $LibPath$RstPath/libevent_extra_$OSName.a
 mv $LibPath$DepLib/$libevent_path/.libs/libevent_pthreads.a $LibPath$RstPath/libevent_pthreads_$OSName.a
 
-exit 0
+#Брвы-----------------curl---------------------------
+cd $LibPath$DepLib
+
+rm -rf $curl_path
+if [ "$OSName" = "SunOS" ]
+then
+    gzcat $curl_tar | tar xvf -
+else
+    tar -xvzf $curl_tar
+fi
+cd $LibPath$DepLib/$curl_path
+
+./configure --enable-shared=no --disable-ldap --disable-ldaps
+make
+
+if [ -f "$LibPath$RstPath/libcurl_$OSName.a" ]
+then
+    rm -rf $LibPath$RstPath/libcurl_$OSName.a
+fi
+
+mv $LibPath$DepLib/$curl_path/lib/.libs/libcurl.a $LibPath$RstPath/libcurl_$OSName.a

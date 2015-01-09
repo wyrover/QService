@@ -69,6 +69,7 @@
 #include "Filter.h"
 #include "SnowflakeID.h"
 #include "MMap.h"
+#include "HttpClient.h"
 #include "Charset.h"
 
 using namespace pugi;

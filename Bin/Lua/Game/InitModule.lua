@@ -10,33 +10,25 @@ local tLoad =
     {"Public/ErrorCodes", true},    
     {"Public/RegFuncs", true}, 
     {"Public/Debug", true},
-    {"Public/RegSV", true},
+    {"Public/DBManager", true},
     
-    {"Game/Ping", true},
-    {"Game/LoadPlayer", true},
-    {"Game/LogIn", true},
-    {"Game/Player", true},
-    {"Game/PlayerMgr", true},
-    
-    {"Game/DBMessage", true},
-    {"Game/World", true},
-    {"Game/GameUtile", true},
+    {"Game/Test", true},
 }
 
-local function LoadAllFile()
+local function loadAllFile()
     for _, val in pairs(tLoad) do
         require(val[1])
     end
 end
 
-LoadAllFile()
+loadAllFile()
 
 --[[
 描述：重加载lua文件
 参数：strFile --文件 为nil则加载tLoad中的所有
 返回值： 无
 --]]
-function ReLoad(strFile)
+function reLoad(strFile)
     local luaDir = Q_GetModulPath() .. "Lua" .. Q_GetPathSeparator()
     local strPath = ""
     

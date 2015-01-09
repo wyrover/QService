@@ -11,8 +11,10 @@
 
 #ifdef Q_OS_WIN32
 #pragma comment(lib, "ws2_32.lib")
+#pragma comment(lib, "../Bin/libmysql.lib")
 #pragma comment(lib, "../Bin/libevent_core.lib")
 #pragma comment(lib, "../Bin/libevent_extras.lib")
+#pragma comment(lib, "../Bin/libcurl_a.lib")
 #pragma comment(lib, "../Bin/QBase.lib")
 #ifdef _DEBUG
 #pragma comment(lib, "../Bin/cppunitd.lib")

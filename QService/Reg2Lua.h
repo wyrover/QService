@@ -30,6 +30,24 @@
 
 #include "../QBase/QBase.h"
 
+struct MessageTrans
+{
+    size_t iLens;
+    char *pBuffer;
+
+    MessageTrans(void):iLens(Q_INIT_NUMBER), pBuffer(NULL)
+    {
+    };
+    size_t getLens(void)
+    {
+        return iLens;
+    };
+    const char *getBuffer(void)
+    {
+        return pBuffer;
+    };
+};
+
 /*LUAÀ©Õ¹*/
 class CReg2Lua
 {
@@ -47,6 +65,7 @@ public:
 private:
     void reg_Func(void);
     void reg_Timer(void);
+    void reg_MessageTrans(void);
     void reg_SnowflakeID(void);
     void reg_Filter(void);
     void reg_Charset(void);
@@ -54,9 +73,10 @@ private:
     void reg_TableFile(void);
     void reg_Session(void);
     void reg_SessionManager(void);
+    void reg_HttpClient(void);
 
 private:
-    struct lua_State *m_pstLState;
+    struct lua_State *m_pstLState;    
 };
 
 #endif//Q_REG2LUA_H_

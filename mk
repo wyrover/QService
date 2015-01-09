@@ -17,7 +17,7 @@ PROGRAMNAME="QService"
 
 #############################################
 #QServer文件夹
-QServerDir="QBase QBase/event2 QBase/lua5.2 QBase/mysql QBase/pugixml QBase/RSAEuro QBase/uchardet"
+QServerDir="QBase QBase/event2 QBase/lua5.2 QBase/mysql QBase/pugixml QBase/RSAEuro QBase/uchardet QBase/curl"
 QServerDir=$QServerDir" QBase/rijndael QBase/Sqlite"
 QServerDir=$QServerDir" QService"
 
@@ -34,7 +34,7 @@ RSTPATH="Bin"
 
 #附加包含库
 INCLUDELIB="-lrt -lz -levent_core -levent_extra"
-INCLUDELIB=$INCLUDELIB" -levent_pthreads -lmysqlclient"
+INCLUDELIB=$INCLUDELIB" -levent_pthreads -lcrypto -lidn -lssl -lcurl -lmysqlclient"
 
 #中间库文件名
 LIBNAME="QServiceLib"
@@ -235,6 +235,7 @@ alias cp="cp -f"
 cp libevent_pthreads_$OSNAME.a libevent_pthreads.a
 cp libevent_extra_$OSNAME.a libevent_extra.a
 cp libevent_core_$OSNAME.a libevent_core.a
+cp libcurl_$OSNAME.a libcurl.a
 
 cd $MAKEFILEPATH/$MAINDIR
 

@@ -68,6 +68,7 @@ void CReg2Lua::Register(void)
     reg_TableFile();
     reg_Session();
     reg_SessionManager();
+    reg_HttpClient();
 }
 
 void CReg2Lua::reg_Func(void)
@@ -76,6 +77,7 @@ void CReg2Lua::reg_Func(void)
         .addFunction("Q_GetModulPath", Q_GetModulPath)
         .addFunction("Q_GetPathSeparator", Q_GetPathSeparator)
         .addFunction("Q_LOG", Q_LuaLog)
+        .addFunction("Q_Sleep", Q_Sleep)
         .addFunction("getServerID", getServerID)
         .addFunction("getServerType", getServerType)
         .addFunction("getEncryptTypeCount", getEncryptTypeCount);
@@ -85,10 +87,19 @@ void CReg2Lua::reg_Timer(void)
 {
     luabridge::getGlobalNamespace(m_pstLState)
         .beginClass<CTimer>("CTimer")
-            .addConstructor<void (*) (void)>()
+        .addConstructor<void (*) (void)>()
 
-            .addFunction("reStart", &CTimer::reStart)
-            .addFunction("Elapsed", &CTimer::Elapsed)
+        .addFunction("reStart", &CTimer::reStart)
+        .addFunction("Elapsed", &CTimer::Elapsed)
+        .endClass();
+}
+
+void CReg2Lua::reg_MessageTrans(void)
+{
+    luabridge::getGlobalNamespace(m_pstLState)
+        .beginClass<MessageTrans>("MessageTrans")
+            .addFunction("getLens", &MessageTrans::getLens)
+            .addFunction("getBuffer", &MessageTrans::getBuffer)
         .endClass();
 }
 
@@ -108,6 +119,8 @@ void CReg2Lua::reg_Filter(void)
     luabridge::getGlobalNamespace(m_pstLState)
         .beginClass<CFilter>("CFilter")
             .addConstructor<void (*) (void)>()
+
+            .addFunction("Clear", &CFilter::Clear)
 
             .addFunction("addSensitiveWord", &CFilter::addSensitiveWord)
 
@@ -213,5 +226,18 @@ void CReg2Lua::reg_SessionManager(void)
 
             .addFunction("getTimer", &CSessionManager::getTimer)
             .addFunction("getCount", &CSessionManager::getCount)
+        .endClass();
+}
+
+void CReg2Lua::reg_HttpClient(void)
+{
+    luabridge::getGlobalNamespace(m_pstLState)
+        .beginClass<CHttpClient>("CHttpClient")
+            .addConstructor<void (*) (void)>()
+
+            .addFunction("Post", &CHttpClient::Post)
+            .addFunction("Get", &CHttpClient::Get)
+            .addFunction("Posts", &CHttpClient::Posts)
+            .addFunction("Gets", &CHttpClient::Gets)
         .endClass();
 }

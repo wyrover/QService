@@ -46,6 +46,8 @@ public:
     /*检查敏感词并替换*/
     void checkAndModify(char *pWord, const size_t uiLens, const char cReplace = '*');
     const char *Filter(const char *pWord, const size_t uiLens);
+    /*清理*/
+    void Clear(void);
 private:
     struct FilterMap
     {

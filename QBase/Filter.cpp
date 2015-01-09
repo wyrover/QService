@@ -37,6 +37,7 @@ CFilter::~CFilter(void)
     if (NULL != m_pmapFilter)
     {
         freeNode(m_pmapFilter);
+        m_pmapFilter = NULL;
     }
 }
 
@@ -51,6 +52,15 @@ void CFilter::freeNode(FilterMap *pFilterMap)
     }
 
     Q_SafeDelete(pFilterMap);
+}
+
+void CFilter::Clear(void)
+{
+    if (NULL != m_pmapFilter)
+    {
+        freeNode(m_pmapFilter);
+        m_pmapFilter = NULL;
+    }    
 }
 
 /************************************************************************

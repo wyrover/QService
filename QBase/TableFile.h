@@ -79,6 +79,7 @@ private:
 
 private:
     bool m_bEof;
+    int m_iRemoveCount;
     std::string m_strFile;
     std::string m_strSplitFlag;
     std::map<int, std::string> m_mapTableHead;

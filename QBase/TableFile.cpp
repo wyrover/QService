@@ -31,6 +31,7 @@ CTableFile::CTableFile(void)
 {
     m_itNowRow = m_lstAllValue.begin();
     m_bEof = true;
+    m_iRemoveCount = Q_INIT_NUMBER;
 }
 
 void CTableFile::setFile(const char *pszFile)
@@ -75,6 +76,8 @@ int CTableFile::Parse(void)
     bool bHaveHead = false;
     std::string strTmp;
     char pBuffer[Q_ONEK * 2] = {0};    
+
+    m_iRemoveCount = Q_INIT_NUMBER;
 
     //读取表头
     while(inStream.good())
@@ -140,6 +143,7 @@ int CTableFile::Parse(void)
 
 void CTableFile::getValue(std::string &strValue, std::map<int, std::string> &mapTableHead)
 {
+    bool bAllEmpty = true;
     int iIndex = Q_INIT_NUMBER;
     std::list<std::string> lstValue;
     std::list<std::string>::iterator itValue;
@@ -150,8 +154,29 @@ void CTableFile::getValue(std::string &strValue, std::map<int, std::string> &map
     for (itValue = lstValue.begin(); (lstValue.end() != itValue) && ((size_t)iIndex < mapTableHead.size()); 
         itValue++)
     {
+        if(!(itValue->empty()))
+        {
+            bAllEmpty = false;
+        }
+    }
+
+    if (bAllEmpty)
+    {
+        return;
+    }
+
+    size_t iCount = Q_INIT_NUMBER;
+    for (itValue = lstValue.begin(); (lstValue.end() != itValue) && ((size_t)iIndex < mapTableHead.size()); 
+        itValue++)
+    {
+        if (iCount >= (lstValue.size() - m_iRemoveCount))
+        {
+            break;
+        }
+
         mapVal.insert(std::make_pair((mapTableHead.find(iIndex)->second), Q_Trim(*itValue)));
         iIndex++;
+        iCount++;
     }
 
     m_lstAllValue.push_back(mapVal);
@@ -162,6 +187,17 @@ bool CTableFile::getHead(std::string &strHead, std::map<int, std::string> &mapTa
     std::list<std::string> lstTableHead;
 
     Q_Split(strHead, m_strSplitFlag, lstTableHead);
+    //记录后面的空值数
+    for (std::list<std::string>::reverse_iterator itTmp = lstTableHead.rbegin(); 
+        lstTableHead.rend() != itTmp; itTmp++)
+    {
+        if (!(itTmp->empty()))
+        {
+            break;
+        }
+
+        m_iRemoveCount++;
+    }
     if (!checkHead(lstTableHead))//检查是否有空值
     {
         Q_Printf("%s", "Invalid table head.");
@@ -186,8 +222,14 @@ bool CTableFile::parseHead(std::list<std::string> &lstTableHead, std::map<int, s
     std::list<std::string>::iterator itHead;    
     std::map<int, std::string>::iterator itMapHead;
 
+    size_t iCount = Q_INIT_NUMBER;
     for (itHead = lstTableHead.begin(); lstTableHead.end() != itHead; itHead++)
     {
+        if (iCount >= (lstTableHead.size() - m_iRemoveCount))
+        {
+            break;
+        }
+
         strTmp = Q_Trim(*itHead);
 
         //是否有重复的
@@ -203,6 +245,7 @@ bool CTableFile::parseHead(std::list<std::string> &lstTableHead, std::map<int, s
 
         mapTableHead.insert(std::make_pair(iIndex, strTmp));
         iIndex++;
+        iCount++;
     }
 
     return true;
@@ -215,13 +258,21 @@ bool CTableFile::checkHead(std::list<std::string> &lstTableHead)
         return false;
     }
 
+    size_t iCount = Q_INIT_NUMBER;
     std::list<std::string>::iterator itHead;
     for (itHead = lstTableHead.begin(); lstTableHead.end() != itHead; itHead++)
     {
+        if (iCount >= (lstTableHead.size() - m_iRemoveCount))
+        {
+            break;
+        }
+
         if (itHead->empty())
         {
             return false;
         }
+
+        iCount++;
     }
 
     return true;

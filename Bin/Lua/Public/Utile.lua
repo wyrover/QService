@@ -42,7 +42,7 @@ end
 参数：
 返回值：编码格式
 --]]
-function GetCharset(strWord)
+function getCharset(strWord)
     return objCharset:getStrCharset(strWord, string.len(strWord))
 end
 
@@ -51,7 +51,7 @@ end
 参数：
 返回值：ID
 --]]
-function GetID()
+function getID()
     return objSnowflakeID:getSnowflakeID()
 end
 
@@ -60,7 +60,7 @@ end
 参数：
 返回值： 无
 --]]
-function CloseLink(iClentID)
+function closeLink(iClentID)
     g_objSessionManager:closeLinkByID(iClentID)
 end
 
@@ -69,7 +69,7 @@ end
 参数：
 返回值： session id
 --]]
-function RandOneSV(iType)
+function randSV(iType)
     local tSVName = g_objSessionManager:getSVLinkerNameByType(iType)
     local iCount = TableLens(tSVName)
     if 0 == iCount then
@@ -89,7 +89,7 @@ end
 参数：
 返回值：无
 --]]
-function AddFilterWord(strWord)
+function addFilterWord(strWord)
     objFilter:addSensitiveWord(strWord, string.len(strWord))
 end
 
@@ -98,7 +98,7 @@ end
 参数：
 返回值：bool
 --]]
-function CheckFilterWord(strWord)
+function checkFilterWord(strWord)
     return objFilter:checkHave(strWord, string.len(strWord))
 end
 
@@ -116,7 +116,7 @@ end
 参数：
 返回值：无
 --]]
-function TimerReStart()
+function timerReStart()
     if not btElapsedTime then
         return
     end
@@ -129,7 +129,7 @@ end
 参数：
 返回值：double
 --]]
-function TimerElapsed()
+function timerElapsed()
     if not btElapsedTime then
         return 0
     end
@@ -142,7 +142,7 @@ end
 参数：
 返回值：无
 --]]
-function FileWrite(strFile, strFormat, ...)
+function fileWrite(strFile, strFormat, ...)
     local pFile = io.open(strFile, "a")
     if not pFile then
         return
@@ -157,25 +157,30 @@ end
 参数：
 返回值：bool 函数返回值
 --]]
-function CallFunc(Func, ...)
+function callFunc(Func, ...)
     if "function" ~= type(Func) then
-        Debug("in function CallFunc param Func is not function.")
+        Debug("in function callFunc param Func is not function.")
         return
     end
-    
-    local bRtn, strMsg = pcall(Func, table.unpack({...}))
-    if not bRtn then
+
+    local strMsg = ''
+    local strParam = cjson.encode({...})
+
+    local function onExcept(sMsg)
+        strMsg = sMsg
         local strStack = debug.traceback()
-        local strParam = cjson.encode({...})
         Debug("error message:" .. strMsg)
         Debug("stack:" .. strStack)
         Debug("param:" .. strParam)
         Q_LOG(LOGLV_ERROR, "error message:" .. strMsg)
         Q_LOG(LOGLV_ERROR, "stack:" .. strStack)
         Q_LOG(LOGLV_ERROR, "param:" .. strParam)
+
     end
     
-    return bRtn, strMsg
+    local bRtn = xpcall(Func, onExcept, table.unpack({...}))
+    
+    return bRtn
 end
 
 --[[
@@ -183,7 +188,7 @@ end
 参数：
 返回值：无
 --]]
-function PrintTable (lua_table, indent)
+function printTable (lua_table, indent)
     indent = indent or 0
     for k, v in pairs(lua_table) do
         if type(k) == "string" then
@@ -220,7 +225,7 @@ end
 参数：
 返回值：bool
 --]]
-function IsTableEmpty(lua_table)
+function isTableEmpty(lua_table)
     if "table" ~= type(lua_table) then
         return true
     end
@@ -237,7 +242,7 @@ end
 参数：
 返回值：int
 --]]
-function TableLens(lua_table)
+function tableLens(lua_table)
     if "table" ~= type(lua_table) then
         return 0
     end
@@ -255,7 +260,7 @@ end
 参数：
 返回值：table
 --]]
-function CopyTable(tTable)
+function copyTable(tTable)
     if "table" ~= type(tTable)  then  
         return nil  
     end
@@ -283,7 +288,7 @@ end
 参数：
 返回值：table
 --]]
-function CreatEnumTable(tMsg, iBegin) 
+function creatEnumTable(tMsg, iBegin) 
     assert("table" == type(tMsg)) 
     local tEnum = {} 
     local iEnumIndex = iBegin or 0 
@@ -293,3 +298,24 @@ function CreatEnumTable(tMsg, iBegin)
     
     return tEnum 
 end 
+
+--[[
+描述：字符串拆分
+参数：
+返回值：table
+--]]
+function string.split(str, delimiter)
+    if ('' == delimiter) then 
+        return nil 
+    end
+    
+    local pos,arr = 0, {}
+    for st,sp in function() return string.find(str, delimiter, pos, true) end do
+        table.insert(arr, string.sub(str, pos, st - 1))
+        pos = sp + 1
+    end
+    
+    table.insert(arr, string.sub(str, pos))
+    
+    return arr
+end

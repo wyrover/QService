@@ -283,12 +283,13 @@ int CServerInit::startLinker(ServerInfo &stServerInfo, ServerHandle &stSVHandle)
 {
     int iRtn = Q_RTN_OK;
     std::list<ServerLinkerInfo>::iterator itLinker;
-
-    for (itLinker = stServerInfo.lstLinkerInfo.begin(); stServerInfo.lstLinkerInfo.end() != itLinker; 
-        itLinker++)
+    
+    //为每个线程添加
+    for (unsigned short us = 0; us < stSVHandle.pSV->getThreadNum(); us++)
     {
-        //为每个线程添加
-        for (unsigned short us = 0; us < stSVHandle.pSV->getThreadNum(); us++)
+        std::vector<CServerLinker *> vcTmpSVLinker;
+        for (itLinker = stServerInfo.lstLinkerInfo.begin(); stServerInfo.lstLinkerInfo.end() != itLinker; 
+            itLinker++)
         {
             CServerLinker *pLinker = new(std::nothrow) CServerLinker();
             if (NULL == pLinker)
@@ -304,17 +305,11 @@ int CServerInit::startLinker(ServerInfo &stServerInfo, ServerHandle &stSVHandle)
             pLinker->setIp(itLinker->strIP.c_str());
             pLinker->setSockPairEvent(&((stSVHandle.pSV->getServerThreadEvent())[us]));
 
-            iRtn = pLinker->Monitor();
-            if (Q_RTN_OK != iRtn)
-            {
-                Q_SafeDelete(pLinker);
-                Q_LOG(LOGLV_ERROR, "%s", "start monitor error.");
-
-                return iRtn;
-            }
-
+            vcTmpSVLinker.push_back(pLinker);
             stSVHandle.lstLinker.push_back(pLinker);
         }
+
+        m_vcInterface[us]->setSVLinker(vcTmpSVLinker);
     }
 
     return Q_RTN_OK;

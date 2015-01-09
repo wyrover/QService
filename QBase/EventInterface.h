@@ -28,7 +28,7 @@
 #ifndef Q_EVENT_INTERFACE_H_ 
 #define Q_EVENT_INTERFACE_H_
 
-#include "Macros.h"
+#include "ServerLinker.h"
 
 /*
 事件处理基类
@@ -67,9 +67,22 @@ public:
     virtual void onSocketRead(const char *, const Q_PackHeadType &){};
     /*服务器连接启动*/
     virtual void onLinkedServer(class CSession *){};
+    void setSVLinker (std::vector<CServerLinker *> &vcLinker)
+    {
+        m_vcLinker = vcLinker;
+    };
+    void startSVLinker(void)
+    {
+        std::vector<CServerLinker *>::iterator itLinker;
+        for (itLinker = m_vcLinker.begin(); m_vcLinker.end() != itLinker; itLinker++)
+        {
+            (*itLinker)->Monitor();
+        }      
+    };
 
 private:
     class CSessionManager *m_pSessionManager;
+    std::vector<CServerLinker *> m_vcLinker;
 };
 
 #endif//Q_EVENT_INTERFACE_H_

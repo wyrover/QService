@@ -5,8 +5,10 @@
         <ServerInfo>
 		    <!--服务器ID(最大1024)-->
 			<ServerID>1</ServerID>
-			<!--服务器类型-->
-			<Type>2</Type>
+			<!--服务器类型
+			(Account 1, Payment 2, Game 3, 
+			Fight 4, DataBase 5)-->
+			<Type>3</Type>
             <!--绑定的IP-->
             <BindIP>0.0.0.0</BindIP>
             <!--绑定端口-->
@@ -18,6 +20,7 @@
             <!--脚本文件-->
             <Script>Lua/Main.lua</Script>			
             <!--连接到其他服务器 可以多个节点--> 
+            <!--
             <ServerLinker>			
                 <LinkerName>accountsv</LinkerName>
 				<Type>0</Type>
@@ -30,6 +33,7 @@
                 <IP>127.0.0.1</IP>
                 <Port>15005</Port>
             </ServerLinker>
+            --> 
         </ServerInfo>
     </LocalServer>
 

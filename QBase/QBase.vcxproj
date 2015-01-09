@@ -28,6 +28,7 @@
     <ClInclude Include="Exception.h" />
     <ClInclude Include="File.h" />
     <ClInclude Include="Filter.h" />
+    <ClInclude Include="HttpClient.h" />
     <ClInclude Include="Include.h" />
     <ClInclude Include="Ini.h" />
     <ClInclude Include="Library.h" />
@@ -165,6 +166,7 @@
     <ClCompile Include="Exception.cpp" />
     <ClCompile Include="File.cpp" />
     <ClCompile Include="Filter.cpp" />
+    <ClCompile Include="HttpClient.cpp" />
     <ClCompile Include="Ini.cpp" />
     <ClCompile Include="Library.cpp" />
     <ClCompile Include="lua5.2\dtoa.c" />
@@ -331,7 +333,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../QBase;../QBase/mysql;../QBase/Sqlite;../QBase/lua5.2;../QBase/pugixml;../QBase/rijndael;../QBase/RSAEuro;../QBase/uchardet;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../QBase;../QBase/mysql;../QBase/Sqlite;../QBase/lua5.2;../QBase/pugixml;../QBase/rijndael;../QBase/RSAEuro;../QBase/uchardet;../QBase/curl;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -347,7 +349,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../QBase;../QBase/mysql;../QBase/Sqlite;../QBase/lua5.2;../QBase/pugixml;../QBase/rijndael;../QBase/RSAEuro;../QBase/uchardet;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../QBase;../QBase/mysql;../QBase/Sqlite;../QBase/lua5.2;../QBase/pugixml;../QBase/rijndael;../QBase/RSAEuro;../QBase/uchardet;../QBase/curl;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

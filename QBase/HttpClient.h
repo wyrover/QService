@@ -1,4 +1,4 @@
-/*****************************************************************************
+Ôªø/*****************************************************************************
 * Copyright (c) 2011-2012. Qifu Luo All Rights Reserved.200309129@163.com 
 * svn:http://asuraserver.googlecode.com/svn/
 * github:https://github.com/QService/QService
@@ -25,39 +25,29 @@
 * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef Q_NETEVENT_DISPOSE_H_
-#define Q_NETEVENT_DISPOSE_H_
+#ifndef HTTP_CURL_H_
+#define HTTP_CURL_H_
 
-#include "Reg2Lua.h"
+#include "Macros.h"
 
-class CDisposeEvent : public CEventInterface
+class CHttpClient
 {
 public:
-    CDisposeEvent(const char *pszLuaFile);
-    ~CDisposeEvent(void);
+	CHttpClient(void);
+	~CHttpClient(void);
 
-    /*π§◊˜œﬂ≥Ã∆Ù∂Ø ±÷¥––*/
-    void onSerciveStartUp(void);
-    /*π§◊˜œﬂ≥Ãπÿ±’ ±÷¥––*/
-    void onSerciveShutDown(void);
-    /*socket¡¨Ω”≥…π¶ ±÷¥––*/
-    void onConnected(class CSession *pSession);
-    /*socket∂œø™ ±÷¥––*/
-    void onSocketClose(void);
-    /*∂® ±∆˜¥•∑¢ ±÷¥––*/
-    void onTimerEvent(void);
-    /*socket∂¡»°µΩÕÍ’˚∞¸ ±÷¥––*/
-    void onSocketRead(const char *pszMsg, const Q_PackHeadType &iLens);
-    /*∑˛ŒÒ∆˜¡¨Ω”∆Ù∂Ø*/
-    void onLinkedServer(class CSession *pSession);
+	//POSTËØ∑Ê±Ç
+	std::string Post(const char *const strUrl, const char *const strPost);
+	//GETËØ∑Ê±Ç
+	std::string Get(const char *const strUrl);
+	//POSTËØ∑Ê±Ç
+	std::string Posts(const char *const strUrl, const char *const strPost, const char * pCaPath = NULL);
+	//GETËØ∑Ê±Ç,Êó†ËØÅ‰π¶ÁâàÊú¨
+	std::string Gets(const char *const strUrl, const char * pCaPath = NULL);
+	void setDebug(bool bDebug);
 
 private:
-    CDisposeEvent(void);
-
-private:
-    struct lua_State *m_pLua;//luaæ‰±˙
-    CReg2Lua m_objReg2Lua;
-    MessageTrans m_stMessageTrans;
+	bool m_bDebug;
 };
 
-#endif//Q_NETEVENT_DISPOSE_H_
+#endif//HTTP_CURL_H_

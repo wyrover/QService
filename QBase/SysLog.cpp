@@ -29,11 +29,14 @@
 #include "QString.h"
 #include "QTime.h"
 #include "Mutex.h"
+#include "File.h"
 #include "Exception.h"
 
 CSysLoger::CSysLoger(void) : m_pFile(NULL), m_pMutex(NULL)
 {
-    m_pFile = fopen((std::string(QService) + std::string(".syslog")).c_str(), "a");
+    std::string strCurPath;
+    Q_GetProPath(strCurPath);
+    m_pFile = fopen((strCurPath + std::string(QService) + std::string(".syslog")).c_str(), "a");
     if (NULL == m_pFile)
     {
         Q_Printf("%s", "open syslog file error.");
