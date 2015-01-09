@@ -40,8 +40,6 @@ public:
     void onSerciveStartUp(void);
     /*工作线程关闭时执行*/
     void onSerciveShutDown(void);
-    /*socket连接成功时执行*/
-    void onConnected(class CSession *pSession);
     /*socket断开时执行*/
     void onSocketClose(void);
     /*定时器触发时执行*/

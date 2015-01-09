@@ -534,3 +534,14 @@ int CSessionManager::getGetSVLinkerNum(void)
 {
     return m_mapServerLinker.size();
 }
+
+void CSessionManager::Flush(void)
+{
+    struct bufferevent *pBufEvent = NULL;
+    std::tr1::unordered_map<int, CSession *>::iterator itSession;
+    for (itSession = m_unmapSession.begin(); m_unmapSession.end() != itSession; itSession++)
+    {
+        pBufEvent = itSession->second->getBuffer()->getBuffer();
+        bufferevent_flush(pBufEvent, EV_WRITE, BEV_FINISHED);
+    }
+}

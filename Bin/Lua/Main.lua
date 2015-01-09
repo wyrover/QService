@@ -38,15 +38,6 @@ function Lua_OnShutDown()
 end
 
 --[[
-描述: 连接成功时调用
-参数：
-返回值：无
---]]
-function Lua_OnConnected(objSession)
-    onGameEvent(GameEvent.Connected, objSession)
-end
-
---[[
 描述：连接可读事件
 参数：
 返回值：无

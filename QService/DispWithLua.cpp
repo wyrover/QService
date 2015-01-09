@@ -114,26 +114,6 @@ void CDisposeEvent::onSerciveShutDown(void)
     }
 }
 
-void CDisposeEvent::onConnected(class CSession *pSession)
-{
-    try
-    {
-        luabridge::getGlobal(m_pLua, LUA_EVENT_ONCONNECTED)(pSession);
-    }
-    catch(luabridge::LuaException &e)
-    {
-        Q_Printf("%s", e.what());
-        Q_SYSLOG(LOGLV_ERROR, "%s", e.what());
-    }
-    catch(CException &e)
-    {
-        Q_Printf("exception. code %d, message %s", 
-            e.getErrorCode(), e.getErrorMsg());
-        Q_SYSLOG(LOGLV_ERROR, "exception. code %d, message %s", 
-            e.getErrorCode(), e.getErrorMsg());
-    }
-}
-
 void CDisposeEvent::onSocketClose(void)
 {
     try

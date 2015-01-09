@@ -153,8 +153,6 @@ void CWorkThreadEvent::onMainRead(struct SockPairEventParam *pParam)
 
             continue;
         }
-
-        pSessionManager->getInterface()->onConnected(pSessionManager->getSession(pBev));
     }
 }
 
@@ -243,6 +241,8 @@ void CWorkThreadEvent::onStop(struct SockPairEventParam *pParam)
     CSessionManager *pSessionManager = (CSessionManager *)(pParam->pUserDate);
 
     pSessionManager->getInterface()->onSerciveShutDown();
+
+    pSessionManager->Flush();
 }
 
 char *CWorkThreadEvent::getDataPack(CSession *pSession, Q_PackHeadType &usSize)

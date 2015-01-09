@@ -99,7 +99,9 @@ public:
     /*返回指定类型的服务器连接*/
     luabridge::LuaRef getSVLinkerNameByType(const int iType);
     /*判断是否为指定类型的服务器连接*/
-    bool checkType(const int iType, const int iClientID);    
+    bool checkType(const int iType, const int iClientID);
+    /*刷所有session发送buffer*/
+    void Flush(void);
 
 private:
     /*释放所有session*/
