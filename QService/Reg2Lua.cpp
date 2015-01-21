@@ -52,11 +52,6 @@ int getServerType(void)
     return g_iServerType;
 }
 
-int getEncryptTypeCount(void)
-{
-    return (EncryptType_Count - 1);
-}
-
 void CReg2Lua::Register(void)
 {
     reg_Func();
@@ -79,8 +74,7 @@ void CReg2Lua::reg_Func(void)
         .addFunction("Q_LOG", Q_LuaLog)
         .addFunction("Q_Sleep", Q_Sleep)
         .addFunction("getServerID", getServerID)
-        .addFunction("getServerType", getServerType)
-        .addFunction("getEncryptTypeCount", getEncryptTypeCount);
+        .addFunction("getServerType", getServerType);
 }
 
 void CReg2Lua::reg_Timer(void)

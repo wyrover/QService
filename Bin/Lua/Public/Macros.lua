@@ -15,6 +15,7 @@ SessionStatus = {
     "Createing",  --创建玩家中
     "Created",  --创建玩家完成
     "Playing",  --游戏中
+    "GM",
 }
 SessionStatus = creatEnumTable(SessionStatus, -1)
 

@@ -93,6 +93,7 @@ enum SessionStatus
     SessionStatus_Createing,
     SessionStatus_Created,
     SessionStatus_Playing,
+    SessionStatus_GM,
 };
 
 #endif//Q_ENUM_H_

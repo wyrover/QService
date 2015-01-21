@@ -24,11 +24,6 @@ local function onShutDown()
 end
 regGameEvent(GameEvent.ShutDown, onShutDown)
 
-local function onConnected(objSession)
-    Debug("onConnected...")
-end
-regGameEvent(GameEvent.Connected, onConnected)
-
 local function onOneSecond()
     Debug("onOneSecond...")
 end

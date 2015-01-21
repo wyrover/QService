@@ -178,9 +178,9 @@ function callFunc(Func, ...)
 
     end
     
-    local bRtn = xpcall(Func, onExcept, table.unpack({...}))
+    local bRtn, objMsg = xpcall(Func, onExcept, table.unpack({...}))
     
-    return bRtn
+    return bRtn, objMsg
 end
 
 --[[
@@ -205,7 +205,7 @@ function printTable (lua_table, indent)
         
         if type(v) == "table" then
             print(formatting)
-            PrintTable(v, indent + 1)
+            printTable(v, indent + 1)
             print(szPrefix.."},")
         else
             local szValue = ""

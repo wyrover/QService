@@ -97,6 +97,9 @@
     <Filter Include="HttpClient">
       <UniqueIdentifier>{26b77e56-3e44-4d69-842f-90b96f1493c2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Lua\LuaPB">
+      <UniqueIdentifier>{8a8042ed-e0a5-4904-bdc7-a33fa93b6010}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Config.h">
