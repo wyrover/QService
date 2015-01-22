@@ -33,8 +33,6 @@
     <ClInclude Include="Ini.h" />
     <ClInclude Include="Library.h" />
     <ClInclude Include="Loger.h" />
-    <ClInclude Include="lua5.2\dtoa_config.h" />
-    <ClInclude Include="lua5.2\fpconv.h" />
     <ClInclude Include="lua5.2\lapi.h" />
     <ClInclude Include="lua5.2\lauxlib.h" />
     <ClInclude Include="lua5.2\lcode.h" />
@@ -57,11 +55,9 @@
     <ClInclude Include="lua5.2\lua.hpp" />
     <ClInclude Include="lua5.2\luaconf.h" />
     <ClInclude Include="lua5.2\lualib.h" />
-    <ClInclude Include="lua5.2\luasql.h" />
     <ClInclude Include="lua5.2\lundump.h" />
     <ClInclude Include="lua5.2\lvm.h" />
     <ClInclude Include="lua5.2\lzio.h" />
-    <ClInclude Include="lua5.2\strbuf.h" />
     <ClInclude Include="LuaBridge\detail\CFunctions.h" />
     <ClInclude Include="LuaBridge\detail\ClassInfo.h" />
     <ClInclude Include="LuaBridge\detail\Constructor.h" />
@@ -79,7 +75,11 @@
     <ClInclude Include="LuaBridge\LuaBridge.h" />
     <ClInclude Include="LuaBridge\RefCountedObject.h" />
     <ClInclude Include="LuaBridge\RefCountedPtr.h" />
+    <ClInclude Include="LuaCJson\dtoa_config.h" />
+    <ClInclude Include="LuaCJson\fpconv.h" />
+    <ClInclude Include="LuaCJson\strbuf.h" />
     <ClInclude Include="LuaFunc.h" />
+    <ClInclude Include="LuaSql\luasql.h" />
     <ClInclude Include="md5.h" />
     <ClInclude Include="MMap.h" />
     <ClInclude Include="NETAddr.h" />
@@ -169,8 +169,6 @@
     <ClCompile Include="HttpClient.cpp" />
     <ClCompile Include="Ini.cpp" />
     <ClCompile Include="Library.cpp" />
-    <ClCompile Include="lua5.2\dtoa.c" />
-    <ClCompile Include="lua5.2\g_fmt.c" />
     <ClCompile Include="lua5.2\lapi.c" />
     <ClCompile Include="lua5.2\lauxlib.c" />
     <ClCompile Include="lua5.2\lbaselib.c" />
@@ -197,17 +195,19 @@
     <ClCompile Include="lua5.2\lstate.c" />
     <ClCompile Include="lua5.2\lstring.c" />
     <ClCompile Include="lua5.2\lstrlib.c" />
-    <ClCompile Include="lua5.2\ls_mysql.c" />
-    <ClCompile Include="lua5.2\ls_sqlite3.c" />
     <ClCompile Include="lua5.2\ltable.c" />
     <ClCompile Include="lua5.2\ltablib.c" />
     <ClCompile Include="lua5.2\ltm.c" />
-    <ClCompile Include="lua5.2\luasql.c" />
-    <ClCompile Include="lua5.2\lua_cjson.c" />
     <ClCompile Include="lua5.2\lundump.c" />
     <ClCompile Include="lua5.2\lvm.c" />
     <ClCompile Include="lua5.2\lzio.c" />
-    <ClCompile Include="lua5.2\strbuf.c" />
+    <ClCompile Include="LuaCJson\dtoa.c" />
+    <ClCompile Include="LuaCJson\g_fmt.c" />
+    <ClCompile Include="LuaCJson\lua_cjson.c" />
+    <ClCompile Include="LuaCJson\strbuf.c" />
+    <ClCompile Include="LuaSql\ls_mysql.c" />
+    <ClCompile Include="LuaSql\ls_sqlite3.c" />
+    <ClCompile Include="LuaSql\luasql.c" />
     <ClCompile Include="md5.cpp" />
     <ClCompile Include="NETAddr.cpp" />
     <ClCompile Include="InitSock.cpp" />
@@ -333,7 +333,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../QBase;../QBase/mysql;../QBase/Sqlite;../QBase/lua5.2;../QBase/pugixml;../QBase/rijndael;../QBase/RSAEuro;../QBase/uchardet;../QBase/curl;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../QBase;../QBase/mysql;../QBase/Sqlite;../QBase/LuaCJson;../QBase/LuaSql;../QBase/lua5.2;../QBase/pugixml;../QBase/rijndael;../QBase/RSAEuro;../QBase/uchardet;../QBase/curl;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -349,7 +349,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../QBase;../QBase/mysql;../QBase/Sqlite;../QBase/lua5.2;../QBase/pugixml;../QBase/rijndael;../QBase/RSAEuro;../QBase/uchardet;../QBase/curl;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../QBase;../QBase/mysql;../QBase/Sqlite;../QBase/LuaCJson;../QBase/LuaSql;../QBase/lua5.2;../QBase/pugixml;../QBase/rijndael;../QBase/RSAEuro;../QBase/uchardet;../QBase/curl;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

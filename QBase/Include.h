@@ -118,6 +118,6 @@
 #include "event2/buffer.h"
 #include "event2/listener.h"
 #include "event2/event.h"
-#include "lua5.2/lua.hpp"
+#include "Lua5.2/lua.hpp"
 
 #endif//Q_INCLUDE_H_

@@ -17,7 +17,7 @@ PROGRAMNAME="QService"
 
 #############################################
 #QServerÎÄ¼þ¼Ð
-QServerDir="QBase QBase/event2 QBase/lua5.2 QBase/mysql QBase/pugixml QBase/RSAEuro QBase/uchardet QBase/curl"
+QServerDir="QBase QBase/event2 QBase/Lua5.2 QBase/LuaCJson QBase/LuaSql QBase/mysql QBase/pugixml QBase/RSAEuro QBase/uchardet QBase/curl"
 QServerDir=$QServerDir" QBase/rijndael QBase/Sqlite"
 QServerDir=$QServerDir" QService"
 

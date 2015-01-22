@@ -85,19 +85,16 @@
     <Filter Include="Lua\lua5.2">
       <UniqueIdentifier>{de1fdfaa-7eab-48f9-8388-c871adab3338}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Lua\lua5.2\cjson">
-      <UniqueIdentifier>{44a13b37-48d3-4262-912a-8ac266d7177f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Base\NetWork">
       <UniqueIdentifier>{235cf100-e459-4b53-97e8-2239e611a770}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Lua\lua5.2\luasql">
-      <UniqueIdentifier>{4fbbfc2a-ad28-4b5e-ac9b-8d08ef3a2036}</UniqueIdentifier>
     </Filter>
     <Filter Include="HttpClient">
       <UniqueIdentifier>{26b77e56-3e44-4d69-842f-90b96f1493c2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Lua\LuaPB">
+    <Filter Include="Lua\LuaCJson">
+      <UniqueIdentifier>{d53173ae-655f-44bb-be45-26e8d8fe161d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lua\LuaSql">
       <UniqueIdentifier>{8a8042ed-e0a5-4904-bdc7-a33fa93b6010}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -502,26 +499,26 @@
     <ClInclude Include="lua5.2\lzio.h">
       <Filter>Lua\lua5.2</Filter>
     </ClInclude>
-    <ClInclude Include="lua5.2\dtoa_config.h">
-      <Filter>Lua\lua5.2\cjson</Filter>
-    </ClInclude>
-    <ClInclude Include="lua5.2\fpconv.h">
-      <Filter>Lua\lua5.2\cjson</Filter>
-    </ClInclude>
-    <ClInclude Include="lua5.2\strbuf.h">
-      <Filter>Lua\lua5.2\cjson</Filter>
-    </ClInclude>
     <ClInclude Include="SnowflakeID.h">
       <Filter>Arithmetic</Filter>
     </ClInclude>
     <ClInclude Include="LuaFunc.h">
       <Filter>Lua</Filter>
     </ClInclude>
-    <ClInclude Include="lua5.2\luasql.h">
-      <Filter>Lua\lua5.2\luasql</Filter>
-    </ClInclude>
     <ClInclude Include="HttpClient.h">
       <Filter>HttpClient</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaSql\luasql.h">
+      <Filter>Lua\LuaSql</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaCJson\dtoa_config.h">
+      <Filter>Lua\LuaCJson</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaCJson\fpconv.h">
+      <Filter>Lua\LuaCJson</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaCJson\strbuf.h">
+      <Filter>Lua\LuaCJson</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -877,32 +874,32 @@
     <ClCompile Include="lua5.2\lzio.c">
       <Filter>Lua\lua5.2</Filter>
     </ClCompile>
-    <ClCompile Include="lua5.2\dtoa.c">
-      <Filter>Lua\lua5.2\cjson</Filter>
-    </ClCompile>
-    <ClCompile Include="lua5.2\g_fmt.c">
-      <Filter>Lua\lua5.2\cjson</Filter>
-    </ClCompile>
-    <ClCompile Include="lua5.2\strbuf.c">
-      <Filter>Lua\lua5.2\cjson</Filter>
-    </ClCompile>
-    <ClCompile Include="lua5.2\lua_cjson.c">
-      <Filter>Lua\lua5.2\cjson</Filter>
-    </ClCompile>
     <ClCompile Include="SnowflakeID.cpp">
       <Filter>Arithmetic</Filter>
     </ClCompile>
-    <ClCompile Include="lua5.2\ls_mysql.c">
-      <Filter>Lua\lua5.2\luasql</Filter>
-    </ClCompile>
-    <ClCompile Include="lua5.2\ls_sqlite3.c">
-      <Filter>Lua\lua5.2\luasql</Filter>
-    </ClCompile>
-    <ClCompile Include="lua5.2\luasql.c">
-      <Filter>Lua\lua5.2\luasql</Filter>
-    </ClCompile>
     <ClCompile Include="HttpClient.cpp">
       <Filter>HttpClient</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaSql\ls_mysql.c">
+      <Filter>Lua\LuaSql</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaSql\ls_sqlite3.c">
+      <Filter>Lua\LuaSql</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaSql\luasql.c">
+      <Filter>Lua\LuaSql</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaCJson\dtoa.c">
+      <Filter>Lua\LuaCJson</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaCJson\g_fmt.c">
+      <Filter>Lua\LuaCJson</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaCJson\lua_cjson.c">
+      <Filter>Lua\LuaCJson</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaCJson\strbuf.c">
+      <Filter>Lua\LuaCJson</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

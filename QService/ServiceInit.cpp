@@ -281,7 +281,6 @@ int CServerInit::initServer(void)
 
 int CServerInit::startLinker(ServerInfo &stServerInfo, ServerHandle &stSVHandle)
 {
-    int iRtn = Q_RTN_OK;
     std::list<ServerLinkerInfo>::iterator itLinker;
     
     //为每个线程添加
