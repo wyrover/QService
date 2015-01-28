@@ -53,9 +53,11 @@ private:
     CDisposeEvent(void);
 
 private:
+    unsigned short m_usOpCode;
+    unsigned short m_usMsgLens;
+    luabridge::BinaryStr m_stBinaryStr;
     struct lua_State *m_pLua;//lua¾ä±ú
     CReg2Lua m_objReg2Lua;
-    MessageTrans m_stMessageTrans;
 };
 
 #endif//Q_NETEVENT_DISPOSE_H_

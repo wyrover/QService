@@ -401,7 +401,7 @@ int CServer::Loop(void)
     return iRtn;
 }
 
-int CServer::Start(void)
+int CServer::Init(void)
 {
     int iRtn = Q_RTN_OK;
 
@@ -443,8 +443,13 @@ int CServer::Start(void)
         Q_Printf("get an exception. code %d, message %s", e.getErrorCode(), e.getErrorMsg());
 
         return e.getErrorCode();
-    }    
+    }
 
+    return Q_RTN_OK;
+}
+
+int CServer::Start(void)
+{
     /*Æô¶¯Ñ­»·*/
     return Loop();
 }

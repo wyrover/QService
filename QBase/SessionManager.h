@@ -57,17 +57,9 @@ public:
     /*ping 检查(uiTime 超时时间(ms))*/
     void checkPing(const unsigned int uiTime);
 
-    /*直接发送 格式 unsigned short(消息长度) + 消息*/
-    bool sendToCur(const char *pszData, const size_t uiLens);
-    bool sendToByID(const int iID, const char *pszData, const size_t uiLens);
-    bool sendToAll(const char *pszData, const size_t uiLens);
-
-    /*将消息打包，打包完成后再发送, 不需要该包则调用Clear清理掉*/
-    bool pushMsg(const char *pszData, const size_t usLens);
-    bool sendPushMsgToCur(void);
-    bool sendPushMsgToByID(const int iID);
-    bool sendPushMsgToAll(void);
-    void Clear(void);
+    /*直接发送 格式 unsigned short(消息的长度 + 消息码长度) + 操作码 + 消息*/
+    bool sendToCur(const unsigned short usOpCode, const char *pszData, const size_t uiLens);
+    bool sendToByID(const int iID, const unsigned short usOpCode, const char *pszData, const size_t uiLens);
 
     /*设置当前触发操作的session*/ 
     void setCurSession(CSession *pSession);
@@ -100,16 +92,12 @@ public:
     luabridge::LuaRef getSVLinkerNameByType(const int iType);
     /*判断是否为指定类型的服务器连接*/
     bool checkType(const int iType, const int iClientID);
-    /*刷所有session发送buffer*/
-    void Flush(void);
 
 private:
     /*释放所有session*/
     void freeAllSession(void);
     bool sendWithHead(CSession *pCurrent, 
-        const char *pszData, const size_t &uiLens);
-    bool checkParam(CSession *pCurrent, 
-        const char *pszData, const size_t &uiLens);
+        const unsigned short &usOpCode, const char *pszData, const size_t &uiLens);
 
 private:
     short m_sThreadIndex;
@@ -121,7 +109,6 @@ private:
     std::tr1::unordered_map<int, CSession *> m_unmapSession;//所有Session
     std::queue<CSession *> m_quFreeSession;//空闲的session
     std::tr1::unordered_map<std::string, bufferevent* > m_mapServerLinker;
-    CBuffer m_objBuffer;
 };
 
 #endif//Q_SESSION_MANAGER_H_

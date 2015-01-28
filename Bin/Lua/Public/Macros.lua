@@ -19,6 +19,16 @@ SessionStatus = {
 }
 SessionStatus = creatEnumTable(SessionStatus, -1)
 
+--消息载体类型
+CarrierType = {
+    "Json",
+    "Protobuf",
+}
+CarrierType = creatEnumTable(CarrierType, 1)
+
+--设置使用的消息载体类型
+MsgCarrier = CarrierType.Protobuf
+
 --服务器类型
 SVType = {
     "Account",--账号

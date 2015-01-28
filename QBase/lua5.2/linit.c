@@ -40,6 +40,8 @@ static const luaL_Reg loadedlibs[] = {
   {LUA_CJSONLIBNAME, luaopen_cjson},
   {LUA_MYSQLLIBNAME, luaopen_luasql_mysql},
   {LUA_SQLITE3LIBNAME, luaopen_luasql_sqlite3},
+  {LUA_LPEG, luaopen_lpeg},
+  {LUA_PROTOBUFC, luaopen_protobuf_c},
   {NULL, NULL}
 };
 

@@ -9,7 +9,7 @@ local function onDelayEvent(iTime)
 end
 regDelayEvent(3, onDelayEvent, 3)
 
-local function onStart()
+local function onStart() 
     Debug("onStart...")
 end
 regGameEvent(GameEvent.Start, onStart)
@@ -45,6 +45,17 @@ end
 regGameEvent(GameEvent.MonthChange, onMonthChange)
 
 local function onFiveSecond()
+    --[[local tInfo = {
+        p1 = 11,
+        p2 = 11.1,
+        p3 = "test"
+    }
+    local strMsg = protobuf.encode("lm.test", tInfo)
+    print(strMsg)
+    tInfo = {}
+    local tInfo = protobuf.decode("lm.test", strMsg)
+    printTable(tInfo)--]]
+    
     Debug("onFiveSecond...")
 end
 regGameEvent(GameEvent.FiveSecond, onFiveSecond)
@@ -78,3 +89,27 @@ local function onClose()
     Debug("onClose...")
 end
 regGameEvent(GameEvent.Close, onClose)
+
+local function onTestNetEvent(tbMessage)
+    Debug("message information:")
+    printTable(tbMessage)
+    
+    local strMsg = ""
+    if CarrierType.Json == MsgCarrier then
+        strMsg = cjson.encode(tbMessage)
+    elseif CarrierType.Protobuf == MsgCarrier then
+        local strProro = getProtoStr(1)
+        if not strProro then
+            Debug("get protobuf string error.")
+            return
+        end
+        
+        strMsg = protobuf.encode(strProro, tbMessage)
+    else
+        Debug("unknown message carrier.")
+        return
+    end
+    
+    g_objSessionManager:sendToCur(1, strMsg, string.len(strMsg))
+end
+regNetEvent(1, onTestNetEvent)

@@ -342,32 +342,11 @@ CSession *CSessionManager::getSessionByID(const int iID)
     return itSession->second;
 }
 
-bool CSessionManager::checkParam(CSession *pCurrent, 
-    const char *pszData, const size_t &uiLens)
-{
-    if (NULL == pCurrent)
-    {
-        Q_Printf("%s", "input session pointer is null.");
-        return false;
-    }
-    if (NULL == pszData)
-    {
-        Q_Printf("%s", "input data pointer is null.");
-        return false;
-    }
-    if (0 >= uiLens)
-    {
-        Q_Printf("%s", "message lens must big than zero.");
-        return false;
-    }
-
-    return true;
-}
-
 bool CSessionManager::sendWithHead(CSession *pCurrent, 
-    const char *pszData, const size_t &uiLens)
+    const unsigned short &usOpCode, const char *pszData, const size_t &uiLens)
 {
-    Q_PackHeadType msgLens = Q_NTOH(uiLens);
+    unsigned short usOp = ntohs(usOpCode);
+    Q_PackHeadType msgLens = Q_NTOH(uiLens + sizeof(usOp));
 
     if (Q_RTN_OK != pCurrent->getBuffer()->writeBuffer((const char*)(&msgLens), sizeof(msgLens)))
     {
@@ -376,27 +355,41 @@ bool CSessionManager::sendWithHead(CSession *pCurrent,
         return false;
     }
 
-    if (Q_RTN_OK != pCurrent->getBuffer()->writeBuffer(pszData, uiLens))
+    if (Q_RTN_OK != pCurrent->getBuffer()->writeBuffer((const char*)(&usOp), sizeof(usOp)))
     {
         Q_Printf("send message to session: id %d error", pCurrent->getSessionID());
 
         return false;
     }
 
+    if ((NULL != pszData) 
+        && (0 != uiLens))
+    {
+        if (Q_RTN_OK != pCurrent->getBuffer()->writeBuffer(pszData, uiLens))
+        {
+            Q_Printf("send message to session: id %d error", pCurrent->getSessionID());
+
+            return false;
+        }
+    }
+
     return true;
 }
 
-bool CSessionManager::sendToCur(const char *pszData, const size_t uiLens)
+bool CSessionManager::sendToCur(const unsigned short usOpCode, const char *pszData, const size_t uiLens)
 {
-    if (!checkParam(m_pCurrent, pszData, uiLens))
+    if (NULL == m_pCurrent)
     {
+        Q_Printf("%s", "current session pointer is null.");
+
         return false;
     }
 
-    return sendWithHead(m_pCurrent, pszData, uiLens);
+    return sendWithHead(m_pCurrent, usOpCode, pszData, uiLens);
 }
 
-bool CSessionManager::sendToByID(const int iID, const char *pszData, const size_t uiLens)
+bool CSessionManager::sendToByID(const int iID, 
+    const unsigned short usOpCode, const char *pszData, const size_t uiLens)
 {
     std::tr1::unordered_map<int, CSession *>::iterator itSession;
 
@@ -407,75 +400,14 @@ bool CSessionManager::sendToByID(const int iID, const char *pszData, const size_
         return false;
     }
 
-    if (!checkParam(itSession->second, pszData, uiLens))
+    if (NULL == itSession->second)
     {
-        return false;
-    }
-
-    return sendWithHead(itSession->second, pszData, uiLens);
-}
-
-bool CSessionManager::sendToAll(const char *pszData, const size_t uiLens)
-{
-    if (NULL == pszData)
-    {
-        Q_Printf("%s", "input data pointer is null.");
-        return false;
-    }
-    if (0 >= uiLens)
-    {
-        Q_Printf("%s", "message lens must big than zero.");
-        return false;
-    }
-
-    std::tr1::unordered_map<int, CSession *>::iterator itSession;
-    for (itSession = m_unmapSession.begin(); m_unmapSession.end() != itSession; itSession++)
-    {
-        if (itSession->second->getServerLinker())
-        {
-            continue;
-        }
-
-        (void)sendWithHead(itSession->second, pszData, uiLens);
-    }
-
-    return true;
-}
-
-bool CSessionManager::pushMsg(const char *pszData, const size_t usLens)
-{
-    try
-    {
-        m_objBuffer.pushBuff(pszData, usLens);
-    }
-    catch (CException &e)
-    {
-        Q_Printf("%s", e.getErrorMsg());
+        Q_Printf("%s", "input session pointer is null.");
 
         return false;
     }
 
-    return true;
-}
-
-bool CSessionManager::sendPushMsgToCur(void)
-{
-    return sendToCur(m_objBuffer.getBuffer(), m_objBuffer.getLens());
-}
-
-bool CSessionManager::sendPushMsgToByID(const int iID)
-{
-    return sendToByID(iID, m_objBuffer.getBuffer(), m_objBuffer.getLens());
-}
-
-bool CSessionManager::sendPushMsgToAll(void)
-{
-    return sendToAll(m_objBuffer.getBuffer(), m_objBuffer.getLens());
-}
-
-void CSessionManager::Clear(void)
-{
-    m_objBuffer.reSet();
+    return sendWithHead(itSession->second, usOpCode, pszData, uiLens);
 }
 
 luabridge::LuaRef CSessionManager::getSVLinkerNameByType(const int iType)
@@ -533,15 +465,4 @@ bool CSessionManager::checkType(const int iType, const int iClientID)
 int CSessionManager::getGetSVLinkerNum(void)
 {
     return m_mapServerLinker.size();
-}
-
-void CSessionManager::Flush(void)
-{
-    struct bufferevent *pBufEvent = NULL;
-    std::tr1::unordered_map<int, CSession *>::iterator itSession;
-    for (itSession = m_unmapSession.begin(); m_unmapSession.end() != itSession; itSession++)
-    {
-        pBufEvent = itSession->second->getBuffer()->getBuffer();
-        (void)bufferevent_flush(pBufEvent, EV_WRITE, BEV_FINISHED);
-    }
 }

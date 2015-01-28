@@ -61,6 +61,8 @@ public:
     void setError(bool bError);
     bool getError(void);
 
+    /*初始化*/
+    int Init(void);
     /*启动服务*/
     int Start(void);
     /*停止服务*/

@@ -33,6 +33,12 @@
     <ClInclude Include="Ini.h" />
     <ClInclude Include="Library.h" />
     <ClInclude Include="Loger.h" />
+    <ClInclude Include="Lpeg\lpcap.h" />
+    <ClInclude Include="Lpeg\lpcode.h" />
+    <ClInclude Include="Lpeg\lpprint.h" />
+    <ClInclude Include="Lpeg\lptree.h" />
+    <ClInclude Include="Lpeg\lptypes.h" />
+    <ClInclude Include="Lpeg\lpvm.h" />
     <ClInclude Include="lua5.2\lapi.h" />
     <ClInclude Include="lua5.2\lauxlib.h" />
     <ClInclude Include="lua5.2\lcode.h" />
@@ -88,6 +94,17 @@
     <ClInclude Include="Macros.h" />
     <ClInclude Include="Mutex.h" />
     <ClInclude Include="OSFunc.h" />
+    <ClInclude Include="pbc\alloc.h" />
+    <ClInclude Include="pbc\array.h" />
+    <ClInclude Include="pbc\bootstrap.h" />
+    <ClInclude Include="pbc\context.h" />
+    <ClInclude Include="pbc\descriptor.pbc.h" />
+    <ClInclude Include="pbc\map.h" />
+    <ClInclude Include="pbc\pattern.h" />
+    <ClInclude Include="pbc\pbc.h" />
+    <ClInclude Include="pbc\proto.h" />
+    <ClInclude Include="pbc\stringpool.h" />
+    <ClInclude Include="pbc\varint.h" />
     <ClInclude Include="pugixml\pugiconfig.hpp" />
     <ClInclude Include="pugixml\pugixml.hpp" />
     <ClInclude Include="QBase.h" />
@@ -169,6 +186,11 @@
     <ClCompile Include="HttpClient.cpp" />
     <ClCompile Include="Ini.cpp" />
     <ClCompile Include="Library.cpp" />
+    <ClCompile Include="Lpeg\lpcap.c" />
+    <ClCompile Include="Lpeg\lpcode.c" />
+    <ClCompile Include="Lpeg\lpprint.c" />
+    <ClCompile Include="Lpeg\lptree.c" />
+    <ClCompile Include="Lpeg\lpvm.c" />
     <ClCompile Include="lua5.2\lapi.c" />
     <ClCompile Include="lua5.2\lauxlib.c" />
     <ClCompile Include="lua5.2\lbaselib.c" />
@@ -214,6 +236,20 @@
     <ClCompile Include="Log.cpp" />
     <ClCompile Include="Mutex.cpp" />
     <ClCompile Include="OSFunc.cpp" />
+    <ClCompile Include="pbc\alloc.cpp" />
+    <ClCompile Include="pbc\array.cpp" />
+    <ClCompile Include="pbc\bootstrap.cpp" />
+    <ClCompile Include="pbc\context.cpp" />
+    <ClCompile Include="pbc\decode.cpp" />
+    <ClCompile Include="pbc\map.cpp" />
+    <ClCompile Include="pbc\pattern.cpp" />
+    <ClCompile Include="pbc\pbc-lua.cpp" />
+    <ClCompile Include="pbc\proto.cpp" />
+    <ClCompile Include="pbc\register.cpp" />
+    <ClCompile Include="pbc\rmessage.cpp" />
+    <ClCompile Include="pbc\stringpool.cpp" />
+    <ClCompile Include="pbc\varint.cpp" />
+    <ClCompile Include="pbc\wmessage.cpp" />
     <ClCompile Include="pugixml\pugixml.cpp" />
     <ClCompile Include="QBase.cpp" />
     <ClCompile Include="QMySQL.cpp" />
@@ -333,7 +369,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../QBase;../QBase/mysql;../QBase/Sqlite;../QBase/LuaCJson;../QBase/LuaSql;../QBase/lua5.2;../QBase/pugixml;../QBase/rijndael;../QBase/RSAEuro;../QBase/uchardet;../QBase/curl;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../QBase;../QBase/mysql;../QBase/Sqlite;../QBase/LuaCJson;../QBase/LuaSql;../QBase/lua5.2;../QBase/pbc;../QBase/Lpeg;../QBase/pugixml;../QBase/rijndael;../QBase/RSAEuro;../QBase/uchardet;../QBase/curl;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -349,7 +385,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../QBase;../QBase/mysql;../QBase/Sqlite;../QBase/LuaCJson;../QBase/LuaSql;../QBase/lua5.2;../QBase/pugixml;../QBase/rijndael;../QBase/RSAEuro;../QBase/uchardet;../QBase/curl;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../QBase;../QBase/mysql;../QBase/Sqlite;../QBase/LuaCJson;../QBase/LuaSql;../QBase/lua5.2;../QBase/pbc;../QBase/Lpeg;../QBase/pugixml;../QBase/rijndael;../QBase/RSAEuro;../QBase/uchardet;../QBase/curl;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

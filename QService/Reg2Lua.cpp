@@ -88,15 +88,6 @@ void CReg2Lua::reg_Timer(void)
         .endClass();
 }
 
-void CReg2Lua::reg_MessageTrans(void)
-{
-    luabridge::getGlobalNamespace(m_pstLState)
-        .beginClass<MessageTrans>("MessageTrans")
-            .addFunction("getLens", &MessageTrans::getLens)
-            .addFunction("getBuffer", &MessageTrans::getBuffer)
-        .endClass();
-}
-
 void CReg2Lua::reg_SnowflakeID(void)
 {
     luabridge::getGlobalNamespace(m_pstLState)
@@ -208,15 +199,8 @@ void CReg2Lua::reg_SessionManager(void)
 
             .addFunction("sendToCur", &CSessionManager::sendToCur)
             .addFunction("sendToByID", &CSessionManager::sendToByID)
-            .addFunction("sendToAll", &CSessionManager::sendToAll)
 
             .addFunction("checkPing", &CSessionManager::checkPing)
-
-            .addFunction("pushMsg", &CSessionManager::pushMsg)
-            .addFunction("sendPushMsgToCur", &CSessionManager::sendPushMsgToCur)
-            .addFunction("sendPushMsgToByID", &CSessionManager::sendPushMsgToByID)
-            .addFunction("sendPushMsgToAll", &CSessionManager::sendPushMsgToAll)
-            .addFunction("Clear", &CSessionManager::Clear)
 
             .addFunction("getTimer", &CSessionManager::getTimer)
             .addFunction("getCount", &CSessionManager::getCount)

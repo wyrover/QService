@@ -7,12 +7,22 @@ local luaDir = Q_GetModulPath() .. "Lua" .. Q_GetPathSeparator()
 package.path = package.path .. ";" .. luaDir .. "?.lua"
 
 cjson = require("cjson")
+protobuf = require("Public/protobuf")
+parser = require("Public/parser")
 require("Game/InitModule")
 
 local tNowDay = os.date("*t", time)
 
 if not g_objSessionManager then
     g_objSessionManager = nil
+end
+
+if not g_ProtocolFilterFun then
+    g_ProtocolFilterFun = nil
+end
+
+if not g_CheckSVRegFun then
+    g_CheckSVRegFun = nil
 end
 
 --[[
@@ -42,19 +52,24 @@ end
 参数：
 返回值：无
 --]]
-function Lua_OnRead(objMessageTrans)
-    Debug(string.format("recv message lens %d", objMessageTrans:getLens()))
-    --[[
-    Debug(string.sub(pszMessage, 1, uiLens))
-    local tbMessage = cjson.decode(string.sub(pszMessage, 1, uiLens))
-    local iProtocol = tbMessage[ProtocolStr_Request]
-    if not iProtocol then
-        Debug("can't find protocol, close this link.")
-        g_objSessionManager:closeCurLink()
-
-        return
+function Lua_OnRead(iProtocol, strMsg, iLens)
+    local tbMessage = {}
+    if 0 ~= iLens then
+        if CarrierType.Json == MsgCarrier then
+            tbMessage = cjson.decode(strMsg)
+        elseif CarrierType.Protobuf == MsgCarrier then
+            local strProro = getProtoStr(iProtocol)
+            tbMessage = protobuf.decode(strProro, strMsg, iLens)
+            assert(tbMessage, protobuf.lasterror()) 
+        else
+            Debug("unknown message carrier.")
+            return
+        end
     end
     
+    printTable(tbMessage)
+    
+    --检查操作码与状态是否匹配
     local objCurSession = g_objSessionManager:getCurSession()   
     if not objCurSession:isServerLinker() then
         if g_ProtocolFilterFun then
@@ -67,17 +82,7 @@ function Lua_OnRead(objMessageTrans)
         end
     end
     
-    if g_CheckSVRegFun and (Protocol.System_RegSV ~= iProtocol) then
-        if not g_CheckSVRegFun(objCurSession:getSessionID()) then
-            Debug(string.format("client id %d not register.", objCurSession:getSessionID()))
-            g_objSessionManager:closeCurLink()
-            return
-        end
-    end
-    
-    Debug("protocol is " .. iProtocol)  
---]]    
-    --onNetEvent(iProtocol, tbMessage)
+    onNetEvent(iProtocol, tbMessage)
 end
 
 --[[
@@ -169,5 +174,5 @@ end
 返回值：无
 --]]
 function Lua_OnLinkedServer(objSession)
-    --RequireRegSV(objSession)
+    requireRegSV(objSession)
 end

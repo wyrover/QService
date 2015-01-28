@@ -240,7 +240,30 @@ int CServerInit::initServer(void)
     m_stServer.pSV->setPort(m_stServerConfig.usPort);
     m_stServer.pSV->setThreadNum(m_stServerConfig.usThreadNum);
     m_stServer.pSV->setInterface(m_vcInterface);
-    m_stServer.pSV->setTimer(m_stServerConfig.uiTimer);    
+    m_stServer.pSV->setTimer(m_stServerConfig.uiTimer); 
+
+    /*完成初始化*/
+    iRtn = m_stServer.pSV->Init();
+    if (Q_RTN_OK != iRtn)
+    {
+        Q_SafeDelete(m_stServer.pSV);
+
+        return iRtn;
+    }
+
+    /*增加服务器间连接*/
+    if (!(m_stServerConfig.lstLinkerInfo.empty()))
+    {
+        Q_Printf("%s", "add service linker...");
+    }
+
+    iRtn = startLinker(m_stServerConfig, m_stServer);
+    if (Q_RTN_OK != iRtn)
+    {
+        Q_SafeDelete(m_stServer.pSV);
+
+        return iRtn;
+    }
 
     /*加入到线程*/
     CServerTask *pTask = new(std::nothrow) CServerTask();
@@ -260,20 +283,6 @@ int CServerInit::initServer(void)
         Q_LOG(LOGLV_ERROR, "start server on port %d error.", m_stServerConfig.usPort);
 
         return Q_RTN_FAILE;
-    }
-
-    /*启动服务器间连接*/
-    if (!(m_stServerConfig.lstLinkerInfo.empty()))
-    {
-        Q_Printf("%s", "start service linker...");
-    }
-
-    iRtn = startLinker(m_stServerConfig, m_stServer);
-    if (Q_RTN_OK != iRtn)
-    {
-        Q_SafeDelete(m_stServer.pSV);
-
-        return iRtn;
     }
 
     return Q_RTN_OK;

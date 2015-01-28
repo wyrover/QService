@@ -97,6 +97,12 @@
     <Filter Include="Lua\LuaSql">
       <UniqueIdentifier>{8a8042ed-e0a5-4904-bdc7-a33fa93b6010}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Lua\Lpeg">
+      <UniqueIdentifier>{9c2709c4-2399-4aee-85b1-19d0c7031654}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lua\pbc">
+      <UniqueIdentifier>{a879763a-9efa-4eaf-9880-1ecf38091c2f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Config.h">
@@ -520,6 +526,57 @@
     <ClInclude Include="LuaCJson\strbuf.h">
       <Filter>Lua\LuaCJson</Filter>
     </ClInclude>
+    <ClInclude Include="Lpeg\lpcap.h">
+      <Filter>Lua\Lpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="Lpeg\lpcode.h">
+      <Filter>Lua\Lpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="Lpeg\lpprint.h">
+      <Filter>Lua\Lpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="Lpeg\lptree.h">
+      <Filter>Lua\Lpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="Lpeg\lptypes.h">
+      <Filter>Lua\Lpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="Lpeg\lpvm.h">
+      <Filter>Lua\Lpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="pbc\alloc.h">
+      <Filter>Lua\pbc</Filter>
+    </ClInclude>
+    <ClInclude Include="pbc\array.h">
+      <Filter>Lua\pbc</Filter>
+    </ClInclude>
+    <ClInclude Include="pbc\bootstrap.h">
+      <Filter>Lua\pbc</Filter>
+    </ClInclude>
+    <ClInclude Include="pbc\context.h">
+      <Filter>Lua\pbc</Filter>
+    </ClInclude>
+    <ClInclude Include="pbc\descriptor.pbc.h">
+      <Filter>Lua\pbc</Filter>
+    </ClInclude>
+    <ClInclude Include="pbc\map.h">
+      <Filter>Lua\pbc</Filter>
+    </ClInclude>
+    <ClInclude Include="pbc\pattern.h">
+      <Filter>Lua\pbc</Filter>
+    </ClInclude>
+    <ClInclude Include="pbc\pbc.h">
+      <Filter>Lua\pbc</Filter>
+    </ClInclude>
+    <ClInclude Include="pbc\proto.h">
+      <Filter>Lua\pbc</Filter>
+    </ClInclude>
+    <ClInclude Include="pbc\stringpool.h">
+      <Filter>Lua\pbc</Filter>
+    </ClInclude>
+    <ClInclude Include="pbc\varint.h">
+      <Filter>Lua\pbc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Log.cpp">
@@ -900,6 +957,63 @@
     </ClCompile>
     <ClCompile Include="LuaCJson\strbuf.c">
       <Filter>Lua\LuaCJson</Filter>
+    </ClCompile>
+    <ClCompile Include="Lpeg\lpcap.c">
+      <Filter>Lua\Lpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="Lpeg\lpcode.c">
+      <Filter>Lua\Lpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="Lpeg\lpprint.c">
+      <Filter>Lua\Lpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="Lpeg\lptree.c">
+      <Filter>Lua\Lpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="Lpeg\lpvm.c">
+      <Filter>Lua\Lpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="pbc\alloc.cpp">
+      <Filter>Lua\pbc</Filter>
+    </ClCompile>
+    <ClCompile Include="pbc\array.cpp">
+      <Filter>Lua\pbc</Filter>
+    </ClCompile>
+    <ClCompile Include="pbc\bootstrap.cpp">
+      <Filter>Lua\pbc</Filter>
+    </ClCompile>
+    <ClCompile Include="pbc\context.cpp">
+      <Filter>Lua\pbc</Filter>
+    </ClCompile>
+    <ClCompile Include="pbc\decode.cpp">
+      <Filter>Lua\pbc</Filter>
+    </ClCompile>
+    <ClCompile Include="pbc\map.cpp">
+      <Filter>Lua\pbc</Filter>
+    </ClCompile>
+    <ClCompile Include="pbc\pattern.cpp">
+      <Filter>Lua\pbc</Filter>
+    </ClCompile>
+    <ClCompile Include="pbc\pbc-lua.cpp">
+      <Filter>Lua\pbc</Filter>
+    </ClCompile>
+    <ClCompile Include="pbc\proto.cpp">
+      <Filter>Lua\pbc</Filter>
+    </ClCompile>
+    <ClCompile Include="pbc\register.cpp">
+      <Filter>Lua\pbc</Filter>
+    </ClCompile>
+    <ClCompile Include="pbc\rmessage.cpp">
+      <Filter>Lua\pbc</Filter>
+    </ClCompile>
+    <ClCompile Include="pbc\stringpool.cpp">
+      <Filter>Lua\pbc</Filter>
+    </ClCompile>
+    <ClCompile Include="pbc\varint.cpp">
+      <Filter>Lua\pbc</Filter>
+    </ClCompile>
+    <ClCompile Include="pbc\wmessage.cpp">
+      <Filter>Lua\pbc</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

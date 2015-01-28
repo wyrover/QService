@@ -50,6 +50,11 @@ LUALIB_API int (luaopen_luasql_mysql) (lua_State *L);
 #define LUA_SQLITE3LIBNAME "sqlite3"
 LUALIB_API int (luaopen_luasql_sqlite3) (lua_State *L);
 
+#define LUA_LPEG "lpeg"  
+LUALIB_API int (luaopen_lpeg) (lua_State *L);
+
+#define LUA_PROTOBUFC "protobuf.c"  
+LUALIB_API int (luaopen_protobuf_c) (lua_State *L);
 
 /* open all previous libraries */
 LUALIB_API void (luaL_openlibs) (lua_State *L);

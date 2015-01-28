@@ -23,11 +23,11 @@
             <!--
             <ServerLinker>			
                 <LinkerName>accountsv</LinkerName>
-				<Type>0</Type>
+				<Type>1</Type>
                 <IP>127.0.0.1</IP>
                 <Port>15001</Port>
             </ServerLinker> 
-			<ServerLinker>			
+			<ServerLinker>
                 <LinkerName>dbsv</LinkerName>
 				<Type>4</Type>
                 <IP>127.0.0.1</IP>

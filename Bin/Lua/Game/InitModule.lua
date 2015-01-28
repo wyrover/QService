@@ -6,13 +6,14 @@ local tLoad =
 {
     {"Public/Utile", true},
     {"Public/Macros", true},    
-    {"Public/Protocol", true},
     {"Public/ErrorCodes", true},    
-    {"Public/RegFuncs", true}, 
+    {"Public/RegFuncs", true},
+    {"Public/Protocol", true},    
     {"Public/Debug", true},
     {"Public/DBManager", true},
+    {"Public/RegSV", true},
     
-    {"Game/Test", true},
+    {"Game/Ping", true},
 }
 
 local function loadAllFile()

@@ -35,7 +35,8 @@
 #define LUA_EVENT_ONREAD      "Lua_OnRead"
 #define LUA_EVENT_ONSVLINKED  "Lua_OnLinkedServer"
 
-CDisposeEvent::CDisposeEvent(const char *pszLuaFile) : m_pLua(NULL)
+CDisposeEvent::CDisposeEvent(const char *pszLuaFile) : m_usOpCode(Q_INIT_NUMBER), 
+    m_usMsgLens(Q_INIT_NUMBER), m_pLua(NULL)
 {
     m_pLua = luaL_newstate();
     if (NULL == m_pLua)
@@ -158,10 +159,18 @@ void CDisposeEvent::onSocketRead(const char *pszMsg, const Q_PackHeadType &iLens
 {
     try
     {
-        m_stMessageTrans.iLens = iLens;
-        m_stMessageTrans.pBuffer = (char*)pszMsg;
-
-        luabridge::getGlobal(m_pLua, LUA_EVENT_ONREAD)(pszMsg, iLens);
+        m_usOpCode = ntohs(*((unsigned short *)(pszMsg)));
+        m_usMsgLens = iLens - sizeof(m_usOpCode);
+        if (0 == m_usMsgLens)
+        {
+            luabridge::getGlobal(m_pLua, LUA_EVENT_ONREAD)(m_usOpCode, "", m_usMsgLens);
+        }
+        else
+        {
+            m_stBinaryStr.pBuf = (char*)(pszMsg + sizeof(m_usOpCode));
+            m_stBinaryStr.iLens = m_usMsgLens;
+            luabridge::getGlobal(m_pLua, LUA_EVENT_ONREAD)(m_usOpCode, m_stBinaryStr, m_usMsgLens);
+        }
     }
     catch(luabridge::LuaException &e)
     {
