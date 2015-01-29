@@ -257,7 +257,7 @@ int CServerInit::initServer(void)
         Q_Printf("%s", "add service linker...");
     }
 
-    iRtn = startLinker(m_stServerConfig, m_stServer);
+    iRtn = initLinker(m_stServerConfig, m_stServer);
     if (Q_RTN_OK != iRtn)
     {
         Q_SafeDelete(m_stServer.pSV);
@@ -288,7 +288,7 @@ int CServerInit::initServer(void)
     return Q_RTN_OK;
 }
 
-int CServerInit::startLinker(ServerInfo &stServerInfo, ServerHandle &stSVHandle)
+int CServerInit::initLinker(ServerInfo &stServerInfo, ServerHandle &stSVHandle)
 {
     std::list<ServerLinkerInfo>::iterator itLinker;
     

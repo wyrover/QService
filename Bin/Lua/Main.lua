@@ -102,7 +102,7 @@ function Lua_OnTimer()
     --1秒
     if 0 == (uiElapseTime % uiOneSecond) then
         onDelayEvent()
-        onGameEvent(GameEvent.OneSecond)        
+        onGameEvent(GameEvent.OneSecond)
         
         --检查变天
         local tDay = os.date("*t", time)
@@ -111,14 +111,14 @@ function Lua_OnTimer()
             or (tDay.day ~= tNowDay.day) then
                 --变天事件
                 tNowDay = tDay
-                Debug("day changed.")                
+                Debug("day changed.")
                 onGameEvent(GameEvent.DayChange)
                 
                 local iNewWeek = tonumber(os.date("%U", os.time(tDay)))
                 local iOldWeek = tonumber(os.date("%U", os.time(tNowDay)))
                 if iNewWeek ~= iOldWeek then
                     onGameEvent(GameEvent.WeekChange)
-                end            
+                end
                 if tDay.month ~= tNowDay.month then
                     onGameEvent(GameEvent.MonthChange)
                 end

@@ -7,7 +7,7 @@ DBType = {
     "Game",
     "Log",
 }
-DBType = creatEnumTable(DBType)
+DBType = creatEnumTable(DBType, 1)
 
 --mysql≥ı ºªØ
 if not g_MysqlENV then

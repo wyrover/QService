@@ -71,7 +71,7 @@ private:
     bool readConfig(void);
     int initServer(void);
     void destroyServer(void);
-    int startLinker(ServerInfo &stServerInfo, ServerHandle &stSVHandle);
+    int initLinker(ServerInfo &stServerInfo, ServerHandle &stSVHandle);
 
 private:
     CThread m_objThread;
