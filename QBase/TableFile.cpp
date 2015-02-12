@@ -154,7 +154,7 @@ void CTableFile::getValue(std::string &strValue, std::map<int, std::string> &map
     for (itValue = lstValue.begin(); (lstValue.end() != itValue) && ((size_t)iIndex < mapTableHead.size()); 
         itValue++)
     {
-        if(!(itValue->empty()))
+        if(!(Q_Trim(*itValue).empty()))
         {
             bAllEmpty = false;
         }
@@ -174,7 +174,7 @@ void CTableFile::getValue(std::string &strValue, std::map<int, std::string> &map
             break;
         }
 
-        mapVal.insert(std::make_pair((mapTableHead.find(iIndex)->second), Q_Trim(*itValue)));
+        mapVal.insert(std::make_pair((mapTableHead.find(iIndex)->second), *itValue));
         iIndex++;
         iCount++;
     }

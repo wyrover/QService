@@ -50,6 +50,12 @@ public:
     /*绑定IP*/
     void setBindIP(const char *pszBindIP = "0.0.0.0");
     const char *getBindIP(void);
+    /*http绑定IP*/
+    void setHttpBindIP(const char *pszBindIP = "0.0.0.0");
+    const char *getHttpBindIP(void);
+    /*http监听端口*/
+    void setHttpPort(const unsigned short usPort);
+    unsigned short getHttpPort(void);
 
     /*是否运行*/
     bool getIsRun(void);
@@ -79,6 +85,7 @@ private:
     int Loop(void);
     void exitWorkThread(void);
     void freeMainEvent(void);
+    Q_SOCK initHttpSock(void);
 
 private:    
     bool m_bShutDownNormal;
@@ -86,7 +93,9 @@ private:
     bool m_bError;
     unsigned short m_usThreadNum;
     unsigned short m_usPort;
+    unsigned short m_usHttpPort;
     unsigned int m_uiTimer;
+    Q_SOCK m_httpSock;
     struct evconnlistener *m_pListener;
     struct event_base *m_pMainBase;
     struct bufferevent *m_pEvent_Exit;
@@ -97,6 +106,7 @@ private:
     CMutex m_objMutex_Exit;
     CCond m_objCond_Exit;
     std::string m_strBindIP;
+    std::string m_strHttpBindIP;
 };
 
 #endif//Q_SERVER_H_

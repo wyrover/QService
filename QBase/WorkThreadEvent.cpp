@@ -27,8 +27,11 @@
 
 #include "WorkThreadEvent.h"
 #include "SockPairEventParam.h"
+#include "HttpBuffer.h"
 
-CWorkThreadEvent::CWorkThreadEvent(void) : m_pEvent(NULL)
+#define Http_TimeOut  60
+
+CWorkThreadEvent::CWorkThreadEvent(void) : m_pEvent(NULL), m_pHttp(NULL)
 {
     setMainParam(&m_objSessionManager);
     setExitParam(&m_objSessionManager);
@@ -42,6 +45,11 @@ CWorkThreadEvent::~CWorkThreadEvent(void)
     {
         event_free(m_pEvent);
         m_pEvent = NULL;
+    }
+    if (NULL != m_pHttp)
+    {
+        evhttp_free(m_pHttp);
+        m_pHttp = NULL;
     }
 }
 
@@ -59,6 +67,30 @@ void CWorkThreadEvent::setInterface(CEventInterface *pInterface)
 {
     pInterface->setSessionManager(&m_objSessionManager);
     m_objSessionManager.setInterface(pInterface);
+}
+
+int CWorkThreadEvent::setHttp(Q_SOCK &sock)
+{
+    if (Q_INVALID_SOCK == sock)
+    {
+        return Q_RTN_OK;
+    }
+    
+    m_pHttp = evhttp_new(getBase());
+    if (NULL == m_pHttp)
+    {
+        return Q_RTN_FAILE;
+    }
+    
+    if (Q_RTN_OK != evhttp_accept_socket(m_pHttp, sock))
+    {
+        return Q_RTN_FAILE;
+    }
+
+    evhttp_set_timeout(m_pHttp, Http_TimeOut);
+    evhttp_set_gencb(m_pHttp, workThreadHttpCB, m_objSessionManager.getInterface());
+
+    return Q_RTN_OK;
 }
 
 int CWorkThreadEvent::setTimer(unsigned int uiMS)
@@ -346,4 +378,14 @@ void CWorkThreadEvent::workThreadTimerCB(evutil_socket_t, short event, void *arg
     pSessionManager->addCount();
 
     pSessionManager->getInterface()->onTimerEvent();
+}
+
+void CWorkThreadEvent::workThreadHttpCB(struct evhttp_request *req, void *arg)
+{
+    CEventInterface *pInterface = (CEventInterface *)arg;
+    CHttpBuffer objHttpEvent(req);
+    if (objHttpEvent.isOK())
+    {
+        pInterface->onHttpRead(&objHttpEvent);
+    }
 }

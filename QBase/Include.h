@@ -117,6 +117,8 @@
 #include "event2/util.h"
 #include "event2/buffer.h"
 #include "event2/listener.h"
+#include "event2/http.h"
+#include "event2/http_struct.h"
 #include "event2/event.h"
 #include "Lua5.2/lua.hpp"
 

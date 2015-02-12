@@ -33,6 +33,7 @@
 #define LUA_EVENT_ONCLOSE     "Lua_OnClose"
 #define LUA_EVENT_ONTIMER     "Lua_OnTimer"
 #define LUA_EVENT_ONREAD      "Lua_OnRead"
+#define LUA_EVENT_ONHTTPREAD  "Lua_OnHttpRead"
 #define LUA_EVENT_ONSVLINKED  "Lua_OnLinkedServer"
 
 CDisposeEvent::CDisposeEvent(const char *pszLuaFile) : m_usOpCode(Q_INIT_NUMBER), 
@@ -171,6 +172,26 @@ void CDisposeEvent::onSocketRead(const char *pszMsg, const Q_PackHeadType &iLens
             m_stBinaryStr.iLens = m_usMsgLens;
             luabridge::getGlobal(m_pLua, LUA_EVENT_ONREAD)(m_usOpCode, m_stBinaryStr, m_usMsgLens);
         }
+    }
+    catch(luabridge::LuaException &e)
+    {
+        Q_Printf("%s", e.what());
+        Q_SYSLOG(LOGLV_ERROR, "%s", e.what());
+    }
+    catch(CException &e)
+    {
+        Q_Printf("exception. code %d, message %s", 
+            e.getErrorCode(), e.getErrorMsg());
+        Q_SYSLOG(LOGLV_ERROR, "exception. code %d, message %s", 
+            e.getErrorCode(), e.getErrorMsg());
+    }
+}
+
+void CDisposeEvent::onHttpRead(class CHttpBuffer *pHttpBuffer)
+{
+    try
+    {
+        luabridge::getGlobal(m_pLua, LUA_EVENT_ONHTTPREAD)(pHttpBuffer);
     }
     catch(luabridge::LuaException &e)
     {

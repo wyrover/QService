@@ -25,64 +25,64 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef Q_EVENT_INTERFACE_H_ 
-#define Q_EVENT_INTERFACE_H_
+#include "HttpBuffer.h"
 
-#include "ServerLinker.h"
-
-/*
-事件处理基类
-*/
-class CEventInterface
+CHttpBuffer::CHttpBuffer(struct evhttp_request *req) : m_bOK(false)
 {
-public:
-    CEventInterface(void) : m_pSessionManager(NULL)
+    m_pEventBuf = evbuffer_new();
+    if (NULL == m_pEventBuf)
     {
-    };
+        Q_Printf("%s", "evbuffer_new error.");
+        return;
+    }
 
-    virtual ~CEventInterface(void)
-    {
-    };
+    m_Req = req;
 
-    void setSessionManager(class CSessionManager *pSessionManager)
+    struct evbuffer *pBuf = evhttp_request_get_input_buffer(m_Req);
+    size_t iLens = evbuffer_get_length(pBuf);
+    if (iLens > 0)
     {
-        m_pSessionManager = pSessionManager;
-    };
+        m_strPostMsg.append((const char *)evbuffer_pullup(pBuf, iLens), iLens);
+        evbuffer_drain(pBuf, iLens);
+    }
 
-    class CSessionManager *getSessionManager(void)
-    {
-        return m_pSessionManager;
-    };
-    /*工作线程启动时执行*/
-    virtual void onSerciveStartUp(void){};
-    /*工作线程关闭时执行*/
-    virtual void onSerciveShutDown(void){};
-    /*socket断开时执行*/
-    virtual void onSocketClose(void){};
-    /*定时器触发时执行*/
-    virtual void onTimerEvent(void){};
-    /*socket读取到完整包时执行*/
-    virtual void onSocketRead(const char *, const Q_PackHeadType &){};
-    /*http */
-    virtual void onHttpRead(class CHttpBuffer *){};
-    /*服务器连接启动*/
-    virtual void onLinkedServer(class CSession *){};
-    void setSVLinker (std::vector<CServerLinker *> &vcLinker)
-    {
-        m_vcLinker = vcLinker;
-    };
-    void startSVLinker(void)
-    {
-        std::vector<CServerLinker *>::iterator itLinker;
-        for (itLinker = m_vcLinker.begin(); m_vcLinker.end() != itLinker; itLinker++)
-        {
-            (*itLinker)->Monitor();
-        }      
-    };
+    const struct evhttp_uri *pUri = evhttp_request_get_evhttp_uri(m_Req);
+    const char *pszQuery = evhttp_uri_get_query(pUri);
+    m_strQuery = (NULL == pszQuery ? "" : pszQuery);
 
-private:
-    class CSessionManager *m_pSessionManager;
-    std::vector<CServerLinker *> m_vcLinker;
-};
+    m_bOK = true;
+}
 
-#endif//Q_EVENT_INTERFACE_H_
+CHttpBuffer::~CHttpBuffer(void)
+{
+    if (NULL != m_pEventBuf)
+    {
+        evbuffer_free(m_pEventBuf);
+        m_pEventBuf = NULL;
+    }
+}
+
+bool CHttpBuffer::isOK(void)
+{
+    return m_bOK;
+}
+
+const char *CHttpBuffer::getQuery(void)
+{
+    return m_strQuery.c_str();
+}
+
+const char *CHttpBuffer::getPostMsg(void)
+{
+    return m_strPostMsg.c_str();
+}
+
+void CHttpBuffer::setReplyContent(const char *pszMsg)
+{
+    evbuffer_add_printf(m_pEventBuf, "%s", pszMsg);
+}
+
+void CHttpBuffer::Reply(const int iCode, const char *pszReason)
+{
+    evhttp_send_reply(m_Req, iCode, pszReason, m_pEventBuf);
+}

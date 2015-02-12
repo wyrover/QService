@@ -11,8 +11,12 @@
 			<Type>3</Type>
             <!--绑定的IP-->
             <BindIP>0.0.0.0</BindIP>
-            <!--绑定端口-->
+            <!--TCP绑定端口-->
             <Port>15000</Port>
+            <!--Http绑定的IP-->
+            <HttpBindIP>0.0.0.0</HttpBindIP>
+            <!--Http绑定端口,为0不启动http server-->
+            <HttpPort>8080</HttpPort>
             <!--线程数-->
             <ThreadNum>1</ThreadNum>
             <!--定时器触发间隔时间 0 不触发(毫秒)-->
@@ -20,8 +24,7 @@
             <!--脚本文件-->
             <Script>Lua/Main.lua</Script>			
             <!--连接到其他服务器 可以多个节点--> 
-            <!--
-            <ServerLinker>			
+            <!--<ServerLinker>			
                 <LinkerName>accountsv</LinkerName>
 				<Type>1</Type>
                 <IP>127.0.0.1</IP>

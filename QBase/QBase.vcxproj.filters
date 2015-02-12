@@ -577,6 +577,9 @@
     <ClInclude Include="pbc\varint.h">
       <Filter>Lua\pbc</Filter>
     </ClInclude>
+    <ClInclude Include="HttpBuffer.h">
+      <Filter>Base\NetWork</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Log.cpp">
@@ -1014,6 +1017,9 @@
     </ClCompile>
     <ClCompile Include="pbc\wmessage.cpp">
       <Filter>Lua\pbc</Filter>
+    </ClCompile>
+    <ClCompile Include="HttpBuffer.cpp">
+      <Filter>Base\NetWork</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -46,6 +46,8 @@ public:
     void onTimerEvent(void);
     /*socket读取到完整包时执行*/
     void onSocketRead(const char *pszMsg, const Q_PackHeadType &iLens);
+    /*http */
+    void onHttpRead(class CHttpBuffer *pHttpBuffer);
     /*服务器连接启动*/
     void onLinkedServer(class CSession *pSession);
 

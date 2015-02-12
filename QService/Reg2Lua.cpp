@@ -64,6 +64,7 @@ void CReg2Lua::Register(void)
     reg_Session();
     reg_SessionManager();
     reg_HttpClient();
+    reg_HttpBuffer();
 }
 
 void CReg2Lua::reg_Func(void)
@@ -217,5 +218,16 @@ void CReg2Lua::reg_HttpClient(void)
             .addFunction("Get", &CHttpClient::Get)
             .addFunction("Posts", &CHttpClient::Posts)
             .addFunction("Gets", &CHttpClient::Gets)
+        .endClass();
+}
+
+void CReg2Lua::reg_HttpBuffer(void)
+{
+    luabridge::getGlobalNamespace(m_pstLState)
+        .beginClass<CHttpBuffer>("CHttpBuffer")
+            .addFunction("getQuery", &CHttpBuffer::getQuery)
+            .addFunction("getPostMsg", &CHttpBuffer::getPostMsg)
+            .addFunction("setReplyContent", &CHttpBuffer::setReplyContent)
+            .addFunction("Reply", &CHttpBuffer::Reply)
         .endClass();
 }

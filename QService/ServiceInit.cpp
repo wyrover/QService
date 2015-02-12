@@ -169,11 +169,14 @@ bool CServerInit::readConfig(void)
     g_iServerType = atoi(itNode->node().child_value("Type"));
     Q_Printf("service id %d, type %d.", g_iServerID, g_iServerType);
     m_stServerConfig.strBindIP = itNode->node().child_value("BindIP");
+    m_stServerConfig.strHttpBindIP = itNode->node().child_value("HttpBindIP");
     m_stServerConfig.usThreadNum = atoi(itNode->node().child_value("ThreadNum"));
     m_stServerConfig.strScript = std::string(g_acModulPath) + std::string(itNode->node().child_value("Script"));
     m_stServerConfig.uiTimer = atoi(itNode->node().child_value("Timer"));
     m_stServerConfig.usPort = atoi(itNode->node().child_value("Port"));
-    Q_Printf("bind port %d.", m_stServerConfig.usPort);
+    Q_Printf("tcp server bind port: %d.", m_stServerConfig.usPort);
+    m_stServerConfig.usHttpPort = atoi(itNode->node().child_value("HttpPort"));
+    Q_Printf("http server bind port: %d.", m_stServerConfig.usHttpPort);
 
     //ServerLinker
     objTmpNodeSet = itNode->node().select_nodes("ServerLinker");        
@@ -200,6 +203,13 @@ int CServerInit::initServer(void)
     if (!readConfig())
     {
         Q_Printf("%s", "read service config error.");
+
+        return Q_RTN_FAILE;
+    }
+
+    if (m_stServerConfig.usHttpPort == m_stServerConfig.usPort)
+    {
+        Q_Printf("%s", "http server and tcp server use the same port...");
 
         return Q_RTN_FAILE;
     }
@@ -240,7 +250,9 @@ int CServerInit::initServer(void)
     m_stServer.pSV->setPort(m_stServerConfig.usPort);
     m_stServer.pSV->setThreadNum(m_stServerConfig.usThreadNum);
     m_stServer.pSV->setInterface(m_vcInterface);
-    m_stServer.pSV->setTimer(m_stServerConfig.uiTimer); 
+    m_stServer.pSV->setTimer(m_stServerConfig.uiTimer);
+    m_stServer.pSV->setHttpBindIP(m_stServerConfig.strHttpBindIP.c_str());
+    m_stServer.pSV->setHttpPort(m_stServerConfig.usHttpPort);
 
     /*完成初始化*/
     iRtn = m_stServer.pSV->Init();

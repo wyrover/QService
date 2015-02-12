@@ -52,10 +52,12 @@ private:
     struct ServerInfo
     {
         unsigned short usPort;
+        unsigned short usHttpPort;
         unsigned short usThreadNum;
         unsigned int uiTimer;
         std::string strScript;
         std::string strBindIP;
+        std::string strHttpBindIP;
 
         std::list<ServerLinkerInfo> lstLinkerInfo;
     };

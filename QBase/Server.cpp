@@ -63,6 +63,8 @@ CServer::CServer(void)
     m_bError = false;
     m_usThreadNum = 1;
     m_usPort = 0;
+    m_usHttpPort = 0;
+    m_httpSock = Q_INVALID_SOCK;
     m_pListener = NULL;
     m_pMainBase = NULL;
     m_pEvent_Exit = NULL;
@@ -94,6 +96,26 @@ void CServer::setPort(const unsigned short usPort)
 unsigned short CServer::getPort(void)
 {
     return m_usPort;
+}
+
+void CServer::setHttpBindIP(const char *pszBindIP)
+{
+    m_strHttpBindIP = pszBindIP;
+}
+
+const char *CServer::getHttpBindIP(void)
+{
+    return m_strHttpBindIP.c_str();
+}
+
+void CServer::setHttpPort(const unsigned short usPort)
+{
+    m_usHttpPort = usPort;
+}
+
+unsigned short CServer::getHttpPort(void)
+{
+    return m_usHttpPort;
 }
 
 void CServer::setError(bool bError)
@@ -285,6 +307,50 @@ int CServer::initMainListener(void)
     return Q_RTN_OK;
 }
 
+Q_SOCK CServer::initHttpSock(void)
+{
+    CNETAddr objAddr;
+    Q_SOCK sock = Q_INVALID_SOCK;
+
+    sock = socket(AF_INET, SOCK_STREAM, 0);
+    if (Q_INVALID_SOCK == sock)
+    {
+        Q_Printf("%s", "create socket error.");
+        return Q_INVALID_SOCK;
+    }
+
+    if (Q_RTN_OK != evutil_make_listen_socket_reuseable(sock))
+    {
+        Q_Printf("%s", "make socket reuseable error.");
+        evutil_closesocket(sock);
+        return Q_INVALID_SOCK;
+    }
+
+    objAddr.setAddr(m_strHttpBindIP.c_str(), m_usHttpPort);
+    if (bind(sock, objAddr.getAddr(), objAddr.getAddrSize()) < 0)
+    {
+        Q_Printf("bind socket on port: %d ip: %s error.", m_usHttpPort, m_strHttpBindIP.c_str());
+        evutil_closesocket(sock);
+        return Q_INVALID_SOCK;
+    }
+
+    if (listen(sock, 5) < 0)
+    {
+        Q_Printf("%s", "listen socket error.");
+        evutil_closesocket(sock);
+        return Q_INVALID_SOCK;
+    }
+
+    if (Q_RTN_OK != evutil_make_socket_nonblocking(sock))
+    {
+        Q_Printf("%s", "make socket nonblock error.");
+        evutil_closesocket(sock);
+        return Q_INVALID_SOCK;
+    }
+    
+    return sock;
+}
+
 int CServer::initWorkThread(void)
 {
     try
@@ -302,14 +368,17 @@ int CServer::initWorkThread(void)
         Q_Printf("get an exception. code %d, message %s", e.getErrorCode(), e.getErrorMsg());
 
         return e.getErrorCode();
-    }    
+    }
 
     for (unsigned short usI = 0; usI < getThreadNum(); usI++)
     {
         m_pServerThreadEvent[usI].getSessionManager()->setThreadIndex(usI);
-        m_pServerThreadEvent[usI].setInterface(m_vcInterface[usI]); 
-
+        m_pServerThreadEvent[usI].setInterface(m_vcInterface[usI]);         
         if (Q_RTN_OK != m_pServerThreadEvent[usI].setTimer(getTimer()))
+        {
+            return Q_RTN_FAILE;
+        }
+        if (Q_RTN_OK != m_pServerThreadEvent[usI].setHttp(m_httpSock))
         {
             return Q_RTN_FAILE;
         }
@@ -407,6 +476,17 @@ int CServer::Init(void)
 
     m_bShutDownNormal = false;
     Q_Printf("%s", "start server...");
+
+    /*初始换HTTP*/
+    if(0 != m_usHttpPort)
+    {
+        Q_Printf("%s", "init http server...");
+        m_httpSock = initHttpSock();
+        if (Q_INVALID_SOCK == m_httpSock)
+        {
+            return Q_RTN_FAILE;
+        }
+    }
 
     /*初始化工作线程*/
     iRtn = initWorkThread();

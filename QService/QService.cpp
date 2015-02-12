@@ -68,7 +68,11 @@ int startSV(void)
 #pragma comment(lib, "../Bin/libmysql.lib")
 #pragma comment(lib, "../Bin/libevent_core.lib")
 #pragma comment(lib, "../Bin/libevent_extras.lib")
+#if _DEBUG
+#pragma comment(lib, "../Bin/libcurl_a_debug.lib")
+#else
 #pragma comment(lib, "../Bin/libcurl_a.lib")
+#endif
 #pragma comment(lib, "../Bin/QBase.lib")
 
 #define Q_STOP_SERVICE_TIMEOUT       60 * 1000      //windows 服务停止超时时间

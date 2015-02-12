@@ -55,7 +55,7 @@ private:
     void reg_Session(void);
     void reg_SessionManager(void);
     void reg_HttpClient(void);
-
+    void reg_HttpBuffer(void);
 private:
     struct lua_State *m_pstLState;    
 };

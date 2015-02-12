@@ -32,6 +32,7 @@
 #include "Cond.h"
 #include "CoreDump.h"
 #include "EventBuffer.h"
+#include "HttpBuffer.h"
 #include "Exception.h"
 #include "InitSock.h"
 #include "Library.h"

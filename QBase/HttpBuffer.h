@@ -25,64 +25,28 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef Q_EVENT_INTERFACE_H_ 
-#define Q_EVENT_INTERFACE_H_
+#include "Macros.h"
 
-#include "ServerLinker.h"
-
-/*
-事件处理基类
-*/
-class CEventInterface
+class CHttpBuffer
 {
 public:
-    CEventInterface(void) : m_pSessionManager(NULL)
-    {
-    };
+    CHttpBuffer(struct evhttp_request *req);
+    ~CHttpBuffer(void);
 
-    virtual ~CEventInterface(void)
-    {
-    };
+    /* 获取 */
+    const char *getQuery(void);
+    const char *getPostMsg(void);    
 
-    void setSessionManager(class CSessionManager *pSessionManager)
-    {
-        m_pSessionManager = pSessionManager;
-    };
+    /* 设置输出数据 */
+    void setReplyContent(const char *pszMsg);
+    /* 返回 */
+    void Reply(const int iCode, const char *pszReason);
 
-    class CSessionManager *getSessionManager(void)
-    {
-        return m_pSessionManager;
-    };
-    /*工作线程启动时执行*/
-    virtual void onSerciveStartUp(void){};
-    /*工作线程关闭时执行*/
-    virtual void onSerciveShutDown(void){};
-    /*socket断开时执行*/
-    virtual void onSocketClose(void){};
-    /*定时器触发时执行*/
-    virtual void onTimerEvent(void){};
-    /*socket读取到完整包时执行*/
-    virtual void onSocketRead(const char *, const Q_PackHeadType &){};
-    /*http */
-    virtual void onHttpRead(class CHttpBuffer *){};
-    /*服务器连接启动*/
-    virtual void onLinkedServer(class CSession *){};
-    void setSVLinker (std::vector<CServerLinker *> &vcLinker)
-    {
-        m_vcLinker = vcLinker;
-    };
-    void startSVLinker(void)
-    {
-        std::vector<CServerLinker *>::iterator itLinker;
-        for (itLinker = m_vcLinker.begin(); m_vcLinker.end() != itLinker; itLinker++)
-        {
-            (*itLinker)->Monitor();
-        }      
-    };
-
+    bool isOK(void);
 private:
-    class CSessionManager *m_pSessionManager;
-    std::vector<CServerLinker *> m_vcLinker;
+    bool m_bOK;
+    struct evbuffer *m_pEventBuf;
+    struct evhttp_request *m_Req;
+    std::string m_strPostMsg;
+    std::string m_strQuery;
 };
-
-#endif//Q_EVENT_INTERFACE_H_

@@ -45,8 +45,10 @@ public:
     void setInterface(CEventInterface *pInterface);
     /*定时器时间(ms)*/
     int setTimer(unsigned int uiMS);
+    /*设置http*/
+    int setHttp(Q_SOCK &sock);
     /*获取该事件循环维护的CSessionManager*/
-    CSessionManager *getSessionManager(void);
+    CSessionManager *getSessionManager(void);    
 
 public:
     void onMainRead(struct SockPairEventParam *pParam);
@@ -58,6 +60,7 @@ public:
     static void workThreadReadCB(struct bufferevent *bev, void *arg);
     static void workThreadEventCB(struct bufferevent *bev, short event, void *arg);
     static void workThreadTimerCB(evutil_socket_t, short event, void *arg);
+    static void workThreadHttpCB(struct evhttp_request *req, void *arg);
 
 private:
     static char *getDataPack(CSession *pSession, Q_PackHeadType &usSize);
@@ -66,6 +69,7 @@ private:
 
 private:
     struct event *m_pEvent;
+    struct evhttp *m_pHttp;
     CSessionManager m_objSessionManager;
 };
 

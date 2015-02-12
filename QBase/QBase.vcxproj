@@ -28,6 +28,7 @@
     <ClInclude Include="Exception.h" />
     <ClInclude Include="File.h" />
     <ClInclude Include="Filter.h" />
+    <ClInclude Include="HttpBuffer.h" />
     <ClInclude Include="HttpClient.h" />
     <ClInclude Include="Include.h" />
     <ClInclude Include="Ini.h" />
@@ -183,6 +184,7 @@
     <ClCompile Include="Exception.cpp" />
     <ClCompile Include="File.cpp" />
     <ClCompile Include="Filter.cpp" />
+    <ClCompile Include="HttpBuffer.cpp" />
     <ClCompile Include="HttpClient.cpp" />
     <ClCompile Include="Ini.cpp" />
     <ClCompile Include="Library.cpp" />

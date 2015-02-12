@@ -86,6 +86,19 @@ function Lua_OnRead(iProtocol, strMsg, iLens)
 end
 
 --[[
+描述：HTTP事件
+参数：
+返回值：无
+--]]
+function Lua_OnHttpRead(objHttpBuffer)
+    Debug("Query:"..objHttpBuffer:getQuery())
+    Debug("PostMsg:"..objHttpBuffer:getPostMsg())
+    
+    objHttpBuffer:setReplyContent("this is test")
+    objHttpBuffer:Reply(HTTP_OK, "OK")
+end
+
+--[[
 描述：定时器调用
 参数：
 返回值：无
