@@ -321,6 +321,7 @@ const char *CTableFile::getStringValue(const char *pszName, const char *pszDefau
     itVal = m_itNowRow->find(std::string(pszName));
     if (m_itNowRow->end() == itVal)
     {
+        Q_Printf("in file %s line %s not find...........", m_strFile.c_str(), pszName);
         return pszDefault;
     }
 

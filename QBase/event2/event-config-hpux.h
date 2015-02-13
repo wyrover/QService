@@ -1,4 +1,0 @@
-#ifndef EVENT_CONFIG_HPUX_H_ 
-#define EVENT_CONFIG_HPUX_H_
-
-#endif//EVENT_CONFIG_HPUX_H_

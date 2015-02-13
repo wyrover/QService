@@ -23,8 +23,8 @@ cppunit_path=cppunit-1.12.1
 curl_tar=curl-7.38.0.tar.gz
 curl_path=curl-7.38.0
 
-libevent_tar=libevent-2.0.21-stable.tar.gz
-libevent_path=libevent-2.0.21-stable
+libevent_tar=libevent-2.0.22-stable.tar.gz
+libevent_path=libevent-2.0.22-stable
 
 #±àÒë---------------------------cppunit---------------------------
 makecppunit=0

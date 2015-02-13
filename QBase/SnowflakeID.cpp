@@ -46,31 +46,15 @@ CSnowflakeID::~CSnowflakeID(void)
 
 uint64_t CSnowflakeID::getTime(void)
 {
-#ifdef Q_OS_WIN32
-    FILETIME stFileTime;
-    uint64_t uiTime = Q_INIT_NUMBER;
-
-    GetSystemTimeAsFileTime(&stFileTime);
-
-    uiTime |= stFileTime.dwHighDateTime;
-    uiTime <<= 32;
-    uiTime |= stFileTime.dwLowDateTime;
-    uiTime /= 10;
-    uiTime -= EPOCHFILETIME;
-
-    return uiTime / 1000;
-#else
     struct timeval stTV;
     uint64_t uiTime = Q_INIT_NUMBER;
 
-    gettimeofday(&stTV, NULL);
+    evutil_gettimeofday(&stTV, NULL);
 
-    uiTime = stTV.tv_usec;
-    uiTime /= 1000;
-    uiTime += (stTV.tv_sec * 1000);
+    uiTime = stTV.tv_usec / 1000;//È¡ºÁÃë
+    uiTime += ((uint64_t)stTV.tv_sec * 1000);
 
     return uiTime;
-#endif
 }
 
 void CSnowflakeID::setMachineID(const int iMachineID)

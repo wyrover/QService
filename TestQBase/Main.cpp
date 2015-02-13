@@ -10,6 +10,7 @@
 #include "TestSnowflakeID.h"
 
 #ifdef Q_OS_WIN32
+CCoreDump objDump(true);
 #pragma comment(lib, "ws2_32.lib")
 #pragma comment(lib, "../Bin/libmysql.lib")
 #pragma comment(lib, "../Bin/libevent_core.lib")
@@ -31,8 +32,6 @@ CPPUNIT_TEST_SUITE_REGISTRATION(CTestLog);
 CPPUNIT_TEST_SUITE_REGISTRATION(CTestLua);
 CPPUNIT_TEST_SUITE_REGISTRATION(CTestCharset);
 CPPUNIT_TEST_SUITE_REGISTRATION(CTestSnowflakeID);
-
-CCoreDump objDump(true);
 
 bool Q_CheckBuff(const char *pSrc, const char *pDes, const size_t ilen)
 {
