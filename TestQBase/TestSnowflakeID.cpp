@@ -11,7 +11,7 @@ void CTestSnowflakeID::Test_SnowflakeID(void)
     objID.setMachineID(10);
     for (int i = 0; i < 10000; i++)
     {
-        iID = objID.generate();
+        iID = objID.Generate();
         itmapID = mapID.find(iID);
         if (mapID.end() != itmapID)
         {
@@ -27,7 +27,7 @@ void CTestSnowflakeID::Test_SnowflakeID(void)
     objTimer.reStart();
     for (int i = 0; i < iCount; i++)
     {
-        objID.generate();
+        objID.Generate();
     }
     std::cout << "SnowflakeID time:" << objTimer.Elapsed() << std::endl;
 

@@ -150,18 +150,17 @@ function callFunc(Func, ...)
     end
 
     local strMsg = ''
-    local strParam = cjson.encode({...})
+    --local strParam = cjson.encode({...})
 
     local function onExcept(sMsg)
         strMsg = sMsg
         local strStack = debug.traceback()
         Debug("error message:" .. strMsg)
         Debug("stack:" .. strStack)
-        Debug("param:" .. strParam)
+        --Debug("param:" .. strParam)
         Q_LOG(LOGLV_ERROR, "error message:" .. strMsg)
         Q_LOG(LOGLV_ERROR, "stack:" .. strStack)
-        Q_LOG(LOGLV_ERROR, "param:" .. strParam)
-
+        --Q_LOG(LOGLV_ERROR, "param:" .. strParam)
     end
     
     local bRtn, objMsg = xpcall(Func, onExcept, table.unpack({...}))

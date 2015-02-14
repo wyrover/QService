@@ -28,12 +28,6 @@
 #include "SnowflakeID.h"
 #include "QString.h"
 
-#ifdef Q_OS_WIN32
-#define EPOCHFILETIME 11644473600000000Ui64
-#else
-#define EPOCHFILETIME 11644473600000000ULL
-#endif
-
 CSnowflakeID::CSnowflakeID(void) : m_iMachineID(Q_INIT_NUMBER), m_iIndex(Q_INIT_NUMBER)
 {
 
@@ -64,10 +58,10 @@ void CSnowflakeID::setMachineID(const int iMachineID)
 
 std::string CSnowflakeID::getSnowflakeID(void)
 {
-    return Q_ToString(generate());
+    return Q_ToString(Generate());
 }
 
-int64_t CSnowflakeID::generate(void)
+int64_t CSnowflakeID::Generate(void)
 {
     int64_t iValue = Q_INIT_NUMBER;
     uint64_t uiTime = getTime();

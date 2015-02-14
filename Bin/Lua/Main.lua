@@ -91,11 +91,7 @@ end
 ∑µªÿ÷µ£∫Œﬁ
 --]]
 function Lua_OnHttpRead(objHttpBuffer)
-    Debug("Query:"..objHttpBuffer:getQuery())
-    Debug("PostMsg:"..objHttpBuffer:getPostMsg())
-    
-    objHttpBuffer:setReplyContent("this is test")
-    objHttpBuffer:Reply(HTTP_OK, "OK")
+    onGameEvent(GameEvent.HttpRead, objHttpBuffer)
 end
 
 --[[

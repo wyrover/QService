@@ -93,7 +93,7 @@ int CTestDataBase::TestDB(CDBPool *pPool)
             pStatement->bindInt(3, i + 3);
             pStatement->bindFloat(4, i + 0.4);
             pStatement->bindBlob(5, (const unsigned char*)m_pFileBuf, m_iFileLens);
-            i64 = objID.generate();
+            i64 = objID.Generate();
             lstInt64.push_back(i64);
             pStatement->bindInt64(6, i64);
             pStatement->execDML();

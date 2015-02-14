@@ -14,6 +14,7 @@ local tLoad =
     {"Public/RegSV", true},
     
     {"Game/Ping", true},
+    {"Game/Test", true},
 }
 
 local function loadAllFile()

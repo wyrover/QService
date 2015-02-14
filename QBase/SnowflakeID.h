@@ -42,7 +42,7 @@ public:
     ~CSnowflakeID(void);
 
     void setMachineID(const int iMachineID);
-    int64_t generate(void);
+    int64_t Generate(void);
     std::string getSnowflakeID(void);
 
 private:
