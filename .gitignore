@@ -28,6 +28,8 @@
 !libevent_extras.lib
 !libmysql.lib
 !vld.lib
+!libcurl_a.lib
+!libcurl_a_debug.lib
 
 # Executables
 *.exe
