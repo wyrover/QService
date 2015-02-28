@@ -21,8 +21,8 @@ if not g_ProtocolFilterFun then
     g_ProtocolFilterFun = nil
 end
 
-if not g_CheckSVRegFun then
-    g_CheckSVRegFun = nil
+if not g_StartCompleted then
+    g_StartCompleted = false
 end
 
 --[[
@@ -34,8 +34,8 @@ function Lua_OnStartUp(objSessionManager)
     g_objSessionManager = objSessionManager
     math.randomseed(tonumber(tostring(os.time()):reverse():sub(1,6)))
     
-    onGameEvent(GameEvent.Start)
-    onGameEvent(GameEvent.Started)
+    onGameEvent(GameEvent.Start)--这里一般读取配置文件
+    onGameEvent(GameEvent.Started)--这里读取配置文件完成后做初始化操作
 end
 
 --[[
@@ -72,6 +72,11 @@ function Lua_OnRead(iProtocol, strMsg, iLens)
     --检查操作码与状态是否匹配
     local objCurSession = g_objSessionManager:getCurSession()   
     if not objCurSession:isServerLinker() then
+        if not g_StartCompleted then
+            Debug("service not start completed.")
+            return
+        end
+        
         if g_ProtocolFilterFun then
             local iStatus = objCurSession:getStatus()
             if not g_ProtocolFilterFun(iProtocol, iStatus) then
@@ -91,6 +96,11 @@ end
 返回值：无
 --]]
 function Lua_OnHttpRead(objHttpBuffer)
+    if not g_StartCompleted then
+        Debug("service not start completed.")
+        return
+    end
+    
     onGameEvent(GameEvent.HttpRead, objHttpBuffer)
 end
 

@@ -10,3 +10,14 @@ local function onHttpRead(objHttpBuffer)
     objHttpBuffer:Reply(HTTP_OK, "OK")
 end
 regGameEvent(GameEvent.HttpRead, onHttpRead)
+
+local function onStart()
+    Debug("onStart")
+end
+regGameEvent(GameEvent.Start, onStart)
+
+local function onStarted()
+    g_StartCompleted = true
+    Debug("onStarted")
+end
+regGameEvent(GameEvent.Started, onStarted)

@@ -477,7 +477,7 @@ int CServer::Init(void)
     m_bShutDownNormal = false;
     Q_Printf("%s", "start server...");
 
-    /*≥ı ºªªHTTP*/
+    /*≥ı ºªØHTTP*/
     if(0 != m_usHttpPort)
     {
         Q_Printf("%s", "init http server...");
