@@ -27,8 +27,8 @@
 
 #include "Session.h"
 
-CSession::CSession(void) : m_bLinker(false), m_pHandle(NULL),
-    m_iSessionID(Q_INVALID_ID), m_iStatus(SessionStatus_Unknown), 
+CSession::CSession(void) : m_pHandle(NULL), m_iSessionType(SType_TcpClient),
+    m_iSessionID(Q_INVALID_ID), m_iStatus(SessionStatus_Closed), 
     m_uiPing(Q_INIT_NUMBER)
 {
     (void)m_objBuffer.setBuffer(NULL);
@@ -39,14 +39,14 @@ CSession::~CSession(void)
 
 }
 
-void CSession::setServerLinker(bool bLinker)
+void CSession::setType(const int iType)
 {
-    m_bLinker = bLinker;
+    m_iSessionType = iType;
 }
 
-bool CSession::getServerLinker(void)
+int CSession::getType(void)
 {
-    return m_bLinker;
+    return m_iSessionType;
 }
 
 void CSession::setSessionID(const int &uiID)
@@ -131,10 +131,10 @@ void *CSession::getHandle(void)
 
 void CSession::Clear(void)
 {
-    m_bLinker = false;
-    m_pHandle = NULL;    
+    m_iSessionType = SType_TcpClient;
+    m_pHandle = NULL;
     m_iSessionID = Q_INVALID_ID;
-    m_iStatus = SessionStatus_Unknown;
+    m_iStatus = SessionStatus_Closed;
     m_uiPing = Q_INIT_NUMBER;
     m_strID.clear();
     m_strCheckID.clear();

@@ -62,10 +62,12 @@ CServer::CServer(void)
     m_bLoop = false;
     m_bError = false;
     m_usThreadNum = 1;
-    m_usPort = 0;
-    m_usHttpPort = 0;
+    m_usPort = Q_INIT_NUMBER;
+    m_usHttpPort = Q_INIT_NUMBER;
+    m_usWebSockPort = Q_INIT_NUMBER;
     m_httpSock = Q_INVALID_SOCK;
     m_pListener = NULL;
+    m_pWebSockListener = NULL;
     m_pMainBase = NULL;
     m_pEvent_Exit = NULL;
     m_pPool = NULL;
@@ -116,6 +118,26 @@ void CServer::setHttpPort(const unsigned short usPort)
 unsigned short CServer::getHttpPort(void)
 {
     return m_usHttpPort;
+}
+
+void CServer::setWebSockBindIP(const char *pszBindIP)
+{
+    m_strWebSockBindIP = pszBindIP;
+}
+
+const char *CServer::getWebSockBindIP(void)
+{
+    return m_strWebSockBindIP.c_str();
+}
+
+void CServer::setWebSockPort(const unsigned short usPort)
+{
+    m_usWebSockPort = usPort;
+}
+
+unsigned short CServer::getWebSockPort(void)
+{
+    return m_usWebSockPort;
 }
 
 void CServer::setError(bool bError)
@@ -181,6 +203,38 @@ CWorkThreadEvent *CServer::getServerThreadEvent(void)
     return m_pServerThreadEvent;
 }
 
+void CServer::webSockAcceptCB(struct evconnlistener *, Q_SOCK sock, struct sockaddr *, 
+    int iSockLen, void *arg)
+{
+    unsigned short usIndex = Q_INIT_NUMBER;  
+    CServer *pServer = (CServer *)arg;
+    CWorkThreadEvent *pThreadEvent = pServer->getServerThreadEvent();
+
+    //取得最小连接数的线程号
+    if (pServer->getThreadNum() > 1)
+    {
+        unsigned int uiCount = Q_INIT_NUMBER;
+        unsigned int uiTmp = pThreadEvent[0].getSessionManager()->getSessionSize();
+        for (unsigned short usI = Q_INIT_NUMBER; usI < pServer->getThreadNum(); usI++)
+        {
+            uiCount = pThreadEvent[usI].getSessionManager()->getSessionSize();
+            if (uiTmp > uiCount)
+            {
+                uiTmp = uiCount;
+                usIndex = usI;
+            }
+        }
+    }    
+
+    if (Q_RTN_OK != pThreadEvent[usIndex].sendWebSockMsg((const char*)&sock, sizeof(sock)))
+    {
+        Q_Printf("add socket %d to thread %d error.", sock, usIndex);
+        Q_SYSLOG(LOGLV_ERROR, "add socket %d to thread %d error.", sock, usIndex);
+
+        evutil_closesocket(sock);
+    }
+}
+
 void CServer::listenerAcceptCB(struct evconnlistener *, Q_SOCK sock, struct sockaddr *, 
     int iSockLen, void *arg)
 {
@@ -204,7 +258,7 @@ void CServer::listenerAcceptCB(struct evconnlistener *, Q_SOCK sock, struct sock
         }
     }    
 
-    if (Q_RTN_OK != pThreadEvent[usIndex].sendMainMsg((const char*)&sock, sizeof(sock)))
+    if (Q_RTN_OK != pThreadEvent[usIndex].sendTcpMsg((const char*)&sock, sizeof(sock)))
     {
         Q_Printf("add socket %d to thread %d error.", sock, usIndex);
         Q_SYSLOG(LOGLV_ERROR, "add socket %d to thread %d error.", sock, usIndex);
@@ -236,38 +290,9 @@ void CServer::mainLoopExitCB(struct bufferevent *bev, void *arg)
     }
 }
 
-int CServer::initMainListener(void)
+int CServer::initMainExit(void)
 {
     int iRtn = Q_RTN_OK;
-    CNETAddr objAddr;
-
-    iRtn = objAddr.setAddr(getBindIP(), getPort());
-    if (Q_RTN_OK != iRtn)
-    {
-        Q_Printf("%s", "set network addr error.");
-
-        return iRtn;
-    }
-
-    m_pMainBase = event_base_new();
-    if (NULL == m_pMainBase)
-    {
-        Q_Printf("%s", "event_base_new error.");
-
-        return Q_RTN_FAILE;
-    }
-
-    m_pListener = evconnlistener_new_bind(m_pMainBase, listenerAcceptCB, this, 
-        LEV_OPT_CLOSE_ON_FREE, -1, 
-        objAddr.getAddr(), objAddr.getAddrSize());
-    if (NULL == m_pListener)
-    {
-        iRtn = EVUTIL_SOCKET_ERROR();
-        Q_Printf("evconnlistener_new_bind error. error code %d, message %s", 
-            iRtn, evutil_socket_error_to_string(iRtn));
-
-        return iRtn;
-    }
 
     try
     {
@@ -282,7 +307,7 @@ int CServer::initMainListener(void)
     catch(CException &e)
     {
         Q_Printf("get an exception. code %d, message %s", e.getErrorCode(), e.getErrorMsg());
-        
+
         return e.getErrorCode();
     }
 
@@ -300,6 +325,62 @@ int CServer::initMainListener(void)
     if (Q_RTN_OK != iRtn)
     {
         Q_Printf("%s", "bufferevent_enable error.");
+
+        return iRtn;
+    }
+
+    return Q_RTN_OK;
+}
+
+int CServer::initWebSockListener(void)
+{
+    int iRtn = Q_RTN_OK;
+    CNETAddr objAddr;
+
+    iRtn = objAddr.setAddr(getWebSockBindIP(), getWebSockPort());
+    if (Q_RTN_OK != iRtn)
+    {
+        Q_Printf("%s", "set network addr error.");
+
+        return iRtn;
+    }
+
+    m_pWebSockListener = evconnlistener_new_bind(m_pMainBase, webSockAcceptCB, this, 
+        LEV_OPT_CLOSE_ON_FREE, -1, 
+        objAddr.getAddr(), objAddr.getAddrSize());
+    if (NULL == m_pWebSockListener)
+    {
+        iRtn = EVUTIL_SOCKET_ERROR();
+        Q_Printf("evconnlistener_new_bind error. error code %d, message %s", 
+            iRtn, evutil_socket_error_to_string(iRtn));
+
+        return iRtn;
+    }
+
+    return Q_RTN_OK;
+}
+
+int CServer::initMainListener(void)
+{
+    int iRtn = Q_RTN_OK;
+    CNETAddr objAddr;
+
+    iRtn = objAddr.setAddr(getBindIP(), getPort());
+    if (Q_RTN_OK != iRtn)
+    {
+        Q_Printf("%s", "set network addr error.");
+
+        return iRtn;
+    }
+
+    m_pListener = evconnlistener_new_bind(m_pMainBase, listenerAcceptCB, this, 
+        LEV_OPT_CLOSE_ON_FREE, -1, 
+        objAddr.getAddr(), objAddr.getAddrSize());
+    if (NULL == m_pListener)
+    {
+        iRtn = EVUTIL_SOCKET_ERROR();
+        Q_Printf("evconnlistener_new_bind error. error code %d, message %s", 
+            iRtn, evutil_socket_error_to_string(iRtn));
 
         return iRtn;
     }
@@ -400,6 +481,12 @@ void CServer::freeMainEvent(void)
         m_pListener = NULL;
     }
 
+    if (NULL != m_pWebSockListener)
+    {
+        evconnlistener_free(m_pWebSockListener);
+        m_pWebSockListener = NULL;
+    }
+
     Q_SafeDelete(m_pPair_Exit);
 
     if (NULL != m_pEvent_Exit)
@@ -475,7 +562,16 @@ int CServer::Init(void)
     int iRtn = Q_RTN_OK;
 
     m_bShutDownNormal = false;
-    Q_Printf("%s", "start server...");
+
+    /*主线程循环*/
+    m_pMainBase = event_base_new();
+    if (NULL == m_pMainBase)
+    {
+        Q_Printf("%s", "event_base_new error.");
+        setError(true);
+
+        return Q_RTN_FAILE;
+    }
 
     /*初始化HTTP*/
     if(0 != m_usHttpPort)
@@ -484,11 +580,27 @@ int CServer::Init(void)
         m_httpSock = initHttpSock();
         if (Q_INVALID_SOCK == m_httpSock)
         {
+            setError(true);
+
+            return Q_RTN_FAILE;
+        }
+    }
+
+    /*初始化websock监听*/
+    if (0 != m_usWebSockPort)
+    {
+        Q_Printf("%s", "init websock server...");
+        iRtn = initWebSockListener();
+        if (Q_RTN_OK != iRtn)
+        {
+            setError(true);
+
             return Q_RTN_FAILE;
         }
     }
 
     /*初始化工作线程*/
+    Q_Printf("%s", "init work thread...");
     iRtn = initWorkThread();
     if (Q_RTN_OK != iRtn)
     {
@@ -497,8 +609,18 @@ int CServer::Init(void)
         return iRtn;
     }
 
-    /*初始化监听线程*/
+    /*初始化tcp监听*/
+    Q_Printf("%s", "init tcp listener...");
     iRtn = initMainListener();
+    if (Q_RTN_OK != iRtn)
+    {
+        setError(true);
+
+        return iRtn;
+    }
+
+    /*初始化退出*/
+    iRtn = initMainExit();
     if (Q_RTN_OK != iRtn)
     {
         setError(true);

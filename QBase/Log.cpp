@@ -54,7 +54,7 @@ struct LogerInfo
 
 CLog::CLog(void)
 {
-    setMainParam(&m_lstLoger);
+    setTcpParam(&m_lstLoger);
     setExitParam(&m_lstLoger);
 }
 
@@ -95,7 +95,7 @@ Q_SOCK CLog::addLoger(CLoger *pLoger)
     }
     
     m_objMutex.Lock();
-    int iRtn = sendMainMsg((const char*)(&objLogInfo), sizeof(objLogInfo));
+    int iRtn = sendTcpMsg((const char*)(&objLogInfo), sizeof(objLogInfo));
     m_objMutex.unLock();
     if (Q_RTN_OK != iRtn)
     {
@@ -131,7 +131,7 @@ static void LogerReadCB(struct bufferevent *bev, void *arg)
     pLogerInfo->pBuffer->delBuffer(iSize);
 }
 
-void CLog::onMainRead(SockPairEventParam *pParam)
+void CLog::onTcpRead(SockPairEventParam *pParam)
 {
     LogerInfo *pLogerInfo = NULL;
 

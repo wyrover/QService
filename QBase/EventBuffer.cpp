@@ -220,3 +220,8 @@ int CEventBuffer::moveBufferData(void)
 
     return evbuffer_add_buffer(m_pWriteBuffer, m_pReadBuffer);
 }
+
+struct evbuffer_ptr CEventBuffer::Search(const char *pszWhat, size_t iLens, const struct evbuffer_ptr *pStart)
+{
+    return evbuffer_search(m_pReadBuffer, pszWhat, iLens, pStart);
+}

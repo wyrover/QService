@@ -103,6 +103,9 @@
     <Filter Include="Lua\pbc">
       <UniqueIdentifier>{a879763a-9efa-4eaf-9880-1ecf38091c2f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Encrypt\Sha1">
+      <UniqueIdentifier>{3cd8ae53-c8a5-41a4-86f2-769722eae2d5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Config.h">
@@ -580,6 +583,12 @@
     <ClInclude Include="HttpBuffer.h">
       <Filter>Base\NetWork</Filter>
     </ClInclude>
+    <ClInclude Include="SHA1.h">
+      <Filter>Encrypt\Sha1</Filter>
+    </ClInclude>
+    <ClInclude Include="WebSock.h">
+      <Filter>Service\WorkThread</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Log.cpp">
@@ -1020,6 +1029,12 @@
     </ClCompile>
     <ClCompile Include="HttpBuffer.cpp">
       <Filter>Base\NetWork</Filter>
+    </ClCompile>
+    <ClCompile Include="SHA1.cpp">
+      <Filter>Encrypt\Sha1</Filter>
+    </ClCompile>
+    <ClCompile Include="WebSock.cpp">
+      <Filter>Service\WorkThread</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

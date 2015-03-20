@@ -45,7 +45,7 @@ struct TimerTask
 
 CTimerTask::CTimerTask(void)
 {
-    setMainParam(&m_lstTask);
+    setTcpParam(&m_lstTask);
     setExitParam(&m_lstTask);
 }
 
@@ -80,7 +80,7 @@ int CTimerTask::Append(CTask *pTask, unsigned int uiMS, unsigned int uiCount)
     stTimerTask.uiMS = uiMS;
 
     m_objMutex.Lock();
-    int iRtn = sendMainMsg((const char*)(&stTimerTask), sizeof(stTimerTask));
+    int iRtn = sendTcpMsg((const char*)(&stTimerTask), sizeof(stTimerTask));
     m_objMutex.unLock();
     if (Q_RTN_OK != iRtn)
     {
@@ -135,7 +135,7 @@ static void time_cb(evutil_socket_t fd, short event, void *arg)
     }
 };
 
-void CTimerTask::onMainRead(SockPairEventParam *pParam)
+void CTimerTask::onTcpRead(SockPairEventParam *pParam)
 {
     TimerTask *pTimerTask = NULL;
     timeval tVal;

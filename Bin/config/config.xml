@@ -17,6 +17,10 @@
             <HttpBindIP>0.0.0.0</HttpBindIP>
             <!--Http绑定端口,为0不启动http server-->
             <HttpPort>8080</HttpPort>
+            <!--WebSock绑定的IP-->
+            <WebSockBindIP>0.0.0.0</WebSockBindIP>
+            <!--WebSock绑定端口,为0不启动WebSock server-->
+            <WebSockPort>8081</WebSockPort>
             <!--线程数-->
             <ThreadNum>1</ThreadNum>
             <!--定时器触发间隔时间 0 不触发(毫秒)-->

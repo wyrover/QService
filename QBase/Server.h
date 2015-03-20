@@ -38,24 +38,30 @@ public:
 
     /*工作线程数*/
     void setThreadNum(const unsigned short usThreadNum = 1);
-    unsigned short getThreadNum(void);
-    /*监听端口*/
-    void setPort(const unsigned short usPort);
-    unsigned short getPort(void);
+    unsigned short getThreadNum(void);    
     /*设置接口对象组，数目与线程usThreadNum相同*/
     void setInterface(std::vector<CEventInterface * > &lstInterface);
     /*定时器时间*/
     void setTimer(unsigned int uiMS = 0);
     unsigned int getTimer(void);      
-    /*绑定IP*/
+    /*tcp绑定IP*/
     void setBindIP(const char *pszBindIP = "0.0.0.0");
     const char *getBindIP(void);
+    /*tcp监听端口*/
+    void setPort(const unsigned short usPort);
+    unsigned short getPort(void);
     /*http绑定IP*/
     void setHttpBindIP(const char *pszBindIP = "0.0.0.0");
     const char *getHttpBindIP(void);
     /*http监听端口*/
     void setHttpPort(const unsigned short usPort);
     unsigned short getHttpPort(void);
+    /*websock绑定IP*/
+    void setWebSockBindIP(const char *pszBindIP = "0.0.0.0");
+    const char *getWebSockBindIP(void);
+    /*websock监听端口*/
+    void setWebSockPort(const unsigned short usPort);
+    unsigned short getWebSockPort(void);
 
     /*是否运行*/
     bool getIsRun(void);
@@ -77,11 +83,15 @@ public:
 public:
     static void listenerAcceptCB(struct evconnlistener *, Q_SOCK sock, struct sockaddr *, 
         int iSockLen, void *arg);
+    static void webSockAcceptCB(struct evconnlistener *, Q_SOCK sock, struct sockaddr *, 
+        int iSockLen, void *arg);
     static void mainLoopExitCB(struct bufferevent *bev, void *arg);
 
 private:
     int initMainListener(void);
+    int initWebSockListener(void);
     int initWorkThread(void);
+    int initMainExit(void);
     int Loop(void);
     void exitWorkThread(void);
     void freeMainEvent(void);
@@ -94,9 +104,11 @@ private:
     unsigned short m_usThreadNum;
     unsigned short m_usPort;
     unsigned short m_usHttpPort;
+    unsigned short m_usWebSockPort;
     unsigned int m_uiTimer;
     Q_SOCK m_httpSock;
     struct evconnlistener *m_pListener;
+    struct evconnlistener *m_pWebSockListener;
     struct event_base *m_pMainBase;
     struct bufferevent *m_pEvent_Exit;
     class CThreadPool *m_pPool;
@@ -107,6 +119,7 @@ private:
     CCond m_objCond_Exit;
     std::string m_strBindIP;
     std::string m_strHttpBindIP;
+    std::string m_strWebSockBindIP;
 };
 
 #endif//Q_SERVER_H_

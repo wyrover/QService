@@ -49,6 +49,7 @@
 #include <string>
 #include <map>
 #include <list>
+#include <bitset>
 #include <queue>
 #include <ostream>
 #include <iostream>

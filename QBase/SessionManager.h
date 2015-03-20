@@ -30,6 +30,7 @@
 
 #include "Session.h"
 #include "Buffer.h"
+#include "WebSock.h"
 #include "EventInterface.h"
 #include "LuaBridge/LuaBridge.h"
 
@@ -93,10 +94,14 @@ public:
     /*判断是否为指定类型的服务器连接*/
     bool checkType(const int iType, const int iClientID);
 
+    /*获取websock解析指针*/
+    CWebSock *getWebSock(void);
 private:
     /*释放所有session*/
     void freeAllSession(void);
     bool sendWithHead(CSession *pCurrent, 
+        const unsigned short &usOpCode, const char *pszData, const size_t &uiLens);
+    bool sendWebSock(CSession *pCurrent, 
         const unsigned short &usOpCode, const char *pszData, const size_t &uiLens);
 
 private:
@@ -109,6 +114,7 @@ private:
     std::tr1::unordered_map<int, CSession *> m_unmapSession;//所有Session
     std::queue<CSession *> m_quFreeSession;//空闲的session
     std::tr1::unordered_map<std::string, bufferevent* > m_mapServerLinker;
+    CWebSock m_objWebSock;
 };
 
 #endif//Q_SESSION_MANAGER_H_

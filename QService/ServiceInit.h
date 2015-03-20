@@ -53,11 +53,13 @@ private:
     {
         unsigned short usPort;
         unsigned short usHttpPort;
+        unsigned short usWebSockPort;
         unsigned short usThreadNum;
         unsigned int uiTimer;
         std::string strScript;
         std::string strBindIP;
         std::string strHttpBindIP;
+        std::string strWebSockBindIP;
 
         std::list<ServerLinkerInfo> lstLinkerInfo;
     };

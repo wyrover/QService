@@ -179,7 +179,7 @@ void CReg2Lua::reg_Session(void)
             .addFunction("setStatus", &CSession::setStatus)
             .addFunction("getStatus", &CSession::getStatus)
 
-            .addFunction("isServerLinker", &CSession::getServerLinker)
+            .addFunction("getType", &CSession::getType)
         .endClass();
 }
 

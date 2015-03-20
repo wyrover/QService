@@ -57,6 +57,8 @@ public:
     int writeBuffer(const char *pszBuffer, const size_t &iLens);
     /*将读缓冲区中的数据移动到写缓冲区*/
     int moveBufferData(void);
+    /*查找*/
+    struct evbuffer_ptr Search(const char *pszWhat, size_t iLens, const struct evbuffer_ptr *pStart = NULL);
     /*获取socket句柄*/
     Q_SOCK getFD(void);
 

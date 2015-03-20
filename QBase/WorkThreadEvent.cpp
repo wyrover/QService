@@ -33,9 +33,10 @@
 
 CWorkThreadEvent::CWorkThreadEvent(void) : m_pEvent(NULL), m_pHttp(NULL)
 {
-    setMainParam(&m_objSessionManager);
+    setTcpParam(&m_objSessionManager);
     setExitParam(&m_objSessionManager);
     setOrderParam(&m_objSessionManager);
+    setWebSockParam(&m_objSessionManager);
 }
 
 CWorkThreadEvent::~CWorkThreadEvent(void)
@@ -138,10 +139,66 @@ int CWorkThreadEvent::setTimer(unsigned int uiMS)
     return Q_RTN_OK;
 }
 
-void CWorkThreadEvent::onMainRead(struct SockPairEventParam *pParam)
+void CWorkThreadEvent::onWebSockRead(struct SockPairEventParam *pParam)
 {
     struct bufferevent *pBev = NULL;
     Q_SOCK iFD = Q_INVALID_SOCK;
+    CSession *pSession = NULL;
+    CSessionManager *pSessionManager = (CSessionManager *)(pParam->pUserDate);
+
+    while(Q_GetEventValue<Q_SOCK>(pParam->pEventBuf, iFD))
+    {
+        if (Q_INVALID_SOCK == iFD)
+        {
+            Q_Printf("%s", "invalid socket");
+
+            continue;
+        }
+
+        (void)evutil_make_socket_nonblocking(iFD);
+        pBev = bufferevent_socket_new(pParam->pMainBase, iFD, 
+            BEV_OPT_CLOSE_ON_FREE);
+        if (NULL == pBev)
+        {
+            evutil_closesocket(iFD);
+            Q_Printf("%s", "bufferevent_socket_new error.");
+
+            continue;
+        }
+
+        if (Q_RTN_OK != pSessionManager->addSession(pBev))
+        {
+            evutil_closesocket(iFD);
+            bufferevent_free(pBev);
+            Q_Printf("%s", "add session error.");
+
+            continue;
+        }
+
+        bufferevent_setcb(pBev, workThreadReadCB, NULL, workThreadEventCB, 
+            pSessionManager);
+        if (Q_RTN_OK != bufferevent_enable(pBev, EV_READ | EV_WRITE))
+        {
+            evutil_closesocket(iFD);
+            pSessionManager->dellSession(pBev);
+            bufferevent_free(pBev);
+
+            Q_Printf("%s", "bufferevent_enable error.");
+
+            continue;
+        }
+
+        pSession = pSessionManager->getSession(pBev);
+        pSession->setType(SType_WebSock);
+        pSession->setStatus(SessionStatus_Linked);
+    }
+}
+
+void CWorkThreadEvent::onTcpRead(struct SockPairEventParam *pParam)
+{
+    struct bufferevent *pBev = NULL;
+    Q_SOCK iFD = Q_INVALID_SOCK;
+    CSession *pSession = NULL;
     CSessionManager *pSessionManager = (CSessionManager *)(pParam->pUserDate);
 
     while(Q_GetEventValue<Q_SOCK>(pParam->pEventBuf, iFD))
@@ -185,6 +242,10 @@ void CWorkThreadEvent::onMainRead(struct SockPairEventParam *pParam)
 
             continue;
         }
+
+        pSession = pSessionManager->getSession(pBev);
+        pSession->setType(SType_TcpClient);
+        pSession->setStatus(SessionStatus_Linked);
     }
 }
 
@@ -262,7 +323,8 @@ void CWorkThreadEvent::addServerLinker(struct event_base *pMainBase,
     pSessionManager->addServerLinker(pServerLinker->getLinkerName(), pBev);
     pSession = pSessionManager->getSession(pBev);    
     pSession->setHandle(pServerLinker);
-    pSession->setServerLinker(true);
+    pSession->setType(SType_SVLinker);
+    pSession->setStatus(SessionStatus_Linked);
     pServerLinker->setLinked(true); 
 
     pSessionManager->getInterface()->onLinkedServer(pSession);
@@ -275,7 +337,7 @@ void CWorkThreadEvent::onStop(struct SockPairEventParam *pParam)
     pSessionManager->getInterface()->onSerciveShutDown();
 }
 
-char *CWorkThreadEvent::getDataPack(CSession *pSession, Q_PackHeadType &usSize)
+char *CWorkThreadEvent::getTcpDataPack(CSession *pSession, Q_PackHeadType &usSize)
 {
     char *pTmp = NULL;
     usSize = Q_INIT_NUMBER;
@@ -319,12 +381,9 @@ char *CWorkThreadEvent::getDataPack(CSession *pSession, Q_PackHeadType &usSize)
 }
 
 void CWorkThreadEvent::workThreadReadCB(struct bufferevent *bev, void *arg)
-{
-    char *pTmp = NULL;
-    Q_PackHeadType packLens = Q_INIT_NUMBER;
+{ 
     CSessionManager *pSessionManager = (CSessionManager *)arg;
     CSession *pSession = pSessionManager->getSession(bev);
-
     if (NULL == pSession)
     {
         Q_Printf("%s", "get session error.");
@@ -334,11 +393,60 @@ void CWorkThreadEvent::workThreadReadCB(struct bufferevent *bev, void *arg)
     }
 
     pSessionManager->setCurSession(pSession);
-    while(NULL != (pTmp = getDataPack(pSession, packLens)))
+    switch(pSession->getType())
     {
-        pSessionManager->getInterface()->onSocketRead(pTmp, packLens);
-        (void)pSession->getBuffer()->delBuffer(packLens + sizeof(packLens));
-    }
+    case SType_SVLinker:
+    case SType_TcpClient:
+        {
+            char *pBuffer = NULL; 
+            Q_PackHeadType packLens = Q_INIT_NUMBER;
+
+            while(NULL != (pBuffer = getTcpDataPack(pSession, packLens)))
+            {
+                pSessionManager->getInterface()->onSocketRead(pBuffer, packLens);
+                if (SessionStatus_Closed != pSession->getStatus())
+                {
+                    (void)pSession->getBuffer()->delBuffer(packLens + sizeof(packLens));
+                }
+                else
+                {
+                    break;
+                }
+            }
+        }        
+        break;
+
+    case SType_WebSock:
+        {
+            bool bClose = false;
+            CWebSock *pWebSock = pSessionManager->getWebSock();
+            if (SessionStatus_Linked == pSession->getStatus())
+            { 
+                //握手
+                if (pWebSock->shakeHands(bClose))
+                {
+                    pSession->setStatus(SessionStatus_ShakeHands);
+                }
+
+                if (bClose)
+                {
+                    pSessionManager->closeCurLink();
+                }
+            }
+            else
+            {
+                //处理数据
+                pWebSock->dispData(bClose);
+                if (bClose)
+                {
+                    pSessionManager->closeCurLink();
+                }
+            }
+        }
+
+    default:
+        break;
+    }    
     pSessionManager->setCurSession(NULL);
 }
 
@@ -357,7 +465,7 @@ void CWorkThreadEvent::workThreadEventCB(struct bufferevent *bev, short event, v
     pSessionManager->getInterface()->onSocketClose();
     pSessionManager->setCurSession(NULL);
 
-    if (pSession->getServerLinker())
+    if (SType_SVLinker == pSession->getType())
     {
         CServerLinker *pServerLinker = (CServerLinker *)pSession->getHandle();
         if (NULL != pServerLinker)
@@ -365,6 +473,10 @@ void CWorkThreadEvent::workThreadEventCB(struct bufferevent *bev, short event, v
             pSessionManager->delServerLinker(pServerLinker->getLinkerName());
             pServerLinker->setLinked(false);
         }
+    }
+    if (SType_WebSock == pSession->getType())
+    {
+        pSessionManager->getWebSock()->delContinuation(pSession->getBuffer()->getFD());
     }
 
     pSessionManager->dellSession(bev);

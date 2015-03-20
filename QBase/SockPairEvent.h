@@ -70,15 +70,19 @@ public:
     bool getError(void);
 
     /*主读写sock 参数*/
-    void setMainParam(void *pArg = NULL);
+    void setTcpParam(void *pArg = NULL);
     /*退出循环sock 参数*/
     void setExitParam(void *pArg = NULL);
     /*命令sock参数*/
     void setOrderParam(void *pArg = NULL);
+    /*命令sock参数*/
+    void setWebSockParam(void *pArg = NULL);
     /*向主读写sock写入数据*/
-    int sendMainMsg(const char *pszBuff, const size_t &iSize);
+    int sendTcpMsg(const char *pszBuff, const size_t &iSize);
     /*向命令sock写入数据*/
     int sendOrderMsg(const char *pszBuff, const size_t &iSize);
+    /*向命令websock写入数据*/
+    int sendWebSockMsg(const char *pszBuff, const size_t &iSize);
     /*获取event_base*/
     struct event_base *getBase(void)
     {
@@ -86,9 +90,10 @@ public:
     };
 
 public:
-    virtual void onMainRead(struct SockPairEventParam *pParam){};
+    virtual void onTcpRead(struct SockPairEventParam *pParam){};
     virtual void onStop(struct SockPairEventParam *pParam){};
     virtual void onOrderRead(struct SockPairEventParam *pParam){};
+    virtual void onWebSockRead(struct SockPairEventParam *pParam){};
     virtual void onStartUp(void){};
 public:
     static void sockPairEventReadCB(struct bufferevent *bev, void *arg);

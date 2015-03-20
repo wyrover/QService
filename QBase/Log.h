@@ -47,7 +47,7 @@ public:
 
 public:
     /*接口实现*/
-    void onMainRead(SockPairEventParam *pParam);
+    void onTcpRead(SockPairEventParam *pParam);
     void onStop(SockPairEventParam *pParam);
 
 private:

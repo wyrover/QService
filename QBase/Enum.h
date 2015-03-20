@@ -82,10 +82,20 @@ enum EventPriority
     Priority_Count,
 };
 
+/*session¿‡–Õ*/
+enum SessionType
+{
+    SType_TcpClient = 0,
+    SType_SVLinker,
+    SType_WebSock,
+};
+
 /*session◊¥Ã¨*/
 enum SessionStatus
 {
-    SessionStatus_Unknown = -1,
+    SessionStatus_Closed = -1,
+    SessionStatus_Linked,    
+    SessionStatus_ShakeHands,
     SessionStatus_Loging,
     SessionStatus_Logined,
     SessionStatus_Loading,

@@ -30,6 +30,7 @@
 
 #include "SessionManager.h"
 #include "ServerLinker.h"
+#include "WebSock.h"
 
 /*
 * 工作线程事件
@@ -51,9 +52,10 @@ public:
     CSessionManager *getSessionManager(void);    
 
 public:
-    void onMainRead(struct SockPairEventParam *pParam);
+    void onTcpRead(struct SockPairEventParam *pParam);
+    void onWebSockRead(struct SockPairEventParam *pParam);
     void onOrderRead(struct SockPairEventParam *pParam);
-    void onStop(struct SockPairEventParam *pParam);
+    void onStop(struct SockPairEventParam *pParam);    
     void onStartUp(void);
 
 public:
@@ -63,14 +65,14 @@ public:
     static void workThreadHttpCB(struct evhttp_request *req, void *arg);
 
 private:
-    static char *getDataPack(CSession *pSession, Q_PackHeadType &usSize);
+    static char *getTcpDataPack(CSession *pSession, Q_PackHeadType &usSize);
     void addServerLinker(struct event_base *pMainBase, 
         CSessionManager *pSessionManager, OrderMsg &stOrderMsg);
 
 private:
     struct event *m_pEvent;
     struct evhttp *m_pHttp;
-    CSessionManager m_objSessionManager;
+    CSessionManager m_objSessionManager;    
 };
 
 #endif//Q_SERVERTHREAD_EVENT_H_

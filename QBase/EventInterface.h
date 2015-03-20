@@ -61,7 +61,7 @@ public:
     virtual void onSocketClose(void){};
     /*定时器触发时执行*/
     virtual void onTimerEvent(void){};
-    /*socket读取到完整包时执行*/
+    /*tcp websocket读取到完整包时执行*/
     virtual void onSocketRead(const char *, const Q_PackHeadType &){};
     /*http */
     virtual void onHttpRead(class CHttpBuffer *){};

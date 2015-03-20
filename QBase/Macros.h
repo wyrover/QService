@@ -166,6 +166,8 @@ extern class CCond g_objExitCond;
 #endif//Q_OS_WIN32
 
 #ifdef Q_OS_WIN32
+    #define Q_Strcasecmp _stricmp
+    #define Q_Strncasecmp _strnicmp
     #define Q_StrTok strtok_s
     #define Q_Snprintf _snprintf
     #define Q_Swprintf swprintf
@@ -183,6 +185,8 @@ extern class CCond g_objExitCond;
     #define Q_AtomicCompareSwap(ppSrc, pOldval, pNewVal) \
                        InterlockedCompareExchangePointer(ppSrc, pNewVal, pOldval)
 #else
+    #define Q_Strcasecmp strcasecmp
+    #define Q_Strncasecmp strncasecmp
     #define Q_StrTok strtok_r
     #define Q_Snprintf snprintf
     #define Q_Swprintf swprintf

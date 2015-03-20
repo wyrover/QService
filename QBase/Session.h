@@ -45,9 +45,6 @@ public:
     void setID(const char *pszID);
     const char * getID(void);
 
-    /*是否为连接到其他服务器的*/
-    bool getServerLinker(void);
-
     /*校验ID*/
     void setCheckID(const char *pszID);
     const char * getCheckID(void);
@@ -64,17 +61,20 @@ public:
     void setStatus(const int iStatus);
     int getStatus(void);
 
+    /*session 类型  enum SessionType*/
+    void setType(const int iType);
+    int getType(void);
+
     void Clear(void);
 
     CEventBuffer *getBuffer(void);
     
-    void setServerLinker(bool bLinker);
     void setHandle(void *pHandle);
     void *getHandle(void);
 
-private:    
-    bool m_bLinker;
+private:
     void *m_pHandle;
+    int m_iSessionType;
     int m_iSessionID;//session id  
     int m_iStatus;
     unsigned int m_uiPing;

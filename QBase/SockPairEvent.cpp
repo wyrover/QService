@@ -279,9 +279,9 @@ bool CSockPairEvent::waitForStarted(void)
     }
 }
 
-void CSockPairEvent::setMainParam(void *pArg)
+void CSockPairEvent::setTcpParam(void *pArg)
 {
-    m_pParam[TYPE_MAIN].pUserDate = pArg;
+    m_pParam[TYPE_TCP].pUserDate = pArg;
 }
 
 void CSockPairEvent::setExitParam(void *pArg)
@@ -292,6 +292,11 @@ void CSockPairEvent::setExitParam(void *pArg)
 void CSockPairEvent::setOrderParam(void *pArg)
 {
     m_pParam[TYPE_ORDER].pUserDate = pArg;
+}
+
+void CSockPairEvent::setWebSockParam(void *pArg)
+{
+    m_pParam[TYPE_WEBSOCK].pUserDate = pArg;
 }
 
 int CSockPairEvent::initEvent(struct bufferevent **pBev, struct SockPairEventParam *pParam, CSockPair &objPair)
@@ -345,9 +350,14 @@ int CSockPairEvent::sendOrderMsg(const char *pszBuff, const size_t &iSize)
     return m_pSockPairs[TYPE_ORDER].Write(pszBuff, iSize);
 }
 
-int CSockPairEvent::sendMainMsg(const char *pszBuff, const size_t &iSize)
+int CSockPairEvent::sendTcpMsg(const char *pszBuff, const size_t &iSize)
 {
-    return m_pSockPairs[TYPE_MAIN].Write(pszBuff, iSize);
+    return m_pSockPairs[TYPE_TCP].Write(pszBuff, iSize);
+}
+
+int CSockPairEvent::sendWebSockMsg(const char *pszBuff, const size_t &iSize)
+{
+    return m_pSockPairs[TYPE_WEBSOCK].Write(pszBuff, iSize);
 }
 
 void CSockPairEvent::sockPairEventCB(struct bufferevent *bev, short event, void *arg)
@@ -388,12 +398,16 @@ void CSockPairEvent::sockPairEventReadCB(struct bufferevent *bev, void *arg)
 
     switch(pParam->emType)
     {
-    case TYPE_MAIN:
-        pParam->pFun->onMainRead(pParam);
+    case TYPE_TCP:
+        pParam->pFun->onTcpRead(pParam);
         break;
 
     case TYPE_ORDER:
         pParam->pFun->onOrderRead(pParam);
+        break;
+
+    case TYPE_WEBSOCK:
+        pParam->pFun->onWebSockRead(pParam);
         break;
 
     case TYPE_EXIT:

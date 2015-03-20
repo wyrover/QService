@@ -53,6 +53,7 @@
 #include "Sqlite.h"
 #include "DBPool.h"
 #include "md5.h"
+#include "SHA1.h"
 #include "QRSA.h"
 #include "Base64.h"
 #include "AES.h"

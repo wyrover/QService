@@ -160,6 +160,11 @@ void CDisposeEvent::onSocketRead(const char *pszMsg, const Q_PackHeadType &iLens
 {
     try
     {
+        if (iLens < sizeof(m_usOpCode))
+        {
+            return;
+        }
+
         m_usOpCode = ntohs(*((unsigned short *)(pszMsg)));
         m_usMsgLens = iLens - sizeof(m_usOpCode);
         if (0 == m_usMsgLens)

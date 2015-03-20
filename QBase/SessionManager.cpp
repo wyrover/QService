@@ -46,6 +46,8 @@ CSessionManager::CSessionManager(void) : m_sThreadIndex(-1), m_uiTimer(Q_INIT_NU
 
         m_quFreeSession.push(pSession);
     }
+
+    m_objWebSock.setSessionMgr(this);
 }
 
 CSessionManager::~CSessionManager(void)
@@ -224,7 +226,7 @@ void CSessionManager::checkPing(const unsigned int uiTime)
 
     for (itMap = m_unmapSession.begin(); m_unmapSession.end() != itMap; itMap++)
     {
-        if (itMap->second->getServerLinker())
+        if (SType_TcpClient != itMap->second->getType())
         {
             continue;
         }
@@ -284,9 +286,13 @@ void CSessionManager::closeLinkByID(const int iID)
     setCurSession(NULL);
 
     CServerLinker *pLink = NULL;
-    if (itSession->second->getServerLinker())
+    if (SType_SVLinker == itSession->second->getType())
     {
         pLink = (CServerLinker *)(itSession->second->getHandle());
+    }
+    if (SType_WebSock == itSession->second->getType())
+    {
+        m_objWebSock.delContinuation(iID);
     }
 
     bufferevent_free(itSession->second->getBuffer()->getBuffer());
@@ -342,6 +348,47 @@ CSession *CSessionManager::getSessionByID(const int iID)
     return itSession->second;
 }
 
+bool CSessionManager::sendWebSock(CSession *pCurrent, 
+    const unsigned short &usOpCode, const char *pszData, const size_t &uiLens)
+{
+    unsigned short usOp = ntohs(usOpCode);
+    Q_PackHeadType msgLens = uiLens + sizeof(usOp);
+    size_t iOutLens = Q_INIT_NUMBER;
+
+    const char *pszHead = m_objWebSock.createWebSockHead(true, BINARY_FRAME, msgLens, iOutLens);
+    if (NULL == pszHead)
+    {
+        return false;
+    }
+
+    if (Q_RTN_OK != pCurrent->getBuffer()->writeBuffer(pszHead, iOutLens))
+    {
+        Q_Printf("send message to session: id %d error", pCurrent->getSessionID());
+
+        return false;
+    }
+
+    if (Q_RTN_OK != pCurrent->getBuffer()->writeBuffer((const char*)(&usOp), sizeof(usOp)))
+    {
+        Q_Printf("send message to session: id %d error", pCurrent->getSessionID());
+
+        return false;
+    }
+
+    if ((NULL != pszData) 
+        && (0 != uiLens))
+    {
+        if (Q_RTN_OK != pCurrent->getBuffer()->writeBuffer(pszData, uiLens))
+        {
+            Q_Printf("send message to session: id %d error", pCurrent->getSessionID());
+
+            return false;
+        }
+    }
+
+    return true;
+}
+
 bool CSessionManager::sendWithHead(CSession *pCurrent, 
     const unsigned short &usOpCode, const char *pszData, const size_t &uiLens)
 {
@@ -385,7 +432,27 @@ bool CSessionManager::sendToCur(const unsigned short usOpCode, const char *pszDa
         return false;
     }
 
-    return sendWithHead(m_pCurrent, usOpCode, pszData, uiLens);
+    bool bOK = false;
+    switch(m_pCurrent->getType())
+    {
+    case SType_SVLinker:
+    case SType_TcpClient:
+        {
+            bOK = sendWithHead(m_pCurrent, usOpCode, pszData, uiLens);
+        }
+        break;
+
+    case SType_WebSock:
+        {
+            bOK = sendWebSock(m_pCurrent, usOpCode, pszData, uiLens);
+        }
+        break;
+
+    default:
+        break;
+    }
+
+    return bOK;
 }
 
 bool CSessionManager::sendToByID(const int iID, 
@@ -407,7 +474,27 @@ bool CSessionManager::sendToByID(const int iID,
         return false;
     }
 
-    return sendWithHead(itSession->second, usOpCode, pszData, uiLens);
+    bool bOK = false;
+    switch(itSession->second->getType())
+    {
+    case SType_SVLinker:
+    case SType_TcpClient:
+        {
+            bOK = sendWithHead(itSession->second, usOpCode, pszData, uiLens);
+        }
+        break;
+
+    case SType_WebSock:
+        {
+            bOK = sendWebSock(itSession->second, usOpCode, pszData, uiLens);
+        }
+        break;
+
+    default:
+        break;
+    }
+
+    return bOK;
 }
 
 luabridge::LuaRef CSessionManager::getSVLinkerNameByType(const int iType)
@@ -423,7 +510,7 @@ luabridge::LuaRef CSessionManager::getSVLinkerNameByType(const int iType)
         itServerLinker++)
     {
         pSession = getSession(itServerLinker->second);
-        if (pSession->getServerLinker())
+        if (SType_SVLinker == pSession->getType())
         {
             pLinker = (CServerLinker *)(pSession->getHandle());
             if (NULL != pLinker)
@@ -448,7 +535,7 @@ bool CSessionManager::checkType(const int iType, const int iClientID)
         return false;
     }
 
-    if (!(pSesson->getServerLinker()))
+    if (SType_SVLinker != pSesson->getType())
     {
         return false;
     }
@@ -465,4 +552,9 @@ bool CSessionManager::checkType(const int iType, const int iClientID)
 int CSessionManager::getGetSVLinkerNum(void)
 {
     return m_mapServerLinker.size();
+}
+
+CWebSock *CSessionManager::getWebSock(void)
+{
+    return &m_objWebSock;
 }

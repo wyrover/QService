@@ -88,7 +88,8 @@ int CNETAddr::setAddr(const char *pszHostName, unsigned short usPort, bool is_ip
     iRtn = getaddrinfo(pszHostName, NULL, &stAddrInfo, &pAddrInfo);
     if (Q_RTN_OK != iRtn)
     {
-        Q_Printf("getaddrinfo error. return code %d, message %s.", iRtn, gai_strerror(iRtn));
+        Q_Printf("getaddrinfo error host %s. return code %d, message %s.", 
+            pszHostName, iRtn, gai_strerror(iRtn));
 
         if (NULL != pAddrInfo)
         {

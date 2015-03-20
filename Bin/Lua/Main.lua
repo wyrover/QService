@@ -13,14 +13,17 @@ require("Game/InitModule")
 
 local tNowDay = os.date("*t", time)
 
+--session管理
 if not g_objSessionManager then
     g_objSessionManager = nil
 end
 
+--非服务器连接，根据状态过滤操作码的函数
 if not g_ProtocolFilterFun then
     g_ProtocolFilterFun = nil
 end
 
+--标记是否启动完成
 if not g_StartCompleted then
     g_StartCompleted = false
 end
@@ -67,11 +70,14 @@ function Lua_OnRead(iProtocol, strMsg, iLens)
         end
     end
     
+    local objCurSession = g_objSessionManager:getCurSession()
+    
+    Debug(string.format("session type %d", objCurSession:getType()))
+    Debug("recv messge:")
     printTable(tbMessage)
     
-    --检查操作码与状态是否匹配
-    local objCurSession = g_objSessionManager:getCurSession()   
-    if not objCurSession:isServerLinker() then
+    --检查操作码与状态是否匹配       
+    if SessionType.SVLinker ~= objCurSession:getType() then
         if not g_StartCompleted then
             Debug("service not start completed.")
             return

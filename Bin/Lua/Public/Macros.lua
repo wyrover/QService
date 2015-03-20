@@ -7,7 +7,9 @@ Q_INVALID_ID = -1
 
 --session状态 与c++中enum SessionStatus对应
 SessionStatus = {
-    "Unknown",  --未知
+    "Closed",
+    "Linked",
+    "ShakeHands",--已经握手,websock使用
     "Logining",  --登陆中
     "Logined",  --已经登陆
     "Loading",  --加载玩家信息中
@@ -15,7 +17,7 @@ SessionStatus = {
     "Createing",  --创建玩家中
     "Created",  --创建玩家完成
     "Playing",  --游戏中
-    "GM",
+    "GM",--GM登录
 }
 SessionStatus = creatEnumTable(SessionStatus, -1)
 
@@ -59,6 +61,13 @@ GameEvent = {
     "HttpRead",--http
 }
 GameEvent = creatEnumTable(GameEvent, 1)
+
+SessionType = {
+    "TcpClient",
+    "SVLinker",
+    "WebSock",
+}
+SessionType = creatEnumTable(SessionType)
 
 --文本日志级别
 LOGLV_NOLOG  = 0
