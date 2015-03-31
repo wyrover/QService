@@ -526,29 +526,6 @@ luabridge::LuaRef CSessionManager::getSVLinkerNameByType(const int iType)
     return luaTable;
 }
 
-bool CSessionManager::checkType(const int iType, const int iClientID)
-{
-    CServerLinker *pLinker = NULL;
-    CSession *pSesson = getSessionByID(iClientID);
-    if(NULL == pSesson)
-    {
-        return false;
-    }
-
-    if (SType_SVLinker != pSesson->getType())
-    {
-        return false;
-    }
-
-    pLinker = (CServerLinker *)(pSesson->getHandle());
-    if (NULL == pLinker)
-    {
-        return false;
-    }
-
-    return (pLinker->getType() == iType) ? true : false;
-}
-
 int CSessionManager::getGetSVLinkerNum(void)
 {
     return m_mapServerLinker.size();

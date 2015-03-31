@@ -348,7 +348,6 @@ void CWebSock::parseData(char *pData,  bool &bClose)
     case PING:
         {
             bControl = true;
-            pSession->setPing(m_pSessionMgr->getCount());
 
             size_t iOutLens = Q_INIT_NUMBER;
             const char *pHead = createWebSockHead(true, PONG, m_stWebSockFram.uiDataLens, iOutLens);
@@ -365,7 +364,6 @@ void CWebSock::parseData(char *pData,  bool &bClose)
     case PONG:
         {
             bControl = true;
-            pSession->setPing(m_pSessionMgr->getCount());
             //nothing to do
         }
         break;

@@ -190,7 +190,7 @@ void CWorkThreadEvent::onWebSockRead(struct SockPairEventParam *pParam)
 
         pSession = pSessionManager->getSession(pBev);
         pSession->setType(SType_WebSock);
-        pSession->setStatus(SessionStatus_Linked);
+        pSession->setStatus(SessionStatus_Connect);
     }
 }
 
@@ -420,12 +420,12 @@ void CWorkThreadEvent::workThreadReadCB(struct bufferevent *bev, void *arg)
         {
             bool bClose = false;
             CWebSock *pWebSock = pSessionManager->getWebSock();
-            if (SessionStatus_Linked == pSession->getStatus())
+            if (SessionStatus_Connect == pSession->getStatus())
             { 
                 //ÎÕÊÖ
                 if (pWebSock->shakeHands(bClose))
                 {
-                    pSession->setStatus(SessionStatus_ShakeHands);
+                    pSession->setStatus(SessionStatus_Linked);
                 }
 
                 if (bClose)

@@ -73,7 +73,6 @@ void CReg2Lua::reg_Func(void)
         .addFunction("Q_GetModulPath", Q_GetModulPath)
         .addFunction("Q_GetPathSeparator", Q_GetPathSeparator)
         .addFunction("Q_LOG", Q_LuaLog)
-        .addFunction("Q_Sleep", Q_Sleep)
         .addFunction("getServerID", getServerID)
         .addFunction("getServerType", getServerType);
 }
@@ -82,10 +81,10 @@ void CReg2Lua::reg_Timer(void)
 {
     luabridge::getGlobalNamespace(m_pstLState)
         .beginClass<CTimer>("CTimer")
-        .addConstructor<void (*) (void)>()
+            .addConstructor<void (*) (void)>()
 
-        .addFunction("reStart", &CTimer::reStart)
-        .addFunction("Elapsed", &CTimer::Elapsed)
+            .addFunction("reStart", &CTimer::reStart)
+            .addFunction("Elapsed", &CTimer::Elapsed)
         .endClass();
 }
 
@@ -187,14 +186,12 @@ void CReg2Lua::reg_SessionManager(void)
 {
     luabridge::getGlobalNamespace(m_pstLState)
         .beginClass<CSessionManager>("CSessionManager")
-            .addFunction("getSessionSize", &CSessionManager::getSessionSize)
-            .addFunction("getGetSVLinkerNum", &CSessionManager::getGetSVLinkerNum)
             .addFunction("closeLinkByID", &CSessionManager::closeLinkByID)
             .addFunction("closeCurLink", &CSessionManager::closeCurLink)
 
             .addFunction("getCurSession", &CSessionManager::getCurSession)
             .addFunction("getSessionByID", &CSessionManager::getSessionByID)
-            .addFunction("checkType", &CSessionManager::checkType)
+
             .addFunction("getSVLinkerNameByType", &CSessionManager::getSVLinkerNameByType)
             .addFunction("getServerLinkerSession", &CSessionManager::getServerLinkerSession)
 

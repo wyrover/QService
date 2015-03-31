@@ -8,8 +8,8 @@ Q_INVALID_ID = -1
 --session状态 与c++中enum SessionStatus对应
 SessionStatus = {
     "Closed",
+    "Connect",
     "Linked",
-    "ShakeHands",--已经握手,websock使用
     "Logining",  --登陆中
     "Logined",  --已经登陆
     "Loading",  --加载玩家信息中

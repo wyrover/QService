@@ -149,23 +149,15 @@ function callFunc(Func, ...)
         return
     end
 
-    local strMsg = ''
-    --local strParam = cjson.encode({...})
-
-    local function onExcept(sMsg)
-        strMsg = sMsg
-        local strStack = debug.traceback()
-        print("error message:" .. strMsg)
-        print("stack:" .. strStack)
-        --Debug("param:" .. strParam)
+    local function onExcept(strMsg)
+        local strStack = debug.trace(3, true, 2)
+        Debug("error message:" .. strMsg)
+        Debug("trace:" .. strStack)
         Q_LOG(LOGLV_ERROR, "error message:" .. strMsg)
-        Q_LOG(LOGLV_ERROR, "stack:" .. strStack)
-        --Q_LOG(LOGLV_ERROR, "param:" .. strParam)
+        Q_LOG(LOGLV_ERROR, "trace:" .. strStack)
     end
     
-    local bRtn, objMsg = xpcall(Func, onExcept, table.unpack({...}))
-    
-    return bRtn, objMsg
+    return xpcall(Func, onExcept, table.unpack({...}))
 end
 
 --[[
@@ -304,162 +296,4 @@ function string.split(str, delimiter)
     table.insert(arr, string.sub(str, pos))
     
     return arr
-end
-
-local function mkoffset_tab(offset)
-    local offset_tab = ""
-    if offset and type(offset) == "number" then
-        for i = 0, offset - 1,1 do
-            offset_tab = offset_tab.."\t"
-        end
-    end
-
-    return offset_tab
-end
-
-local function dump(obj, offset)
-    local getIndent, quoteStr, wrapKey, wrapVal, isArray, dumpObj
-
-    offset = offset or 0
-    local offset_tab = mkoffset_tab(offset + 1)
-
-    getIndent = function(level)
-                    return string.rep("\t", level)
-                end
-    quoteStr = function(str)
-                    str = string.gsub(str, "[%c\\\"]", {
-                        ["\t"] = "\\t",
-                        ["\r"] = "\\r",
-                        ["\n"] = "\\n",
-                        ["\""] = "\\\"",
-                        ["\\"] = "\\\\",
-                    })
-                    return '"' .. str .. '"'
-                end
-    wrapKey = function(val)
-                if type(val) == "number" then
-                    return "[" .. val .. "]"
-                elseif type(val) == "string" then
-                    return "[" .. quoteStr(val) .. "]"
-                else
-                    return "[" .. tostring(val) .. "]"
-                end
-             end
-    wrapVal = function(val, level)
-                if type(val) == "table" then
-                    return dumpObj(val, level)
-                elseif type(val) == "number" then
-                    return val
-                elseif type(val) == "string" then
-                    return quoteStr(val)
-                else
-                    return tostring(val)
-                end
-             end
-    local isArray = function(arr)
-                        local count = 0 
-                        for k, v in pairs(arr) do
-                            count = count + 1 
-                        end 
-                        for i = 1, count do
-                            if arr[i] == nil then
-                                return false
-                            end 
-                        end 
-                        
-                        return true, count
-                    end
-    dumpObj = function(obj, level)
-                if type(obj) ~= "table" then
-                    return wrapVal(obj)
-                end
-                level = level + 1
-                local tokens = {}
-                tokens[#tokens + 1] = offset_tab.."{"
-                local ret, count = isArray(obj)
-                if ret then
-                    for i = 1, count do
-                        tokens[#tokens + 1] = offset_tab..getIndent(level) .. wrapVal(obj[i], level) .. ","
-                    end
-                else
-                    for k, v in pairs(obj) do
-                        tokens[#tokens + 1] = offset_tab..getIndent(level) .. wrapKey(k) .. " = " .. wrapVal(v, level) .. ","
-                    end
-                end
-                tokens[#tokens + 1] = offset_tab..getIndent(level - 1) .. "}"
-                
-                return table.concat(tokens, "\n")
-             end
-             
-    return dumpObj(obj, 0)
-end
-
-function debug.var_export(obj, prt)
-    if prt then
-        print(dump(obj))
-    else
-        return dump(obj)
-    end
-end
-
-function debug.var_dump(obj)
-    print(dump(obj))
-end
-
-function debug.trace(depth, not_prt, offset)
-    local lstr = ""
-    local offset_tab = mkoffset_tab(offset or 0)
-
-    local function traceex(cur_level, base_level)
-        local stack = debug.getinfo(cur_level)
-        if not stack then 
-            return false 
-        end
-
-        if stack.what == "C" then
-            lstr = lstr..offset_tab..string.format("%d.[C FUNCTION]",cur_level - base_level + 1).."\n"
-        else
-            lstr = lstr..offset_tab..string.format("%d.[%s:%d]:%s:",cur_level - base_level + 1, stack.short_src, stack.linedefined, stack.name or "").."\n"
-        end
-
-        local i = 1
-        while true do
-            local name, value = debug.getlocal(cur_level, i)
-            if not name then break end
-
-            lstr = lstr..offset_tab.."\t"..name.." = "..dump(value, offset).."\n"
-            i = i + 1
-        end
-
-        return true
-    end
-    
-    local function trace_all()
-        local base_level = 4
-        local i = base_level
-
-        repeat
-            local ret = traceex(i, base_level, 1)
-            i = i + 1
-        until ret ~= true
-    end
-
-    local function trace_dep(depth)
-        local base_level = 4
-        local i = base_level
-
-        repeat
-            local ret = traceex(i, base_level, 1)
-            i = i + 1
-            if i >= depth + base_level then break end
-        until ret ~= true
-    end
-
-    if not depth or depth == 0 or type(depth) ~= "number" then
-        trace_all()
-    elseif type(depth) == "number" then
-        trace_dep(depth)
-    end
-  
-    print(lstr)
 end

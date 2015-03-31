@@ -94,8 +94,8 @@ enum SessionType
 enum SessionStatus
 {
     SessionStatus_Closed = -1,
-    SessionStatus_Linked,    
-    SessionStatus_ShakeHands,
+    SessionStatus_Connect,
+    SessionStatus_Linked,
     SessionStatus_Loging,
     SessionStatus_Logined,
     SessionStatus_Loading,

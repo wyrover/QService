@@ -41,10 +41,6 @@ public:
     CSessionManager(void);
     ~CSessionManager(void);
 
-    /*获取session数量*/
-    size_t getSessionSize(void);
-    /*获取服务器间连接数*/
-    int getGetSVLinkerNum(void);
     /*根据ID关闭连接*/
     void closeLinkByID(const int iID);
     /*关闭当前连接*/
@@ -57,11 +53,17 @@ public:
     CSession *getServerLinkerSession(const char *pszName);
     /*ping 检查(uiTime 超时时间(ms))*/
     void checkPing(const unsigned int uiTime);
+    /*返回指定类型的服务器连接*/
+    luabridge::LuaRef getSVLinkerNameByType(const int iType);
 
     /*直接发送 格式 unsigned short(消息的长度 + 消息码长度) + 操作码 + 消息*/
     bool sendToCur(const unsigned short usOpCode, const char *pszData, const size_t uiLens);
     bool sendToByID(const int iID, const unsigned short usOpCode, const char *pszData, const size_t uiLens);
 
+     /*获取session数量*/
+    size_t getSessionSize(void);
+    /*获取服务器间连接数*/
+    int getGetSVLinkerNum(void);
     /*设置当前触发操作的session*/ 
     void setCurSession(CSession *pSession);
     /*删除session*/
@@ -88,11 +90,6 @@ public:
     unsigned int getCount(void);
     /*设置lua虚拟机*/
     void setLua(struct lua_State *pLua);
-
-    /*返回指定类型的服务器连接*/
-    luabridge::LuaRef getSVLinkerNameByType(const int iType);
-    /*判断是否为指定类型的服务器连接*/
-    bool checkType(const int iType, const int iClientID);
 
     /*获取websock解析指针*/
     CWebSock *getWebSock(void);
