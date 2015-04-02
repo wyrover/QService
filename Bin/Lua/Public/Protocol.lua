@@ -10,8 +10,9 @@ Protocol = {
     "Sys_RegSVRtn",--服务器注册返回
     
     "CS_Ping",   --ping 
+    "SC_Ping",   --ping 
 }
-Protocol = creatEnumTable(Protocol, 1)
+Protocol = table.enum(Protocol, 1)
 
 --protobuf文件
 local tProtoFile = {

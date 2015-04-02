@@ -7,7 +7,7 @@ ErrorCode = {
     "OK",
     "ERROR",
 }
-ErrorCode = creatEnumTable(ErrorCode, -1)
+ErrorCode = table.enum(ErrorCode, -1)
 
 --Http´íÎóÂë
 HTTP_OK	= 200 --/**< request completed ok */

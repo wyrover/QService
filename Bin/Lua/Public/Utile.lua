@@ -55,7 +55,7 @@ end
 返回值： 无
 --]]
 function closeLink(iClentID)
-    g_objSessionManager:closeLinkByID(iClentID)
+    g_objSessionMgr:closeLinkByID(iClentID)
 end
 
 --[[
@@ -64,8 +64,8 @@ end
 返回值： session id
 --]]
 function randSV(iType)
-    local tSVName = g_objSessionManager:getSVLinkerNameByType(iType)
-    local iCount = TableLens(tSVName)
+    local tSVName = g_objSessionMgr:getSVLinkerNameByType(iType)
+    local iCount = table.len(tSVName)
     if 0 == iCount then
         return Q_INVALID_ID
     end
@@ -75,7 +75,7 @@ function randSV(iType)
         iRand = math.random(iCount)
     end
     
-    return g_objSessionManager:getServerLinkerSession(tSVName[iRand]):getSessionID()
+    return g_objSessionMgr:getServerLinkerSession(tSVName[iRand]):getSessionID()
 end
 
 --[[
@@ -110,7 +110,7 @@ end
 参数：
 返回值：无
 --]]
-function timerReStart()    
+function timerReStart()
     objCtimer:reStart()
 end
 
@@ -144,10 +144,7 @@ end
 返回值：bool 函数返回值
 --]]
 function callFunc(Func, ...)
-    if "function" ~= type(Func) then
-        Debug("in function callFunc param Func is not function.")
-        return
-    end
+    assert("function" == type(Func))
 
     local function onExcept(strMsg)
         local strStack = debug.trace(3, true, 2)
@@ -161,11 +158,83 @@ function callFunc(Func, ...)
 end
 
 --[[
+描述：lua sql
+参数：
+返回值：读取到的值
+--]]
+function Rows (objConn, strSql)
+    local cursor = assert (objConn:execute (strSql))
+    return function ()
+        return cursor:fetch()
+    end
+end
+
+--[[
+描述: 批量执行sql
+参数: 
+返回值: 
+--]]
+function sqlExecAll(objConn, tSqls)
+    if table.empty(tSqls) then
+        return
+    end
+    
+    local bRtn = objConn:setautocommit(false)
+    if bRtn then
+        for _, sql in pairs(tSqls) do
+            local Rtn, strError = objConn:execute(sql)
+            if not Rtn then
+                objConn:rollback()
+                objConn:setautocommit(true)
+                assert(Rtn, strError)
+                
+                return
+            end
+        end
+            
+        objConn:commit()
+        objConn:setautocommit(true)
+        
+        return
+    end
+  
+    for _, sql in pairs(tSqls) do
+        assert(objConn:execute(sql))
+    end
+end
+
+--[[
+描述：字符串拆分
+参数：
+返回值：table
+--]]
+function string.split(str, delimiter)
+    assert("string" == str)
+    assert("string" == delimiter)
+    
+    if ('' == delimiter) then 
+        return {str} 
+    end
+    
+    local pos,arr = 0, {}
+    for st,sp in function() return string.find(str, delimiter, pos, true) end do
+        table.insert(arr, string.sub(str, pos, st - 1))
+        pos = sp + 1
+    end
+    
+    table.insert(arr, string.sub(str, pos))
+    
+    return arr
+end
+
+--[[
 描述：table打印
 参数：
 返回值：无
 --]]
-function printTable(lua_table, indent)
+function table.print(lua_table, indent)
+    assert("table" == type(lua_table))
+    
     indent = indent or 0
     for k, v in pairs(lua_table) do
         if type(k) == "string" then
@@ -182,7 +251,7 @@ function printTable(lua_table, indent)
         
         if type(v) == "table" then
             print(formatting)
-            printTable(v, indent + 1)
+            table.print(v, indent + 1)
             print(szPrefix.."},")
         else
             local szValue = ""
@@ -202,12 +271,10 @@ end
 参数：
 返回值：bool
 --]]
-function isTableEmpty(lua_table)
-    if "table" ~= type(lua_table) then
-        return true
-    end
+function table.empty(lua_table)
+    assert("table" == type(lua_table))
     
-    for _,_ in pairs(lua_table) do
+    for _, _ in pairs(lua_table) do
         return false
     end
     
@@ -219,13 +286,11 @@ end
 参数：
 返回值：int
 --]]
-function tableLens(lua_table)
-    if "table" ~= type(lua_table) then
-        return 0
-    end
+function table.len(lua_table)
+    assert("table" == type(lua_table))
     
     local iCount = 0
-    for _,_ in pairs(lua_table) do
+    for _, _ in pairs(lua_table) do
         iCount = iCount + 1
     end
     
@@ -237,17 +302,15 @@ end
 参数：
 返回值：table
 --]]
-function copyTable(tTable)
-    if "table" ~= type(tTable)  then  
-        return nil  
-    end
+function table.copy(tTable)
+    assert("table" == type(lua_table))
     
     local tNewTab = {}  
     for i, v in pairs(tTable) do  
         local vtyp = type(v)
         
         if ("table" == vtyp) then  
-            tNewTab[i] = CopyTable(v)  
+            tNewTab[i] = table.copy(v)  
         elseif ("thread" == vtyp) then  
             tNewTab[i] = v  
         elseif ("userdata" == vtyp) then  
@@ -265,7 +328,7 @@ end
 参数：
 返回值：table
 --]]
-function creatEnumTable(tMsg, iBegin) 
+function table.enum(tMsg, iBegin) 
     assert("table" == type(tMsg)) 
     
     local tEnum = {} 
@@ -276,24 +339,3 @@ function creatEnumTable(tMsg, iBegin)
     
     return tEnum 
 end 
-
---[[
-描述：字符串拆分
-参数：
-返回值：table
---]]
-function string.split(str, delimiter)
-    if ('' == delimiter) then 
-        return {str} 
-    end
-    
-    local pos,arr = 0, {}
-    for st,sp in function() return string.find(str, delimiter, pos, true) end do
-        table.insert(arr, string.sub(str, pos, st - 1))
-        pos = sp + 1
-    end
-    
-    table.insert(arr, string.sub(str, pos))
-    
-    return arr
-end

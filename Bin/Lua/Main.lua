@@ -14,8 +14,8 @@ require("Game/InitModule")
 local tNowDay = os.date("*t", time)
 
 --session管理
-if not g_objSessionManager then
-    g_objSessionManager = nil
+if not g_objSessionMgr then
+    g_objSessionMgr = nil
 end
 
 --非服务器连接，根据状态过滤操作码的函数
@@ -33,8 +33,8 @@ end
 参数：
 返回值： 无
 --]]
-function Lua_OnStartUp(objSessionManager)
-    g_objSessionManager = objSessionManager
+function Lua_OnStartUp(objSessionMgr)
+    g_objSessionMgr = objSessionMgr
     math.randomseed(tonumber(tostring(os.time()):reverse():sub(1,6)))
     
     onGameEvent(GameEvent.Start)--这里一般读取配置文件
@@ -70,11 +70,11 @@ function Lua_OnRead(iProtocol, strMsg, iLens)
         end
     end
     
-    local objCurSession = g_objSessionManager:getCurSession()
+    local objCurSession = g_objSessionMgr:getCurSession()
     
     Debug(string.format("session type %d", objCurSession:getType()))
     Debug("recv messge:")
-    printTable(tbMessage)
+    table.print(tbMessage)
     
     --检查操作码与状态是否匹配       
     if SessionType.SVLinker ~= objCurSession:getType() then
@@ -116,8 +116,8 @@ end
 返回值：无
 --]]
 function Lua_OnTimer()
-    local uiCount = g_objSessionManager:getCount()
-    local uiClick = g_objSessionManager:getTimer()
+    local uiCount = g_objSessionMgr:getCount()
+    local uiClick = g_objSessionMgr:getTimer()
     local uiElapseTime = uiClick * uiCount
     local uiOneSecond = 1000
     

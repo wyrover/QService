@@ -25,7 +25,7 @@ function requireRegSV(objSession)
     tRequest.uiClientID = iClientID
     
     local strMsg = protobuf.encode(strProro, tRequest)
-    g_objSessionManager:sendToByID(iClientID, Protocol.Sys_ReqRegSV, strMsg, string.len(strMsg))
+    g_objSessionMgr:sendToByID(iClientID, Protocol.Sys_ReqRegSV, strMsg, string.len(strMsg))
 end
 
 --[[
@@ -35,7 +35,7 @@ end
 --]]
 local function RegServer(tbMessage)
     local strProro = getProtoStr(Protocol.Sys_RegSVRtn)
-    local objCurSession = g_objSessionManager:getCurSession()
+    local objCurSession = g_objSessionMgr:getCurSession()
     local iSessionID = objCurSession:getSessionID()
     local iSVID = tbMessage.uiServerID
     local iSVType = tbMessage.uiServerType
@@ -56,7 +56,7 @@ local function RegServer(tbMessage)
     end
     
     local strMsg = protobuf.encode(strProro, tResponse)
-    g_objSessionManager:sendToCur(Protocol.Sys_RegSVRtn, strMsg, string.len(strMsg))
+    g_objSessionMgr:sendToCur(Protocol.Sys_RegSVRtn, strMsg, string.len(strMsg))
 end
 regNetEvent(Protocol.Sys_ReqRegSV, RegServer)
 
@@ -70,7 +70,7 @@ local function RegServerRtn(tbMessage)
     local iClientID = tbMessage.uiClientID
     local iRtn = tbMessage.iRtn
     
-    local objSession = g_objSessionManager:getSessionByID(iClientID)
+    local objSession = g_objSessionMgr:getSessionByID(iClientID)
     if not objSession then
         return
     end
@@ -96,7 +96,7 @@ regNetEvent(Protocol.Sys_RegSVRtn, RegServerRtn)
 ∑µªÿ÷µ£∫ Œﬁ
 --]]
 local function OnRegSVClose()
-    local objCurSession = g_objSessionManager:getCurSession()
+    local objCurSession = g_objSessionMgr:getCurSession()
     local iSessionID = objCurSession:getSessionID()
     
     for key, val in pairs(g_RegService) do

@@ -10,7 +10,6 @@ local tLoad =
     {"Public/RegFuncs", true},
     {"Public/Protocol", true},    
     {"Public/Debug", true},
-    {"Public/DBManager", true},
     {"Public/RegSV", true},
     
     {"Game/Ping", true},

@@ -120,7 +120,7 @@ function onNetEvent(iProtocol, ...)
     if Func then
         callFunc(Func, table.unpack{...})      
     else
-        g_objSessionManager:closeCurLink()
+        g_objSessionMgr:closeCurLink()
     end
 end
 

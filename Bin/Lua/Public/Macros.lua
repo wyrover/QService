@@ -19,14 +19,14 @@ SessionStatus = {
     "Playing",  --游戏中
     "GM",--GM登录
 }
-SessionStatus = creatEnumTable(SessionStatus, -1)
+SessionStatus = table.enum(SessionStatus, -1)
 
 --消息载体类型
 CarrierType = {
     "Json",
     "Protobuf",
 }
-CarrierType = creatEnumTable(CarrierType, 1)
+CarrierType = table.enum(CarrierType, 1)
 
 --设置使用的消息载体类型
 MsgCarrier = CarrierType.Protobuf
@@ -39,7 +39,7 @@ SVType = {
     "Fight",  --战斗
     "DataBase",--数据库
 }
-SVType = creatEnumTable(SVType, 1)
+SVType = table.enum(SVType, 1)
 
 --游戏事件
 GameEvent = {
@@ -60,14 +60,14 @@ GameEvent = {
     "Close",--连接关闭
     "HttpRead",--http
 }
-GameEvent = creatEnumTable(GameEvent, 1)
+GameEvent = table.enum(GameEvent, 1)
 
 SessionType = {
     "TcpClient",
     "SVLinker",
     "WebSock",
 }
-SessionType = creatEnumTable(SessionType)
+SessionType = table.enum(SessionType)
 
 --文本日志级别
 LOGLV_NOLOG  = 0
