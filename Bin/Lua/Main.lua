@@ -47,7 +47,9 @@ end
 返回值：无
 --]]
 function Lua_OnShutDown()
-    onGameEvent(GameEvent.ShutDown)    
+    onGameEvent(GameEvent.ShutDown)
+    --确认退出，，，没这个不会退出
+    g_objSessionMgr:confirmStop()
 end
 
 --[[

@@ -41,7 +41,6 @@ CWorkThreadEvent::CWorkThreadEvent(void) : m_pEvent(NULL), m_pHttp(NULL)
 
 CWorkThreadEvent::~CWorkThreadEvent(void)
 {
-    Stop();
     if (NULL != m_pEvent)
     {
         event_free(m_pEvent);
@@ -59,9 +58,9 @@ CSessionManager *CWorkThreadEvent::getSessionManager(void)
     return &m_objSessionManager;
 }
 
-void CWorkThreadEvent::onStartUp(void)
+bool CWorkThreadEvent::onStartUp(void)
 {
-    m_objSessionManager.getInterface()->onSerciveStartUp();
+    return m_objSessionManager.getInterface()->onSerciveStartUp();
 }
 
 void CWorkThreadEvent::setInterface(CEventInterface *pInterface)
@@ -333,6 +332,7 @@ void CWorkThreadEvent::addServerLinker(struct event_base *pMainBase,
 void CWorkThreadEvent::onStop(struct SockPairEventParam *pParam)
 {
     CSessionManager *pSessionManager = (CSessionManager *)(pParam->pUserDate);
+    pSessionManager->setWorkThread(this);
 
     pSessionManager->getInterface()->onSerciveShutDown();
 }

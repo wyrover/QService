@@ -37,7 +37,7 @@ public:
     ~CDisposeEvent(void);
 
     /*工作线程启动时执行*/
-    void onSerciveStartUp(void);
+    bool onSerciveStartUp(void);
     /*工作线程关闭时执行*/
     void onSerciveShutDown(void);
     /*socket断开时执行*/

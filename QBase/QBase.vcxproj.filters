@@ -22,9 +22,6 @@
     <Filter Include="Xml">
       <UniqueIdentifier>{f105553c-0760-42a5-ba63-508fdead5be6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="TimerTask">
-      <UniqueIdentifier>{b5a56e40-212a-4351-9e84-876f3fbfc165}</UniqueIdentifier>
-    </Filter>
     <Filter Include="DataBase">
       <UniqueIdentifier>{308debb4-45c8-4962-90ca-f71013c9ce31}</UniqueIdentifier>
     </Filter>
@@ -106,6 +103,9 @@
     <Filter Include="Encrypt\Sha1">
       <UniqueIdentifier>{3cd8ae53-c8a5-41a4-86f2-769722eae2d5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="TimerTask">
+      <UniqueIdentifier>{4c01fb72-0db3-43d4-8c89-59ef6c423e21}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Config.h">
@@ -160,9 +160,6 @@
       <Filter>DataBase\MySQL</Filter>
     </ClInclude>
     <ClInclude Include="QBase.h" />
-    <ClInclude Include="TimerTask.h">
-      <Filter>TimerTask</Filter>
-    </ClInclude>
     <ClInclude Include="SampleLoger.h">
       <Filter>Log</Filter>
     </ClInclude>
@@ -589,6 +586,9 @@
     <ClInclude Include="WebSock.h">
       <Filter>Service\WorkThread</Filter>
     </ClInclude>
+    <ClInclude Include="TimerTask.h">
+      <Filter>TimerTask</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Log.cpp">
@@ -623,9 +623,6 @@
     </ClCompile>
     <ClCompile Include="QMySQL.cpp">
       <Filter>DataBase\MySQL</Filter>
-    </ClCompile>
-    <ClCompile Include="TimerTask.cpp">
-      <Filter>TimerTask</Filter>
     </ClCompile>
     <ClCompile Include="SampleLoger.cpp">
       <Filter>Log</Filter>
@@ -1035,6 +1032,9 @@
     </ClCompile>
     <ClCompile Include="WebSock.cpp">
       <Filter>Service\WorkThread</Filter>
+    </ClCompile>
+    <ClCompile Include="TimerTask.cpp">
+      <Filter>TimerTask</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -28,11 +28,13 @@
 #include "SessionManager.h"
 #include "Exception.h"
 #include "ServerLinker.h"
+#include "WorkThreadEvent.h"
 
 #define Q_INITSESSIONSIZE 2000
 
 CSessionManager::CSessionManager(void) : m_sThreadIndex(-1), m_uiTimer(Q_INIT_NUMBER),
-    m_uiCount(Q_INIT_NUMBER), m_pLua(NULL), m_pCurrent(NULL), m_pInterface(NULL)
+    m_uiCount(Q_INIT_NUMBER), m_pLua(NULL), m_pCurrent(NULL), m_pInterface(NULL),
+    m_pWorkThread(NULL)
 {
     for (int i = 0; i < Q_INITSESSIONSIZE; i++)
     {
@@ -78,6 +80,11 @@ unsigned int CSessionManager::getCount(void)
 void CSessionManager::setLua(struct lua_State *pLua)
 {
     m_pLua = pLua;
+}
+
+void CSessionManager::setWorkThread(class CWorkThreadEvent *pThread)
+{
+    m_pWorkThread = pThread;
 }
 
 void CSessionManager::setThreadIndex(const short &sIndex)
@@ -216,6 +223,13 @@ CSession *CSessionManager::getServerLinkerSession(const char *pszName)
     }
 
     return getSession(itServerLinker->second);
+}
+
+void CSessionManager::confirmStop(void)
+{
+    assert(NULL != m_pWorkThread);
+
+    m_pWorkThread->setRunStatus(RunStatus_Stopped);
 }
 
 void CSessionManager::checkPing(const unsigned int uiTime)

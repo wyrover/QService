@@ -64,18 +64,12 @@ private:
         std::list<ServerLinkerInfo> lstLinkerInfo;
     };
 
-    struct ServerHandle
-    {
-        CServer *pSV;
-        std::list<CServerLinker *> lstLinker;
-    };
-
 private:
     void initSampleLog(void);
     bool readConfig(void);
     int initServer(void);
     void destroyServer(void);
-    int initLinker(ServerInfo &stServerInfo, ServerHandle &stSVHandle);
+    int initLinker(ServerInfo &stServerInfo);
 
 private:
     CThread m_objThread;
@@ -84,8 +78,9 @@ private:
     xml_parse_result m_objXmlResult;
     xml_node m_objXmlNode;
     CLog m_objLog;
-    ServerHandle m_stServer;
     ServerInfo m_stServerConfig;
+    CServer m_objServer;
+    std::list<CServerLinker *> m_lstLinker;
     std::vector<CEventInterface * > m_vcInterface;
 };
 

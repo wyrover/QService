@@ -86,7 +86,7 @@ private:
 
 CServerInit::~CServerInit(void)
 {
-    Stop();
+    destroyServer();
 }
 
 int CServerInit::Start(void)
@@ -145,7 +145,10 @@ int CServerInit::Start(void)
 
 void CServerInit::Stop(void)
 {
-    destroyServer();
+    Q_Printf("%s", "shutdown server...");
+    m_objServer.Stop();
+    Q_Printf("%s", "stop log system.");
+    m_objLog.Stop();
 }
 
 bool CServerInit::readConfig(void)
@@ -234,35 +237,24 @@ int CServerInit::initServer(void)
         Q_Printf("get an exception. code %d, message %s", e.getErrorCode(), e.getErrorMsg());
         
         return e.getErrorCode();
-    }    
-
-    /*new CServer*/
-    m_stServer.pSV = new(std::nothrow) CServer();
-    if (NULL == m_stServer.pSV)
-    {
-        Q_LOG(LOGLV_ERROR, "%s", Q_EXCEPTION_ALLOCMEMORY);
-
-        return Q_ERROR_ALLOCMEMORY;
     }
 
     /*设置值*/
-    m_stServer.pSV->setBindIP(m_stServerConfig.strBindIP.c_str());
-    m_stServer.pSV->setPort(m_stServerConfig.usPort);
-    m_stServer.pSV->setHttpBindIP(m_stServerConfig.strHttpBindIP.c_str());
-    m_stServer.pSV->setHttpPort(m_stServerConfig.usHttpPort);
-    m_stServer.pSV->setWebSockBindIP(m_stServerConfig.strWebSockBindIP.c_str());
-    m_stServer.pSV->setWebSockPort(m_stServerConfig.usWebSockPort);
+    m_objServer.setBindIP(m_stServerConfig.strBindIP.c_str());
+    m_objServer.setPort(m_stServerConfig.usPort);
+    m_objServer.setHttpBindIP(m_stServerConfig.strHttpBindIP.c_str());
+    m_objServer.setHttpPort(m_stServerConfig.usHttpPort);
+    m_objServer.setWebSockBindIP(m_stServerConfig.strWebSockBindIP.c_str());
+    m_objServer.setWebSockPort(m_stServerConfig.usWebSockPort);
 
-    m_stServer.pSV->setThreadNum(m_stServerConfig.usThreadNum);
-    m_stServer.pSV->setInterface(m_vcInterface);
-    m_stServer.pSV->setTimer(m_stServerConfig.uiTimer);    
+    m_objServer.setThreadNum(m_stServerConfig.usThreadNum);
+    m_objServer.setInterface(m_vcInterface);
+    m_objServer.setTimer(m_stServerConfig.uiTimer);    
 
     /*完成初始化*/
-    iRtn = m_stServer.pSV->Init();
+    iRtn = m_objServer.Init();
     if (Q_RTN_OK != iRtn)
     {
-        Q_SafeDelete(m_stServer.pSV);
-
         return iRtn;
     }
 
@@ -272,11 +264,9 @@ int CServerInit::initServer(void)
         Q_Printf("%s", "add service linker...");
     }
 
-    iRtn = initLinker(m_stServerConfig, m_stServer);
+    iRtn = initLinker(m_stServerConfig);
     if (Q_RTN_OK != iRtn)
     {
-        Q_SafeDelete(m_stServer.pSV);
-
         return iRtn;
     }
 
@@ -284,17 +274,15 @@ int CServerInit::initServer(void)
     CServerTask *pTask = new(std::nothrow) CServerTask();
     if (NULL == pTask)
     {
-        Q_SafeDelete(m_stServer.pSV);
         Q_LOG(LOGLV_ERROR, "%s", Q_EXCEPTION_ALLOCMEMORY);
 
         return Q_ERROR_ALLOCMEMORY;
     }
 
-    pTask->setServerHandle(m_stServer.pSV);
+    pTask->setServerHandle(&m_objServer);
     m_objThread.Execute(pTask);
-    if (!(m_stServer.pSV->waitForStarted()))
+    if (!(m_objServer.waitForStarted()))
     {
-        Q_SafeDelete(m_stServer.pSV);
         Q_LOG(LOGLV_ERROR, "start server on port %d error.", m_stServerConfig.usPort);
 
         return Q_RTN_FAILE;
@@ -303,12 +291,12 @@ int CServerInit::initServer(void)
     return Q_RTN_OK;
 }
 
-int CServerInit::initLinker(ServerInfo &stServerInfo, ServerHandle &stSVHandle)
+int CServerInit::initLinker(ServerInfo &stServerInfo)
 {
     std::list<ServerLinkerInfo>::iterator itLinker;
     
     //为每个线程添加
-    for (unsigned short us = 0; us < stSVHandle.pSV->getThreadNum(); us++)
+    for (unsigned short us = 0; us < m_objServer.getThreadNum(); us++)
     {
         std::vector<CServerLinker *> vcTmpSVLinker;
         for (itLinker = stServerInfo.lstLinkerInfo.begin(); stServerInfo.lstLinkerInfo.end() != itLinker; 
@@ -326,10 +314,10 @@ int CServerInit::initLinker(ServerInfo &stServerInfo, ServerHandle &stSVHandle)
             pLinker->setPort(itLinker->usPort);
             pLinker->setType(itLinker->iType);
             pLinker->setIp(itLinker->strIP.c_str());
-            pLinker->setSockPairEvent(&((stSVHandle.pSV->getServerThreadEvent())[us]));
+            pLinker->setSockPairEvent(&((m_objServer.getServerThreadEvent())[us]));
 
             vcTmpSVLinker.push_back(pLinker);
-            stSVHandle.lstLinker.push_back(pLinker);
+            m_lstLinker.push_back(pLinker);
         }
 
         m_vcInterface[us]->setSVLinker(vcTmpSVLinker);
@@ -343,19 +331,17 @@ void CServerInit::destroyServer(void)
     std::list<CServerLinker *>::iterator itLinker;
     std::vector<CEventInterface * >::iterator itInterface;
 
-    for (itLinker = m_stServer.lstLinker.begin(); m_stServer.lstLinker.end() != itLinker; itLinker++)
+    for (itLinker = m_lstLinker.begin(); m_lstLinker.end() != itLinker; itLinker++)
     {
         Q_SafeDelete(*itLinker);
     }
-
-    Q_SafeDelete(m_stServer.pSV);
 
     for (itInterface = m_vcInterface.begin(); m_vcInterface.end() != itInterface; itInterface++)
     {
         Q_SafeDelete(*itInterface);
     }
 
-    m_vcInterface.clear();
+    m_vcInterface.clear();    
 }
 
 void CServerInit::initSampleLog(void)

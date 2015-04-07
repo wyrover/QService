@@ -31,7 +31,7 @@
 
 #define Q_THREADPOOL_CONDTIMEOUT   1000
 
-enum RunStatus
+enum ThRunStatus
 {
     RUN = 0,
     STOP,

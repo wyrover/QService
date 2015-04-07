@@ -56,7 +56,7 @@ public:
     void onWebSockRead(struct SockPairEventParam *pParam);
     void onOrderRead(struct SockPairEventParam *pParam);
     void onStop(struct SockPairEventParam *pParam);    
-    void onStartUp(void);
+    bool onStartUp(void);
 
 public:
     static void workThreadReadCB(struct bufferevent *bev, void *arg);

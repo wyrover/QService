@@ -28,18 +28,16 @@
 #include "SockPairEvent.h"
 #include "Thread.h"
 #include "Exception.h"
-#include "SockPairEventParam.h"
 #include "SysLog.h"
 
-#define EXIT_COMMAND "EXIT"
-
-CSockPairEvent::CSockPairEvent(void) : m_bExitNormal(false), m_bRun(false), m_bError(false),
-    m_pEventBase(NULL), m_pBevs(NULL), m_pSockPairs(NULL), m_pBuffers(NULL), m_pParam(NULL)
+CSockPairEvent::CSockPairEvent(void) : m_bRunOnStop(false),
+    m_cStatus(RunStatus_Unknown), m_pEventBase(NULL), m_pBevs(NULL), m_pSockPairs(NULL), 
+    m_pBuffers(NULL), m_pParam(NULL), m_pExitEvent(NULL)
 {
     int iRtn = Init();
     if (Q_RTN_OK != iRtn)
     {
-        setError(true);
+        setRunStatus(RunStatus_Error);
         freeAll();
 
         Q_EXCEPTION(iRtn, "%s", "init socket pair event error.");
@@ -48,8 +46,6 @@ CSockPairEvent::CSockPairEvent(void) : m_bExitNormal(false), m_bRun(false), m_bE
 
 CSockPairEvent::~CSockPairEvent(void)
 {
-    Stop();
-
     freeAll();
 }
 
@@ -119,6 +115,9 @@ int CSockPairEvent::Init(void)
         m_pParam[i].pFun = this;
     }
 
+    m_stExitParam.pMainBase = m_pEventBase;
+    m_stExitParam.pFun = this;
+
     return Q_RTN_OK;
 }
 
@@ -142,11 +141,53 @@ void CSockPairEvent::freeAll(void)
     Q_SafeDelete_Array(m_pBuffers);    
     Q_SafeDelete_Array(m_pParam);
 
+    if (NULL != m_pExitEvent)
+    {
+        event_free(m_pExitEvent);
+        m_pExitEvent = NULL;
+    }
+
     if (NULL != m_pEventBase)
     {
         event_base_free(m_pEventBase);
         m_pEventBase = NULL;
     }
+}
+
+int CSockPairEvent::initExitMonitor(unsigned int uiMS)
+{
+    timeval tVal;
+    evutil_timerclear(&tVal);
+    if (uiMS >= 1000)
+    {
+        tVal.tv_sec = uiMS / 1000;
+        tVal.tv_usec = (uiMS % 1000) * (1000);
+    }
+    else
+    {
+        tVal.tv_usec = (uiMS * 1000);
+    }
+
+    m_pExitEvent = event_new(getBase(), 
+        -1, EV_PERSIST, exitMonitorCB, &m_stExitParam);
+    if (NULL == m_pExitEvent)
+    {
+        Q_Printf("%s", "event_new error");
+
+        return Q_RTN_FAILE;
+    }
+
+    if (Q_RTN_OK != event_add(m_pExitEvent, &tVal))
+    {
+        Q_Printf("%s", "event_add error");
+
+        event_free(m_pExitEvent);
+        m_pExitEvent = NULL;
+
+        return Q_RTN_FAILE;
+    }
+
+    return Q_RTN_OK;
 }
 
 /************************************************************************
@@ -162,46 +203,44 @@ void CSockPairEvent::freeAll(void)
 ************************************************************************/
 int CSockPairEvent::Start(void)
 {
+    //初始化时是否出错
+    if (getError())
+    {
+        return Q_RTN_FAILE;
+    }
+
     int iRtn = Q_RTN_OK;
 
+    //初始化event
+    setRunStatus(RunStatus_Starting);
     iRtn = initEvent();
     if (Q_RTN_OK != iRtn)
     {
-        setError(true);
-
+        setRunStatus(RunStatus_Error);
         return iRtn;
     }
 
-    Q_Printf("%s", "run sock pair loop");
-    m_bRun = true;
-    onStartUp();
-    iRtn = event_base_dispatch(m_pEventBase);
-    if (!m_bExitNormal)
+    //退出监控
+    iRtn = initExitMonitor(100);
+    if (Q_RTN_OK != iRtn)
     {
-        iRtn = EVUTIL_SOCKET_ERROR();
-        Q_Printf("happen error on loop. error code %d, message %s", 
-            iRtn, evutil_socket_error_to_string(iRtn));
-
-        Q_SYSLOG(LOGLV_ERROR, "happen error on loop. error code %d, message %s", 
-            iRtn, evutil_socket_error_to_string(iRtn));
-
-        setError(true);
-
-        g_objExitMutex.Lock();
-        g_objExitCond.Signal();
-        g_objExitMutex.unLock();
+        setRunStatus(RunStatus_Error);
+        return iRtn;
     }
-    m_bRun = false;
-    Q_Printf("%s", "exit sock pair loop");
+
+    if (!onStartUp())
+    {
+        setRunStatus(RunStatus_Error);
+        return iRtn;
+    }
+
+    setRunStatus(RunStatus_Runing);
+    event_base_dispatch(m_pEventBase);
+    setRunStatus(RunStatus_Stopped);
 
     m_Mutex.Lock();
     m_Cond.Signal();
     m_Mutex.unLock();
-
-    if (!m_bExitNormal)
-    {
-        return iRtn;
-    }
 
     return Q_RTN_OK;
 }
@@ -222,32 +261,41 @@ void CSockPairEvent::Stop(void)
     if (getIsRun()
         && NULL != m_pSockPairs)
     {
-        m_bExitNormal = true;
-
-        Q_Printf("%s", "wait event loop stop");
-
         m_Mutex.Lock();
-        (void)m_pSockPairs[TYPE_EXIT].Write(EXIT_COMMAND, strlen(EXIT_COMMAND));
+        setRunStatus(RunStatus_Stopping);
         m_Cond.Wait(&m_Mutex);
         m_Mutex.unLock();
-
-        Q_Printf("%s", "event loop stoped");
-    }   
+    }
 }
 
-void CSockPairEvent::setError(bool bError)
+void CSockPairEvent::setRunStatus(RunStatus emStatus)
 {
-    m_bError = bError;
+    m_cStatus = emStatus;
+}
+
+RunStatus CSockPairEvent::getRunStatus(void)
+{
+    return (RunStatus)m_cStatus;
+}
+
+void CSockPairEvent::setRunOnStop(bool bRun)
+{
+    m_bRunOnStop = bRun;
+}
+
+bool CSockPairEvent::getRunOnStop(void)
+{
+    return m_bRunOnStop;
 }
 
 bool CSockPairEvent::getError(void)
 {
-    return m_bError;
+    return ((RunStatus_Error == getRunStatus()) ? true : false);
 }
 
 bool CSockPairEvent::getIsRun(void)
 {
-    return m_bRun;
+    return ((RunStatus_Runing == getRunStatus()) ? true : false);
 }
 
 /************************************************************************
@@ -284,11 +332,6 @@ void CSockPairEvent::setTcpParam(void *pArg)
     m_pParam[TYPE_TCP].pUserDate = pArg;
 }
 
-void CSockPairEvent::setExitParam(void *pArg)
-{
-    m_pParam[TYPE_EXIT].pUserDate = pArg;
-}
-
 void CSockPairEvent::setOrderParam(void *pArg)
 {
     m_pParam[TYPE_ORDER].pUserDate = pArg;
@@ -297,6 +340,11 @@ void CSockPairEvent::setOrderParam(void *pArg)
 void CSockPairEvent::setWebSockParam(void *pArg)
 {
     m_pParam[TYPE_WEBSOCK].pUserDate = pArg;
+}
+
+void CSockPairEvent::setExitParam(void *pArg)
+{
+    m_stExitParam.pUserDate = pArg;
 }
 
 int CSockPairEvent::initEvent(struct bufferevent **pBev, struct SockPairEventParam *pParam, CSockPair &objPair)
@@ -385,7 +433,6 @@ void CSockPairEvent::sockPairEventCB(struct bufferevent *bev, short event, void 
 #endif
     }
 
-    pParam->pFun->onStop(pParam);
     event_base_loopbreak(pParam->pMainBase);
     Q_SYSLOG(LOGLV_ERROR, 
         "an event error for bufferevent %d, event is %d. error code %d, message %s exit loop",
@@ -410,22 +457,37 @@ void CSockPairEvent::sockPairEventReadCB(struct bufferevent *bev, void *arg)
         pParam->pFun->onWebSockRead(pParam);
         break;
 
-    case TYPE_EXIT:
-        {
-            size_t iSize = Q_INIT_NUMBER;
-            iSize = pParam->pEventBuf->getTotalLens();
-            if (strlen(EXIT_COMMAND) <= iSize)
-            {
-                pParam->pFun->onStop(pParam);
-                event_base_loopbreak(pParam->pMainBase);
+    default:
+        Q_Printf("%s", "unkown event type");
+        break;
+    }
+}
 
-                Q_Printf("%s", "get order to exit sock pair loop");
+void CSockPairEvent::exitMonitorCB(evutil_socket_t, short event, void *arg)
+{
+    SockPairEventParam *pParam = (SockPairEventParam*)arg;
+
+    switch(pParam->pFun->getRunStatus())
+    {
+    case RunStatus_Stopping:
+        {
+            if (!pParam->pFun->getRunOnStop())
+            {
+                Q_Printf("ready stop thread %u.", Q_ThreadId());
+                pParam->pFun->onStop(pParam);
+                pParam->pFun->setRunOnStop(true);
             }
         }
         break;
 
+    case RunStatus_Stopped:
+        {
+            Q_Printf("stop thread %u successfully.", Q_ThreadId());
+            event_base_loopbreak(pParam->pMainBase);
+        }
+        break;
+
     default:
-        Q_Printf("%s", "unkown event type");
         break;
     }
 }

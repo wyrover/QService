@@ -33,9 +33,8 @@
 enum SockPairEventType
 {
     TYPE_TCP = 0,
-    TYPE_EXIT,
-    TYPE_ORDER,
     TYPE_WEBSOCK,
+    TYPE_ORDER,    
     TYPE_COUNT,
 };
 

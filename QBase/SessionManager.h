@@ -55,6 +55,8 @@ public:
     void checkPing(const unsigned int uiTime);
     /*返回指定类型的服务器连接*/
     luabridge::LuaRef getSVLinkerNameByType(const int iType);
+    /*确认停止服务*/
+    void confirmStop(void);
 
     /*直接发送 格式 unsigned short(消息的长度 + 消息码长度) + 操作码 + 消息*/
     bool sendToCur(const unsigned short usOpCode, const char *pszData, const size_t uiLens);
@@ -90,7 +92,8 @@ public:
     unsigned int getCount(void);
     /*设置lua虚拟机*/
     void setLua(struct lua_State *pLua);
-
+    /*设置工作线程指针*/
+    void setWorkThread(class CWorkThreadEvent *pThread);
     /*获取websock解析指针*/
     CWebSock *getWebSock(void);
 private:
@@ -108,6 +111,7 @@ private:
     struct lua_State *m_pLua;
     CSession *m_pCurrent; //当前Session
     class CEventInterface *m_pInterface;
+    class CWorkThreadEvent *m_pWorkThread;
     std::tr1::unordered_map<int, CSession *> m_unmapSession;//所有Session
     std::queue<CSession *> m_quFreeSession;//空闲的session
     std::tr1::unordered_map<std::string, bufferevent* > m_mapServerLinker;

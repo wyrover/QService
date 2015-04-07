@@ -38,12 +38,37 @@
 #define PAYLOADLENS_126 126
 #define PAYLOADLENS_127 127
 
-#define htonl64(p) {\
-    (char)(((p & ((uint64_t)0xff << 0)) >> 0) & 0xff), (char)(((p & ((uint64_t)0xff << 8)) >> 8) & 0xff), \
-    (char)(((p & ((uint64_t)0xff << 16)) >> 16) & 0xff), (char)(((p & ((uint64_t)0xff << 24)) >> 24) & 0xff), \
-    (char)(((p & ((uint64_t)0xff << 32)) >> 32) & 0xff), (char)(((p & ((uint64_t)0xff << 40)) >> 40) & 0xff), \
-    (char)(((p & ((uint64_t)0xff << 48)) >> 48) & 0xff), (char)(((p & ((uint64_t)0xff << 56)) >> 56) & 0xff) }
+static union  
+{
+    char a[4];  
+    unsigned long ul;  
+}endian = {{'L', '?', '?', 'B'}}; 
+#define ENDIAN ((char)endian.ul) 
 
+uint64_t ntohl64(uint64_t host)
+{
+    if ('L' == ENDIAN)
+    {
+        uint64_t uiRet = 0;
+        unsigned long ulHigh,ulLow;
+
+        ulLow = host & 0xFFFFFFFF;
+        ulHigh = (host >> 32) & 0xFFFFFFFF;
+
+        ulLow = ntohl(ulLow); 
+        ulHigh = ntohl(ulHigh);
+
+        uiRet = ulLow;
+        uiRet <<= 32;
+        uiRet |= ulHigh;
+
+        return uiRet;
+    }
+    else
+    {
+        return host;
+    }
+}
 
 CWebSock::CWebSock(void) : m_pSessionMgr(NULL)
 {
@@ -536,8 +561,8 @@ const char *CWebSock::createWebSockHead(const bool &bFin, const WebSockOpCode em
     else 
     {
         m_acWebSockHead[1] = PAYLOADLENS_127;
-        char acLen64[8] = htonl64(iDataLens);
-        memcpy(m_acWebSockHead + 2, acLen64, sizeof(acLen64));
+        uint64_t uiLens64 = ntohl64(iDataLens);
+        memcpy(m_acWebSockHead + 2, &uiLens64, sizeof(uiLens64));
 
         iOutLens = FRAME_HEAD_EXT64_LEN - 4;
     }

@@ -65,7 +65,7 @@ int CTimerTask::Append(CTask *pTask, unsigned int uiMS, unsigned int uiCount)
         return Q_RTN_FAILE;
     }
 
-    if (!getIsRun())
+    if (RunStatus_Runing != getRunStatus())
     {
         Q_Printf("%s", "event loop not run.");
         Q_SafeDelete(pTask);
@@ -202,4 +202,6 @@ void CTimerTask::onStop(SockPairEventParam *pParam)
     }
 
     plstUserData->clear();
+
+    setRunStatus(RunStatus_Stopped);
 }

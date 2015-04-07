@@ -30,8 +30,6 @@
 #include "Exception.h"
 #include "SysLog.h"
 
-#define EXIT_COMMAND "EXIT"
-
 class CWorkerThreadTask : public CTask
 {
 public:
@@ -58,9 +56,7 @@ private:
 CServer::CServer(void)
 {
     m_uiTimer = Q_INIT_NUMBER;
-    m_bShutDownNormal = false;
-    m_bLoop = false;
-    m_bError = false;
+    m_cRunStatus = RunStatus_Unknown;
     m_usThreadNum = 1;
     m_usPort = Q_INIT_NUMBER;
     m_usHttpPort = Q_INIT_NUMBER;
@@ -69,15 +65,21 @@ CServer::CServer(void)
     m_pListener = NULL;
     m_pWebSockListener = NULL;
     m_pMainBase = NULL;
-    m_pEvent_Exit = NULL;
     m_pPool = NULL;
     m_pServerThreadEvent = NULL;
-    m_pPair_Exit = NULL;
+    m_pExitEvent = NULL;
 }
 
 CServer::~CServer(void)
 {
-    Stop();
+    Q_SafeDelete_Array(m_pServerThreadEvent);
+    Q_SafeDelete(m_pPool);
+    freeMainEvent();
+    if (Q_INVALID_SOCK != m_httpSock)
+    {
+        evutil_closesocket(m_httpSock);
+        m_httpSock = Q_INVALID_SOCK;
+    }
 }
 
 void CServer::setThreadNum(const unsigned short usThreadNum)
@@ -140,14 +142,19 @@ unsigned short CServer::getWebSockPort(void)
     return m_usWebSockPort;
 }
 
-void CServer::setError(bool bError)
-{
-    m_bError = bError;
-}
-
 bool CServer::getError(void)
 {
-    return m_bError;
+    return ((RunStatus_Error == getRunStatus()) ? true : false);;
+}
+
+void CServer::setRunStatus(RunStatus emStatus)
+{
+    m_cRunStatus = emStatus;
+}
+
+RunStatus CServer::getRunStatus(void)
+{
+    return (RunStatus)m_cRunStatus;
 }
 
 void CServer::setInterface(std::vector<CEventInterface * > &lstInterface)
@@ -167,7 +174,7 @@ unsigned int CServer::getTimer(void)
 
 bool CServer::getIsRun(void)
 {
-    return m_bLoop;
+    return ((RunStatus_Runing == getRunStatus()) ? true : false);
 }
 
 bool CServer::waitForStarted(void)
@@ -210,6 +217,12 @@ void CServer::webSockAcceptCB(struct evconnlistener *, Q_SOCK sock, struct socka
     CServer *pServer = (CServer *)arg;
     CWorkThreadEvent *pThreadEvent = pServer->getServerThreadEvent();
 
+    if (RunStatus_Runing != pServer->getRunStatus())
+    {
+        evutil_closesocket(sock);
+        return;
+    }
+
     //取得最小连接数的线程号
     if (pServer->getThreadNum() > 1)
     {
@@ -242,6 +255,12 @@ void CServer::listenerAcceptCB(struct evconnlistener *, Q_SOCK sock, struct sock
     CServer *pServer = (CServer *)arg;
     CWorkThreadEvent *pThreadEvent = pServer->getServerThreadEvent();
 
+    if (RunStatus_Runing != pServer->getRunStatus())
+    {
+        evutil_closesocket(sock);
+        return;
+    }
+
     //取得最小连接数的线程号
     if (pServer->getThreadNum() > 1)
     {
@@ -267,69 +286,28 @@ void CServer::listenerAcceptCB(struct evconnlistener *, Q_SOCK sock, struct sock
     }
 }
 
-void CServer::mainLoopExitCB(struct bufferevent *bev, void *arg)
+void CServer::exitMonitorCB(evutil_socket_t, short event, void *arg)
 {
-    size_t iSize = Q_INIT_NUMBER;
-    std::string strTmp;
-    CEventBuffer objBuffer;
-    struct event_base *pMainBase = NULL;
-
-    pMainBase = (struct event_base *)arg;
-
-    if (Q_RTN_OK != objBuffer.setBuffer(bev))
+    CServer *pServer = (CServer *)arg;
+    switch(pServer->getRunStatus())
     {
-        return;
-    }
-
-    iSize = objBuffer.getTotalLens();
-    if (strlen(EXIT_COMMAND) <= iSize)
-    {
-        event_base_loopbreak(pMainBase);
-
-        Q_Printf("%s", "get order to exit main loop");
-    }
-}
-
-int CServer::initMainExit(void)
-{
-    int iRtn = Q_RTN_OK;
-
-    try
-    {
-        m_pPair_Exit = new(std::nothrow) CSockPair();
-        if (NULL == m_pPair_Exit)
+    case RunStatus_Stopping:
         {
-            Q_Printf("%s", Q_EXCEPTION_ALLOCMEMORY);
-
-            return Q_ERROR_ALLOCMEMORY;
+            Q_Printf("ready stop main thread.");
+            pServer->setRunStatus(RunStatus_Stopped);            
         }
+        break;
+
+    case RunStatus_Stopped:
+        {
+            Q_Printf("stop main thread successfully.");
+            event_base_loopbreak(pServer->getBase());
+        }
+        break;
+
+    default:
+        break;
     }
-    catch(CException &e)
-    {
-        Q_Printf("get an exception. code %d, message %s", e.getErrorCode(), e.getErrorMsg());
-
-        return e.getErrorCode();
-    }
-
-    m_pEvent_Exit = bufferevent_socket_new(m_pMainBase, 
-        m_pPair_Exit->getReadFD(), BEV_OPT_CLOSE_ON_FREE);
-    if (NULL == m_pEvent_Exit)
-    {
-        Q_Printf("%s", "bufferevent_socket_new error.");
-
-        return Q_RTN_FAILE;
-    }
-
-    bufferevent_setcb(m_pEvent_Exit, mainLoopExitCB, NULL, NULL, m_pMainBase);
-    iRtn = bufferevent_enable(m_pEvent_Exit, EV_READ);
-    if (Q_RTN_OK != iRtn)
-    {
-        Q_Printf("%s", "bufferevent_enable error.");
-
-        return iRtn;
-    }
-
-    return Q_RTN_OK;
 }
 
 int CServer::initWebSockListener(void)
@@ -470,7 +448,10 @@ int CServer::initWorkThread(void)
 
 void CServer::exitWorkThread(void)
 {
-    Q_SafeDelete_Array(m_pServerThreadEvent);
+    for (int i = 0; i < getThreadNum(); i++)
+    {
+        m_pServerThreadEvent[i].Stop();
+    }
 }
 
 void CServer::freeMainEvent(void)
@@ -487,12 +468,10 @@ void CServer::freeMainEvent(void)
         m_pWebSockListener = NULL;
     }
 
-    Q_SafeDelete(m_pPair_Exit);
-
-    if (NULL != m_pEvent_Exit)
+    if (NULL != m_pExitEvent)
     {
-        bufferevent_free(m_pEvent_Exit);
-        m_pEvent_Exit = NULL;
+        event_free(m_pExitEvent);
+        m_pExitEvent = NULL;
     }
 
     if (NULL != m_pMainBase)
@@ -512,7 +491,7 @@ int CServer::Loop(void)
         pTask = new(std::nothrow) CWorkerThreadTask();
         if (NULL == pTask)
         {
-            setError(true);
+            setRunStatus(RunStatus_Error);
             Q_Printf("%s", Q_EXCEPTION_ALLOCMEMORY);
 
             return Q_ERROR_ALLOCMEMORY;
@@ -522,33 +501,16 @@ int CServer::Loop(void)
         m_pPool->Append(pTask, Q_ThreadLV_High);
         if (!m_pServerThreadEvent[us].waitForStarted())
         {
-            setError(true);
+            setRunStatus(RunStatus_Error);
             Q_Printf("%s", "wait work thread start error.");
 
             return Q_RTN_FAILE;
         }
     }
 
-    m_bLoop = true;
-    Q_Printf("%s", "run main loop");
+    setRunStatus(RunStatus_Runing);
     iRtn = event_base_dispatch(m_pMainBase);
-    if (!m_bShutDownNormal)
-    {
-        iRtn = EVUTIL_SOCKET_ERROR();
-
-        Q_Printf("happen error on loop. error code %d, message %s", 
-            iRtn, evutil_socket_error_to_string(iRtn));
-        Q_SYSLOG(LOGLV_ERROR, "happen error on loop. error code %d, message %s", 
-            iRtn, evutil_socket_error_to_string(iRtn));
-
-        setError(true);
-
-        g_objExitMutex.Lock();
-        g_objExitCond.Signal();
-        g_objExitMutex.unLock();
-    }
-    Q_Printf("%s", "exit main loop");
-    m_bLoop = false;
+    setRunStatus(RunStatus_Stopped);
 
     m_objMutex_Exit.Lock();
     m_objCond_Exit.Signal();
@@ -557,18 +519,53 @@ int CServer::Loop(void)
     return iRtn;
 }
 
+int CServer::initExitMonitor(unsigned int uiMS)
+{
+    timeval tVal;
+    evutil_timerclear(&tVal);
+    if (uiMS >= 1000)
+    {
+        tVal.tv_sec = uiMS / 1000;
+        tVal.tv_usec = (uiMS % 1000) * (1000);
+    }
+    else
+    {
+        tVal.tv_usec = (uiMS * 1000);
+    }
+
+    m_pExitEvent = event_new(m_pMainBase, 
+        -1, EV_PERSIST, exitMonitorCB, this);
+    if (NULL == m_pExitEvent)
+    {
+        Q_Printf("%s", "event_new error");
+
+        return Q_RTN_FAILE;
+    }
+
+    if (Q_RTN_OK != event_add(m_pExitEvent, &tVal))
+    {
+        Q_Printf("%s", "event_add error");
+
+        event_free(m_pExitEvent);
+        m_pExitEvent = NULL;
+
+        return Q_RTN_FAILE;
+    }
+
+    return Q_RTN_OK;
+}
+
 int CServer::Init(void)
 {
     int iRtn = Q_RTN_OK;
 
-    m_bShutDownNormal = false;
-
+    setRunStatus(RunStatus_Starting);
     /*主线程循环*/
     m_pMainBase = event_base_new();
     if (NULL == m_pMainBase)
     {
         Q_Printf("%s", "event_base_new error.");
-        setError(true);
+        setRunStatus(RunStatus_Error);
 
         return Q_RTN_FAILE;
     }
@@ -580,7 +577,7 @@ int CServer::Init(void)
         m_httpSock = initHttpSock();
         if (Q_INVALID_SOCK == m_httpSock)
         {
-            setError(true);
+            setRunStatus(RunStatus_Error);
 
             return Q_RTN_FAILE;
         }
@@ -593,7 +590,7 @@ int CServer::Init(void)
         iRtn = initWebSockListener();
         if (Q_RTN_OK != iRtn)
         {
-            setError(true);
+            setRunStatus(RunStatus_Error);
 
             return Q_RTN_FAILE;
         }
@@ -604,7 +601,7 @@ int CServer::Init(void)
     iRtn = initWorkThread();
     if (Q_RTN_OK != iRtn)
     {
-        setError(true);
+        setRunStatus(RunStatus_Error);
 
         return iRtn;
     }
@@ -614,16 +611,16 @@ int CServer::Init(void)
     iRtn = initMainListener();
     if (Q_RTN_OK != iRtn)
     {
-        setError(true);
+        setRunStatus(RunStatus_Error);
 
         return iRtn;
     }
 
     /*初始化退出*/
-    iRtn = initMainExit();
+    iRtn = initExitMonitor(100);
     if (Q_RTN_OK != iRtn)
     {
-        setError(true);
+        setRunStatus(RunStatus_Error);
 
         return iRtn;
     }
@@ -633,7 +630,7 @@ int CServer::Init(void)
         m_pPool = new(std::nothrow) CThreadPool(getThreadNum());
         if (NULL == m_pPool)
         {
-            setError(true);
+            setRunStatus(RunStatus_Error);
             Q_Printf("%s", Q_EXCEPTION_ALLOCMEMORY);
 
             return Q_ERROR_ALLOCMEMORY;
@@ -641,7 +638,7 @@ int CServer::Init(void)
     }
     catch(CException &e)
     {
-        setError(true);
+        setRunStatus(RunStatus_Error);
         Q_Printf("get an exception. code %d, message %s", e.getErrorCode(), e.getErrorMsg());
 
         return e.getErrorCode();
@@ -658,29 +655,17 @@ int CServer::Start(void)
 
 void CServer::Stop(void)
 {
-    Q_Printf("%s", "shutdown server...");
     if (!getIsRun())
     {
         exitWorkThread();
-        freeMainEvent();
-        Q_SafeDelete(m_pPool);
 
         return;
     }
-
-    m_bShutDownNormal = true;
     
     exitWorkThread();
-    Q_SafeDelete(m_pPool);
 
-    Q_Printf("%s", "wait main event loop stop");
-
-    m_objMutex_Exit.Lock();    
-    (void)m_pPair_Exit->Write(EXIT_COMMAND, strlen(EXIT_COMMAND));
+    m_objMutex_Exit.Lock();
+    setRunStatus(RunStatus_Stopping);
     m_objCond_Exit.Wait(&m_objMutex_Exit);    
     m_objMutex_Exit.unLock();
-
-    Q_Printf("%s", "event main loop stoped");
-
-    freeMainEvent();
 }

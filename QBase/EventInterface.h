@@ -54,7 +54,7 @@ public:
         return m_pSessionManager;
     };
     /*工作线程启动时执行*/
-    virtual void onSerciveStartUp(void){};
+    virtual bool onSerciveStartUp(void){return true;};
     /*工作线程关闭时执行*/
     virtual void onSerciveShutDown(void){};
     /*socket断开时执行*/

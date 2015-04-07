@@ -65,7 +65,7 @@ Q_SOCK CLog::addLoger(CLoger *pLoger)
         return Q_INVALID_SOCK;
     }
 
-    if (!getIsRun())
+    if (RunStatus_Runing != getRunStatus())
     {
         Q_Printf("%s", "loger not run.");
         Q_SafeDelete(pLoger);
@@ -184,4 +184,6 @@ void CLog::onStop(SockPairEventParam *pParam)
     }
 
     plstUserData->clear();
+
+    setRunStatus(RunStatus_Stopped);
 }

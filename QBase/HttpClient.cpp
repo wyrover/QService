@@ -103,7 +103,7 @@ std::string CHttpClient::Post(const char *const strUrl, const char *const strPos
 	CURL* curl = curl_easy_init();
 	if (NULL == curl)
 	{
-		Q_Printf("curl_easy_init failed");
+		Q_Printf("%s", "curl_easy_init failed");
 		return NULL;
 	}
 
@@ -147,7 +147,7 @@ std::string CHttpClient::Get(const char *const strUrl)
 	CURL* curl = curl_easy_init();
 	if (NULL == curl)
 	{
-		Q_Printf("curl_easy_init failed");
+		Q_Printf("%s", "curl_easy_init failed");
 		return NULL;
 	}
 
@@ -189,7 +189,7 @@ std::string CHttpClient::Posts(const char *const strUrl, const char *const strPo
 	CURL* curl = curl_easy_init();
 	if (NULL == curl)
 	{
-		Q_Printf("curl_easy_init failed");
+		Q_Printf("%s", "curl_easy_init failed");
 		return NULL;
 	}
 
@@ -246,7 +246,7 @@ std::string CHttpClient::Gets(const char *const strUrl, const char * pCaPath)
 	CURL* curl = curl_easy_init();
 	if (NULL == curl)
 	{
-		Q_Printf("curl_easy_init failed");
+		Q_Printf("%s", "curl_easy_init failed");
 		return NULL;
 	}
 

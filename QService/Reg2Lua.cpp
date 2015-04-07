@@ -202,6 +202,8 @@ void CReg2Lua::reg_SessionManager(void)
 
             .addFunction("getTimer", &CSessionManager::getTimer)
             .addFunction("getCount", &CSessionManager::getCount)
+
+            .addFunction("confirmStop", &CSessionManager::confirmStop)
         .endClass();
 }
 

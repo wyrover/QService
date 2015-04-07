@@ -37,10 +37,7 @@ class CTimerTask : public CSockPairEvent
 {
 public:
     CTimerTask(void);
-    ~CTimerTask(void)
-    {
-        Stop();
-    };
+    ~CTimerTask(void){ };
 
     /*任务指针在执行完成后自动删除,uiCount执行次数为0永久执行,uiMS时间间隔（毫秒）*/
     int Append(CTask *pTask, unsigned int uiMS, unsigned int uiCount = Q_INIT_NUMBER);

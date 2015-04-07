@@ -74,7 +74,7 @@ CDisposeEvent::~CDisposeEvent(void)
     }
 }
 
-void CDisposeEvent::onSerciveStartUp(void)
+bool CDisposeEvent::onSerciveStartUp(void)
 {
     try
     {
@@ -86,6 +86,8 @@ void CDisposeEvent::onSerciveStartUp(void)
     {
         Q_Printf("%s", e.what());
         Q_SYSLOG(LOGLV_ERROR, "%s", e.what());
+
+        return false;
     }
     catch(CException &e)
     {
@@ -93,14 +95,18 @@ void CDisposeEvent::onSerciveStartUp(void)
             e.getErrorCode(), e.getErrorMsg());
         Q_SYSLOG(LOGLV_ERROR, "exception. code %d, message %s", 
             e.getErrorCode(), e.getErrorMsg());
+
+        return false;
     }
+
+    return true;
 }
 
 void CDisposeEvent::onSerciveShutDown(void)
 {
     try
     {
-        luabridge::getGlobal(m_pLua, LUA_EVENT_ONSHUTDOWN)();
+        luabridge::getGlobal(m_pLua, LUA_EVENT_ONSHUTDOWN)();        
     }
     catch(luabridge::LuaException &e)
     {

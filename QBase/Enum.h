@@ -106,4 +106,15 @@ enum SessionStatus
     SessionStatus_GM,
 };
 
+/*服务*/
+enum RunStatus
+{
+    RunStatus_Unknown = 0,//未知
+    RunStatus_Error,//发生错误
+    RunStatus_Starting,//正在启动
+    RunStatus_Runing,//运行
+    RunStatus_Stopping,//正在停止
+    RunStatus_Stopped,//停止
+};
+
 #endif//Q_ENUM_H_

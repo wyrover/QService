@@ -31,6 +31,7 @@
 #include "SockPair.h"
 #include "EventBuffer.h"
 #include "Cond.h"
+#include "SockPairEventParam.h"
 
 enum OrderType
 {
@@ -61,22 +62,23 @@ public:
     int Start(void);
     /*停止事件循环*/
     void Stop(void);
-    /*获取是否进入事件循环*/
-    bool getIsRun(void);
     /*等待进入事件循环*/
     bool waitForStarted(void);
-    /*是否发生错误*/
-    void setError(bool bError);
-    bool getError(void);
+    /*状态设置*/
+    void setRunStatus(RunStatus emStatus);
+    RunStatus getRunStatus(void);
+    /*onStop是否执行*/
+    void setRunOnStop(bool bRun);
+    bool getRunOnStop(void);
 
     /*主读写sock 参数*/
     void setTcpParam(void *pArg = NULL);
-    /*退出循环sock 参数*/
-    void setExitParam(void *pArg = NULL);
     /*命令sock参数*/
     void setOrderParam(void *pArg = NULL);
     /*命令sock参数*/
     void setWebSockParam(void *pArg = NULL);
+    /*命令sock参数*/
+    void setExitParam(void *pArg = NULL);
     /*向主读写sock写入数据*/
     int sendTcpMsg(const char *pszBuff, const size_t &iSize);
     /*向命令sock写入数据*/
@@ -91,29 +93,40 @@ public:
 
 public:
     virtual void onTcpRead(struct SockPairEventParam *pParam){};
-    virtual void onStop(struct SockPairEventParam *pParam){};
+    virtual void onStop(struct SockPairEventParam *pParam)
+    {
+        setRunStatus(RunStatus_Stopped);
+    };
     virtual void onOrderRead(struct SockPairEventParam *pParam){};
     virtual void onWebSockRead(struct SockPairEventParam *pParam){};
-    virtual void onStartUp(void){};
+    virtual bool onStartUp(void)
+    {
+        return true;
+    };
 public:
     static void sockPairEventReadCB(struct bufferevent *bev, void *arg);
     static void sockPairEventCB(struct bufferevent *bev, short event, void *arg);
+    static void exitMonitorCB(evutil_socket_t, short event, void *arg);
 
 private:
     int Init(void);
     void freeAll(void);
     int initEvent(void);
     int initEvent(struct bufferevent **pBev, struct SockPairEventParam *pParam, CSockPair &objPair);
+    int initExitMonitor(unsigned int uiMS);
+    bool getError(void);
+    bool getIsRun(void);
 
 private:
-    bool m_bExitNormal;
-    bool m_bRun;
-    bool m_bError;
+    bool m_bRunOnStop;
+    char m_cStatus;
     struct event_base *m_pEventBase;
     struct bufferevent **m_pBevs;
     CSockPair *m_pSockPairs;
     CEventBuffer *m_pBuffers;
     struct SockPairEventParam *m_pParam;
+    struct event *m_pExitEvent;
+    struct SockPairEventParam m_stExitParam;
     CMutex m_Mutex;
     CCond m_Cond;
 };

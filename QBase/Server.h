@@ -63,15 +63,18 @@ public:
     void setWebSockPort(const unsigned short usPort);
     unsigned short getWebSockPort(void);
 
-    /*是否运行*/
-    bool getIsRun(void);
     /*等待启动完成*/
     bool waitForStarted(void); 
     /*获取工作线程事件对象*/
     CWorkThreadEvent *getServerThreadEvent(void);
-    /*是否发送错误*/
-    void setError(bool bError);
-    bool getError(void);
+    /*状态设置*/
+    void setRunStatus(RunStatus emStatus);
+    RunStatus getRunStatus(void);
+    
+    struct event_base *getBase(void)
+    {
+        return m_pMainBase;
+    };
 
     /*初始化*/
     int Init(void);
@@ -85,22 +88,22 @@ public:
         int iSockLen, void *arg);
     static void webSockAcceptCB(struct evconnlistener *, Q_SOCK sock, struct sockaddr *, 
         int iSockLen, void *arg);
-    static void mainLoopExitCB(struct bufferevent *bev, void *arg);
+    static void exitMonitorCB(evutil_socket_t, short event, void *arg);
 
 private:
     int initMainListener(void);
     int initWebSockListener(void);
     int initWorkThread(void);
-    int initMainExit(void);
     int Loop(void);
     void exitWorkThread(void);
     void freeMainEvent(void);
     Q_SOCK initHttpSock(void);
+    bool getError(void);
+    bool getIsRun(void);
+    int initExitMonitor(unsigned int uiMS);
 
-private:    
-    bool m_bShutDownNormal;
-    bool m_bLoop;
-    bool m_bError;
+private:
+    char m_cRunStatus;
     unsigned short m_usThreadNum;
     unsigned short m_usPort;
     unsigned short m_usHttpPort;
@@ -110,10 +113,9 @@ private:
     struct evconnlistener *m_pListener;
     struct evconnlistener *m_pWebSockListener;
     struct event_base *m_pMainBase;
-    struct bufferevent *m_pEvent_Exit;
     class CThreadPool *m_pPool;
     CWorkThreadEvent *m_pServerThreadEvent;
-    CSockPair *m_pPair_Exit;
+    struct event *m_pExitEvent;
     std::vector<CEventInterface * > m_vcInterface;
     CMutex m_objMutex_Exit;
     CCond m_objCond_Exit;

@@ -37,10 +37,7 @@ class CLog : public CSockPairEvent
 {
 public:
     CLog(void);
-    ~CLog(void)
-    {
-        Stop();
-    };
+    ~CLog(void){ };
 
     //添加一日志记录器,返回一个用于写的句柄
     Q_SOCK addLoger(CLoger *pLoger);
