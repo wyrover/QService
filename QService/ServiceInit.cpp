@@ -33,7 +33,7 @@
 #define Q_CONFIGFOLDER    "config"
 #define LOG_FOLDER        "log"
 
-CServerInit m_objServerInit;
+static CServerInit m_objServerInit;
 
 /*日志任务*/
 class CLogSysTask : public CTask

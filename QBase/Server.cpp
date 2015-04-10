@@ -332,7 +332,7 @@ int CServer::initWebSockListener(void)
         Q_Printf("evconnlistener_new_bind error. error code %d, message %s", 
             iRtn, evutil_socket_error_to_string(iRtn));
 
-        return iRtn;
+        return Q_RTN_FAILE;
     }
 
     return Q_RTN_OK;
@@ -360,7 +360,7 @@ int CServer::initMainListener(void)
         Q_Printf("evconnlistener_new_bind error. error code %d, message %s", 
             iRtn, evutil_socket_error_to_string(iRtn));
 
-        return iRtn;
+        return Q_RTN_FAILE;
     }
 
     return Q_RTN_OK;
@@ -448,6 +448,11 @@ int CServer::initWorkThread(void)
 
 void CServer::exitWorkThread(void)
 {
+    if (NULL == m_pServerThreadEvent)
+    {
+        return;
+    }
+
     for (int i = 0; i < getThreadNum(); i++)
     {
         m_pServerThreadEvent[i].Stop();
@@ -570,6 +575,16 @@ int CServer::Init(void)
         return Q_RTN_FAILE;
     }
 
+    /*初始化工作线程*/
+    Q_Printf("%s", "init work thread...");
+    iRtn = initWorkThread();
+    if (Q_RTN_OK != iRtn)
+    {
+        setRunStatus(RunStatus_Error);
+
+        return iRtn;
+    }
+
     /*初始化HTTP*/
     if(0 != m_usHttpPort)
     {
@@ -594,26 +609,19 @@ int CServer::Init(void)
 
             return Q_RTN_FAILE;
         }
-    }
-
-    /*初始化工作线程*/
-    Q_Printf("%s", "init work thread...");
-    iRtn = initWorkThread();
-    if (Q_RTN_OK != iRtn)
-    {
-        setRunStatus(RunStatus_Error);
-
-        return iRtn;
-    }
+    }    
 
     /*初始化tcp监听*/
-    Q_Printf("%s", "init tcp listener...");
-    iRtn = initMainListener();
-    if (Q_RTN_OK != iRtn)
+    if (0 != m_usPort)
     {
-        setRunStatus(RunStatus_Error);
+        Q_Printf("%s", "init tcp listener...");
+        iRtn = initMainListener();
+        if (Q_RTN_OK != iRtn)
+        {
+            setRunStatus(RunStatus_Error);
 
-        return iRtn;
+            return iRtn;
+        }
     }
 
     /*初始化退出*/

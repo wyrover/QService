@@ -40,8 +40,8 @@
 
 static union  
 {
-    char a[4];  
-    unsigned long ul;  
+    char a[4];
+    unsigned long ul;
 }endian = {{'L', '?', '?', 'B'}}; 
 #define ENDIAN ((char)endian.ul) 
 

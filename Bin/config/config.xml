@@ -11,7 +11,7 @@
 			<Type>3</Type>
             <!--绑定的IP-->
             <BindIP>0.0.0.0</BindIP>
-            <!--TCP绑定端口-->
+            <!--TCP绑定端口, 为0不启动-->
             <Port>15000</Port>
             <!--Http绑定的IP-->
             <HttpBindIP>0.0.0.0</HttpBindIP>
