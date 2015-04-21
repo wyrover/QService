@@ -31,6 +31,7 @@ QService服务器支持http、 tcp 、websocket协议；数据库支持sqlite3�
 * DBManager.lua  
     数据库  
 * 其他Lua文件  
+
 ##四、事件  
 * 事件定义  
     事件的枚举在Macros.lua中的GameEvent，用户可以自定义事件如玩家升级等。  
