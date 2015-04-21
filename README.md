@@ -9,6 +9,7 @@ windows使用vs2010或者更高版本；
 linux使用mklib.sh编译出依赖库，然后再mk.sh。
 
 二、配置文件
+
     config.xml 配置服务器启动参数
 
 三、Lua文件
