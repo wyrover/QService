@@ -29,9 +29,10 @@
 #define Q_SESSION_MANAGER_H_
 
 #include "Session.h"
-#include "Buffer.h"
-#include "WebSock.h"
 #include "EventInterface.h"
+#include "WebSockParser.h"
+#include "TcpParser.h"
+#include "LinkOther.h"
 #include "LuaBridge/LuaBridge.h"
 
 /*session管理*/
@@ -49,23 +50,19 @@ public:
     CSession *getCurSession(void);
     /*根据ID获取session*/
     CSession *getSessionByID(const int iID);
-    /*获取服务器间连接的Session*/
-    CSession *getServerLinkerSession(const char *pszName);
     /*ping 检查(uiTime 超时时间(ms))*/
     void checkPing(const unsigned int uiTime);
-    /*返回指定类型的服务器连接*/
-    luabridge::LuaRef getSVLinkerNameByType(const int iType);
     /*确认停止服务*/
     void confirmStop(void);
+    /*根据名称获取链接*/
+    int getLinkOtherID(const char *pszName);
 
-    /*直接发送 格式 unsigned short(消息的长度 + 消息码长度) + 操作码 + 消息*/
-    bool sendToCur(const unsigned short usOpCode, const char *pszData, const size_t uiLens);
-    bool sendToByID(const int iID, const unsigned short usOpCode, const char *pszData, const size_t uiLens);
+    /*发送*/
+    bool sendToCur(const char *pszData, const size_t uiLens);
+    bool sendToByID(const int iID, const char *pszData, const size_t uiLens);
 
      /*获取session数量*/
     size_t getSessionSize(void);
-    /*获取服务器间连接数*/
-    int getGetSVLinkerNum(void);
     /*设置当前触发操作的session*/ 
     void setCurSession(CSession *pSession);
     /*删除session*/
@@ -74,16 +71,9 @@ public:
     int addSession(struct bufferevent *bev);
     /*获取session*/
     CSession *getSession(struct bufferevent *bev);
-    /*添加服务器间连接*/
-    void addServerLinker(const char *pszName, struct bufferevent *pBufEvent);
-    /*删除服务器间连接*/
-    void delServerLinker(const char *pszName);
     /*设置事件处理对象*/
     void setInterface(class CEventInterface *pInterface);
     class CEventInterface *getInterface(void);
-    /*线程编号*/
-    void setThreadIndex(const short &sIndex);
-    short getThreadIndex(void);
     /*定时器触发时间*/
     void setTimer(unsigned int &uiMS);
     unsigned int getTimer(void);
@@ -94,18 +84,18 @@ public:
     void setLua(struct lua_State *pLua);
     /*设置工作线程指针*/
     void setWorkThread(class CWorkThreadEvent *pThread);
-    /*获取websock解析指针*/
-    CWebSock *getWebSock(void);
+
+    CLinkOther *getLinkOther(void)
+    {
+        return &m_objLinkOther;
+    };
 private:
     /*释放所有session*/
     void freeAllSession(void);
-    bool sendWithHead(CSession *pCurrent, 
-        const unsigned short &usOpCode, const char *pszData, const size_t &uiLens);
-    bool sendWebSock(CSession *pCurrent, 
-        const unsigned short &usOpCode, const char *pszData, const size_t &uiLens);
+    bool sendTcp(CSession *pCurrent, const char *pszData, const size_t &uiLens);
+    bool sendWebSock(CSession *pCurrent, const char *pszData, const size_t &uiLens);
 
 private:
-    short m_sThreadIndex;
     unsigned int m_uiTimer;
     unsigned int m_uiCount;
     struct lua_State *m_pLua;
@@ -114,8 +104,10 @@ private:
     class CWorkThreadEvent *m_pWorkThread;
     std::tr1::unordered_map<int, CSession *> m_unmapSession;//所有Session
     std::queue<CSession *> m_quFreeSession;//空闲的session
-    std::tr1::unordered_map<std::string, bufferevent* > m_mapServerLinker;
-    CWebSock m_objWebSock;
+    CWebSockParser m_objWebSockParser;
+    CTcpParser m_objTcpParser;
+    CLinkOther m_objLinkOther;
+    std::tr1::unordered_map<std::string, int> m_umapLinkOther;
 };
 
 #endif//Q_SESSION_MANAGER_H_

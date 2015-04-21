@@ -7,8 +7,6 @@ local luaDir = Q_GetModulPath() .. "Lua" .. Q_GetPathSeparator()
 package.path = package.path .. ";" .. luaDir .. "?.lua"
 
 cjson = require("cjson")
-protobuf = require("Public/protobuf")
-parser = require("Public/parser")
 require("Game/InitModule")
 
 local tNowDay = os.date("*t", time)
@@ -53,11 +51,15 @@ function Lua_OnShutDown()
 end
 
 --[[
-描述：连接可读事件
+描述：tcp可读事件
 参数：
 返回值：无
 --]]
-function Lua_OnRead(iProtocol, strMsg, iLens)
+function Lua_OnTcpRead(strMsg, iLens)
+    Debug("Lua_OnTcpRead:" .. strMsg)
+    local strMsg = "this is tcp server"
+    g_objSessionMgr:sendToCur(strMsg, string.len(strMsg))
+    --[[
     local tbMessage = {}
     if 0 ~= iLens then
         if CarrierType.Json == MsgCarrier then
@@ -79,7 +81,7 @@ function Lua_OnRead(iProtocol, strMsg, iLens)
     table.print(tbMessage)
     
     --检查操作码与状态是否匹配       
-    if SessionType.SVLinker ~= objCurSession:getType() then
+    if SessionType.TcpClient ~= objCurSession:getType() then
         if not g_StartCompleted then
             Debug("service not start completed.")
             return
@@ -96,6 +98,18 @@ function Lua_OnRead(iProtocol, strMsg, iLens)
     end
     
     onNetEvent(iProtocol, tbMessage)
+    --]]
+end
+
+--[[
+描述：websock可读事件
+参数：
+返回值：无
+--]]
+function Lua_OnWebSockRead(strMsg, iLens)
+    Debug("Lua_OnWebSockRead:" .. strMsg)
+    local strMsg = "this is websock server"
+    g_objSessionMgr:sendToCur(strMsg, string.len(strMsg))
 end
 
 --[[
@@ -104,11 +118,6 @@ end
 返回值：无
 --]]
 function Lua_OnHttpRead(objHttpBuffer)
-    if not g_StartCompleted then
-        Debug("service not start completed.")
-        return
-    end
-    
     onGameEvent(GameEvent.HttpRead, objHttpBuffer)
 end
 
@@ -201,5 +210,5 @@ end
 返回值：无
 --]]
 function Lua_OnLinkedServer(objSession)
-    requireRegSV(objSession)
+    --requireRegSV(objSession)
 end

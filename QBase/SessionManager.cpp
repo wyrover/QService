@@ -26,13 +26,11 @@
 *****************************************************************************/
 
 #include "SessionManager.h"
-#include "Exception.h"
-#include "ServerLinker.h"
 #include "WorkThreadEvent.h"
 
-#define Q_INITSESSIONSIZE 2000
+#define Q_INITSESSIONSIZE 2048
 
-CSessionManager::CSessionManager(void) : m_sThreadIndex(-1), m_uiTimer(Q_INIT_NUMBER),
+CSessionManager::CSessionManager(void) : m_uiTimer(Q_INIT_NUMBER),
     m_uiCount(Q_INIT_NUMBER), m_pLua(NULL), m_pCurrent(NULL), m_pInterface(NULL),
     m_pWorkThread(NULL)
 {
@@ -48,8 +46,6 @@ CSessionManager::CSessionManager(void) : m_sThreadIndex(-1), m_uiTimer(Q_INIT_NU
 
         m_quFreeSession.push(pSession);
     }
-
-    m_objWebSock.setSessionMgr(this);
 }
 
 CSessionManager::~CSessionManager(void)
@@ -85,16 +81,6 @@ void CSessionManager::setLua(struct lua_State *pLua)
 void CSessionManager::setWorkThread(class CWorkThreadEvent *pThread)
 {
     m_pWorkThread = pThread;
-}
-
-void CSessionManager::setThreadIndex(const short &sIndex)
-{
-    m_sThreadIndex = sIndex; 
-}
-
-short CSessionManager::getThreadIndex(void)
-{
-    return m_sThreadIndex;
 }
 
 void CSessionManager::setCurSession(CSession *pSession)
@@ -185,51 +171,16 @@ CSession *CSessionManager::getSession(struct bufferevent *bev)
     return itSession->second;
 }
 
-void CSessionManager::addServerLinker(const char *pszName, struct bufferevent *pBufEvent)
-{
-    std::tr1::unordered_map<std::string, bufferevent* >::iterator itServerLinker;
-    std::string strName(pszName);
-
-    itServerLinker = m_mapServerLinker.find(strName);
-    if (m_mapServerLinker.end() == itServerLinker)
-    {
-        m_mapServerLinker.insert(std::make_pair(strName, pBufEvent));
-    }
-    else
-    {
-        itServerLinker->second = pBufEvent;
-    }
-}
-
-void CSessionManager::delServerLinker(const char *pszName)
-{
-    std::tr1::unordered_map<std::string, bufferevent* >::iterator itServerLinker;
-
-    itServerLinker = m_mapServerLinker.find(std::string(pszName));
-    if (m_mapServerLinker.end() != itServerLinker)
-    {
-        m_mapServerLinker.erase(itServerLinker);
-    }
-}
-
-CSession *CSessionManager::getServerLinkerSession(const char *pszName)
-{
-    std::tr1::unordered_map<std::string, bufferevent* >::iterator itServerLinker;
-
-    itServerLinker = m_mapServerLinker.find(std::string(pszName));
-    if (m_mapServerLinker.end() == itServerLinker)
-    {
-        return NULL;
-    }
-
-    return getSession(itServerLinker->second);
-}
-
 void CSessionManager::confirmStop(void)
 {
     assert(NULL != m_pWorkThread);
 
     m_pWorkThread->setRunStatus(RunStatus_Stopped);
+}
+
+int CSessionManager::getLinkOtherID(const char *pszName)
+{
+    return m_objLinkOther.getSockByName(pszName);
 }
 
 void CSessionManager::checkPing(const unsigned int uiTime)
@@ -240,7 +191,7 @@ void CSessionManager::checkPing(const unsigned int uiTime)
 
     for (itMap = m_unmapSession.begin(); m_unmapSession.end() != itMap; itMap++)
     {
-        if (SType_TcpClient != itMap->second->getType())
+        if (STYPE_TCPCLIENT == itMap->second->getType())
         {
             continue;
         }
@@ -288,7 +239,6 @@ void CSessionManager::freeAllSession(void)
 void CSessionManager::closeLinkByID(const int iID)
 {
     std::tr1::unordered_map<int, CSession *>::iterator itSession;
-
     itSession = m_unmapSession.find(iID);
     if (m_unmapSession.end() == itSession)
     {
@@ -299,26 +249,30 @@ void CSessionManager::closeLinkByID(const int iID)
     m_pInterface->onSocketClose();
     setCurSession(NULL);
 
-    CServerLinker *pLink = NULL;
-    if (SType_SVLinker == itSession->second->getType())
+    switch(itSession->second->getType())
     {
-        pLink = (CServerLinker *)(itSession->second->getHandle());
-    }
-    if (SType_WebSock == itSession->second->getType())
-    {
-        m_objWebSock.delContinuation(iID);
+    case STYPE_WEBSOCK:
+        {
+            //外面已经清理 CWorkThreadEvent::dispWebSock
+        }
+        break;
+
+    case STYPE_TCPCLIENT:
+        {
+            getLinkOther()->setSockStatus(iID, SessionStatus_Closed);
+        }
+        break;
+
+    default:
+        break;
     }
 
+    getLinkOther()->setSockStatus(itSession->second->getBuffer()->getFD(), SessionStatus_Closed);
     bufferevent_free(itSession->second->getBuffer()->getBuffer());
     itSession->second->Clear();
 
     m_quFreeSession.push(itSession->second);
     m_unmapSession.erase(itSession);
-
-    if (NULL != pLink)
-    {
-        pLink->setLinked(false);
-    }
 
     return;
 }
@@ -362,18 +316,10 @@ CSession *CSessionManager::getSessionByID(const int iID)
     return itSession->second;
 }
 
-bool CSessionManager::sendWebSock(CSession *pCurrent, 
-    const unsigned short &usOpCode, const char *pszData, const size_t &uiLens)
+bool CSessionManager::sendWebSock(CSession *pCurrent, const char *pszData, const size_t &uiLens)
 {
-    unsigned short usOp = ntohs(usOpCode);
-    Q_PackHeadType msgLens = uiLens + sizeof(usOp);
     size_t iOutLens = Q_INIT_NUMBER;
-
-    const char *pszHead = m_objWebSock.createWebSockHead(true, BINARY_FRAME, msgLens, iOutLens);
-    if (NULL == pszHead)
-    {
-        return false;
-    }
+    const char *pszHead = m_objWebSockParser.createHead(true, TEXT_FRAME, uiLens, iOutLens);
 
     if (Q_RTN_OK != pCurrent->getBuffer()->writeBuffer(pszHead, iOutLens))
     {
@@ -382,13 +328,6 @@ bool CSessionManager::sendWebSock(CSession *pCurrent,
         return false;
     }
 
-    if (Q_RTN_OK != pCurrent->getBuffer()->writeBuffer((const char*)(&usOp), sizeof(usOp)))
-    {
-        Q_Printf("send message to session: id %d error", pCurrent->getSessionID());
-
-        return false;
-    }
-
     if ((NULL != pszData) 
         && (0 != uiLens))
     {
@@ -403,26 +342,18 @@ bool CSessionManager::sendWebSock(CSession *pCurrent,
     return true;
 }
 
-bool CSessionManager::sendWithHead(CSession *pCurrent, 
-    const unsigned short &usOpCode, const char *pszData, const size_t &uiLens)
+bool CSessionManager::sendTcp(CSession *pCurrent, const char *pszData, const size_t &uiLens)
 {
-    unsigned short usOp = ntohs(usOpCode);
-    Q_PackHeadType msgLens = Q_NTOH(uiLens + sizeof(usOp));
+    size_t iHeadLens = Q_INIT_NUMBER;
+    const char *pszHead = m_objTcpParser.createHead(uiLens, iHeadLens);
 
-    if (Q_RTN_OK != pCurrent->getBuffer()->writeBuffer((const char*)(&msgLens), sizeof(msgLens)))
+    if (Q_RTN_OK != pCurrent->getBuffer()->writeBuffer(pszHead, iHeadLens))
     {
         Q_Printf("send message lens to session: id %d error", pCurrent->getSessionID());
 
         return false;
     }
 
-    if (Q_RTN_OK != pCurrent->getBuffer()->writeBuffer((const char*)(&usOp), sizeof(usOp)))
-    {
-        Q_Printf("send message to session: id %d error", pCurrent->getSessionID());
-
-        return false;
-    }
-
     if ((NULL != pszData) 
         && (0 != uiLens))
     {
@@ -437,28 +368,26 @@ bool CSessionManager::sendWithHead(CSession *pCurrent,
     return true;
 }
 
-bool CSessionManager::sendToCur(const unsigned short usOpCode, const char *pszData, const size_t uiLens)
+bool CSessionManager::sendToCur(const char *pszData, const size_t uiLens)
 {
     if (NULL == m_pCurrent)
     {
         Q_Printf("%s", "current session pointer is null.");
-
         return false;
     }
 
     bool bOK = false;
     switch(m_pCurrent->getType())
     {
-    case SType_SVLinker:
-    case SType_TcpClient:
+    case STYPE_TCP:
         {
-            bOK = sendWithHead(m_pCurrent, usOpCode, pszData, uiLens);
+            bOK = sendTcp(m_pCurrent, pszData, uiLens);
         }
         break;
 
-    case SType_WebSock:
+    case STYPE_WEBSOCK:
         {
-            bOK = sendWebSock(m_pCurrent, usOpCode, pszData, uiLens);
+            bOK = sendWebSock(m_pCurrent, pszData, uiLens);
         }
         break;
 
@@ -469,8 +398,7 @@ bool CSessionManager::sendToCur(const unsigned short usOpCode, const char *pszDa
     return bOK;
 }
 
-bool CSessionManager::sendToByID(const int iID, 
-    const unsigned short usOpCode, const char *pszData, const size_t uiLens)
+bool CSessionManager::sendToByID(const int iID, const char *pszData, const size_t uiLens)
 {
     std::tr1::unordered_map<int, CSession *>::iterator itSession;
 
@@ -491,16 +419,15 @@ bool CSessionManager::sendToByID(const int iID,
     bool bOK = false;
     switch(itSession->second->getType())
     {
-    case SType_SVLinker:
-    case SType_TcpClient:
+    case STYPE_TCP:
         {
-            bOK = sendWithHead(itSession->second, usOpCode, pszData, uiLens);
+            bOK = sendTcp(itSession->second, pszData, uiLens);
         }
         break;
 
-    case SType_WebSock:
+    case STYPE_WEBSOCK:
         {
-            bOK = sendWebSock(itSession->second, usOpCode, pszData, uiLens);
+            bOK = sendWebSock(itSession->second, pszData, uiLens);
         }
         break;
 
@@ -509,43 +436,4 @@ bool CSessionManager::sendToByID(const int iID,
     }
 
     return bOK;
-}
-
-luabridge::LuaRef CSessionManager::getSVLinkerNameByType(const int iType)
-{
-    assert(NULL != m_pLua);
-
-    CServerLinker *pLinker = NULL;
-    CSession *pSession = NULL;
-    luabridge::LuaRef luaTable = luabridge::newTable(m_pLua);
-    std::tr1::unordered_map<std::string, bufferevent* >::iterator itServerLinker;
-
-    for (itServerLinker = m_mapServerLinker.begin(); m_mapServerLinker.end() != itServerLinker; 
-        itServerLinker++)
-    {
-        pSession = getSession(itServerLinker->second);
-        if (SType_SVLinker == pSession->getType())
-        {
-            pLinker = (CServerLinker *)(pSession->getHandle());
-            if (NULL != pLinker)
-            {
-                if (iType == pLinker->getType())
-                {
-                    luaTable.append(pLinker->getLinkerName());
-                }
-            }
-        }
-    }
-
-    return luaTable;
-}
-
-int CSessionManager::getGetSVLinkerNum(void)
-{
-    return m_mapServerLinker.size();
-}
-
-CWebSock *CSessionManager::getWebSock(void)
-{
-    return &m_objWebSock;
 }

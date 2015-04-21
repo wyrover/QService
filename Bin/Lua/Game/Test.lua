@@ -46,10 +46,26 @@ local function luaSqlWriteOK()
     sqlExecAll(objConn, tSql)
 end
 
+local function testRedis()
+    Debug("test redis:")
+    local client = redis.connect('127.0.0.1', 6379)
+    local value = client:ping()
+    Debug("ping retrun:" .. tostring(value))    
+    client:set('usr:nrk', 10)
+    client:set('usr:nobody', 5)
+    value = nil
+    value = client:get('usr:nrk')
+    Debug("get usr:nrk " .. tostring(value))
+    value = nil
+    value = client:get('usr:nobody')
+    Debug("get usr:nobody " .. tostring(value))
+end
+
 local function onStart()
     --luaSqlTestRead()
     --luaSqlWriteError()
-    Debug("onStart")    
+    Debug("onStart") 
+    testRedis()
 end
 regGameEvent(GameEvent.Start, onStart)
 
@@ -59,3 +75,39 @@ local function onStarted()
     Debug("onStarted")
 end
 regGameEvent(GameEvent.Started, onStarted)
+
+local iCount = 0
+local function testDBLog()
+    iCount = iCount + 1
+    local strMsg = string.format("%d", iCount)
+    Q_DBLOG("13245346543", -1, strMsg, string.len(strMsg)) 
+end
+
+local function testTxtLog()
+    local str = "!"
+    for i = 1, 12 do
+        str = str .. "a"
+    end
+    str = str .. "!"    
+    Q_LOG(LOGLV_INFO, str)
+    
+    str = "!"
+    for i = 1, 655 do
+        str = str .. "a"
+    end
+    str = str .. "!"
+    Q_LOG(LOGLV_INFO, str)
+    
+    str = "!"
+    for i = 1, 65535 do
+        str = str .. "a"
+    end
+    str = str .. "!"
+    Q_LOG(LOGLV_INFO, str)
+end
+
+local function onFiveSecond()
+    --testDBLog()
+    --testTxtLog()
+end
+regGameEvent(GameEvent.FiveSecond, onFiveSecond)

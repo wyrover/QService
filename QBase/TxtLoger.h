@@ -25,28 +25,47 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#include "Macros.h"
+#ifndef Q_TXTLOGERER_H_
+#define Q_TXTLOGERER_H_
 
-class CHttpBuffer
+#include "Loger.h"
+#include "Mutex.h"
+#include "TcpParser.h"
+
+//文本日志
+class CTxtLoger : public CLoger
 {
 public:
-    CHttpBuffer(struct evhttp_request *req);
-    ~CHttpBuffer(void);
+    CTxtLoger(void);
+    ~CTxtLoger(void);
 
-    /* 获取 */
-    const char *getQuery(void);
-    const char *getPostMsg(void);    
+    /*设置打印级别，低于该级别的不输出, 设置LOGLV_NOLOG不输出日志*/
+    void setPriority(const LOG_LEVEL emLV);
+    /*设置日志文件*/
+    void setLogFile(const char *pLogFile);
+    /*设置日志文件大小*/
+    void setLogMaxSize(const size_t iSize);
 
-    /* 设置输出数据 */
-    void setReplyContent(const char *pszMsg);
-    /* 返回 */
-    void Reply(const int iCode, const char *pszReason);
+    void writeLog(const LOG_LEVEL emInLogLv,
+        const char *pFile, const char *pFunction, const int iLine, Q_SOCK &fd,
+        const char *pFormat, ...);
 
-    bool isOK(void);
+    void Open(void);
+
+public:
+    void Write(const char *pszMsg, const size_t iLens);
+
 private:
-    bool m_bOK;
-    struct evbuffer *m_pEventBuf;
-    struct evhttp_request *m_Req;
-    std::string m_strPostMsg;
-    std::string m_strQuery;
+    std::string getLV(LOG_LEVEL emInLogLv);
+
+private:
+    FILE *m_pFile;
+    LOG_LEVEL m_emPriorityLV;
+    size_t m_uiLogSize;
+    time_t m_LastCheckTime;
+    std::string m_strFilePath;
+    CMutex m_objMutex;
+    CTcpParser m_objTcpParser;
 };
+
+#endif//Q_TXTLOGERER_H_

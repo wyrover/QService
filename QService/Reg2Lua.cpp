@@ -32,6 +32,11 @@ void Q_LuaLog(int iLV, const char *pszMsg)
     Q_LOG((LOG_LEVEL)iLV, "%s", pszMsg);
 }
 
+void Q_DBLog(const char *pszPlayerID, unsigned short sType, const char *pszMsg, const size_t iLens)
+{
+    Q_DBLOG(pszPlayerID, sType, pszMsg, iLens);
+}
+
 const char *Q_GetModulPath(void)
 {
     return g_acModulPath;
@@ -73,6 +78,7 @@ void CReg2Lua::reg_Func(void)
         .addFunction("Q_GetModulPath", Q_GetModulPath)
         .addFunction("Q_GetPathSeparator", Q_GetPathSeparator)
         .addFunction("Q_LOG", Q_LuaLog)
+        .addFunction("Q_DBLOG", Q_DBLog)
         .addFunction("getServerID", getServerID)
         .addFunction("getServerType", getServerType);
 }
@@ -192,9 +198,6 @@ void CReg2Lua::reg_SessionManager(void)
             .addFunction("getCurSession", &CSessionManager::getCurSession)
             .addFunction("getSessionByID", &CSessionManager::getSessionByID)
 
-            .addFunction("getSVLinkerNameByType", &CSessionManager::getSVLinkerNameByType)
-            .addFunction("getServerLinkerSession", &CSessionManager::getServerLinkerSession)
-
             .addFunction("sendToCur", &CSessionManager::sendToCur)
             .addFunction("sendToByID", &CSessionManager::sendToByID)
 
@@ -204,6 +207,8 @@ void CReg2Lua::reg_SessionManager(void)
             .addFunction("getCount", &CSessionManager::getCount)
 
             .addFunction("confirmStop", &CSessionManager::confirmStop)
+
+            .addFunction("getLinkOtherID", &CSessionManager::getLinkOtherID)
         .endClass();
 }
 
@@ -223,10 +228,10 @@ void CReg2Lua::reg_HttpClient(void)
 void CReg2Lua::reg_HttpBuffer(void)
 {
     luabridge::getGlobalNamespace(m_pstLState)
-        .beginClass<CHttpBuffer>("CHttpBuffer")
-            .addFunction("getQuery", &CHttpBuffer::getQuery)
-            .addFunction("getPostMsg", &CHttpBuffer::getPostMsg)
-            .addFunction("setReplyContent", &CHttpBuffer::setReplyContent)
-            .addFunction("Reply", &CHttpBuffer::Reply)
+        .beginClass<CHttpParser>("CHttpBuffer")
+            .addFunction("getQuery", &CHttpParser::getQuery)
+            .addFunction("getPostMsg", &CHttpParser::getPostMsg)
+            .addFunction("setReplyContent", &CHttpParser::setReplyContent)
+            .addFunction("Reply", &CHttpParser::Reply)
         .endClass();
 }

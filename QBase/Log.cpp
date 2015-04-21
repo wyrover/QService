@@ -27,8 +27,9 @@
 
 #include "Log.h"
 #include "Exception.h"
-#include "SockPairEventParam.h"
 #include "QString.h"
+
+#define LOG_EVTIME 5 * 60 * 1000
 
 struct LogerInfo
 {
@@ -36,6 +37,7 @@ struct LogerInfo
     CLoger *pLoger;
     struct bufferevent *pBev;
     CEventBuffer *pBuffer;
+    CTcpParser *pParser;
     void FreeAll()
     {
         Q_SafeDelete(pPair);        
@@ -47,15 +49,65 @@ struct LogerInfo
         }
         Q_SafeDelete(pLoger);
     };
-    LogerInfo() : pPair(NULL), pLoger(NULL), pBev(NULL), pBuffer(NULL)
+    LogerInfo() : pPair(NULL), pLoger(NULL), pBev(NULL), pBuffer(NULL), pParser(NULL)
     {
     };
 };
 
-CLog::CLog(void)
+CLog::CLog(void) : m_pTimeEvent(NULL)
 {
-    setTcpParam(&m_lstLoger);
-    setExitParam(&m_lstLoger);
+    (void)setTimer(LOG_EVTIME);
+}
+
+CLog::~CLog(void)
+{
+    if (NULL != m_pTimeEvent)
+    {
+        event_free(m_pTimeEvent);
+        m_pTimeEvent = NULL;
+    }
+}
+
+int CLog::setTimer(unsigned int uiMS)
+{
+    if (Q_INIT_NUMBER == uiMS)
+    {
+        return Q_RTN_OK;
+    }
+
+    timeval tVal;
+
+    evutil_timerclear(&tVal);
+    if (uiMS >= 1000)
+    {
+        tVal.tv_sec = uiMS / 1000;
+        tVal.tv_usec = (uiMS % 1000) * (1000);
+    }
+    else
+    {
+        tVal.tv_usec = (uiMS * 1000);
+    }
+
+    m_pTimeEvent = event_new(getBase(), 
+        -1, EV_PERSIST, timerCB, &m_lstLoger);
+    if (NULL == m_pTimeEvent)
+    {
+        Q_Printf("%s", "event_new error");
+
+        return Q_RTN_FAILE;
+    }
+
+    if (Q_RTN_OK != event_add(m_pTimeEvent, &tVal))
+    {
+        Q_Printf("%s", "event_add error");
+
+        event_free(m_pTimeEvent);
+        m_pTimeEvent = NULL;
+
+        return Q_RTN_FAILE;
+    }
+
+    return Q_RTN_OK;
 }
 
 Q_SOCK CLog::addLoger(CLoger *pLoger)
@@ -95,7 +147,7 @@ Q_SOCK CLog::addLoger(CLoger *pLoger)
     }
     
     m_objMutex.Lock();
-    int iRtn = sendTcpMsg((const char*)(&objLogInfo), sizeof(objLogInfo));
+    int iRtn = sendMainMsg((const char*)(&objLogInfo), sizeof(objLogInfo));
     m_objMutex.unLock();
     if (Q_RTN_OK != iRtn)
     {
@@ -108,37 +160,42 @@ Q_SOCK CLog::addLoger(CLoger *pLoger)
     return objLogInfo.pPair->getWriteFD();
 }
 
-static void LogerReadCB(struct bufferevent *bev, void *arg)
+void CLog::timerCB(evutil_socket_t, short event, void *arg)
 {
-    LogerInfo *pLogerInfo = (LogerInfo*)arg;
-    size_t iSize = Q_INIT_NUMBER;
-    char *pBuf = NULL;
-
-    iSize = pLogerInfo->pBuffer->getTotalLens();
-    if (iSize <= 0)
+    std::list<LogerInfo *>::iterator itLoger;
+    std::list<LogerInfo *> *pLoger = (std::list<LogerInfo *> *)arg;
+    for (itLoger = pLoger->begin(); pLoger->end() != itLoger; itLoger++)
     {
-        return;
+        (void)(*itLoger)->pLoger->Check();
     }
-
-    pBuf = pLogerInfo->pBuffer->readBuffer(iSize);
-    if (NULL == pBuf)
-    {
-        return;
-    }
-
-    pLogerInfo->pLoger->Write(pBuf, iSize);
-
-    pLogerInfo->pBuffer->delBuffer(iSize);
 }
 
-void CLog::onTcpRead(SockPairEventParam *pParam)
+void CLog::LogerReadCB(struct bufferevent *bev, void *arg)
+{
+    LogerInfo *pLogerInfo = (LogerInfo*)arg;
+    CTcpParser *pParser = pLogerInfo->pParser;
+
+    while(true)
+    {
+        const char *pszBuf = pParser->parsePack(pLogerInfo->pBuffer);
+        if (NULL == pszBuf)
+        {
+            break;
+        }
+
+        pLogerInfo->pLoger->Write(pszBuf, pParser->getBufLens());
+        (void)pLogerInfo->pBuffer->delBuffer(pParser->getParsedLens());
+    }
+}
+
+void CLog::onMainRead(CEventBuffer *pBuffer)
 {
     LogerInfo *pLogerInfo = NULL;
 
-    while(NULL != (pLogerInfo = Q_GetEventValue<LogerInfo>(pParam->pEventBuf)))
+    while(NULL != (pLogerInfo = Q_GetEventValue<LogerInfo>(pBuffer)))
     {
         //Ìí¼Ó½øÑ­»·
-        pLogerInfo->pBev = bufferevent_socket_new(pParam->pMainBase, 
+        pLogerInfo->pBev = bufferevent_socket_new(getBase(), 
             pLogerInfo->pPair->getReadFD(), BEV_OPT_CLOSE_ON_FREE);
         if (NULL == pLogerInfo->pBev)
         {
@@ -158,6 +215,7 @@ void CLog::onTcpRead(SockPairEventParam *pParam)
             continue;
         }
 
+        pLogerInfo->pParser = &m_objTcpParser;
         bufferevent_setcb(pLogerInfo->pBev, LogerReadCB, NULL, NULL, pLogerInfo);
         if (Q_RTN_OK != bufferevent_enable(pLogerInfo->pBev, EV_READ))
         {
@@ -168,22 +226,20 @@ void CLog::onTcpRead(SockPairEventParam *pParam)
             continue;
         }
 
-        ((std::list<LogerInfo *>*)(pParam->pUserDate))->push_back(pLogerInfo);
+        m_lstLoger.push_back(pLogerInfo);
     }
 }
 
-void CLog::onStop(SockPairEventParam *pParam)
+void CLog::onStop(void)
 {
     std::list<LogerInfo *>::iterator itTask;
-    std::list<LogerInfo *> *plstUserData = (std::list<LogerInfo *> *)(pParam->pUserDate);
-
-    for (itTask = plstUserData->begin(); plstUserData->end() != itTask; itTask++)
+    for (itTask = m_lstLoger.begin(); m_lstLoger.end() != itTask; itTask++)
     {
         (*itTask)->FreeAll();
         Q_SafeDelete((*itTask));
     }
 
-    plstUserData->clear();
+    m_lstLoger.clear();
 
     setRunStatus(RunStatus_Stopped);
 }

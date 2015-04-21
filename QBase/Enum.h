@@ -28,6 +28,16 @@
 #ifndef Q_ENUM_H_
 #define Q_ENUM_H_
 
+enum  WebSockOpCode
+{
+    CONTINUATION = 0x00,
+    TEXT_FRAME = 0x01,
+    BINARY_FRAME = 0x02,
+    CLOSE = 0x08,
+    PING = 0x09,
+    PONG = 0x0A,
+};
+
 /*aes key类型*/
 enum AESKeyType
 {
@@ -46,6 +56,13 @@ enum EncryptType
     EncryptType_RSA,
 
     EncryptType_Count,
+};
+
+/*日志类型*/
+enum LOG_TYPE
+{
+    LTYPE_TXT = 0,
+    LTYPE_DB,
 };
 
 /*日志级别,越小越高*/
@@ -73,21 +90,12 @@ enum DBType
     DBType_MySql,
 };
 
-/*事件优先级*/
-enum EventPriority
-{
-    Priority_Hight = 0,
-    Priority_Normal,
-
-    Priority_Count,
-};
-
-/*session类型*/
+//连接类型
 enum SessionType
 {
-    SType_TcpClient = 0,
-    SType_SVLinker,
-    SType_WebSock,
+    STYPE_TCP = 0,//tcp
+    STYPE_TCPCLIENT,//tcp连接
+    STYPE_WEBSOCK,//websocket
 };
 
 /*session状态*/

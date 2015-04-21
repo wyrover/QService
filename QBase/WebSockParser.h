@@ -25,8 +25,8 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef Q_WEBSOCK_H_ 
-#define Q_WEBSOCK_H_
+#ifndef Q_WEBSOCK_PARSER_H_
+#define Q_WEBSOCK_PARSER_H_
 
 #include "Base64.h"
 #include "SHA1.h"
@@ -35,70 +35,74 @@
 #define FRAME_HEAD_EXT16_LEN 8
 #define FRAME_HEAD_EXT64_LEN 14
 
-enum  WebSockOpCode
+//websock 解析后的头
+struct WebSockFram
 {
-    CONTINUATION = 0x00,
-    TEXT_FRAME = 0x01,
-    BINARY_FRAME = 0x02,
-    CLOSE = 0x08,
-    PING = 0x09,
-    PONG = 0x0A,
+    char cFin;
+    char cRsv1;
+    char cRsv2;
+    char cRsv3;
+    WebSockOpCode emOpCode;
+    char cMask;
+    unsigned char ucPayloadLen;
+    size_t uiDataLens;
+    char acMaskKey[4];
 };
 
-class CWebSock
+class CWebSockParser
 {
 public:
-    CWebSock(void);
-    ~CWebSock(void);
+    CWebSockParser(void);
+    ~CWebSockParser(void){};
 
-    /*设置session*/
-    void setSessionMgr(class CSessionManager *pSessionMgr);
+    //解析握手
+    const char *shakeHands(class CEventBuffer *pBuffer);
 
-    /*握手处理*/
-    bool shakeHands(bool &bClose);
-    /*处理数据 返回真则关闭该链接*/
-    void dispData(bool &bClose);
-    /*删除分片数据帧*/
-    void delContinuation(const Q_SOCK &sock);
-    /*构造头*/
-    const char *createWebSockHead(const bool &bFin, const WebSockOpCode emCode, 
-        const size_t &iDataLens, size_t &iOutLens);
-
-private:   
-
-    //websock 解析后的头
-    struct WebSockFram
+    //解包
+    bool parsePack(class CEventBuffer *pBuffer);
+    bool getClose(void)
     {
-        char cFin;
-        char cRsv1;
-        char cRsv2;
-        char cRsv3;
-        WebSockOpCode emOpCode;
-        char cMask;
-        unsigned char ucPayloadLen;
-        size_t uiDataLens;
-        char acMaskKey[4];
+        return m_bClose;
     };
+    size_t getParsedLens(void)
+    {
+        return m_iParsedLens;
+    };
+    std::string *getVal(void)
+    {
+        return &m_strVal;
+    };
+    WebSockFram *getHead(void)
+    {
+        return &m_stFram;
+    };
+
+    //创建包头
+    const char *createHead(const bool &bFin, const WebSockOpCode emCode, 
+        const size_t &iDataLens, size_t &iOutLens);
 
 private:
     std::string parseShakeHands(std::list<std::string> &lstShakeHands);
     std::string createChallengeKey(std::string &strKey);
     std::string createHandshakeResponse(std::string &strKey);
-    bool parseHead(size_t &iFramLens, bool &bClose, const size_t &iTotalLens);
-     /*处理数据 返回真则关闭该链接*/
-    void parseData(char *pData,  bool &bClose);
-    void addContinuation(const Q_SOCK &sock, const char *pszData, const size_t &iLens);
-    std::string *getContinuation(const Q_SOCK &sock);
+    bool parseHead(class CEventBuffer *pBuffer);
 
 private:
-    class CSessionManager *m_pSessionMgr;
+    bool m_bClose;
+    size_t m_iParsedLens;
+    size_t m_iHeadLens;
+    size_t m_iTotalLens;
+    size_t m_iNeedReadLens;
+    size_t m_iShakeHandsEndFlagLens;
+    unsigned char m_acShaKey[20];
+    char m_acWebSockHead[FRAME_HEAD_EXT64_LEN];
+    std::string m_strVersion;
+    std::string m_strVal;
+    std::string m_strSplitFlag;
     CBase64 m_objbase64;
     CSHA1 m_objSHA1;
-    unsigned char m_acShaKey[20];
-    std::string m_strVersion;
-    WebSockFram m_stWebSockFram;
-    std::tr1::unordered_map<Q_SOCK, std::string> m_mapFram;
-    char m_acWebSockHead[FRAME_HEAD_EXT64_LEN];
+    WebSockFram m_stFram;
+    struct evbuffer_ptr m_stPos;
 };
 
-#endif
+#endif//Q_WEBSOCK_PARSER_H_

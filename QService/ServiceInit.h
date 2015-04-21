@@ -41,35 +41,29 @@ public:
     void Stop(void);
 
 private:
-    struct ServerLinkerInfo
+    struct LinkOther
     {
         unsigned short usPort;
-        int iType;
-        std::string strIP;
-        std::string strLinkerName;
+        std::string strIp;
+        std::string strName;
     };
-
-    struct ServerInfo
+    struct ServerConfig
     {
-        unsigned short usPort;
-        unsigned short usHttpPort;
-        unsigned short usWebSockPort;
         unsigned short usThreadNum;
         unsigned int uiTimer;
         std::string strScript;
-        std::string strBindIP;
-        std::string strHttpBindIP;
-        std::string strWebSockBindIP;
 
-        std::list<ServerLinkerInfo> lstLinkerInfo;
+        std::map<unsigned short, std::string> mapTcp;
+        std::map<unsigned short, std::string> mapWebSock;
+        std::map<unsigned short, std::string> mapHttp;
     };
 
 private:
-    void initSampleLog(void);
+    void initTxtLog(void);
+    bool initDBLog(void);
     bool readConfig(void);
     int initServer(void);
-    void destroyServer(void);
-    int initLinker(ServerInfo &stServerInfo);
+    void readLinkOtherConfig(std::vector<LinkOther> &vcLinkOther);
 
 private:
     CThread m_objThread;
@@ -78,9 +72,8 @@ private:
     xml_parse_result m_objXmlResult;
     xml_node m_objXmlNode;
     CLog m_objLog;
-    ServerInfo m_stServerConfig;
+    ServerConfig m_stServerConfig;
     CServer m_objServer;
-    std::list<CServerLinker *> m_lstLinker;
     std::vector<CEventInterface * > m_vcInterface;
 };
 

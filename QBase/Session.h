@@ -62,19 +62,15 @@ public:
     int getStatus(void);
 
     /*session ¿‡–Õ  enum SessionType*/
-    void setType(const int iType);
+    void setType(const SessionType emType);
     int getType(void);
 
     void Clear(void);
 
     CEventBuffer *getBuffer(void);
-    
-    void setHandle(void *pHandle);
-    void *getHandle(void);
 
 private:
-    void *m_pHandle;
-    int m_iSessionType;
+    char m_cSessionType;   
     int m_iSessionID;//session id  
     int m_iStatus;
     unsigned int m_uiPing;

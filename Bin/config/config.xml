@@ -1,51 +1,44 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <QServer>
-    <LocalServer>
-        <!--服务器节点-->
-        <ServerInfo>
-		    <!--服务器ID(最大1024)-->
-			<ServerID>1</ServerID>
-			<!--服务器类型
-			(Account 1, Payment 2, Game 3, 
-			Fight 4, DataBase 5)-->
-			<Type>3</Type>
-            <!--绑定的IP-->
+    <!--服务器节点-->
+    <ServerInfo>
+		<!--服务器ID(最大1024)-->
+        <ServerID>1</ServerID>
+		<!--服务器类型-->
+        <Type>3</Type>
+        <!--线程数-->
+        <ThreadNum>1</ThreadNum>
+        <!--定时器触发间隔时间 0 不触发(毫秒)-->
+        <Timer>50</Timer>
+        <!--脚本文件-->
+        <Script>Lua/Main.lua</Script>
+            
+        <!--tcp 绑定Ip 端口-->
+        <TCP>
             <BindIP>0.0.0.0</BindIP>
-            <!--TCP绑定端口, 为0不启动-->
             <Port>15000</Port>
-            <!--Http绑定的IP-->
-            <HttpBindIP>0.0.0.0</HttpBindIP>
-            <!--Http绑定端口,为0不启动http server-->
-            <HttpPort>8080</HttpPort>
-            <!--WebSock绑定的IP-->
-            <WebSockBindIP>0.0.0.0</WebSockBindIP>
-            <!--WebSock绑定端口,为0不启动WebSock server-->
-            <WebSockPort>8081</WebSockPort>
-            <!--线程数-->
-            <ThreadNum>1</ThreadNum>
-            <!--定时器触发间隔时间 0 不触发(毫秒)-->
-            <Timer>50</Timer>
-            <!--脚本文件-->
-            <Script>Lua/Main.lua</Script>			
-            <!--连接到其他服务器 可以多个节点--> 
-            <!--<ServerLinker>			
-                <LinkerName>accountsv</LinkerName>
-				<Type>1</Type>
-                <IP>127.0.0.1</IP>
-                <Port>15001</Port>
-            </ServerLinker> 
-			<ServerLinker>
-                <LinkerName>dbsv</LinkerName>
-				<Type>4</Type>
-                <IP>127.0.0.1</IP>
-                <Port>15005</Port>
-            </ServerLinker>
-            --> 
-        </ServerInfo>
-    </LocalServer>
+        </TCP>
+        <!--Http 绑定Ip 端口-->
+        <Http>
+            <BindIP>0.0.0.0</BindIP>
+            <Port>8080</Port>
+        </Http>
+        <!--WebSocket 绑定Ip 端口-->
+        <WebSock>
+            <BindIP>0.0.0.0</BindIP>
+            <Port>8081</Port>
+        </WebSock>
+    </ServerInfo>
+    
+    <!--连接到其他服务器-->
+    <LinkOther>
+        <Name>accounsv</Name>
+        <IP>127.0.0.1</IP>
+        <Port>15001</Port>
+    </LinkOther>
 
-    <!-- 日志参数配置 --> 
-    <LogConfig>
+    <!-- 文本日志参数配置 --> 
+    <TxtLog>
 		<!--日志文件名称-->
 		<LogName>Game.log</LogName>
 	    <!--日志文件大小限制-->
@@ -58,5 +51,14 @@
         -->
 		<!--日志级别限制-->
         <Priority>600</Priority>
-    </LogConfig>
+    </TxtLog>
+    
+    <!-- mysql日志参数配置,不需要则屏蔽该节点。log表的生成sql语句在log.sql中 --> 
+    <DBLog>
+		<Ip>127.0.0.1</Ip>
+        <Port>3306</Port>
+        <User>root</User>
+        <PWD></PWD>
+        <DB>logtest</DB>
+    </DBLog>
 </QServer>

@@ -27,7 +27,7 @@ local objCharset = CCharset()
 --]]
 function Debug(msg)
     if bDebugSwitch then
-        print(string.format("[%s][Debug] %s", os.date(), tostring(msg)))
+        print(string.format("[%s][Lua_Debug] %s", os.date(), tostring(msg)))
     end
 end
 
@@ -56,26 +56,6 @@ end
 --]]
 function closeLink(iClentID)
     g_objSessionMgr:closeLinkByID(iClentID)
-end
-
---[[
-描述：随机获取一指的类型的服务器
-参数：
-返回值： session id
---]]
-function randSV(iType)
-    local tSVName = g_objSessionMgr:getSVLinkerNameByType(iType)
-    local iCount = table.len(tSVName)
-    if 0 == iCount then
-        return Q_INVALID_ID
-    end
-    
-    local iRand = 1
-    if iCount > 1  then
-        iRand = math.random(iCount)
-    end
-    
-    return g_objSessionMgr:getServerLinkerSession(tSVName[iRand]):getSessionID()
 end
 
 --[[
@@ -119,7 +99,7 @@ end
 参数：
 返回值：double
 --]]
-function timerElapsed()    
+function timerElapsed()
     return objCtimer:Elapsed()
 end
 
@@ -162,7 +142,7 @@ end
 参数：
 返回值：读取到的值
 --]]
-function Rows (objConn, strSql)
+function Rows(objConn, strSql)
     local cursor = assert (objConn:execute (strSql))
     return function ()
         return cursor:fetch()
@@ -233,8 +213,7 @@ end
 返回值：无
 --]]
 function table.print(lua_table, indent)
-    assert("table" == type(lua_table))
-    
+    assert("table" == type(lua_table))    
     indent = indent or 0
     for k, v in pairs(lua_table) do
         if type(k) == "string" then
@@ -272,8 +251,7 @@ end
 返回值：bool
 --]]
 function table.empty(lua_table)
-    assert("table" == type(lua_table))
-    
+    assert("table" == type(lua_table))    
     for _, _ in pairs(lua_table) do
         return false
     end
@@ -287,8 +265,7 @@ end
 返回值：int
 --]]
 function table.len(lua_table)
-    assert("table" == type(lua_table))
-    
+    assert("table" == type(lua_table))    
     local iCount = 0
     for _, _ in pairs(lua_table) do
         iCount = iCount + 1
@@ -303,8 +280,7 @@ end
 返回值：table
 --]]
 function table.copy(tTable)
-    assert("table" == type(lua_table))
-    
+    assert("table" == type(lua_table))    
     local tNewTab = {}  
     for i, v in pairs(tTable) do  
         local vtyp = type(v)
@@ -329,8 +305,7 @@ end
 返回值：table
 --]]
 function table.enum(tMsg, iBegin) 
-    assert("table" == type(tMsg)) 
-    
+    assert("table" == type(tMsg))    
     local tEnum = {} 
     local iEnumIndex = iBegin or 0 
     for key, val in pairs(tMsg) do 

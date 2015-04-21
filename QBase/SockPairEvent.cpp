@@ -30,17 +30,14 @@
 #include "Exception.h"
 #include "SysLog.h"
 
-CSockPairEvent::CSockPairEvent(void) : m_bRunOnStop(false),
-    m_cStatus(RunStatus_Unknown), m_pEventBase(NULL), m_pBevs(NULL), m_pSockPairs(NULL), 
-    m_pBuffers(NULL), m_pParam(NULL), m_pExitEvent(NULL)
+CSockPairEvent::CSockPairEvent(void) : m_bRunOnStop(false), m_cStatus(RunStatus_Unknown), 
+    m_pBase(NULL), m_pMainBev(NULL),m_pAssistBev(NULL), m_pExitEvent(NULL)
 {
-    int iRtn = Init();
-    if (Q_RTN_OK != iRtn)
+    m_pBase = event_base_new();
+    if (NULL == m_pBase)
     {
+        Q_Printf("%s", "event_base_new error.");
         setRunStatus(RunStatus_Error);
-        freeAll();
-
-        Q_EXCEPTION(iRtn, "%s", "init socket pair event error.");
     }
 }
 
@@ -49,97 +46,19 @@ CSockPairEvent::~CSockPairEvent(void)
     freeAll();
 }
 
-int CSockPairEvent::Init(void)
-{
-    try
-    {
-        m_pSockPairs = new(std::nothrow) CSockPair[TYPE_COUNT];
-        if (NULL == m_pSockPairs)
-        {
-            Q_Printf("%s", Q_EXCEPTION_ALLOCMEMORY);
-
-            return Q_ERROR_ALLOCMEMORY;
-        }
-    }
-    catch(CException &e)
-    {
-        Q_Printf("get an exception. code %d, message %s", e.getErrorCode(), e.getErrorMsg());
-
-        return e.getErrorCode();
-    }
-
-    m_pEventBase = event_base_new();
-    if (NULL == m_pEventBase)
-    {
-        Q_Printf("%s", "event_base_new error.");
-
-        return Q_RTN_FAILE;
-    }
-
-    (void)event_base_priority_init(m_pEventBase, Priority_Count);
-
-    m_pBevs = new(std::nothrow) struct bufferevent *[TYPE_COUNT];
-    if (NULL == m_pBevs)
-    {
-        Q_Printf("%s", Q_EXCEPTION_ALLOCMEMORY);
-
-        return Q_ERROR_ALLOCMEMORY;
-    }
-
-    for (int i = 0; i < TYPE_COUNT; i++)
-    {
-        m_pBevs[i] = NULL;
-    }    
-
-    m_pBuffers = new(std::nothrow) CEventBuffer[TYPE_COUNT];
-    if (NULL == m_pBuffers)
-    {
-        Q_Printf("%s", Q_EXCEPTION_ALLOCMEMORY);
-
-        return Q_ERROR_ALLOCMEMORY;
-    }
-
-    m_pParam = new(std::nothrow) SockPairEventParam[TYPE_COUNT];
-    if (NULL == m_pParam)
-    {
-        Q_Printf("%s", Q_EXCEPTION_ALLOCMEMORY);
-
-        return Q_ERROR_ALLOCMEMORY;
-    }    
-
-    for (int i = 0; i < TYPE_COUNT; i++)
-    {
-        m_pParam[i].emType = (SockPairEventType)i;
-        m_pParam[i].pEventBuf = &m_pBuffers[i]; 
-        m_pParam[i].pMainBase = m_pEventBase;
-        m_pParam[i].pFun = this;
-    }
-
-    m_stExitParam.pMainBase = m_pEventBase;
-    m_stExitParam.pFun = this;
-
-    return Q_RTN_OK;
-}
-
 void CSockPairEvent::freeAll(void)
 {
-    Q_SafeDelete_Array(m_pSockPairs);
-
-    if (NULL != m_pBevs)
+    if (NULL != m_pMainBev)
     {
-        for (int i = 0; i < TYPE_COUNT; i++)
-        {
-            if (NULL != m_pBevs[i])
-            {
-                bufferevent_free(m_pBevs[i]);
-                m_pBevs[i] = NULL;
-            }
-        }
+        bufferevent_free(m_pMainBev);
+        m_pMainBev = NULL;
     }
-    
-    Q_SafeDelete_Array(m_pBevs);
-    Q_SafeDelete_Array(m_pBuffers);    
-    Q_SafeDelete_Array(m_pParam);
+
+    if (NULL != m_pAssistBev)
+    {
+        bufferevent_free(m_pAssistBev);
+        m_pAssistBev = NULL;
+    }
 
     if (NULL != m_pExitEvent)
     {
@@ -147,10 +66,10 @@ void CSockPairEvent::freeAll(void)
         m_pExitEvent = NULL;
     }
 
-    if (NULL != m_pEventBase)
+    if (NULL != m_pBase)
     {
-        event_base_free(m_pEventBase);
-        m_pEventBase = NULL;
+        event_base_free(m_pBase);
+        m_pBase = NULL;
     }
 }
 
@@ -169,7 +88,7 @@ int CSockPairEvent::initExitMonitor(unsigned int uiMS)
     }
 
     m_pExitEvent = event_new(getBase(), 
-        -1, EV_PERSIST, exitMonitorCB, &m_stExitParam);
+        -1, EV_PERSIST, exitMonitorCB, this);
     if (NULL == m_pExitEvent)
     {
         Q_Printf("%s", "event_new error");
@@ -203,17 +122,25 @@ int CSockPairEvent::initExitMonitor(unsigned int uiMS)
 ************************************************************************/
 int CSockPairEvent::Start(void)
 {
-    //初始化时是否出错
-    if (getError())
+    int iRtn = Q_RTN_OK;
+
+    if (RunStatus_Error == getRunStatus())
     {
         return Q_RTN_FAILE;
     }
 
-    int iRtn = Q_RTN_OK;
-
-    //初始化event
     setRunStatus(RunStatus_Starting);
-    iRtn = initEvent();
+
+    //初始化main event    
+    iRtn = initMainEvent();
+    if (Q_RTN_OK != iRtn)
+    {
+        setRunStatus(RunStatus_Error);
+        return iRtn;
+    }
+
+    //初始化assist event  
+    iRtn = initAssistEvent();
     if (Q_RTN_OK != iRtn)
     {
         setRunStatus(RunStatus_Error);
@@ -235,7 +162,7 @@ int CSockPairEvent::Start(void)
     }
 
     setRunStatus(RunStatus_Runing);
-    event_base_dispatch(m_pEventBase);
+    event_base_dispatch(m_pBase);
     setRunStatus(RunStatus_Stopped);
 
     m_Mutex.Lock();
@@ -258,8 +185,7 @@ int CSockPairEvent::Start(void)
 ************************************************************************/
 void CSockPairEvent::Stop(void)
 {
-    if (getIsRun()
-        && NULL != m_pSockPairs)
+    if (getIsRun())
     {
         m_Mutex.Lock();
         setRunStatus(RunStatus_Stopping);
@@ -327,40 +253,20 @@ bool CSockPairEvent::waitForStarted(void)
     }
 }
 
-void CSockPairEvent::setTcpParam(void *pArg)
-{
-    m_pParam[TYPE_TCP].pUserDate = pArg;
-}
-
-void CSockPairEvent::setOrderParam(void *pArg)
-{
-    m_pParam[TYPE_ORDER].pUserDate = pArg;
-}
-
-void CSockPairEvent::setWebSockParam(void *pArg)
-{
-    m_pParam[TYPE_WEBSOCK].pUserDate = pArg;
-}
-
-void CSockPairEvent::setExitParam(void *pArg)
-{
-    m_stExitParam.pUserDate = pArg;
-}
-
-int CSockPairEvent::initEvent(struct bufferevent **pBev, struct SockPairEventParam *pParam, CSockPair &objPair)
+int CSockPairEvent::initAssistEvent(void)
 {
     int iRtn = Q_RTN_OK;
 
-    *pBev = bufferevent_socket_new(pParam->pMainBase, 
-        objPair.getReadFD(), BEV_OPT_CLOSE_ON_FREE);
-    if (NULL == *pBev)
+    m_pAssistBev = bufferevent_socket_new(getBase(), 
+        m_objAssistSockPair.getReadFD(), BEV_OPT_CLOSE_ON_FREE);
+    if (NULL == m_pAssistBev)
     {
         Q_Printf("%s", "bufferevent_socket_new error.");
 
         return Q_RTN_FAILE;
     }  
 
-    iRtn = pParam->pEventBuf->setBuffer(*pBev);
+    iRtn = m_objAssistBuffer.setBuffer(m_pAssistBev);
     if (Q_RTN_OK != iRtn)
     {
         Q_Printf("%s", "set main buffer error.");
@@ -368,8 +274,8 @@ int CSockPairEvent::initEvent(struct bufferevent **pBev, struct SockPairEventPar
         return iRtn;
     }
 
-    bufferevent_setcb(*pBev, sockPairEventReadCB, NULL, sockPairEventCB, pParam);
-    iRtn = bufferevent_enable(*pBev, EV_READ);
+    bufferevent_setcb(m_pAssistBev, assistReadCB, NULL, eventCB, this);
+    iRtn = bufferevent_enable(m_pAssistBev, EV_READ);
     if (Q_RTN_OK != iRtn)
     {
         Q_Printf("%s", "bufferevent_enable error.");
@@ -380,37 +286,52 @@ int CSockPairEvent::initEvent(struct bufferevent **pBev, struct SockPairEventPar
     return Q_RTN_OK;
 }
 
-int CSockPairEvent::initEvent(void)
+int CSockPairEvent::initMainEvent(void)
 {
-    for (int i = 0; i < TYPE_COUNT; i++)
+    int iRtn = Q_RTN_OK;
+
+    m_pMainBev = bufferevent_socket_new(getBase(), 
+        m_objMainSockPair.getReadFD(), BEV_OPT_CLOSE_ON_FREE);
+    if (NULL == m_pMainBev)
     {
-        if (Q_RTN_OK != initEvent(&m_pBevs[i], &m_pParam[i], m_pSockPairs[i]))
-        {
-            return Q_RTN_FAILE;
-        }
+        Q_Printf("%s", "bufferevent_socket_new error.");
+
+        return Q_RTN_FAILE;
+    }  
+
+    iRtn = m_objMainBuffer.setBuffer(m_pMainBev);
+    if (Q_RTN_OK != iRtn)
+    {
+        Q_Printf("%s", "set main buffer error.");
+
+        return iRtn;
+    }
+
+    bufferevent_setcb(m_pMainBev, mainReadCB, NULL, eventCB, this);
+    iRtn = bufferevent_enable(m_pMainBev, EV_READ);
+    if (Q_RTN_OK != iRtn)
+    {
+        Q_Printf("%s", "bufferevent_enable error.");
+
+        return iRtn;
     }
 
     return Q_RTN_OK;
 }
 
-int CSockPairEvent::sendOrderMsg(const char *pszBuff, const size_t &iSize)
+int CSockPairEvent::sendMainMsg(const char *pszBuff, const size_t &iSize)
 {
-    return m_pSockPairs[TYPE_ORDER].Write(pszBuff, iSize);
+    return m_objMainSockPair.Write(pszBuff, iSize);
 }
 
-int CSockPairEvent::sendTcpMsg(const char *pszBuff, const size_t &iSize)
+int CSockPairEvent::sendAssistMsg(const char *pszBuff, const size_t &iSize)
 {
-    return m_pSockPairs[TYPE_TCP].Write(pszBuff, iSize);
+    return m_objAssistSockPair.Write(pszBuff, iSize);
 }
 
-int CSockPairEvent::sendWebSockMsg(const char *pszBuff, const size_t &iSize)
+void CSockPairEvent::eventCB(struct bufferevent *bev, short event, void *arg)
 {
-    return m_pSockPairs[TYPE_WEBSOCK].Write(pszBuff, iSize);
-}
-
-void CSockPairEvent::sockPairEventCB(struct bufferevent *bev, short event, void *arg)
-{
-    SockPairEventParam *pParam = (SockPairEventParam*)arg;
+    CSockPairEvent *pParam = (CSockPairEvent*)arg;
     int iSockError = EVUTIL_SOCKET_ERROR();
 
     if (event & BEV_EVENT_TIMEOUT)
@@ -433,49 +354,37 @@ void CSockPairEvent::sockPairEventCB(struct bufferevent *bev, short event, void 
 #endif
     }
 
-    event_base_loopbreak(pParam->pMainBase);
+    pParam->setRunStatus(RunStatus_Stopping);    
     Q_SYSLOG(LOGLV_ERROR, 
-        "an event error for bufferevent %d, event is %d. error code %d, message %s exit loop",
-        pParam->emType, event, iSockError, evutil_socket_error_to_string(iSockError));
+        "an event error happend, event is %d. error code %d, message %s exit loop",
+         event, iSockError, evutil_socket_error_to_string(iSockError));
 }
 
-void CSockPairEvent::sockPairEventReadCB(struct bufferevent *bev, void *arg)
+void CSockPairEvent::assistReadCB(struct bufferevent *bev, void *arg)
 {
-    SockPairEventParam *pParam = (SockPairEventParam*)arg;    
+    CSockPairEvent *pParam = (CSockPairEvent*)arg;
+    pParam->onAssistRead(pParam->getAssistBuffer());
+}
 
-    switch(pParam->emType)
-    {
-    case TYPE_TCP:
-        pParam->pFun->onTcpRead(pParam);
-        break;
-
-    case TYPE_ORDER:
-        pParam->pFun->onOrderRead(pParam);
-        break;
-
-    case TYPE_WEBSOCK:
-        pParam->pFun->onWebSockRead(pParam);
-        break;
-
-    default:
-        Q_Printf("%s", "unkown event type");
-        break;
-    }
+void CSockPairEvent::mainReadCB(struct bufferevent *bev, void *arg)
+{
+    CSockPairEvent *pParam = (CSockPairEvent*)arg;
+    pParam->onMainRead(pParam->getMainBuffer());
 }
 
 void CSockPairEvent::exitMonitorCB(evutil_socket_t, short event, void *arg)
 {
-    SockPairEventParam *pParam = (SockPairEventParam*)arg;
+    CSockPairEvent *pParam = (CSockPairEvent*)arg;
 
-    switch(pParam->pFun->getRunStatus())
+    switch(pParam->getRunStatus())
     {
     case RunStatus_Stopping:
         {
-            if (!pParam->pFun->getRunOnStop())
+            if (!pParam->getRunOnStop())
             {
                 Q_Printf("ready stop thread %u.", Q_ThreadId());
-                pParam->pFun->onStop(pParam);
-                pParam->pFun->setRunOnStop(true);
+                pParam->onStop();
+                pParam->setRunOnStop(true);
             }
         }
         break;
@@ -483,7 +392,7 @@ void CSockPairEvent::exitMonitorCB(evutil_socket_t, short event, void *arg)
     case RunStatus_Stopped:
         {
             Q_Printf("stop thread %u successfully.", Q_ThreadId());
-            event_base_loopbreak(pParam->pMainBase);
+            event_base_loopbreak(pParam->getBase());
         }
         break;
 

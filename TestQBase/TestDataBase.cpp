@@ -60,7 +60,6 @@ int CTestDataBase::TestDB(CDBPool *pPool)
         return Q_RTN_FAILE;
     }
 
-    bool bCheckBuf = false;
     CDBStatement *pStatement = NULL;
     CDBQuery *pQuery = NULL;
     CSqlBuffer objBuf;
@@ -104,7 +103,6 @@ int CTestDataBase::TestDB(CDBPool *pPool)
 
         objBuf.Format("select blob1,intll from test where intll >= ?;");
         pStatement = pLink->compileStatement(objBuf);
-        int iBlobLens = 0;
 
         std::string strInsertSql = "insert into test(vchar1, intll, float1, smallint1, double1, blob1, int64) values ('1111',1111,1111,11,1111,'',1111);";
         std::string strDelSql = "delete from test where int64=1111";

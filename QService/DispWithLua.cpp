@@ -32,12 +32,12 @@
 #define LUA_EVENT_ONCONNECTED "Lua_OnConnected"
 #define LUA_EVENT_ONCLOSE     "Lua_OnClose"
 #define LUA_EVENT_ONTIMER     "Lua_OnTimer"
-#define LUA_EVENT_ONREAD      "Lua_OnRead"
+#define LUA_EVENT_ONTCPREAD   "Lua_OnTcpRead"
+#define LUA_EVENT_ONWEBSOCKREAD "Lua_OnWebSockRead"
 #define LUA_EVENT_ONHTTPREAD  "Lua_OnHttpRead"
 #define LUA_EVENT_ONSVLINKED  "Lua_OnLinkedServer"
 
-CDisposeEvent::CDisposeEvent(const char *pszLuaFile) : m_usOpCode(Q_INIT_NUMBER), 
-    m_usMsgLens(Q_INIT_NUMBER), m_pLua(NULL)
+CDisposeEvent::CDisposeEvent(const char *pszLuaFile) : m_pLua(NULL)
 {
     m_pLua = luaL_newstate();
     if (NULL == m_pLua)
@@ -80,7 +80,6 @@ bool CDisposeEvent::onSerciveStartUp(void)
     {
         getSessionManager()->setLua(m_pLua);
         luabridge::getGlobal(m_pLua, LUA_EVENT_ONSTARTUP)(getSessionManager());
-        startSVLinker();
     }
     catch(luabridge::LuaException &e)
     {
@@ -162,27 +161,14 @@ void CDisposeEvent::onTimerEvent(void)
     }
 }
 
-void CDisposeEvent::onSocketRead(const char *pszMsg, const Q_PackHeadType &iLens)
+void CDisposeEvent::onTcpRead(const char *pszMsg, const size_t &iLens)
 {
     try
     {
-        if (iLens < sizeof(m_usOpCode))
-        {
-            return;
-        }
+        m_stBinaryStr.pBuf = (char*)(pszMsg);
+        m_stBinaryStr.iLens = iLens;
 
-        m_usOpCode = ntohs(*((unsigned short *)(pszMsg)));
-        m_usMsgLens = iLens - sizeof(m_usOpCode);
-        if (0 == m_usMsgLens)
-        {
-            luabridge::getGlobal(m_pLua, LUA_EVENT_ONREAD)(m_usOpCode, "", m_usMsgLens);
-        }
-        else
-        {
-            m_stBinaryStr.pBuf = (char*)(pszMsg + sizeof(m_usOpCode));
-            m_stBinaryStr.iLens = m_usMsgLens;
-            luabridge::getGlobal(m_pLua, LUA_EVENT_ONREAD)(m_usOpCode, m_stBinaryStr, m_usMsgLens);
-        }
+        luabridge::getGlobal(m_pLua, LUA_EVENT_ONTCPREAD)(m_stBinaryStr, iLens);
     }
     catch(luabridge::LuaException &e)
     {
@@ -198,11 +184,34 @@ void CDisposeEvent::onSocketRead(const char *pszMsg, const Q_PackHeadType &iLens
     }
 }
 
-void CDisposeEvent::onHttpRead(class CHttpBuffer *pHttpBuffer)
+void CDisposeEvent::onWebSockRead(const char *pszMsg, const size_t &iLens)
 {
     try
     {
-        luabridge::getGlobal(m_pLua, LUA_EVENT_ONHTTPREAD)(pHttpBuffer);
+        m_stBinaryStr.pBuf = (char*)(pszMsg);
+        m_stBinaryStr.iLens = iLens;
+
+        luabridge::getGlobal(m_pLua, LUA_EVENT_ONWEBSOCKREAD)(m_stBinaryStr, iLens);
+    }
+    catch(luabridge::LuaException &e)
+    {
+        Q_Printf("%s", e.what());
+        Q_SYSLOG(LOGLV_ERROR, "%s", e.what());
+    }
+    catch(CException &e)
+    {
+        Q_Printf("exception. code %d, message %s", 
+            e.getErrorCode(), e.getErrorMsg());
+        Q_SYSLOG(LOGLV_ERROR, "exception. code %d, message %s", 
+            e.getErrorCode(), e.getErrorMsg());
+    }
+}
+
+void CDisposeEvent::onHttpRead(class CHttpParser *pBuffer)
+{
+    try
+    {
+        luabridge::getGlobal(m_pLua, LUA_EVENT_ONHTTPREAD)(pBuffer);
     }
     catch(luabridge::LuaException &e)
     {

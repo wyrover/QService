@@ -58,15 +58,6 @@
     <Filter Include="Base\OS">
       <UniqueIdentifier>{448db666-d984-45e5-9408-0c6d1f273a15}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Service">
-      <UniqueIdentifier>{404438f3-ebef-4875-892f-fc55bf3556c5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Service\Session">
-      <UniqueIdentifier>{253f895c-a984-435e-9251-e88f62fd05df}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Service\WorkThread">
-      <UniqueIdentifier>{b96add17-3e73-4002-a1ad-6b525a6de1f9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Arithmetic">
       <UniqueIdentifier>{f286f5fc-5259-461c-8132-39c66b01a145}</UniqueIdentifier>
     </Filter>
@@ -85,9 +76,6 @@
     <Filter Include="Base\NetWork">
       <UniqueIdentifier>{235cf100-e459-4b53-97e8-2239e611a770}</UniqueIdentifier>
     </Filter>
-    <Filter Include="HttpClient">
-      <UniqueIdentifier>{26b77e56-3e44-4d69-842f-90b96f1493c2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Lua\LuaCJson">
       <UniqueIdentifier>{d53173ae-655f-44bb-be45-26e8d8fe161d}</UniqueIdentifier>
     </Filter>
@@ -103,8 +91,23 @@
     <Filter Include="Encrypt\Sha1">
       <UniqueIdentifier>{3cd8ae53-c8a5-41a4-86f2-769722eae2d5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="TimerTask">
-      <UniqueIdentifier>{4c01fb72-0db3-43d4-8c89-59ef6c423e21}</UniqueIdentifier>
+    <Filter Include="Service">
+      <UniqueIdentifier>{404438f3-ebef-4875-892f-fc55bf3556c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Service\Session">
+      <UniqueIdentifier>{253f895c-a984-435e-9251-e88f62fd05df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="HttpClient">
+      <UniqueIdentifier>{99521b8f-68cc-4813-88e9-f359559c738a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Service\Worker">
+      <UniqueIdentifier>{b96add17-3e73-4002-a1ad-6b525a6de1f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lua\LuaSocket">
+      <UniqueIdentifier>{1de284e5-f58f-4bf7-98bc-996529a73b25}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Base\NetWork\Protocol">
+      <UniqueIdentifier>{02632629-b64f-475b-bd79-cde93b3e1443}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -160,9 +163,6 @@
       <Filter>DataBase\MySQL</Filter>
     </ClInclude>
     <ClInclude Include="QBase.h" />
-    <ClInclude Include="SampleLoger.h">
-      <Filter>Log</Filter>
-    </ClInclude>
     <ClInclude Include="Loger.h">
       <Filter>Log</Filter>
     </ClInclude>
@@ -181,11 +181,8 @@
     <ClInclude Include="SessionManager.h">
       <Filter>Service\Session</Filter>
     </ClInclude>
-    <ClInclude Include="ServerLinker.h">
-      <Filter>Service\WorkThread</Filter>
-    </ClInclude>
     <ClInclude Include="WorkThreadEvent.h">
-      <Filter>Service\WorkThread</Filter>
+      <Filter>Service\Worker</Filter>
     </ClInclude>
     <ClInclude Include="RSAEuro\des.h">
       <Filter>Encrypt\RSA\RSAEuro</Filter>
@@ -265,9 +262,6 @@
     <ClInclude Include="SockPairEvent.h">
       <Filter>Base\NetWork</Filter>
     </ClInclude>
-    <ClInclude Include="SockPairEventParam.h">
-      <Filter>Base\NetWork</Filter>
-    </ClInclude>
     <ClInclude Include="QTime.h">
       <Filter>Base\OS</Filter>
     </ClInclude>
@@ -294,9 +288,6 @@
     </ClInclude>
     <ClInclude Include="Filter.h">
       <Filter>Arithmetic</Filter>
-    </ClInclude>
-    <ClInclude Include="Buffer.h">
-      <Filter>Base\OS</Filter>
     </ClInclude>
     <ClInclude Include="LuaBridge\detail\CFunctions.h">
       <Filter>Lua\LuaBridge\detail</Filter>
@@ -356,7 +347,7 @@
       <Filter>Config</Filter>
     </ClInclude>
     <ClInclude Include="EventInterface.h">
-      <Filter>Service\WorkThread</Filter>
+      <Filter>Service\Worker</Filter>
     </ClInclude>
     <ClInclude Include="MMap.h">
       <Filter>Base\OS</Filter>
@@ -511,9 +502,6 @@
     <ClInclude Include="LuaFunc.h">
       <Filter>Lua</Filter>
     </ClInclude>
-    <ClInclude Include="HttpClient.h">
-      <Filter>HttpClient</Filter>
-    </ClInclude>
     <ClInclude Include="LuaSql\luasql.h">
       <Filter>Lua\LuaSql</Filter>
     </ClInclude>
@@ -577,17 +565,83 @@
     <ClInclude Include="pbc\varint.h">
       <Filter>Lua\pbc</Filter>
     </ClInclude>
-    <ClInclude Include="HttpBuffer.h">
-      <Filter>Base\NetWork</Filter>
-    </ClInclude>
     <ClInclude Include="SHA1.h">
       <Filter>Encrypt\Sha1</Filter>
     </ClInclude>
-    <ClInclude Include="WebSock.h">
-      <Filter>Service\WorkThread</Filter>
+    <ClInclude Include="HttpClient.h">
+      <Filter>HttpClient</Filter>
     </ClInclude>
-    <ClInclude Include="TimerTask.h">
-      <Filter>TimerTask</Filter>
+    <ClInclude Include="LinkOther.h">
+      <Filter>Service\Worker</Filter>
+    </ClInclude>
+    <ClInclude Include="TxtLoger.h">
+      <Filter>Log</Filter>
+    </ClInclude>
+    <ClInclude Include="DBLoger.h">
+      <Filter>Log</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaSocket\auxiliar.h">
+      <Filter>Lua\LuaSocket</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaSocket\buffer.h">
+      <Filter>Lua\LuaSocket</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaSocket\except.h">
+      <Filter>Lua\LuaSocket</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaSocket\inet.h">
+      <Filter>Lua\LuaSocket</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaSocket\luasocket.h">
+      <Filter>Lua\LuaSocket</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaSocket\options.h">
+      <Filter>Lua\LuaSocket</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaSocket\pierror.h">
+      <Filter>Lua\LuaSocket</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaSocket\select.h">
+      <Filter>Lua\LuaSocket</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaSocket\socket.h">
+      <Filter>Lua\LuaSocket</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaSocket\tcp.h">
+      <Filter>Lua\LuaSocket</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaSocket\timeout.h">
+      <Filter>Lua\LuaSocket</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaSocket\udp.h">
+      <Filter>Lua\LuaSocket</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaSocket\usocket.h">
+      <Filter>Lua\LuaSocket</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaSocket\wsocket.h">
+      <Filter>Lua\LuaSocket</Filter>
+    </ClInclude>
+    <ClInclude Include="BufferMgr.h">
+      <Filter>Base\OS</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaSocket\unix.h">
+      <Filter>Lua\LuaSocket</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaSocket\mime.h">
+      <Filter>Lua\LuaSocket</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaSocket\luasockio.h">
+      <Filter>Lua\LuaSocket</Filter>
+    </ClInclude>
+    <ClInclude Include="WebSockParser.h">
+      <Filter>Base\NetWork\Protocol</Filter>
+    </ClInclude>
+    <ClInclude Include="HttpParser.h">
+      <Filter>Base\NetWork\Protocol</Filter>
+    </ClInclude>
+    <ClInclude Include="TcpParser.h">
+      <Filter>Base\NetWork\Protocol</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -624,9 +678,6 @@
     <ClCompile Include="QMySQL.cpp">
       <Filter>DataBase\MySQL</Filter>
     </ClCompile>
-    <ClCompile Include="SampleLoger.cpp">
-      <Filter>Log</Filter>
-    </ClCompile>
     <ClCompile Include="DBPool.cpp">
       <Filter>DataBase</Filter>
     </ClCompile>
@@ -642,11 +693,8 @@
     <ClCompile Include="SessionManager.cpp">
       <Filter>Service\Session</Filter>
     </ClCompile>
-    <ClCompile Include="ServerLinker.cpp">
-      <Filter>Service\WorkThread</Filter>
-    </ClCompile>
     <ClCompile Include="WorkThreadEvent.cpp">
-      <Filter>Service\WorkThread</Filter>
+      <Filter>Service\Worker</Filter>
     </ClCompile>
     <ClCompile Include="RSAEuro\desc.c">
       <Filter>Encrypt\RSA\RSAEuro</Filter>
@@ -756,9 +804,6 @@
     </ClCompile>
     <ClCompile Include="Filter.cpp">
       <Filter>Arithmetic</Filter>
-    </ClCompile>
-    <ClCompile Include="Buffer.cpp">
-      <Filter>Base\OS</Filter>
     </ClCompile>
     <ClCompile Include="SysLog.cpp">
       <Filter>Base\OS</Filter>
@@ -943,9 +988,6 @@
     <ClCompile Include="SnowflakeID.cpp">
       <Filter>Arithmetic</Filter>
     </ClCompile>
-    <ClCompile Include="HttpClient.cpp">
-      <Filter>HttpClient</Filter>
-    </ClCompile>
     <ClCompile Include="LuaSql\ls_mysql.c">
       <Filter>Lua\LuaSql</Filter>
     </ClCompile>
@@ -1024,17 +1066,80 @@
     <ClCompile Include="pbc\wmessage.cpp">
       <Filter>Lua\pbc</Filter>
     </ClCompile>
-    <ClCompile Include="HttpBuffer.cpp">
-      <Filter>Base\NetWork</Filter>
-    </ClCompile>
     <ClCompile Include="SHA1.cpp">
       <Filter>Encrypt\Sha1</Filter>
     </ClCompile>
-    <ClCompile Include="WebSock.cpp">
-      <Filter>Service\WorkThread</Filter>
+    <ClCompile Include="HttpClient.cpp">
+      <Filter>HttpClient</Filter>
     </ClCompile>
-    <ClCompile Include="TimerTask.cpp">
-      <Filter>TimerTask</Filter>
+    <ClCompile Include="LinkOther.cpp">
+      <Filter>Service\Worker</Filter>
+    </ClCompile>
+    <ClCompile Include="TxtLoger.cpp">
+      <Filter>Log</Filter>
+    </ClCompile>
+    <ClCompile Include="DBLoger.cpp">
+      <Filter>Log</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaSocket\auxiliar.c">
+      <Filter>Lua\LuaSocket</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaSocket\buffer.c">
+      <Filter>Lua\LuaSocket</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaSocket\except.c">
+      <Filter>Lua\LuaSocket</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaSocket\inet.c">
+      <Filter>Lua\LuaSocket</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaSocket\luasocket.c">
+      <Filter>Lua\LuaSocket</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaSocket\options.c">
+      <Filter>Lua\LuaSocket</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaSocket\select.c">
+      <Filter>Lua\LuaSocket</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaSocket\tcp.c">
+      <Filter>Lua\LuaSocket</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaSocket\timeout.c">
+      <Filter>Lua\LuaSocket</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaSocket\udp.c">
+      <Filter>Lua\LuaSocket</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaSocket\usocket.c">
+      <Filter>Lua\LuaSocket</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaSocket\wsocket.c">
+      <Filter>Lua\LuaSocket</Filter>
+    </ClCompile>
+    <ClCompile Include="BufferMgr.cpp">
+      <Filter>Base\OS</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaSocket\unix.c">
+      <Filter>Lua\LuaSocket</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaSocket\serial.c">
+      <Filter>Lua\LuaSocket</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaSocket\mime.c">
+      <Filter>Lua\LuaSocket</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaSocket\luasockio.c">
+      <Filter>Lua\LuaSocket</Filter>
+    </ClCompile>
+    <ClCompile Include="WebSockParser.cpp">
+      <Filter>Base\NetWork\Protocol</Filter>
+    </ClCompile>
+    <ClCompile Include="HttpParser.cpp">
+      <Filter>Base\NetWork\Protocol</Filter>
+    </ClCompile>
+    <ClCompile Include="TcpParser.cpp">
+      <Filter>Base\NetWork\Protocol</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

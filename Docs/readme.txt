@@ -1,74 +1,78 @@
-Ë®Æ½ÓĞÏŞ£¬Èç·¢ÏÖbug»òÓĞÊ²Ã´Òâ¼û¡¢½¨ÒéÇëÁªÏµÎÒ£¬´ó¼ÒÒ»ÆğÍêÉÆÕâ¸ö¿ò¼Ü¡£email:200309129@163.com¡£
+ï»¿QServiceæœåŠ¡å™¨æ”¯æŒhttpã€ tcp ã€websocketåè®®ï¼›æ•°æ®åº“æ”¯æŒsqlite3ã€mysqlã€redisã€‚
+æ‰€æœ‰ä¸šåŠ¡å‡å¯ç”¨Luaè„šæœ¬å¼€å‘ï¼Œå·²ç»ç”¨äºæ‰‹æ¸¸æœåŠ¡å™¨ç«¯å¼€å‘ã€‚
 
-Ò»¡¢±àÒëQService
-windowsÊ¹ÓÃvs2010»òÕß¸ü¸ß°æ±¾£»
-linuxÊ¹ÓÃmklib±àÒë³öÒÀÀµ¿â£¬È»ºóÔÙmk¡£
+ä¸€ã€ç¼–è¯‘QService
+windowsä½¿ç”¨vs2010æˆ–è€…æ›´é«˜ç‰ˆæœ¬ï¼›
+linuxä½¿ç”¨mklib.shç¼–è¯‘å‡ºä¾èµ–åº“ï¼Œç„¶åå†mk.shã€‚
 
-¶ş¡¢LuaÎÄ¼ş
-    1¡¢Main.lua
-        Main.luaÎªÖ÷luaÎÄ¼ş£¬Ö´ĞĞÒ»Ğ©±ØĞëµÄÊÂ¼ş£¬ÈçÏûÏ¢´¦Àí·Ö·¢¡¢Á¬½Ó¶Ï¿ªµÈ¡£
-    2¡¢RegFuncs.lua
-        RegFuncs.luaÊµÏÖÊÂ¼ş×¢²á£¬»Øµ÷¡£
-    3¡¢Utile.lua 
-        Ò»Ğ©³£ÓÃº¯Êı
-    4¡¢RegSV.lua
-       ·şÎñÆ÷×¢²á
-    5¡¢Protocol.lua
-        ²Ù×÷Âë¡¢ÇëÇóÂë
-    6¡¢Macros.lua
-        ºê¡¢Ã¶¾Ù
-    7¡¢ErrorCodes.lua
-        ´íÎóÂë
-    8¡¢Debug.lua
+äºŒã€é…ç½®æ–‡ä»¶
+    config.xml é…ç½®æœåŠ¡å™¨å¯åŠ¨å‚æ•°
+
+ä¸‰ã€Luaæ–‡ä»¶
+    1ã€Main.lua
+        Main.luaä¸ºä¸»luaæ–‡ä»¶ï¼Œæ‰§è¡Œä¸€äº›å¿…é¡»çš„äº‹ä»¶ï¼Œå¦‚æ¶ˆæ¯å¤„ç†åˆ†å‘ã€è¿æ¥æ–­å¼€ç­‰ã€‚
+    2ã€RegFuncs.lua
+        RegFuncs.luaå®ç°äº‹ä»¶æ³¨å†Œï¼Œå›è°ƒã€‚
+    3ã€Utile.lua 
+        ä¸€äº›å¸¸ç”¨å‡½æ•°
+    4ã€RegSV.lua
+       æœåŠ¡å™¨æ³¨å†Œ
+    5ã€Protocol.lua
+        æ“ä½œç ã€è¯·æ±‚ç 
+    6ã€Macros.lua
+        å®ã€æšä¸¾
+    7ã€ErrorCodes.lua
+        é”™è¯¯ç 
+    8ã€Debug.lua
         debug
-    9¡¢DBManager.lua
-        Êı¾İ¿â
-    10¡¢ÆäËûLuaÎÄ¼ş
-Èı¡¢ÊÂ¼ş
-    1¡¢ÊÂ¼ş¶¨Òå
-        ÊÂ¼şµÄÃ¶¾ÙÔÚMacros.luaÖĞµÄGameEvent£¬ÓÃ»§¿ÉÒÔ×Ô¶¨ÒåÊÂ¼şÈçÍæ¼ÒÉı¼¶µÈ¡£
-    2¡¢ÊÂ¼şÖ´ĞĞ
-        ÈçÍæ¼ÒÉı¼¶£¬ÔÚÍæ¼ÒµÈ¼¶ÌáÉıºóÖ´ĞĞonGameEvent(GameEvent.LevelUp, objPlayer)
-    3¡¢ÊÂ¼ş×¢²á
-        ÈçÍæ¼ÒÉı¼¶,regGameEvent(GameEvent.LevelUp, taskOnLevelUp) taskOnLevelUpÎªÍæ¼Ò
-    µÈ¼¶ÌáÉıÒÔºóÈÎÎñ´¦Àíº¯Êı¡£
+    9ã€DBManager.lua
+        æ•°æ®åº“
+    10ã€å…¶ä»–Luaæ–‡ä»¶
+å››ã€äº‹ä»¶
+    1ã€äº‹ä»¶å®šä¹‰
+        äº‹ä»¶çš„æšä¸¾åœ¨Macros.luaä¸­çš„GameEventï¼Œç”¨æˆ·å¯ä»¥è‡ªå®šä¹‰äº‹ä»¶å¦‚ç©å®¶å‡çº§ç­‰ã€‚
+    2ã€äº‹ä»¶æ‰§è¡Œ
+        å¦‚ç©å®¶å‡çº§ï¼Œåœ¨ç©å®¶ç­‰çº§æå‡åæ‰§è¡ŒonGameEvent(GameEvent.LevelUp, objPlayer)
+    3ã€äº‹ä»¶æ³¨å†Œ
+        å¦‚ç©å®¶å‡çº§,regGameEvent(GameEvent.LevelUp, taskOnLevelUp) taskOnLevelUpä¸ºç©å®¶
+    ç­‰çº§æå‡ä»¥åä»»åŠ¡å¤„ç†å‡½æ•°ã€‚
 
-ËÄ¡¢LuaÖĞÊ¹ÓÃµÄc++º¯Êı
-    Ïòluaµ¼³öµÄº¯Êı²Î¿´Reg2Lua.cpp ÖĞµÄvoid Register(void)º¯Êı
-    1¡¢º¯Êı
-        Q_GetModulPath »ñÈ¡QServiceÖ´ĞĞÎÄ¼şËùÔÚÂ·¾¶
-        Q_GetPathSeparator »ñÈ¡Â·¾¶·Ö¸ô·û("/"»ò"\")
-        Q_LOG ÎÄ±¾ÈÕÖ¾
-        getServerID »ñÈ¡ÅäÖÃ±íÖĞµÄ·şÎñÆ÷ID
-        getServerType »ñÈ¡ÅäÖÃ±íÖĞµÄ·şÎñÆ÷ÀàĞÍ
-    2¡¢Àà ÕâÀïÖ÷Òª½éÉÜsessionºÍsession¹ÜÀí
-        CSession sessionÀàÃ¿¸öÁ¬½Ó¶ÔÓ¦Ò»session ÔÚLuaÖĞ²»ÔÊĞíÊµÀı»¯
-            getSessionID »ñÈ¡session IDºÅ
-            setID  ¹ØÁªµÄÍâ²¿ID ÈçÍæ¼ÒID,Ö÷ÒªÍ¨¹ı¸ÃIDÓëÍæ¼Ò¶ÔÓ¦
-            getID  »ñÈ¡¹ØÁªµÄÍâ²¿ID
-            setCheckID ÉèÖÃĞ£ÑéID
-            getCheckID »ñÈ¡Ğ£ÑéID
-            setPing  ÉèÖÃping
-            setAccount ÉèÖÃ¹ØÁªµÄÕËºÅ
-            getAccount »ñÈ¡¹ØÁªµÄÕËºÅ
-            setStatus ÉèÖÃ×´Ì¬ ÖµÎªMacros.luaÖĞµÄSessionStatusÃ¶¾Ù
-            getStatus »ñÈ¡×´Ì¬ 
-            getType »ñÈ¡sessionÀàĞÍ ÖµÎªMacros.luaÖĞµÄSessionTypeÃ¶¾Ù
-        CSessionManager session¹ÜÀí ÔÚLuaÖĞ²»ÔÊĞíÊµÀı»¯ ¶ÔÓ¦ÓÚMain.luaÖĞµÄg_objSessionManager±äÁ¿
-            closeLinkByID ¹Ø±ÕÁ¬½Ó¸ù¾İsession ID
-            closeCurLink ¹Ø±Õµ±Ç°sessionÁ¬½Ó
-            getCurSession »ñÈ¡µ±Ç°session¶ÔÏó CSessionÀàĞÍ  ÔÚÍøÂç¿É¶ÁºÍ¶Ï¿ªµÄÊ±ºòÓĞÖµÆäËûÊ±ºòÎªnil
-            getSessionByID ¸ù¾İsession ID»ñÈ¡session¶ÔÏó
-            getSVLinkerNameByType »ñÈ¡Ä³ÖÖÀàĞÍ£¨SVType£©µÄ·şÎñÆ÷¼äÁ¬½ÓÃû³Æ
-            getServerLinkerSession ¸ù¾İÃû³Æ»ñÈ¡·şÎñÆ÷¼äÁ¬½ÓµÄsession¶ÔÏó
-            sendToCur Ïòµ±Ç°session·¢ËÍÏûÏ¢
-            sendToByID ÏòÖ¸¶¨IDµÄsession·¢ËÍÏûÏ¢
-            checkPing ping¼ì²é£¬²ÎÊıÎª³¬Ê±Ê±¼ä
-            getTimer »ñÈ¡¼ÆÊ±Æ÷´¥·¢Ê±¼ä¼ä¸ô
-            getCount »ñÈ¡¼ÆÊ±Æ÷´¥·¢µÄ´ÎÊı             
+äº”ã€Luaä¸­ä½¿ç”¨çš„c++å‡½æ•°
+    å‘luaå¯¼å‡ºçš„å‡½æ•°å‚çœ‹Reg2Lua.cpp ä¸­çš„void Register(void)å‡½æ•°
+    1ã€å‡½æ•°
+        Q_GetModulPath è·å–QServiceæ‰§è¡Œæ–‡ä»¶æ‰€åœ¨è·¯å¾„
+        Q_GetPathSeparator è·å–è·¯å¾„åˆ†éš”ç¬¦("/"æˆ–"\")
+        Q_LOG æ–‡æœ¬æ—¥å¿—
+        Q_DBLOG æ•°æ®åº“æ—¥å¿—
+        getServerID è·å–é…ç½®è¡¨ä¸­çš„æœåŠ¡å™¨ID
+        getServerType è·å–é…ç½®è¡¨ä¸­çš„æœåŠ¡å™¨ç±»å‹
+    2ã€ç±» è¿™é‡Œä¸»è¦ä»‹ç»sessionå’Œsessionç®¡ç†
+        CSession sessionç±»æ¯ä¸ªè¿æ¥å¯¹åº”ä¸€session åœ¨Luaä¸­ä¸å…è®¸å®ä¾‹åŒ–
+            getSessionID è·å–session IDå·
+            setID  å…³è”çš„å¤–éƒ¨ID å¦‚ç©å®¶ID,ä¸»è¦é€šè¿‡è¯¥IDä¸ç©å®¶å¯¹åº”
+            getID  è·å–å…³è”çš„å¤–éƒ¨ID
+            setCheckID è®¾ç½®æ ¡éªŒID
+            getCheckID è·å–æ ¡éªŒID
+            setPing  è®¾ç½®ping
+            setAccount è®¾ç½®å…³è”çš„è´¦å·
+            getAccount è·å–å…³è”çš„è´¦å·
+            setStatus è®¾ç½®çŠ¶æ€ å€¼ä¸ºMacros.luaä¸­çš„SessionStatusæšä¸¾
+            getStatus è·å–çŠ¶æ€ 
+            getType è·å–sessionç±»å‹ å€¼ä¸ºMacros.luaä¸­çš„SessionTypeæšä¸¾
+        CSessionManager sessionç®¡ç† åœ¨Luaä¸­ä¸å…è®¸å®ä¾‹åŒ– å¯¹åº”äºMain.luaä¸­çš„g_objSessionManagerå˜é‡
+            closeLinkByID å…³é—­è¿æ¥æ ¹æ®session ID
+            closeCurLink å…³é—­å½“å‰sessionè¿æ¥
+            getCurSession è·å–å½“å‰sessionå¯¹è±¡ CSessionç±»å‹  åœ¨ç½‘ç»œå¯è¯»å’Œæ–­å¼€çš„æ—¶å€™æœ‰å€¼å…¶ä»–æ—¶å€™ä¸ºnil
+            getSessionByID æ ¹æ®session IDè·å–sessionå¯¹è±¡
+            sendToCur å‘å½“å‰sessionå‘é€æ¶ˆæ¯
+            sendToByID å‘æŒ‡å®šIDçš„sessionå‘é€æ¶ˆæ¯
+            checkPing pingæ£€æŸ¥ï¼Œå‚æ•°ä¸ºè¶…æ—¶æ—¶é—´
+            getTimer è·å–è®¡æ—¶å™¨è§¦å‘æ—¶é—´é—´éš”
+            getCount è·å–è®¡æ—¶å™¨è§¦å‘çš„æ¬¡æ•° 
+            confirmStop ç¡®è®¤é€€å‡ºæœåŠ¡å™¨
+            getLinkOtherID æ ¹æ®åç§°è·å–é“¾æ¥åˆ°å…¶ä»–æœåŠ¡å™¨çš„ID           
         
-
-    
+æ°´å¹³æœ‰é™ï¼Œå¦‚å‘ç°bugæˆ–æœ‰ä»€ä¹ˆæ„è§ã€å»ºè®®è¯·è”ç³»æˆ‘ï¼Œå¤§å®¶ä¸€èµ·å®Œå–„è¿™ä¸ªæ¡†æ¶ã€‚email:200309129@163.comã€‚
 
 
 

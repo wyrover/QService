@@ -25,7 +25,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#include "Buffer.h"
+#include "BufferMgr.h"
 #include "Exception.h"
 
 CBuffer::CBuffer(void) : m_pBuffer(NULL), 

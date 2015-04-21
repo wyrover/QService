@@ -45,9 +45,11 @@ public:
     /*定时器触发时执行*/
     void onTimerEvent(void);
     /*socket读取到完整包时执行*/
-    void onSocketRead(const char *pszMsg, const Q_PackHeadType &iLens);
+    void onTcpRead(const char *pszMsg, const size_t &iLens);
+    /*websock 读取到完整包时执行*/
+    void onWebSockRead(const char *pszMsg, const size_t &iLens);
     /*http */
-    void onHttpRead(class CHttpBuffer *pHttpBuffer);
+    void onHttpRead(class CHttpParser *pBuffer);
     /*服务器连接启动*/
     void onLinkedServer(class CSession *pSession);
 
@@ -55,8 +57,6 @@ private:
     CDisposeEvent(void);
 
 private:
-    unsigned short m_usOpCode;
-    unsigned short m_usMsgLens;
     luabridge::BinaryStr m_stBinaryStr;
     struct lua_State *m_pLua;//lua句柄
     CReg2Lua m_objReg2Lua;

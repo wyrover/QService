@@ -25,36 +25,46 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef Q_ENCYPTBUFFER_H_
-#define Q_ENCYPTBUFFER_H_
+#ifndef Q_DBLOGER_H_
+#define Q_DBLOGER_H_
 
-#include "Macros.h"
+#include "Loger.h"
+#include "QMySQL.h"
+#include "Mutex.h"
+#include "TcpParser.h"
 
-/*
-数据打包
-*/
-class CBuffer
+//数据库日志
+class CDBLoger : public CLoger
 {
 public:
-    CBuffer(void);
-    /*iInitSize 默认buffer大小*/
-    explicit CBuffer(const size_t iInitSize);
-    ~CBuffer(void);
+    CDBLoger(void);
+    ~CDBLoger(void);
 
-    /*添加信息进buffer*/
-    void pushBuff(const void *pBuff, const size_t &iLens);
-    /*重置buffer偏移标志*/
-    void reSet(void);
+    //初始化
+    bool Init(const char *pszIp, unsigned short &usPort, 
+        const char *pszUser, const char *pszPWD, const char *pszDB);
 
-    /*返回buffer*/
-    const char *getBuffer(void);
-    /*获取buffer长度*/
-    const size_t getLens(void);
+    //写
+    void writeDBLog(Q_SOCK &fd, const char *pszPlayerID, const short sType, 
+        const char *pszMsg, const size_t iLens);
+
+public:
+    //接口
+    void Write(const char *pszMsg, const size_t iLens);
+    bool Check(void);
 
 private:
-    char *m_pBuffer;
-    size_t m_iOffset;
-    size_t m_iTotalSize;
+    bool Link(void);
+    std::string getTableNam(void);
+    bool createTable(std::string &strName);
+
+private:
+    CDBStatement *m_pStatement;
+    CMySQLLink m_objLinker;
+    CDBUrl m_objUrl;
+    CMutex m_objMutex;
+    std::string m_strTable;
+    CTcpParser m_objTcpParser;
 };
 
-#endif//Q_ENCYPTBUFFER_H_
+#endif//Q_DBLOGER_H_

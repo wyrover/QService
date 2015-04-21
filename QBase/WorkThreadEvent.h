@@ -28,9 +28,20 @@
 #ifndef Q_SERVERTHREAD_EVENT_H_
 #define Q_SERVERTHREAD_EVENT_H_
 
+#include "SockPairEvent.h"
 #include "SessionManager.h"
-#include "ServerLinker.h"
-#include "WebSock.h"
+#include "WebSockParser.h"
+#include "TcpParser.h"
+
+struct TriggerSock
+{
+    SessionType emType;
+    Q_SOCK iSock;
+    TriggerSock(void) : iSock(Q_INVALID_SOCK)
+    {
+        
+    };
+};
 
 /*
 * 工作线程事件
@@ -46,16 +57,22 @@ public:
     void setInterface(CEventInterface *pInterface);
     /*定时器时间(ms)*/
     int setTimer(unsigned int uiMS);
-    /*设置http*/
-    int setHttp(Q_SOCK &sock);
+    int setHttpSock(std::vector<Q_SOCK> &vcHttpSock);
+
     /*获取该事件循环维护的CSessionManager*/
-    CSessionManager *getSessionManager(void);    
+    CSessionManager *getSessionManager(void);
+    /*获取WebSockParser*/
+    CWebSockParser *getWebSockParser(void);
+    /*获取CTcpParser*/
+    CTcpParser *getTcpParser(void);
+    /*获取链接到其他服务器对象*/
+    CLinkOther *getLinkOther(void);
 
 public:
-    void onTcpRead(struct SockPairEventParam *pParam);
-    void onWebSockRead(struct SockPairEventParam *pParam);
-    void onOrderRead(struct SockPairEventParam *pParam);
-    void onStop(struct SockPairEventParam *pParam);    
+    //接口实现
+    void onMainRead(CEventBuffer *pBuffer);
+    void onAssistRead(CEventBuffer *pBuffer);
+    void onStop(void);
     bool onStartUp(void);
 
 public:
@@ -64,15 +81,26 @@ public:
     static void workThreadTimerCB(evutil_socket_t, short event, void *arg);
     static void workThreadHttpCB(struct evhttp_request *req, void *arg);
 
-private:
-    static char *getTcpDataPack(CSession *pSession, Q_PackHeadType &usSize);
-    void addServerLinker(struct event_base *pMainBase, 
-        CSessionManager *pSessionManager, OrderMsg &stOrderMsg);
+    //不同类型协议读取
+    static void dispTcp(CWorkThreadEvent *pWorkThreadEvent,
+        CSessionManager *pSessionManager, CSession *pSession);
+    static void dispWebSock(CWorkThreadEvent *pWorkThreadEvent,
+        CSessionManager *pSessionManager, CSession *pSession);
+
+public:
+    //websocket 分片帧操作
+    void addContinuation(const Q_SOCK &sock, const char *pszData, const size_t &iLens);
+    std::string *getContinuation(const Q_SOCK &sock);
+    void delContinuation(const Q_SOCK &sock);
 
 private:
     struct event *m_pEvent;
-    struct evhttp *m_pHttp;
-    CSessionManager m_objSessionManager;    
+    CSessionManager m_objSessionManager;
+    TriggerSock m_stWorkSock;
+    CWebSockParser m_objWebSockParser;
+    CTcpParser m_objTcpParser;
+    std::vector<struct evhttp *> m_vcEvHttp;
+    std::tr1::unordered_map<Q_SOCK, std::string> m_mapWebSockPack;
 };
 
 #endif//Q_SERVERTHREAD_EVENT_H_

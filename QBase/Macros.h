@@ -42,10 +42,6 @@
 
 #define QService "QService"
 
-//消息包头类型，转换
-typedef unsigned short Q_PackHeadType;
-#define Q_NTOH  ntohs
-
 #ifndef Q_OS_WIN32
     #define Q_SIGNAL_EXIT    SIGRTMIN + 10
 #endif

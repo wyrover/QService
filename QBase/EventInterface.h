@@ -28,7 +28,7 @@
 #ifndef Q_EVENT_INTERFACE_H_ 
 #define Q_EVENT_INTERFACE_H_
 
-#include "ServerLinker.h"
+#include "Macros.h"
 
 /*
 事件处理基类
@@ -61,28 +61,17 @@ public:
     virtual void onSocketClose(void){};
     /*定时器触发时执行*/
     virtual void onTimerEvent(void){};
-    /*tcp websocket读取到完整包时执行*/
-    virtual void onSocketRead(const char *, const Q_PackHeadType &){};
+    /*tcp读取到完整包时执行*/
+    virtual void onTcpRead(const char *, const size_t &){};
+    /*websock 读取到完整包时执行*/
+    virtual void onWebSockRead(const char *, const size_t &){};
     /*http */
-    virtual void onHttpRead(class CHttpBuffer *){};
+    virtual void onHttpRead(class CHttpParser *){};
     /*服务器连接启动*/
     virtual void onLinkedServer(class CSession *){};
-    void setSVLinker (std::vector<CServerLinker *> &vcLinker)
-    {
-        m_vcLinker = vcLinker;
-    };
-    void startSVLinker(void)
-    {
-        std::vector<CServerLinker *>::iterator itLinker;
-        for (itLinker = m_vcLinker.begin(); m_vcLinker.end() != itLinker; itLinker++)
-        {
-            (*itLinker)->Monitor();
-        }      
-    };
 
 private:
     class CSessionManager *m_pSessionManager;
-    std::vector<CServerLinker *> m_vcLinker;
 };
 
 #endif//Q_EVENT_INTERFACE_H_

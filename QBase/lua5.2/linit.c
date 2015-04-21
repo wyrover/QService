@@ -42,6 +42,7 @@ static const luaL_Reg loadedlibs[] = {
   {LUA_SQLITE3LIBNAME, luaopen_luasql_sqlite3},
   {LUA_LPEG, luaopen_lpeg},
   {LUA_PROTOBUFC, luaopen_protobuf_c},
+  {LUA_SOCKET, luaopen_socket_core},
   {NULL, NULL}
 };
 

@@ -25,79 +25,65 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef Q_SERVERLINKER_H_
-#define Q_SERVERLINKER_H_
+#ifndef Q_LINKOTHER_H_
+#define Q_LINKOTHER_H_
 
-#include "Cond.h"
 #include "InitSock.h"
-#include "SockPairEvent.h"
+#include "Mutex.h"
 
-/*连接到其他服务器*/
-class CServerLinker
+//连接到其他
+class CLinkOther
 {
 public:
-    CServerLinker(void);
-    ~CServerLinker(void);
+    CLinkOther(void);
+    ~CLinkOther(void);
 
-    /*连接状况*/
-    void setLinked(bool bLinked);
-    bool getLinked(void);
-    /*端口*/
-    void setPort(unsigned short usPort);
-    unsigned short getPort(void);
-    /*IP*/
-    void setIp(const char *pszIp);
-    const char *getIp(void);
-    /*连接类型*/
-    void setType(const int iType);
-    int getType(void);
-    /*该连接事件循环存放点*/
-    void setSockPairEvent(CSockPairEvent *pEvent);
-    /*开启该连接的监控*/
-    int Monitor(void);
-    /*连接*/
-    int Link(void);
-    /*将该连接放入事件循环*/
-    int addInLoop(void);
-    /*关闭*/
-    void closeSock(void);
-    /*设置非阻塞*/
-    void setNonblock(void);
-    /*获取该连接的sock句柄*/
-    Q_SOCK getSock(void);
-    /*等待退出*/
-    CMutex *getCloseMutex(void);
-    CCond *getCloseCond(void);
-    /*向主线程发送信号*/
-    CMutex *getMutex(void);
-    CCond *getCond(void);
-    /*退出标志*/
-    bool getStop(void);
-    /*监控线程运行状况*/
-    bool getMonitorRun(void);
-    void setMonitorRun(bool bMonitorRun);
-    /*连接名称*/
-    void setLinkerName(const char *pszName);
-    const char *getLinkerName(void);
+    //设置CWorkThreadEvent对象
+    void setThreadEvent(class CWorkThreadEvent *pThreadEvent);
+    class CWorkThreadEvent *getThreadEvent(void);
+
+    //服务运行状态
+    void setStatus(const RunStatus emStatus);
+    RunStatus getStatus(void);
+
+    //增加要连接的主机信息
+    bool addHost(const char *pszIp, unsigned short usPort, const char *pszName);
+
+    //开始、停止
+    bool Start(void);
+    void Stop(void);
+
+    //连接
+    void Link(void);
+
+    //单个连接运行状态
+    void setSockStatus(Q_SOCK sock, SessionStatus emStatus);
+    
+    //根据名称获取链接ID
+    int getSockByName(const char *pszName);
 
 private:
-    void setTimeOut(const unsigned int uiMS);
+    struct LinkInfo
+    {
+        SessionStatus emStatus;
+        unsigned short usPort;
+        Q_SOCK sock;
+        std::string strIp;
+        std::string strName;
+        void Clear(void)
+        {
+            emStatus = SessionStatus_Closed;
+            sock = Q_INVALID_SOCK;
+        };
+    };
 
 private:
-    bool m_bMonitorRun;
-    bool m_bStop;
-    bool m_bLinked;            //是否连接
-    unsigned short m_usDesPort;//连接目标主机端口
-    int m_iType;
-    Q_SOCK m_Sock;
-    CSockPairEvent *m_pEvent;
-    std::string m_strDesIp;  //连接目标主机IP
-    CMutex m_objMutex_Close;
-    CCond m_objCond_Close;
-    CMutex m_objMutex;
-    CCond m_objCond;
-    CSockInit m_objSockInit;
-    std::string m_strLinkerName;
+    Q_SOCK initSock(const char *pszIp, unsigned short usPort);
+
+private:
+    RunStatus m_emStatus;
+    class CWorkThreadEvent *m_pThreadEvent;
+    std::vector<LinkInfo> m_vcLinkInfo;
 };
 
-#endif//Q_SERVERLINKER_H_
+#endif//Q_LINKOTHER_H_

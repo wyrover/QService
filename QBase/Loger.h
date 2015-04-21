@@ -33,10 +33,14 @@
 class CLoger
 {
 public:
-    CLoger(void){};
+    CLoger(void){};    
     virtual ~CLoger(void){};
 
     virtual void Write(const char *pszMsg, const size_t iLens) = 0;
+    virtual bool Check(void)
+    {
+        return true;
+    };
 };
 
 #endif

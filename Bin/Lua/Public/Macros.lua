@@ -63,8 +63,8 @@ GameEvent = {
 GameEvent = table.enum(GameEvent, 1)
 
 SessionType = {
+    "Tcp",
     "TcpClient",
-    "SVLinker",
     "WebSock",
 }
 SessionType = table.enum(SessionType)

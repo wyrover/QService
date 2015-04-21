@@ -25,13 +25,13 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#include "SampleLoger.h"
+#include "TxtLoger.h"
 #include "InitSock.h"
 #include "QTime.h"
 #include "QString.h"
 #include "File.h"
 
-CSampleLoger::CSampleLoger(void)
+CTxtLoger::CTxtLoger(void)
 {
     m_uiLogSize = 5*1024*1024;
     m_pFile = NULL;
@@ -39,7 +39,7 @@ CSampleLoger::CSampleLoger(void)
     m_LastCheckTime = time(NULL);
 }
 
-CSampleLoger::~CSampleLoger(void)
+CTxtLoger::~CTxtLoger(void)
 {
     if (NULL != m_pFile)
     {
@@ -48,22 +48,22 @@ CSampleLoger::~CSampleLoger(void)
     }
 }
 
-void CSampleLoger::setPriority(const LOG_LEVEL emLV)
+void CTxtLoger::setPriority(const LOG_LEVEL emLV)
 {
     m_emPriorityLV = emLV;
 }
 
-void CSampleLoger::setLogFile(const char *pLogFile)
+void CTxtLoger::setLogFile(const char *pLogFile)
 {
     m_strFilePath = pLogFile;
 }
 
-void CSampleLoger::setLogMaxSize(const size_t iSize)
+void CTxtLoger::setLogMaxSize(const size_t iSize)
 {
     m_uiLogSize = iSize;
 }
 
-void CSampleLoger::Open(void)
+void CTxtLoger::Open(void)
 {
     m_pFile = fopen(m_strFilePath.c_str(), "a");
     if(NULL == m_pFile)
@@ -76,7 +76,7 @@ void CSampleLoger::Open(void)
     return;
 }
 
-std::string CSampleLoger::getLV(LOG_LEVEL emInLogLv)
+std::string CTxtLoger::getLV(LOG_LEVEL emInLogLv)
 {
     std::string strRst;
 
@@ -106,7 +106,7 @@ std::string CSampleLoger::getLV(LOG_LEVEL emInLogLv)
     return strRst;
 }
 
-void CSampleLoger::Write(const char *pszMsg, const size_t iLens)
+void CTxtLoger::Write(const char *pszMsg, const size_t iLens)
 {
     if (NULL == m_pFile)
     {
@@ -156,7 +156,7 @@ void CSampleLoger::Write(const char *pszMsg, const size_t iLens)
     }
 }
 
-void CSampleLoger::writeLog(const LOG_LEVEL emInLogLv,
+void CTxtLoger::writeLog(const LOG_LEVEL emInLogLv,
     const char *pFile, const char *pFunction, const int iLine, Q_SOCK &fd,
     const char *pFormat, ...)
 {
@@ -191,7 +191,11 @@ void CSampleLoger::writeLog(const LOG_LEVEL emInLogLv,
         getLV(emInLogLv).c_str(), 
         strVa.c_str());
 
-    m_objMutex.Lock();
+    size_t iHeadLens = Q_INIT_NUMBER;
+    const char *pszHead = m_objTcpParser.createHead(strMsg.size(), iHeadLens);
+
+    m_objMutex.Lock();   
+    (void)Q_SockWrite(fd, pszHead, iHeadLens);
     (void)Q_SockWrite(fd, strMsg.c_str(), strMsg.size());
     m_objMutex.unLock();
 

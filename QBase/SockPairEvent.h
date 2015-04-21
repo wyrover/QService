@@ -31,23 +31,6 @@
 #include "SockPair.h"
 #include "EventBuffer.h"
 #include "Cond.h"
-#include "SockPairEventParam.h"
-
-enum OrderType
-{
-    OrderType_AddServerLinker = 0,
-};
-
-struct OrderMsg
-{
-    OrderType emType;
-    void *pHandle;
-    OrderMsg(void)
-    {
-        emType = OrderType_AddServerLinker;
-        pHandle = NULL;
-    }
-};
 
 /*
 SockPair事件循环
@@ -71,48 +54,44 @@ public:
     void setRunOnStop(bool bRun);
     bool getRunOnStop(void);
 
-    /*主读写sock 参数*/
-    void setTcpParam(void *pArg = NULL);
-    /*命令sock参数*/
-    void setOrderParam(void *pArg = NULL);
-    /*命令sock参数*/
-    void setWebSockParam(void *pArg = NULL);
-    /*命令sock参数*/
-    void setExitParam(void *pArg = NULL);
-    /*向主读写sock写入数据*/
-    int sendTcpMsg(const char *pszBuff, const size_t &iSize);
-    /*向命令sock写入数据*/
-    int sendOrderMsg(const char *pszBuff, const size_t &iSize);
-    /*向命令websock写入数据*/
-    int sendWebSockMsg(const char *pszBuff, const size_t &iSize);
+    /*写入数据*/
+    int sendMainMsg(const char *pszBuff, const size_t &iSize);
+    int sendAssistMsg(const char *pszBuff, const size_t &iSize);
     /*获取event_base*/
     struct event_base *getBase(void)
     {
-        return m_pEventBase;
+        return m_pBase;
+    };
+    CEventBuffer *getMainBuffer(void)
+    {
+        return &m_objMainBuffer;
+    };
+    CEventBuffer *getAssistBuffer(void)
+    {
+        return &m_objAssistBuffer;
     };
 
 public:
-    virtual void onTcpRead(struct SockPairEventParam *pParam){};
-    virtual void onStop(struct SockPairEventParam *pParam)
+    virtual void onMainRead(CEventBuffer *){};
+    virtual void onAssistRead(CEventBuffer *){};
+    virtual void onStop(void)
     {
         setRunStatus(RunStatus_Stopped);
     };
-    virtual void onOrderRead(struct SockPairEventParam *pParam){};
-    virtual void onWebSockRead(struct SockPairEventParam *pParam){};
     virtual bool onStartUp(void)
     {
         return true;
     };
 public:
-    static void sockPairEventReadCB(struct bufferevent *bev, void *arg);
-    static void sockPairEventCB(struct bufferevent *bev, short event, void *arg);
+    static void mainReadCB(struct bufferevent *bev, void *arg);
+    static void assistReadCB(struct bufferevent *bev, void *arg);
+    static void eventCB(struct bufferevent *bev, short event, void *arg);
     static void exitMonitorCB(evutil_socket_t, short event, void *arg);
 
 private:
-    int Init(void);
     void freeAll(void);
-    int initEvent(void);
-    int initEvent(struct bufferevent **pBev, struct SockPairEventParam *pParam, CSockPair &objPair);
+    int initMainEvent(void);
+    int initAssistEvent(void);
     int initExitMonitor(unsigned int uiMS);
     bool getError(void);
     bool getIsRun(void);
@@ -120,13 +99,14 @@ private:
 private:
     bool m_bRunOnStop;
     char m_cStatus;
-    struct event_base *m_pEventBase;
-    struct bufferevent **m_pBevs;
-    CSockPair *m_pSockPairs;
-    CEventBuffer *m_pBuffers;
-    struct SockPairEventParam *m_pParam;
+    struct event_base *m_pBase;
+    struct bufferevent *m_pMainBev;
+    struct bufferevent *m_pAssistBev;
     struct event *m_pExitEvent;
-    struct SockPairEventParam m_stExitParam;
+    CSockPair m_objMainSockPair;
+    CSockPair m_objAssistSockPair;
+    CEventBuffer m_objMainBuffer; 
+    CEventBuffer m_objAssistBuffer; 
     CMutex m_Mutex;
     CCond m_Cond;
 };

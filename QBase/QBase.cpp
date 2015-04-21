@@ -31,8 +31,12 @@
 CSysLoger g_SysLoger;
 
 /*日志全局变量*/
-CSampleLoger *g_pSampleLoger = NULL;
-Q_SOCK g_SampleLogerFD = Q_INVALID_SOCK;
+CTxtLoger *g_pTxtLoger = NULL;
+Q_SOCK g_TxtLogerFD = Q_INVALID_SOCK;
+
+/*数据库日志*/
+class CDBLoger *g_pDBLoger = NULL;
+Q_SOCK g_DBLogerFD = Q_INVALID_SOCK;
 
 /*程序退出信号量*/
 CMutex g_objExitMutex;

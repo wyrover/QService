@@ -25,30 +25,43 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef Q_SOCKPAIREVENT_PARAM_H_
-#define Q_SOCKPAIREVENT_PARAM_H_
+#ifndef Q_TCP_PARSER_H_
+#define Q_TCP_PARSER_H_
 
-#include "EventBuffer.h"
+#include "Macros.h"
 
-enum SockPairEventType
+#define TCP_HRAD_MAXLENS  5
+
+class CTcpParser
 {
-    TYPE_TCP = 0,
-    TYPE_WEBSOCK,
-    TYPE_ORDER,    
-    TYPE_COUNT,
-};
+public:
+    CTcpParser(void);
+    ~CTcpParser(void);
 
-struct SockPairEventParam
-{
-    SockPairEventType emType;
-    struct event_base *pMainBase;
-    CEventBuffer *pEventBuf;
-    void *pUserDate;
-    class CSockPairEvent *pFun;
-    SockPairEventParam(void) : pMainBase(NULL), pEventBuf(NULL), 
-        pUserDate(NULL), pFun(NULL)
+    //解析包 
+    const char *parsePack(class CEventBuffer *pBuffer);
+    size_t getParsedLens(void)
     {
+        return m_iParsedLens;
     };
+    size_t getBufLens(void)
+    {
+        return m_iBufLens;
+    };
+
+    //创建头
+    const char *createHead(const size_t &iLens, size_t &iHeadLens);
+
+private:
+    bool parseHead(class CEventBuffer *pBuffer);
+
+private:
+    char m_acHead[TCP_HRAD_MAXLENS];
+    size_t m_iParsedLens;
+    size_t m_iBufLens;
+    size_t m_iHeadLens;
+    size_t m_iTotalLens;
+    size_t m_iNeedReadLens;
 };
 
-#endif//Q_SOCKPAIREVENT_PARAM_H_
+#endif//Q_TCP_PARSER_H_

@@ -28,7 +28,7 @@
 #ifndef Q_AES_H_
 #define Q_AES_H_
 
-#include "Buffer.h"
+#include "BufferMgr.h"
 
 /*aes加密 非线程安全*/
 class CAESEncode

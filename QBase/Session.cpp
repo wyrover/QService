@@ -27,7 +27,7 @@
 
 #include "Session.h"
 
-CSession::CSession(void) : m_pHandle(NULL), m_iSessionType(SType_TcpClient),
+CSession::CSession(void) : m_cSessionType(STYPE_TCP),
     m_iSessionID(Q_INVALID_ID), m_iStatus(SessionStatus_Closed), 
     m_uiPing(Q_INIT_NUMBER)
 {
@@ -39,14 +39,14 @@ CSession::~CSession(void)
 
 }
 
-void CSession::setType(const int iType)
+void CSession::setType(const SessionType emType)
 {
-    m_iSessionType = iType;
+    m_cSessionType = (char)emType;
 }
 
 int CSession::getType(void)
 {
-    return m_iSessionType;
+    return (int)m_cSessionType;
 }
 
 void CSession::setSessionID(const int &uiID)
@@ -119,20 +119,9 @@ CEventBuffer *CSession::getBuffer(void)
     return &m_objBuffer;
 }
 
-void CSession::setHandle(void *pHandle)
-{
-    m_pHandle = pHandle;
-}
-
-void *CSession::getHandle(void)
-{
-    return m_pHandle;
-}
-
 void CSession::Clear(void)
 {
-    m_iSessionType = SType_TcpClient;
-    m_pHandle = NULL;
+    m_cSessionType = STYPE_TCP;
     m_iSessionID = Q_INVALID_ID;
     m_iStatus = SessionStatus_Closed;
     m_uiPing = Q_INIT_NUMBER;

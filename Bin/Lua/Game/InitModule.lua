@@ -4,6 +4,9 @@
 
 local tLoad = 
 {
+    {"Public/pbc/initpbc", true},
+    {"Public/luasocket/initluasocket", true},
+    {"Public/redis/initredis", true},
     {"Public/Utile", true},
     {"Public/Macros", true},    
     {"Public/ErrorCodes", true},    

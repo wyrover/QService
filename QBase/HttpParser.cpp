@@ -25,43 +25,64 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef Q_SAMPLELOGERER_H_
-#define Q_SAMPLELOGERER_H_
+#include "HttpParser.h"
 
-#include "Loger.h"
-#include "Mutex.h"
-
-class CSampleLoger : public CLoger
+CHttpParser::CHttpParser(struct evhttp_request *req) : m_bOK(false)
 {
-public:
-    CSampleLoger(void);
-    ~CSampleLoger(void);
+    m_pEventBuf = evbuffer_new();
+    if (NULL == m_pEventBuf)
+    {
+        Q_Printf("%s", "evbuffer_new error.");
+        return;
+    }
 
-    /*设置打印级别，低于该级别的不输出, 设置LOGLV_NOLOG不输出日志*/
-    void setPriority(const LOG_LEVEL emLV);
-    /*设置日志文件*/
-    void setLogFile(const char *pLogFile);
-    /*设置日志文件大小*/
-    void setLogMaxSize(const size_t iSize); 
+    m_Req = req;
 
-    void Write(const char *pszMsg, const size_t iLens);
+    struct evbuffer *pBuf = evhttp_request_get_input_buffer(m_Req);
+    size_t iLens = evbuffer_get_length(pBuf);
+    if (iLens > 0)
+    {
+        m_strPostMsg.append((const char *)evbuffer_pullup(pBuf, iLens), iLens);
+        evbuffer_drain(pBuf, iLens);
+    }
 
-    void writeLog(const LOG_LEVEL emInLogLv,
-        const char *pFile, const char *pFunction, const int iLine, Q_SOCK &fd,
-        const char *pFormat, ...);
+    const struct evhttp_uri *pUri = evhttp_request_get_evhttp_uri(m_Req);
+    const char *pszQuery = evhttp_uri_get_query(pUri);
+    m_strQuery = (NULL == pszQuery ? "" : pszQuery);
 
-    void Open(void);
+    m_bOK = true;
+}
 
-private:
-    std::string getLV(LOG_LEVEL emInLogLv);
+CHttpParser::~CHttpParser(void)
+{
+    if (NULL != m_pEventBuf)
+    {
+        evbuffer_free(m_pEventBuf);
+        m_pEventBuf = NULL;
+    }
+}
 
-private:
-    FILE *m_pFile;
-    LOG_LEVEL m_emPriorityLV;
-    size_t m_uiLogSize;
-    std::string m_strFilePath;
-    CMutex m_objMutex;
-    time_t m_LastCheckTime;
-};
+bool CHttpParser::isOK(void)
+{
+    return m_bOK;
+}
 
-#endif//Q_SAMPLELOGERER_H_
+const char *CHttpParser::getQuery(void)
+{
+    return m_strQuery.c_str();
+}
+
+const char *CHttpParser::getPostMsg(void)
+{
+    return m_strPostMsg.c_str();
+}
+
+void CHttpParser::setReplyContent(const char *pszMsg)
+{
+    evbuffer_add_printf(m_pEventBuf, "%s", pszMsg);
+}
+
+void CHttpParser::Reply(const int iCode, const char *pszReason)
+{
+    evhttp_send_reply(m_Req, iCode, pszReason, m_pEventBuf);
+}

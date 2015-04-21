@@ -29,7 +29,7 @@
 #define Q_QRSA_H_
 
 #include "RSAKey.h"
-#include "Buffer.h"
+#include "BufferMgr.h"
 
 /*
 RSA加密解密类，非线程安全

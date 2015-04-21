@@ -36,33 +36,6 @@ public:
     CServer(void);
     ~CServer(void);
 
-    /*工作线程数*/
-    void setThreadNum(const unsigned short usThreadNum = 1);
-    unsigned short getThreadNum(void);    
-    /*设置接口对象组，数目与线程usThreadNum相同*/
-    void setInterface(std::vector<CEventInterface * > &lstInterface);
-    /*定时器时间*/
-    void setTimer(unsigned int uiMS = 0);
-    unsigned int getTimer(void);      
-    /*tcp绑定IP*/
-    void setBindIP(const char *pszBindIP = "0.0.0.0");
-    const char *getBindIP(void);
-    /*tcp监听端口*/
-    void setPort(const unsigned short usPort);
-    unsigned short getPort(void);
-    /*http绑定IP*/
-    void setHttpBindIP(const char *pszBindIP = "0.0.0.0");
-    const char *getHttpBindIP(void);
-    /*http监听端口*/
-    void setHttpPort(const unsigned short usPort);
-    unsigned short getHttpPort(void);
-    /*websock绑定IP*/
-    void setWebSockBindIP(const char *pszBindIP = "0.0.0.0");
-    const char *getWebSockBindIP(void);
-    /*websock监听端口*/
-    void setWebSockPort(const unsigned short usPort);
-    unsigned short getWebSockPort(void);
-
     /*等待启动完成*/
     bool waitForStarted(void); 
     /*获取工作线程事件对象*/
@@ -70,6 +43,13 @@ public:
     /*状态设置*/
     void setRunStatus(RunStatus emStatus);
     RunStatus getRunStatus(void);
+    /*获取类型*/
+    SessionType getSockType(evutil_socket_t uiSock);
+    /*获取线程数*/
+    unsigned short getThreadNum(void)
+    {
+        return m_usThreadNum;
+    };
     
     struct event_base *getBase(void)
     {
@@ -77,51 +57,45 @@ public:
     };
 
     /*初始化*/
-    int Init(void);
+    int Init(const unsigned short &usThreadNum, const unsigned int &uiTime,
+        std::vector<CEventInterface * > &vcInterface,
+        std::map<unsigned short, std::string> &mapTcp, 
+        std::map<unsigned short, std::string> &mapWebSock, 
+        std::map<unsigned short, std::string> &mapHttp);
     /*启动服务*/
     int Start(void);
     /*停止服务*/
     void Stop(void);
 
 public:
-    static void listenerAcceptCB(struct evconnlistener *, Q_SOCK sock, struct sockaddr *, 
-        int iSockLen, void *arg);
-    static void webSockAcceptCB(struct evconnlistener *, Q_SOCK sock, struct sockaddr *, 
+    static void listenerAcceptCB(struct evconnlistener *pListener, Q_SOCK sock, struct sockaddr *, 
         int iSockLen, void *arg);
     static void exitMonitorCB(evutil_socket_t, short event, void *arg);
 
 private:
-    int initMainListener(void);
-    int initWebSockListener(void);
-    int initWorkThread(void);
+    struct evconnlistener * initListener(const char *pszHost, const unsigned short usPort);
+    int initWorkThread(std::vector<CEventInterface * > &vcInterface);
     int Loop(void);
     void exitWorkThread(void);
     void freeMainEvent(void);
-    Q_SOCK initHttpSock(void);
     bool getError(void);
     bool getIsRun(void);
     int initExitMonitor(unsigned int uiMS);
+    Q_SOCK initHttpSock(const char *pszIp, const unsigned short &usPort);
 
 private:
     char m_cRunStatus;
     unsigned short m_usThreadNum;
-    unsigned short m_usPort;
-    unsigned short m_usHttpPort;
-    unsigned short m_usWebSockPort;
     unsigned int m_uiTimer;
-    Q_SOCK m_httpSock;
-    struct evconnlistener *m_pListener;
-    struct evconnlistener *m_pWebSockListener;
     struct event_base *m_pMainBase;
     class CThreadPool *m_pPool;
     CWorkThreadEvent *m_pServerThreadEvent;
     struct event *m_pExitEvent;
-    std::vector<CEventInterface * > m_vcInterface;
     CMutex m_objMutex_Exit;
     CCond m_objCond_Exit;
-    std::string m_strBindIP;
-    std::string m_strHttpBindIP;
-    std::string m_strWebSockBindIP;
+    std::vector<Q_SOCK> m_vcHttpSock;
+    std::vector<struct evconnlistener * > m_vcAllListener;
+    std::map<evutil_socket_t, SessionType> m_mapType;
 };
 
 #endif//Q_SERVER_H_

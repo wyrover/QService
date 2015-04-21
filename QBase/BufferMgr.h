@@ -25,64 +25,36 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#include "HttpBuffer.h"
+#ifndef Q_BUFFER_H_
+#define Q_BUFFER_H_
 
-CHttpBuffer::CHttpBuffer(struct evhttp_request *req) : m_bOK(false)
+#include "Macros.h"
+
+/*
+数据打包
+*/
+class CBuffer
 {
-    m_pEventBuf = evbuffer_new();
-    if (NULL == m_pEventBuf)
-    {
-        Q_Printf("%s", "evbuffer_new error.");
-        return;
-    }
+public:
+    CBuffer(void);
+    /*iInitSize 默认buffer大小*/
+    explicit CBuffer(const size_t iInitSize);
+    ~CBuffer(void);
 
-    m_Req = req;
+    /*添加信息进buffer*/
+    void pushBuff(const void *pBuff, const size_t &iLens);
+    /*重置buffer偏移标志*/
+    void reSet(void);
 
-    struct evbuffer *pBuf = evhttp_request_get_input_buffer(m_Req);
-    size_t iLens = evbuffer_get_length(pBuf);
-    if (iLens > 0)
-    {
-        m_strPostMsg.append((const char *)evbuffer_pullup(pBuf, iLens), iLens);
-        evbuffer_drain(pBuf, iLens);
-    }
+    /*返回buffer*/
+    const char *getBuffer(void);
+    /*获取buffer长度*/
+    const size_t getLens(void);
 
-    const struct evhttp_uri *pUri = evhttp_request_get_evhttp_uri(m_Req);
-    const char *pszQuery = evhttp_uri_get_query(pUri);
-    m_strQuery = (NULL == pszQuery ? "" : pszQuery);
+private:
+    char *m_pBuffer;
+    size_t m_iOffset;
+    size_t m_iTotalSize;
+};
 
-    m_bOK = true;
-}
-
-CHttpBuffer::~CHttpBuffer(void)
-{
-    if (NULL != m_pEventBuf)
-    {
-        evbuffer_free(m_pEventBuf);
-        m_pEventBuf = NULL;
-    }
-}
-
-bool CHttpBuffer::isOK(void)
-{
-    return m_bOK;
-}
-
-const char *CHttpBuffer::getQuery(void)
-{
-    return m_strQuery.c_str();
-}
-
-const char *CHttpBuffer::getPostMsg(void)
-{
-    return m_strPostMsg.c_str();
-}
-
-void CHttpBuffer::setReplyContent(const char *pszMsg)
-{
-    evbuffer_add_printf(m_pEventBuf, "%s", pszMsg);
-}
-
-void CHttpBuffer::Reply(const int iCode, const char *pszReason)
-{
-    evhttp_send_reply(m_Req, iCode, pszReason, m_pEventBuf);
-}
+#endif//Q_BUFFER_H_

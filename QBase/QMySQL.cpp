@@ -1097,6 +1097,8 @@ CDBQuery* CMySQLLink::execQuery(const char* szSQL)
 
 CDBStatement *CMySQLLink::compileStatement(const char* pszSQL)
 {
+    checkDB();
+
     MYSQL_STMT *pStmt = NULL;
 
     pStmt = mysql_stmt_init(m_pDb_Ptr);

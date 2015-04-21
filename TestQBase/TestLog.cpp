@@ -23,13 +23,13 @@ void CTestLog::Test_Log(void)
     int iRtn = Q_GetProPath(strLogPath);
     CPPUNIT_ASSERT_EQUAL(Q_RTN_OK , iRtn);
 
-    g_pSampleLoger = new(std::nothrow) CSampleLoger();
-    CPPUNIT_ASSERT(NULL != g_pSampleLoger);
+    g_pTxtLoger = new(std::nothrow) CTxtLoger();
+    CPPUNIT_ASSERT(NULL != g_pTxtLoger);
 
-    g_pSampleLoger->setLogFile(std::string(strLogPath + "log/Log.txt").c_str());
-    g_pSampleLoger->Open();
+    g_pTxtLoger->setLogFile(std::string(strLogPath + "log/Log.txt").c_str());
+    g_pTxtLoger->Open();
 
-    g_SampleLogerFD = objLog.addLoger(g_pSampleLoger);
+    g_TxtLogerFD = objLog.addLoger(g_pTxtLoger);
 
     for (int i = 0; i < 100; i++)
     {

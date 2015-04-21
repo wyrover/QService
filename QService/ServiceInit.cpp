@@ -86,7 +86,13 @@ private:
 
 CServerInit::~CServerInit(void)
 {
-    destroyServer();
+    std::vector<CEventInterface * >::iterator itInterface;
+    for (itInterface = m_vcInterface.begin(); m_vcInterface.end() != itInterface; itInterface++)
+    {
+        Q_SafeDelete(*itInterface);
+    }
+
+    m_vcInterface.clear(); 
 }
 
 int CServerInit::Start(void)
@@ -108,8 +114,7 @@ int CServerInit::Start(void)
         return Q_RTN_FAILE;
     }
 
-    /*初始化日志*/
-    Q_Printf("%s", "init log system ...");
+    /*初始化日志*/    
     pLogSysTask = new(std::nothrow) CLogSysTask();
     if (NULL == pLogSysTask)
     {
@@ -127,7 +132,15 @@ int CServerInit::Start(void)
         return Q_RTN_FAILE;
     }
 
-    initSampleLog();
+    Q_Printf("%s", "init txt log system ...");
+    initTxtLog();
+    Q_Printf("%s", "init db log system ...");
+    if (!initDBLog())
+    {
+        Q_Printf("%s", "init db log system error.");
+
+        return Q_RTN_FAILE;
+    }
 
     /*启动服务*/
     Q_Printf("%s", "start service ...");
@@ -151,10 +164,27 @@ void CServerInit::Stop(void)
     m_objLog.Stop();
 }
 
+void CServerInit::readLinkOtherConfig(std::vector<LinkOther> &vcLinkOther)
+{
+    pugi::xpath_node_set objNodeSet;
+    pugi::xpath_node_set::const_iterator itNode;
+
+    objNodeSet = m_objXmlDoc.select_nodes("//LinkOther");
+    for (itNode = objNodeSet.begin(); objNodeSet.end() != itNode; itNode++)
+    {
+        LinkOther stLinkOther;
+        stLinkOther.strIp = itNode->node().child_value("IP");
+        stLinkOther.strName = itNode->node().child_value("Name");
+        stLinkOther.usPort = atoi(itNode->node().child_value("Port"));
+
+        vcLinkOther.push_back(stLinkOther);
+    }
+}
+
 bool CServerInit::readConfig(void)
 {
-    pugi::xpath_node_set objTmpNodeSet;
-    pugi::xpath_node_set::const_iterator itTmpNode;
+    std::string strIp;
+    unsigned short usPort = Q_INIT_NUMBER;
     pugi::xpath_node_set objNodeSet;
     pugi::xpath_node_set::const_iterator itNode;
 
@@ -177,29 +207,40 @@ bool CServerInit::readConfig(void)
         std::string(itNode->node().child_value("Script"));
     m_stServerConfig.uiTimer = atoi(itNode->node().child_value("Timer"));
 
-    m_stServerConfig.strBindIP = itNode->node().child_value("BindIP");
-    m_stServerConfig.usPort = atoi(itNode->node().child_value("Port"));
-    Q_Printf("tcp server bind ip: %s, port %d.", m_stServerConfig.strBindIP.c_str(), m_stServerConfig.usPort);
-    m_stServerConfig.strHttpBindIP = itNode->node().child_value("HttpBindIP");
-    m_stServerConfig.usHttpPort = atoi(itNode->node().child_value("HttpPort"));
-    Q_Printf("http server bind ip: %s, port %d.", m_stServerConfig.strHttpBindIP.c_str(), m_stServerConfig.usHttpPort);
-    m_stServerConfig.strWebSockBindIP = itNode->node().child_value("WebSockBindIP");
-    m_stServerConfig.usWebSockPort = atoi(itNode->node().child_value("WebSockPort"));
-    Q_Printf("websocket server bind ip: %s, port %d.", m_stServerConfig.strWebSockBindIP.c_str(), m_stServerConfig.usWebSockPort);
-
-
-    //ServerLinker
-    objTmpNodeSet = itNode->node().select_nodes("ServerLinker");        
-    for (itTmpNode = objTmpNodeSet.begin(); objTmpNodeSet.end() != itTmpNode; ++itTmpNode)
+    objNodeSet = m_objXmlDoc.select_nodes("//TCP");
+    if (!objNodeSet.empty())
     {
-        ServerLinkerInfo stLinkerInfo;
+        for (itNode = objNodeSet.begin(); objNodeSet.end() != itNode; itNode++)
+        {
+            strIp = itNode->node().child_value("BindIP");
+            usPort = atoi(itNode->node().child_value("Port"));
+        }
 
-        stLinkerInfo.iType = atoi(itTmpNode->node().child_value("Type"));
-        stLinkerInfo.strIP = itTmpNode->node().child_value("IP");
-        stLinkerInfo.usPort = atoi(itTmpNode->node().child_value("Port"));
-        stLinkerInfo.strLinkerName = itTmpNode->node().child_value("LinkerName");
+        m_stServerConfig.mapTcp.insert(std::make_pair(usPort, strIp));
+    }
 
-        m_stServerConfig.lstLinkerInfo.push_back(stLinkerInfo);
+    objNodeSet = m_objXmlDoc.select_nodes("//WebSock");
+    if (!objNodeSet.empty())
+    {
+        for (itNode = objNodeSet.begin(); objNodeSet.end() != itNode; itNode++)
+        {
+            strIp = itNode->node().child_value("BindIP");
+            usPort = atoi(itNode->node().child_value("Port"));
+        }
+
+        m_stServerConfig.mapWebSock.insert(std::make_pair(usPort, strIp));
+    }
+
+    objNodeSet = m_objXmlDoc.select_nodes("//Http");
+    if (!objNodeSet.empty())
+    {
+        for (itNode = objNodeSet.begin(); objNodeSet.end() != itNode; itNode++)
+        {
+            strIp = itNode->node().child_value("BindIP");
+            usPort = atoi(itNode->node().child_value("Port"));
+        }
+
+        m_stServerConfig.mapHttp.insert(std::make_pair(usPort, strIp));
     }
 
     return true;
@@ -221,7 +262,8 @@ int CServerInit::initServer(void)
     {
         for (unsigned short usI = 0; usI < m_stServerConfig.usThreadNum; usI++)
         {
-            CEventInterface *pInterface  = new(std::nothrow) CDisposeEvent(m_stServerConfig.strScript.c_str());
+            CEventInterface *pInterface = 
+                new(std::nothrow) CDisposeEvent(m_stServerConfig.strScript.c_str());
             if (NULL == pInterface)
             {
                 Q_Printf("%s", Q_EXCEPTION_ALLOCMEMORY);
@@ -235,39 +277,46 @@ int CServerInit::initServer(void)
     catch(CException &e)
     {
         Q_Printf("get an exception. code %d, message %s", e.getErrorCode(), e.getErrorMsg());
-        
+
         return e.getErrorCode();
-    }
-
-    /*设置值*/
-    m_objServer.setBindIP(m_stServerConfig.strBindIP.c_str());
-    m_objServer.setPort(m_stServerConfig.usPort);
-    m_objServer.setHttpBindIP(m_stServerConfig.strHttpBindIP.c_str());
-    m_objServer.setHttpPort(m_stServerConfig.usHttpPort);
-    m_objServer.setWebSockBindIP(m_stServerConfig.strWebSockBindIP.c_str());
-    m_objServer.setWebSockPort(m_stServerConfig.usWebSockPort);
-
-    m_objServer.setThreadNum(m_stServerConfig.usThreadNum);
-    m_objServer.setInterface(m_vcInterface);
-    m_objServer.setTimer(m_stServerConfig.uiTimer);    
+    }     
 
     /*完成初始化*/
-    iRtn = m_objServer.Init();
+    iRtn = m_objServer.Init(m_stServerConfig.usThreadNum, m_stServerConfig.uiTimer,
+        m_vcInterface, 
+        m_stServerConfig.mapTcp, m_stServerConfig.mapWebSock, m_stServerConfig.mapHttp);
     if (Q_RTN_OK != iRtn)
     {
         return iRtn;
     }
 
-    /*增加服务器间连接*/
-    if (!(m_stServerConfig.lstLinkerInfo.empty()))
-    {
-        Q_Printf("%s", "add service linker...");
-    }
+    /*读取服务器间连接配置*/
+    std::vector<LinkOther> vcLinkOther;
+    std::vector<LinkOther>::iterator itLinkOther;
 
-    iRtn = initLinker(m_stServerConfig);
-    if (Q_RTN_OK != iRtn)
+    Q_Printf("%s", "read link other config...");
+    readLinkOtherConfig(vcLinkOther);
+
+    /*设置服务器间连接*/
+    CWorkThreadEvent *pThreadEvent = m_objServer.getServerThreadEvent();
+    for (unsigned short i = 0; i < m_objServer.getThreadNum(); i++)
     {
-        return iRtn;
+        for (itLinkOther = vcLinkOther.begin(); vcLinkOther.end() != itLinkOther; itLinkOther++)
+        {
+            if (itLinkOther->strName.empty())
+            {
+                Q_Printf("%s", "link other name empty.");
+                return Q_RTN_FAILE;
+            }
+
+            if (!(pThreadEvent[i].getLinkOther()->addHost(itLinkOther->strIp.c_str(),
+                itLinkOther->usPort,
+                itLinkOther->strName.c_str())))
+            {
+                Q_Printf("add link other %s error.", itLinkOther->strName.c_str());
+                return Q_RTN_FAILE;
+            }
+        }
     }
 
     /*加入到线程*/
@@ -283,7 +332,7 @@ int CServerInit::initServer(void)
     m_objThread.Execute(pTask);
     if (!(m_objServer.waitForStarted()))
     {
-        Q_LOG(LOGLV_ERROR, "start server on port %d error.", m_stServerConfig.usPort);
+        Q_LOG(LOGLV_ERROR, "%s", "start server error.");
 
         return Q_RTN_FAILE;
     }
@@ -291,77 +340,23 @@ int CServerInit::initServer(void)
     return Q_RTN_OK;
 }
 
-int CServerInit::initLinker(ServerInfo &stServerInfo)
-{
-    std::list<ServerLinkerInfo>::iterator itLinker;
-    
-    //为每个线程添加
-    for (unsigned short us = 0; us < m_objServer.getThreadNum(); us++)
-    {
-        std::vector<CServerLinker *> vcTmpSVLinker;
-        for (itLinker = stServerInfo.lstLinkerInfo.begin(); stServerInfo.lstLinkerInfo.end() != itLinker; 
-            itLinker++)
-        {
-            CServerLinker *pLinker = new(std::nothrow) CServerLinker();
-            if (NULL == pLinker)
-            {
-                Q_LOG(LOGLV_ERROR, "%s", Q_EXCEPTION_ALLOCMEMORY);
-
-                return Q_ERROR_ALLOCMEMORY;
-            }
-
-            pLinker->setLinkerName(itLinker->strLinkerName.c_str());
-            pLinker->setPort(itLinker->usPort);
-            pLinker->setType(itLinker->iType);
-            pLinker->setIp(itLinker->strIP.c_str());
-            pLinker->setSockPairEvent(&((m_objServer.getServerThreadEvent())[us]));
-
-            vcTmpSVLinker.push_back(pLinker);
-            m_lstLinker.push_back(pLinker);
-        }
-
-        m_vcInterface[us]->setSVLinker(vcTmpSVLinker);
-    }
-
-    return Q_RTN_OK;
-}
-
-void CServerInit::destroyServer(void)
-{
-    std::list<CServerLinker *>::iterator itLinker;
-    std::vector<CEventInterface * >::iterator itInterface;
-
-    for (itLinker = m_lstLinker.begin(); m_lstLinker.end() != itLinker; itLinker++)
-    {
-        Q_SafeDelete(*itLinker);
-    }
-
-    for (itInterface = m_vcInterface.begin(); m_vcInterface.end() != itInterface; itInterface++)
-    {
-        Q_SafeDelete(*itInterface);
-    }
-
-    m_vcInterface.clear();    
-}
-
-void CServerInit::initSampleLog(void)
+void CServerInit::initTxtLog(void)
 {
     std::string strLogPath;
     std::string strLogName;
     int iMaxSize = 5*1024*1024;
     int iPriority = 600;
 
-    g_pSampleLoger = new(std::nothrow) CSampleLoger();
-    if (NULL == g_pSampleLoger)
+    g_pTxtLoger = new(std::nothrow) CTxtLoger();
+    if (NULL == g_pTxtLoger)
     {
         Q_Printf("%s", Q_EXCEPTION_ALLOCMEMORY);
-
         return;
     }
 
     strLogPath = Q_FormatStr("%s%s%s", g_acModulPath, LOG_FOLDER, Q_PATH_SEPARATOR);    
 
-    m_objXmlNode = m_objXmlDoc.child("QServer").child("LogConfig");
+    m_objXmlNode = m_objXmlDoc.child("QServer").child("TxtLog");
     if (!m_objXmlNode.empty())
     {
         strLogName = m_objXmlNode.child_value("LogName");
@@ -374,14 +369,58 @@ void CServerInit::initSampleLog(void)
         Q_Printf("log priority %d.", iPriority);
     }
 
-    g_pSampleLoger->setLogMaxSize(iMaxSize);    
-    g_pSampleLoger->setPriority((LOG_LEVEL)iPriority);
-    g_pSampleLoger->setLogFile(std::string(strLogPath + strLogName).c_str());
-    g_pSampleLoger->Open();
+    g_pTxtLoger->setLogMaxSize(iMaxSize);    
+    g_pTxtLoger->setPriority((LOG_LEVEL)iPriority);
+    g_pTxtLoger->setLogFile(std::string(strLogPath + strLogName).c_str());
+    g_pTxtLoger->Open();
 
-    g_SampleLogerFD = m_objLog.addLoger(g_pSampleLoger);
+    g_TxtLogerFD = m_objLog.addLoger(g_pTxtLoger);
 
     return;
+}
+
+bool CServerInit::initDBLog(void)
+{
+    m_objXmlNode = m_objXmlDoc.child("QServer").child("DBLog");
+    if (!m_objXmlNode.empty())
+    {
+        std::string strIp;
+        std::string strUser;
+        std::string strPWD;
+        std::string strDB;
+        unsigned short usPort = Q_INIT_NUMBER;
+
+        g_pDBLoger = new(std::nothrow) CDBLoger();
+        if (NULL == g_pDBLoger)
+        {
+            Q_Printf("%s", Q_EXCEPTION_ALLOCMEMORY);
+            return false;
+        }
+
+        strIp = m_objXmlNode.child_value("Ip");
+        strUser = m_objXmlNode.child_value("User");
+        strPWD = m_objXmlNode.child_value("PWD");
+        strDB = m_objXmlNode.child_value("DB");
+        usPort = atoi(m_objXmlNode.child_value("Port"));
+        Q_Printf("link to mysql.ip %s port %d user name %s password %s database %s...", 
+            strIp.c_str(), usPort, strUser.c_str(), strPWD.c_str(), strDB.c_str());
+        if (!g_pDBLoger->Init(strIp.c_str(), usPort, strUser.c_str(), strPWD.c_str(), strDB.c_str()))
+        {
+            Q_SafeDelete(g_pDBLoger);
+
+            return false;
+        }
+
+        g_DBLogerFD = m_objLog.addLoger(g_pDBLoger);
+        if (Q_INVALID_SOCK == g_DBLogerFD)
+        {
+            Q_SafeDelete(g_pDBLoger);
+
+            return false;
+        }
+    }
+
+    return true;
 }
 
 /*************************************************
@@ -401,7 +440,7 @@ int Service_InitProgram(void)
 
     try
     {
-        iRtn = m_objServerInit.Start();        
+        iRtn = m_objServerInit.Start();
     }
     catch(CException &e)
     {

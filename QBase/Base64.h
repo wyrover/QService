@@ -28,7 +28,7 @@
 #ifndef Q_BASE64_H_
 #define Q_BASE64_H_
 
-#include "Buffer.h"
+#include "BufferMgr.h"
 
 /*Base64 编码解码类，Decode非线程安全*/
 class CBase64
