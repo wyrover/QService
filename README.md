@@ -72,7 +72,7 @@ QService服务器支持http、 tcp 、websocket协议；数据库支持sqlite3�
         sendToByID 向指定ID的session发送消息   
         checkPing ping检查，参数为超时时间   
         getTimer 获取计时器触发时间间隔   
-        getCount 获取计时器触发的次数    
+        getCount 获取计时器触发的次数     
         confirmStop 确认退出服务器   
         getLinkOtherID 根据名称获取链接到其他服务器的ID             
            
