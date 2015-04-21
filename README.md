@@ -4,7 +4,7 @@ QService
 QService服务器支持http、 tcp 、websocket协议；数据库支持sqlite3、mysql、redis。  
 所有业务均可用Lua脚本开发，已经用于手游服务器端开发。
 
-一、编译QService  
+##一、编译QService  
 windows使用vs2010或者更高版本；  
 linux使用mklib.sh编译出依赖库，然后再mk.sh。  
 
