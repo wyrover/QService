@@ -75,6 +75,4 @@ QService服务器支持http、 tcp 、websocket协议；数据库支持sqlite3�
         getTimer 获取计时器触发时间间隔   
         getCount 获取计时器触发的次数     
         confirmStop 确认退出服务器   
-        getLinkOtherID 根据名称获取链接到其他服务器的ID             
-           
-##水平有限，如发现bug或有什么意见、建议请联系我，大家一起完善这个框架。email:200309129@163.com。
+        getLinkOtherID 根据名称获取链接到其他服务器的ID    
