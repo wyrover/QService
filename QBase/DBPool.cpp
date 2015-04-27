@@ -57,7 +57,7 @@ public:
     {
         m_pRunFlag = pRunFlag;
     };
-    void setMutex_Exit(CMutex *pMutex_Exit)
+    void setMutex_Exit(CQMutex *pMutex_Exit)
     {
         m_pMutex_Exit = pMutex_Exit;
     };
@@ -65,7 +65,7 @@ public:
     {
         m_pCond_Exit = pCond_Exit;
     };
-    void setMutex_Start(CMutex *pMutex_Start)
+    void setMutex_Start(CQMutex *pMutex_Start)
     {
         m_pMutex_Start = pMutex_Start;
     };
@@ -73,7 +73,7 @@ public:
     {
         m_pCond_Start = pCond_Start;
     };
-    void setMaxMutex(CMutex *pMaxMutex)
+    void setMaxMutex(CQMutex *pMaxMutex)
     {
         m_pMaxMutex = pMaxMutex;
     };
@@ -128,10 +128,10 @@ public:
 private:
     unsigned int *m_pFreeTime;
     long *m_pRunFlag;
-    CMutex *m_pMutex_Exit;
+    CQMutex *m_pMutex_Exit;
     CCond *m_pCond_Exit;
-    CMutex *m_pMaxMutex;
-    CMutex *m_pMutex_Start;
+    CQMutex *m_pMaxMutex;
+    CQMutex *m_pMutex_Start;
     CCond *m_pCond_Start;
     std::list<struct stBDMaxPoolInfo *> *m_pMaxLinker;
 };
@@ -208,7 +208,7 @@ int CDBPool::getLinker(CDBLink **ppLinker)
 
         return Q_RTN_OK;
     }
-    catch (CException &e)
+    catch (CQException &e)
     {
         Q_SafeDelete(*ppLinker);
 
@@ -375,7 +375,7 @@ CDBLink *CDBPool::getFromMin(void)
 
                     break;
                 }
-                catch (CException &e)
+                catch (CQException &e)
                 {
                     pLinker = NULL;
                     Q_Printf("excption code %d  message %s", e.getErrorCode(), e.getErrorMsg());
@@ -418,7 +418,7 @@ CDBLink *CDBPool::getFromMax(void)
 
                     break;
                 }
-                catch (CException &e)
+                catch (CQException &e)
                 {
                     pLinker = NULL;
                     Q_Printf("excption code %d  message %s", e.getErrorCode(), e.getErrorMsg());

@@ -42,13 +42,13 @@ public:
     CWorkThreadEvent *getServerThreadEvent(void);
     /*状态设置*/
     void setRunStatus(RunStatus emStatus);
-    RunStatus getRunStatus(void);
+    RunStatus *getRunStatus(void);
     /*获取类型*/
     SessionType getSockType(evutil_socket_t uiSock);
     /*获取线程数*/
-    unsigned short getThreadNum(void)
+    unsigned short *getThreadNum(void)
     {
-        return m_usThreadNum;
+        return &m_usThreadNum;
     };
     
     struct event_base *getBase(void)
@@ -67,6 +67,11 @@ public:
     /*停止服务*/
     void Stop(void);
 
+    TriggerSock *getTriggerSock(void)
+    {
+        return &m_stWorkSock;
+    };
+
 public:
     static void listenerAcceptCB(struct evconnlistener *pListener, Q_SOCK sock, struct sockaddr *, 
         int iSockLen, void *arg);
@@ -84,15 +89,16 @@ private:
     Q_SOCK initHttpSock(const char *pszIp, const unsigned short &usPort);
 
 private:
-    char m_cRunStatus;
+    RunStatus m_emRunStatus;
     unsigned short m_usThreadNum;
     unsigned int m_uiTimer;
     struct event_base *m_pMainBase;
     class CThreadPool *m_pPool;
     CWorkThreadEvent *m_pServerThreadEvent;
     struct event *m_pExitEvent;
-    CMutex m_objMutex_Exit;
+    CQMutex m_objMutex_Exit;
     CCond m_objCond_Exit;
+    TriggerSock m_stWorkSock;
     std::vector<Q_SOCK> m_vcHttpSock;
     std::vector<struct evconnlistener * > m_vcAllListener;
     std::map<evutil_socket_t, SessionType> m_mapType;

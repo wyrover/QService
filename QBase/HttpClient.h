@@ -48,6 +48,7 @@ public:
 
 private:
 	bool m_bDebug;
+    std::string m_strResponse;
 };
 
 #endif//HTTP_CURL_H_

@@ -51,13 +51,12 @@ public:
     /*http */
     void onHttpRead(class CHttpParser *pBuffer);
     /*服务器连接启动*/
-    void onLinkedServer(class CSession *pSession);
+    void onLinkedOther(class CSession *pSession);
 
 private:
     CDisposeEvent(void);
 
 private:
-    luabridge::BinaryStr m_stBinaryStr;
     struct lua_State *m_pLua;//lua句柄
     CReg2Lua m_objReg2Lua;
 };

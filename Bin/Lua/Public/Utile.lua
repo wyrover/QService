@@ -3,22 +3,24 @@
 --]]
 
 --Debug打印开关
-local bDebugSwitch = true
-
+local bDebug = true
 --计时器
-local objCtimer = CTimer()
-
---唯一ID
-local objSnowflakeID = CSnowflakeID()
-objSnowflakeID:setMachineID(getServerID())
-
---过滤敏感字
-if not objFilter then
-    objFilter = CFilter()
+if not g_objCtimer then
+    g_objCtimer = CTimer()
 end
-
+--ID生成
+if not g_objSnowflakeID then
+    g_objSnowflakeID = CSnowflakeID()
+    g_objSnowflakeID:setMachineID(getServerID())
+end
+--过滤敏感字
+if not g_objFilter then
+    g_objFilter = CFilter()
+end
 --字符集
-local objCharset = CCharset()
+if not g_objCharset then
+    g_objCharset = CCharset()
+end
 
 --[[
 描述：调试信息打印
@@ -26,7 +28,7 @@ local objCharset = CCharset()
 返回值：无
 --]]
 function Debug(msg)
-    if bDebugSwitch then
+    if bDebug then
         print(string.format("[%s][Lua_Debug] %s", os.date(), tostring(msg)))
     end
 end
@@ -34,28 +36,19 @@ end
 --[[
 描述：获取字符串编码格式
 参数：
-返回值：编码格式
+返回值：无
 --]]
 function getCharset(strWord)
-    return objCharset:getStrCharset(strWord, string.len(strWord))
+    return g_objCharset:getStrCharset(strWord, string.len(strWord))
 end
 
 --[[
 描述：获取一不重复的ID
 参数：
-返回值：ID
+返回值：无
 --]]
 function getID()
-    return objSnowflakeID:getSnowflakeID()
-end
-
---[[
-描述：关闭
-参数：
-返回值： 无
---]]
-function closeLink(iClentID)
-    g_objSessionMgr:closeLinkByID(iClentID)
+    return g_objSnowflakeID:getSnowflakeID()
 end
 
 --[[
@@ -64,7 +57,7 @@ end
 返回值：无
 --]]
 function addFilterWord(strWord)
-    objFilter:addSensitiveWord(strWord, string.len(strWord))
+    g_objFilter:addSensitiveWord(strWord, string.len(strWord))
 end
 
 --[[
@@ -73,7 +66,7 @@ end
 返回值：bool
 --]]
 function checkFilterWord(strWord)
-    return objFilter:checkHave(strWord, string.len(strWord))
+    return g_objFilter:checkHave(strWord, string.len(strWord))
 end
 
 --[[
@@ -82,7 +75,7 @@ end
 返回值：过滤后的结果
 --]]
 function Filter(strWord)
-    return objFilter:Filter(strWord, string.len(strWord))
+    return g_objFilter:Filter(strWord, string.len(strWord))
 end
 
 --[[
@@ -91,7 +84,7 @@ end
 返回值：无
 --]]
 function timerReStart()
-    objCtimer:reStart()
+    g_objCtimer:reStart()
 end
 
 --[[
@@ -100,7 +93,16 @@ end
 返回值：double
 --]]
 function timerElapsed()
-    return objCtimer:Elapsed()
+    return g_objCtimer:Elapsed()
+end
+
+--[[
+描述：根据session ID关闭连接
+参数：
+返回值： 无
+--]]
+function closeLink(iClentID)
+    g_objSessionMgr:closeLinkByID(iClentID)
 end
 
 --[[
@@ -138,13 +140,31 @@ function callFunc(Func, ...)
 end
 
 --[[
+描述：数字为key的table 按key顺序遍历
+参数：
+返回值：
+--]]
+function pairsByKeys(t)  
+    local a = {}
+    for n in pairs(t) do  
+        a[#a+1] = n  
+    end
+    table.sort(a)  
+    local i = 0
+    return function()
+        i = i + 1
+        return a[i], t[a[i]]  
+    end  
+end
+
+--[[
 描述：lua sql
 参数：
 返回值：读取到的值
 --]]
 function Rows(objConn, strSql)
     local cursor = assert (objConn:execute (strSql))
-    return function ()
+    return function()
         return cursor:fetch()
     end
 end

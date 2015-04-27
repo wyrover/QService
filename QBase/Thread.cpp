@@ -127,7 +127,7 @@ Q_Thread_Result_t Q_THREAD_CALL Run(void *args)
     {
         pTask->Run();        
     }
-    catch(CException &e)
+    catch(CQException &e)
     {
         Q_Printf("run task exception. error code %d, message %s", 
             e.getErrorCode(), e.getErrorMsg());

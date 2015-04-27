@@ -25,7 +25,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#include "Filter.h"
+#include "QFilter.h"
 
 CFilter::CFilter(void) : m_pmapFilter(NULL)
 {

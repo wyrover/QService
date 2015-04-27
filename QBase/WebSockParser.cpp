@@ -28,6 +28,7 @@
 #include "WebSockParser.h"
 #include "QString.h"
 #include "EventBuffer.h"
+#include "OSFunc.h"
 
 #define WebSock_ShakeHands_EndFlag "\r\n\r\n"
 #define ShakeHands_SplitFlag "\r\n"
@@ -37,44 +38,12 @@
 #define PAYLOADLENS_126 126
 #define PAYLOADLENS_127 127
 
-static union  
-{
-    char a[4];
-    unsigned long ul;
-}endian = {{'L', '?', '?', 'B'}}; 
-#define ENDIAN ((char)endian.ul) 
-
-uint64_t ntohl64(uint64_t host)
-{
-    if ('L' == ENDIAN)
-    {
-        uint64_t uiRet = 0;
-        unsigned long ulHigh,ulLow;
-
-        ulLow = host & 0xFFFFFFFF;
-        ulHigh = (host >> 32) & 0xFFFFFFFF;
-
-        ulLow = ntohl(ulLow); 
-        ulHigh = ntohl(ulHigh);
-
-        uiRet = ulLow;
-        uiRet <<= 32;
-        uiRet |= ulHigh;
-
-        return uiRet;
-    }
-    else
-    {
-        return host;
-    }
-}
-
 CWebSockParser::CWebSockParser(void) : m_bClose(false), m_iParsedLens(Q_INIT_NUMBER),
-    m_iHeadLens(Q_INIT_NUMBER), m_iTotalLens(Q_INIT_NUMBER), m_iNeedReadLens(Q_INIT_NUMBER)
+    m_iHeadLens(Q_INIT_NUMBER), m_iTotalLens(Q_INIT_NUMBER), m_iNeedReadLens(Q_INIT_NUMBER),
+    m_pMsg(NULL)
 {
     m_iShakeHandsEndFlagLens = strlen(WebSock_ShakeHands_EndFlag);
     m_strVersion = Q_FormatStr("%d-%d-%d", Q_MAJOR, Q_MINOR, Q_RELEASE);
-    m_strSplitFlag = ShakeHands_SplitFlag;
 }
 
 std::string CWebSockParser::parseShakeHands(std::list<std::string> &lstShakeHands)
@@ -117,7 +86,7 @@ std::string CWebSockParser::parseShakeHands(std::list<std::string> &lstShakeHand
         }
 
         lstTmp.clear();
-        Q_Split(*itShakeHands, std::string(":"), lstTmp);
+        Q_Split(*itShakeHands, ":", lstTmp);
         if (2 != lstTmp.size())
         {
             continue;
@@ -203,7 +172,7 @@ std::string CWebSockParser::createHandshakeResponse(std::string &strKey)
     return strRtn;
 }
 
-const char *CWebSockParser::shakeHands(class CEventBuffer *pBuffer)
+std::string *CWebSockParser::shakeHands(class CEventBuffer *pBuffer)
 {
     m_bClose = false;
     m_iParsedLens = Q_INIT_NUMBER;
@@ -224,7 +193,7 @@ const char *CWebSockParser::shakeHands(class CEventBuffer *pBuffer)
 
     //½âÎö
     std::list<std::string> lstTmp;
-    Q_Split(std::string(pShakeHands), m_strSplitFlag, lstTmp);
+    Q_Split(std::string(pShakeHands), ShakeHands_SplitFlag, lstTmp);
     m_strVal = parseShakeHands(lstTmp);
     if (m_strVal.empty())
     {
@@ -245,7 +214,7 @@ const char *CWebSockParser::shakeHands(class CEventBuffer *pBuffer)
     m_strVal = createHandshakeResponse(m_strVal);
     m_iParsedLens = m_stPos.pos + m_iShakeHandsEndFlagLens;
 
-    return m_strVal.c_str();
+    return &m_strVal;
 }
 
 bool CWebSockParser::parseHead(class CEventBuffer *pBuffer)
@@ -359,16 +328,21 @@ bool CWebSockParser::parsePack(class CEventBuffer *pBuffer)
         return false;
     }
 
+    m_pMsg = NULL;
     if (m_stFram.uiDataLens > 0)
     {
         char *pMsg = pBuffer->readBuffer(m_iNeedReadLens);
+        if (NULL == pMsg)
+        {
+            return false;
+        }
+
         for (size_t i = 0; i < m_stFram.uiDataLens; i++)
         {
             pMsg[i + m_iHeadLens] = pMsg[i + m_iHeadLens] ^ m_stFram.acMaskKey[i % 4];
         }
-
-        m_strVal.clear();
-        m_strVal.append(pMsg+ m_iHeadLens, m_stFram.uiDataLens);
+        
+        m_pMsg = pMsg+ m_iHeadLens;
     }
 
     m_iParsedLens = m_iHeadLens + m_stFram.uiDataLens;

@@ -10,6 +10,7 @@
     <ClCompile Include="TestArithmetic.cpp" />
     <ClCompile Include="TestCharset.cpp" />
     <ClCompile Include="TestSnowflakeID.cpp" />
+    <ClCompile Include="TestBinary.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TestDataBase.h" />
@@ -21,5 +22,6 @@
     <ClInclude Include="TestArithmetic.h" />
     <ClInclude Include="TestCharset.h" />
     <ClInclude Include="TestSnowflakeID.h" />
+    <ClInclude Include="TestBinary.h" />
   </ItemGroup>
 </Project>

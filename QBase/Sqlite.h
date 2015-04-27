@@ -112,7 +112,7 @@ public:
     CSQLite3Link(void);
     ~CSQLite3Link(void);
 
-    void open(CDBUrl objDBUrl);
+    void open(CDBUrl &objDBUrl);
     void close(void);
 
     void Transaction(void);

@@ -286,9 +286,6 @@
     <ClInclude Include="QRSA.h">
       <Filter>Encrypt\RSA</Filter>
     </ClInclude>
-    <ClInclude Include="Filter.h">
-      <Filter>Arithmetic</Filter>
-    </ClInclude>
     <ClInclude Include="LuaBridge\detail\CFunctions.h">
       <Filter>Lua\LuaBridge\detail</Filter>
     </ClInclude>
@@ -643,6 +640,12 @@
     <ClInclude Include="TcpParser.h">
       <Filter>Base\NetWork\Protocol</Filter>
     </ClInclude>
+    <ClInclude Include="Binary.h">
+      <Filter>Lua</Filter>
+    </ClInclude>
+    <ClInclude Include="QFilter.h">
+      <Filter>Arithmetic</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Log.cpp">
@@ -801,9 +804,6 @@
     </ClCompile>
     <ClCompile Include="QRSA.cpp">
       <Filter>Encrypt\RSA</Filter>
-    </ClCompile>
-    <ClCompile Include="Filter.cpp">
-      <Filter>Arithmetic</Filter>
     </ClCompile>
     <ClCompile Include="SysLog.cpp">
       <Filter>Base\OS</Filter>
@@ -1140,6 +1140,12 @@
     </ClCompile>
     <ClCompile Include="TcpParser.cpp">
       <Filter>Base\NetWork\Protocol</Filter>
+    </ClCompile>
+    <ClCompile Include="Binary.cpp">
+      <Filter>Lua</Filter>
+    </ClCompile>
+    <ClCompile Include="QFilter.cpp">
+      <Filter>Arithmetic</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -48,29 +48,47 @@ end
 
 local function testRedis()
     Debug("test redis:")
-    local client = redis.connect('127.0.0.1', 6379)
+    local client = redis.connect('192.168.73.128', 2222)
+    --local client = redis.connect('127.0.0.1', 6379)
     local value = client:ping()
     Debug("ping retrun:" .. tostring(value))    
     client:set('usr:nrk', 10)
     client:set('usr:nobody', 5)
-    value = nil
     value = client:get('usr:nrk')
     Debug("get usr:nrk " .. tostring(value))
-    value = nil
     value = client:get('usr:nobody')
     Debug("get usr:nobody " .. tostring(value))
+end
+
+local function testpairsByKeys()
+    local t = {}
+    t[10] = 10
+    t[50] = 30
+    t[40] = 40
+    t[70] = 10
+    t[60] = 30
+    t[80] = 40
+    Debug("testpairsByKeys: use pairs:")
+    for key, val in pairs(t) do
+        print(key.."---"..val)
+    end
+    Debug("testpairsByKeys: use pairsByKeys:")
+    for key, val in pairsByKeys(t) do
+        print(key.."---"..val)
+    end
 end
 
 local function onStart()
     --luaSqlTestRead()
     --luaSqlWriteError()
-    Debug("onStart") 
-    testRedis()
+    Debug("onStart")
+    testpairsByKeys()
+    --testRedis()
 end
 regGameEvent(GameEvent.Start, onStart)
 
 local function onStarted()
-    g_StartCompleted = true
+    g_Started = true
     --luaSqlWriteOK()
     Debug("onStarted")
 end

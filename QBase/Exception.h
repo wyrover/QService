@@ -25,24 +25,24 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef Q_EXCEPTION_H_
-#define Q_EXCEPTION_H_
+#ifndef Q_QEXCEPTION_H_
+#define Q_QEXCEPTION_H_
 
 #include "Macros.h"
 
 /*“Ï≥£¿‡*/
-class CException
+class CQException
 {
 public:
-    CException(const int iErroCode, const char *pszFile, 
+    CQException(const int iErroCode, const char *pszFile, 
         const char *pszFunc, const int iLine, const char *pcFormat, ...);
-    ~CException(void);
+    ~CQException(void);
 
     const char* getErrorMsg(void);
     int getErrorCode(void);
 
 private:
-    CException(void);
+    CQException(void);
 
 private:
     std::string m_strMsg;
@@ -50,6 +50,6 @@ private:
 };
 
 #define Q_EXCEPTION(iErroCode, acFormat, ...) \
-    throw CException(iErroCode, __FILE__, __FUNCTION__, __LINE__, acFormat, ##__VA_ARGS__)
+    throw CQException(iErroCode, __FILE__, __FUNCTION__, __LINE__, acFormat, ##__VA_ARGS__)
 
-#endif//Q_EXCEPTION_H_
+#endif//Q_QEXCEPTION_H_

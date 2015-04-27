@@ -49,7 +49,7 @@ private:
 
 private:
     FILE *m_pFile;
-    class CMutex *m_pMutex;
+    class CQMutex *m_pMutex;
 };
 
 #endif//Q_SYSLOG_H_

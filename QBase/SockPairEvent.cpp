@@ -30,7 +30,7 @@
 #include "Exception.h"
 #include "SysLog.h"
 
-CSockPairEvent::CSockPairEvent(void) : m_bRunOnStop(false), m_cStatus(RunStatus_Unknown), 
+CSockPairEvent::CSockPairEvent(void) : m_bRunOnStop(false), m_emStatus(RunStatus_Unknown), 
     m_pBase(NULL), m_pMainBev(NULL),m_pAssistBev(NULL), m_pExitEvent(NULL)
 {
     m_pBase = event_base_new();
@@ -196,12 +196,12 @@ void CSockPairEvent::Stop(void)
 
 void CSockPairEvent::setRunStatus(RunStatus emStatus)
 {
-    m_cStatus = emStatus;
+    m_emStatus = emStatus;
 }
 
 RunStatus CSockPairEvent::getRunStatus(void)
 {
-    return (RunStatus)m_cStatus;
+    return (RunStatus)m_emStatus;
 }
 
 void CSockPairEvent::setRunOnStop(bool bRun)

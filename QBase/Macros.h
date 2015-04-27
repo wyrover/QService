@@ -38,7 +38,7 @@
 #define Q_ONEK                       1024       //1K
 #define Q_SERVICE_NAME_LEN           260        //windows 服务名称最大长度
 #define Q_UUIDLENS                   64         //UUID长度
-#define Q_MaxSendSize                1450       //每次发送最大字节数
+#define Q_MaxTcpBetterSize           1450       //Tcp每次发送不分包最大字节数
 
 #define QService "QService"
 
@@ -61,8 +61,6 @@
 
 #define Q_INVALID_SOCK -1
 #define Q_INVALID_ID   -1
-#define Q_INVALID_STATUS   -1
-#define Q_LogIned  1
 
 #ifndef Q_OS_WIN32
     #ifdef Q_OS_SOLARIS
@@ -115,7 +113,7 @@ extern class CSysLoger g_SysLoger;
     acFormat, ##__VA_ARGS__)
 
 /*程序退出信号量*/
-extern class CMutex g_objExitMutex;
+extern class CQMutex g_objExitMutex;
 extern class CCond g_objExitCond;
 
 /*连结x,y的内容*/

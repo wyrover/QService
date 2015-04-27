@@ -1,0 +1,16 @@
+//调试
+package Debug;
+
+//请求调试
+message CSDebug
+{
+    required string strCheckID = 4;
+}
+
+//调试返回
+message SCDebug
+{
+    required int32 iRtn = 1;   
+    required uint32 uiClientID = 2;
+    required string strCheckID = 3;
+}

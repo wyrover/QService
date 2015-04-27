@@ -186,7 +186,7 @@ public:
     CDBLink(void):m_bUsed(false){};
     virtual ~CDBLink(void){};
 
-    virtual void open(CDBUrl objDBUrl){};
+    virtual void open(CDBUrl &objDBUrl){};
     virtual void close(void){};
 
     virtual void Transaction(void){};

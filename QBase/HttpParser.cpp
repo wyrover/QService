@@ -27,13 +27,36 @@
 
 #include "HttpParser.h"
 
-CHttpParser::CHttpParser(struct evhttp_request *req) : m_bOK(false)
+CHttpParser::CHttpParser(void) : m_pEventBuf(NULL)
 {
+    
+}
+
+CHttpParser::~CHttpParser(void)
+{
+    if (NULL != m_pEventBuf)
+    {
+        evbuffer_free(m_pEventBuf);
+        m_pEventBuf = NULL;
+    }
+}
+
+bool CHttpParser::setHttpRequest(struct evhttp_request *req)
+{
+    if (NULL != m_pEventBuf)
+    {
+        evbuffer_free(m_pEventBuf);
+        m_pEventBuf = NULL;
+    }
+
+    m_strPostMsg.clear();
+    m_strQuery.clear();
+
     m_pEventBuf = evbuffer_new();
     if (NULL == m_pEventBuf)
     {
         Q_Printf("%s", "evbuffer_new error.");
-        return;
+        return false;
     }
 
     m_Req = req;
@@ -50,21 +73,7 @@ CHttpParser::CHttpParser(struct evhttp_request *req) : m_bOK(false)
     const char *pszQuery = evhttp_uri_get_query(pUri);
     m_strQuery = (NULL == pszQuery ? "" : pszQuery);
 
-    m_bOK = true;
-}
-
-CHttpParser::~CHttpParser(void)
-{
-    if (NULL != m_pEventBuf)
-    {
-        evbuffer_free(m_pEventBuf);
-        m_pEventBuf = NULL;
-    }
-}
-
-bool CHttpParser::isOK(void)
-{
-    return m_bOK;
+    return true;
 }
 
 const char *CHttpParser::getQuery(void)

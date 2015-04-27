@@ -153,7 +153,7 @@ int CTestDataBase::TestDB(CDBPool *pPool)
 
         pPool->freeLinker(pLink);
     }
-    catch (CException &e)
+    catch (CQException &e)
     {
         pLink->rollBack();
         pPool->freeLinker(pLink);

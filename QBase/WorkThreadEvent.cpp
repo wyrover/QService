@@ -26,7 +26,6 @@
 *****************************************************************************/
 
 #include "WorkThreadEvent.h"
-#include "HttpParser.h"
 
 #define Http_TimeOut  10
 
@@ -69,6 +68,11 @@ CTcpParser *CWorkThreadEvent::getTcpParser(void)
 CLinkOther *CWorkThreadEvent::getLinkOther(void)
 {
     return m_objSessionManager.getLinkOther();
+}
+
+CHttpParser *CWorkThreadEvent::getHttpParser(void)
+{
+    return &m_objHttpParser;
 }
 
 bool CWorkThreadEvent::onStartUp(void)
@@ -159,13 +163,6 @@ void CWorkThreadEvent::onMainRead(CEventBuffer *pBuffer)
 
     while(Q_GetEventValue<TriggerSock>(getMainBuffer(), m_stWorkSock))
     {
-        if (Q_INVALID_SOCK == m_stWorkSock.iSock)
-        {
-            Q_Printf("%s", "invalid socket");
-
-            continue;
-        }
-
         (void)evutil_make_socket_nonblocking(m_stWorkSock.iSock);
         pBev = bufferevent_socket_new(getBase(), m_stWorkSock.iSock, 
             BEV_OPT_CLOSE_ON_FREE);
@@ -216,12 +213,6 @@ void CWorkThreadEvent::onAssistRead(CEventBuffer *pBuffer)
 
     while(Q_GetEventValue<TriggerSock>(getAssistBuffer(), m_stWorkSock))
     {
-        if (Q_INVALID_SOCK == m_stWorkSock.iSock)
-        {
-            Q_Printf("%s", "invalid socket");            
-            continue;
-        }
-
         (void)evutil_make_socket_nonblocking(m_stWorkSock.iSock);
         pBev = bufferevent_socket_new(getBase(), m_stWorkSock.iSock, 
             BEV_OPT_CLOSE_ON_FREE);
@@ -260,7 +251,7 @@ void CWorkThreadEvent::onAssistRead(CEventBuffer *pBuffer)
         pSession->setStatus(SessionStatus_Linked);
         m_objSessionManager.getLinkOther()->setSockStatus(m_stWorkSock.iSock, SessionStatus_Linked);
 
-        m_objSessionManager.getInterface()->onLinkedServer(pSession);
+        m_objSessionManager.getInterface()->onLinkedOther(pSession);
     }
 }
 
@@ -279,7 +270,7 @@ void CWorkThreadEvent::dispTcp(CWorkThreadEvent *pWorkThreadEvent,
         const char *pszBuf = pParser->parsePack(pSession->getBuffer());
         if (NULL == pszBuf)
         {
-            break;
+            return;
         }
 
         pSessionManager->getInterface()->onTcpRead(pszBuf, pParser->getBufLens());
@@ -289,7 +280,7 @@ void CWorkThreadEvent::dispTcp(CWorkThreadEvent *pWorkThreadEvent,
         }
         else
         {
-            break;
+            return;
         }
     }
 }
@@ -302,20 +293,19 @@ void CWorkThreadEvent::dispWebSock(CWorkThreadEvent *pWorkThreadEvent,
     //握手处理
     if (SessionStatus_Connect == pSession->getStatus())
     {
-        const char *pszShakeHandsRtn = pParser->shakeHands(pSession->getBuffer());
+        std::string *pStrShakeHandsRtn = pParser->shakeHands(pSession->getBuffer());
         if (pParser->getClose())
         {
-            pWorkThreadEvent->delContinuation(pSession->getBuffer()->getFD());
             pSessionManager->closeLinkByID(pSession->getSessionID());
 
             return;
         }
-        if (NULL == pszShakeHandsRtn)
+        if (NULL == pStrShakeHandsRtn)
         {
             return;
         }
 
-        (void)pSession->getBuffer()->writeBuffer(pszShakeHandsRtn, strlen(pszShakeHandsRtn));
+        (void)pSession->getBuffer()->writeBuffer(pStrShakeHandsRtn->c_str(), pStrShakeHandsRtn->size());
         pSession->setStatus(SessionStatus_Linked);
 
         (void)pSession->getBuffer()->delBuffer(pParser->getParsedLens());
@@ -336,16 +326,14 @@ void CWorkThreadEvent::dispWebSock(CWorkThreadEvent *pWorkThreadEvent,
             pWorkThreadEvent->delContinuation(pSession->getBuffer()->getFD());
             pSessionManager->closeLinkByID(pSession->getSessionID());
 
-            break;
+            return;
         }
         if (!bOk)
         {
-            break;
+            return;
         }
 
         pHead = pParser->getHead();
-        //清除数据
-        (void)pSession->getBuffer()->delBuffer(pParser->getParsedLens());
 
         //控制帧
         bControl = false;
@@ -353,7 +341,6 @@ void CWorkThreadEvent::dispWebSock(CWorkThreadEvent *pWorkThreadEvent,
         {
         case CLOSE:
             {
-                bControl = true;
                 pWorkThreadEvent->delContinuation(pSession->getBuffer()->getFD());
                 pSessionManager->closeLinkByID(pSession->getSessionID());
 
@@ -367,11 +354,13 @@ void CWorkThreadEvent::dispWebSock(CWorkThreadEvent *pWorkThreadEvent,
                 const char *pHead = pParser->createHead(true, PONG, 0, iOutLens);
 
                 pSession->getBuffer()->writeBuffer(pHead, iOutLens);
+                pSession->setPing(pSessionManager->getCount());
             }
             break;
         case PONG:
             {
                 bControl = true;
+                pSession->setPing(pSessionManager->getCount());
             }
             break;
         default:
@@ -380,44 +369,64 @@ void CWorkThreadEvent::dispWebSock(CWorkThreadEvent *pWorkThreadEvent,
 
         if (bControl)
         {
+            (void)pSession->getBuffer()->delBuffer(pParser->getParsedLens());
+
             continue;
         }
+
+        Q_SOCK sock = pSession->getBuffer()->getFD();
 
         //完整帧
         if ((CONTINUATION != pHead->emOpCode)
             && (1 == pHead->cFin))
         {
-            Q_SOCK sock = pSession->getBuffer()->getFD();
-            pSessionManager->getInterface()->onWebSockRead(pParser->getVal()->c_str(), pParser->getVal()->size());
+            pSessionManager->getInterface()->onWebSockRead(pParser->getMsg(), pHead->uiDataLens);
             if (SessionStatus_Closed == pSession->getStatus())
             {
                 pWorkThreadEvent->delContinuation(sock);
+                return;
+            }
+            else
+            {
+                (void)pSession->getBuffer()->delBuffer(pParser->getParsedLens());
+                continue;
             }
         }
-        else//一个分片的消息由起始帧（FIN为0，opcode非0），若干（0个或多个）帧（FIN为0，opcode为0），结束帧（FIN为1，opcode为0）
-        {
-            Q_SOCK sock = pSession->getBuffer()->getFD();
 
-            //是否为结束帧
-            if ((1 == pHead->cFin)
-                && (CONTINUATION == pHead->emOpCode))
+        /*一个分片的消息由起:
+        始帧（FIN为0，opcode非0），
+        若干（0个或多个）帧（FIN为0，opcode为0），
+        结束帧（FIN为1，opcode为0）*/
+        //是否为结束帧
+        if ((1 == pHead->cFin)
+            && (CONTINUATION == pHead->emOpCode))
+        {
+            std::string *pStrBuf = pWorkThreadEvent->getContinuation(sock);
+            if (NULL != pStrBuf)
             {
-                std::string *pStrBuf = pWorkThreadEvent->getContinuation(sock);
-                if (NULL != pStrBuf)
+                pStrBuf->append(pParser->getMsg(), pHead->uiDataLens);
+                pSessionManager->getInterface()->onWebSockRead(pStrBuf->c_str(), pStrBuf->size());
+                if (SessionStatus_Closed == pSession->getStatus())
                 {
-                    pStrBuf->append(pParser->getVal()->c_str(), pParser->getVal()->size());
-                    pSessionManager->getInterface()->onWebSockRead(pStrBuf->c_str(), pStrBuf->size());
-                    if (SessionStatus_Closed == pSession->getStatus())
-                    {
-                        pWorkThreadEvent->delContinuation(sock);
-                    }
+                    pWorkThreadEvent->delContinuation(sock);
+                    return;
+                }
+                else
+                {
+                    (void)pSession->getBuffer()->delBuffer(pParser->getParsedLens());
                     pStrBuf->clear();
                 }
             }
             else
             {
-                pWorkThreadEvent->addContinuation(sock, pParser->getVal()->c_str(), pParser->getVal()->size());
+                //丢弃该包
+                (void)pSession->getBuffer()->delBuffer(pParser->getParsedLens());
             }
+        }
+        else
+        {
+            pWorkThreadEvent->addContinuation(sock, pParser->getMsg(), pHead->uiDataLens);
+            (void)pSession->getBuffer()->delBuffer(pParser->getParsedLens());
         }
     }
 
@@ -512,11 +521,10 @@ void CWorkThreadEvent::workThreadHttpCB(struct evhttp_request *req, void *arg)
 {
     CWorkThreadEvent *pWorkThreadEvent = (CWorkThreadEvent *)arg;
     CSessionManager *pSessionManager = pWorkThreadEvent->getSessionManager();
-
-    CHttpParser objHttpEvent(req);
-    if (objHttpEvent.isOK())
+    CHttpParser *pHttpParser = pWorkThreadEvent->getHttpParser();
+    if (pHttpParser->setHttpRequest(req))
     {
-        pSessionManager->getInterface()->onHttpRead(&objHttpEvent);
+        pSessionManager->getInterface()->onHttpRead(pHttpParser);
     }
 }
 

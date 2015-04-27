@@ -199,8 +199,8 @@ bool CServerInit::readConfig(void)
     itNode = objNodeSet.begin();
 
     g_iServerID =  atoi(itNode->node().child_value("ServerID"));
-    g_iServerType = atoi(itNode->node().child_value("Type"));
-    Q_Printf("service id %d, type %d.", g_iServerID, g_iServerType);
+    g_strServerName = itNode->node().child_value("Name");
+    Q_Printf("service id %d, name %s.", g_iServerID, g_strServerName.c_str());
 
     m_stServerConfig.usThreadNum = atoi(itNode->node().child_value("ThreadNum"));
     m_stServerConfig.strScript = std::string(g_acModulPath) + 
@@ -274,7 +274,7 @@ int CServerInit::initServer(void)
             m_vcInterface.push_back(pInterface);
         }
     }
-    catch(CException &e)
+    catch(CQException &e)
     {
         Q_Printf("get an exception. code %d, message %s", e.getErrorCode(), e.getErrorMsg());
 
@@ -299,7 +299,7 @@ int CServerInit::initServer(void)
 
     /*设置服务器间连接*/
     CWorkThreadEvent *pThreadEvent = m_objServer.getServerThreadEvent();
-    for (unsigned short i = 0; i < m_objServer.getThreadNum(); i++)
+    for (unsigned short i = 0; i < *(m_objServer.getThreadNum()); i++)
     {
         for (itLinkOther = vcLinkOther.begin(); vcLinkOther.end() != itLinkOther; itLinkOther++)
         {
@@ -442,7 +442,7 @@ int Service_InitProgram(void)
     {
         iRtn = m_objServerInit.Start();
     }
-    catch(CException &e)
+    catch(CQException &e)
     {
         Q_Printf("get an exception. code %d, message %s", e.getErrorCode(), e.getErrorMsg());
 

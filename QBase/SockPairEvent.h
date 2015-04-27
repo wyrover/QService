@@ -98,7 +98,7 @@ private:
 
 private:
     bool m_bRunOnStop;
-    char m_cStatus;
+    RunStatus m_emStatus;
     struct event_base *m_pBase;
     struct bufferevent *m_pMainBev;
     struct bufferevent *m_pAssistBev;
@@ -107,7 +107,7 @@ private:
     CSockPair m_objAssistSockPair;
     CEventBuffer m_objMainBuffer; 
     CEventBuffer m_objAssistBuffer; 
-    CMutex m_Mutex;
+    CQMutex m_Mutex;
     CCond m_Cond;
 };
 

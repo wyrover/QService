@@ -31,11 +31,11 @@
 #include "Macros.h"
 
 /*互斥锁类,失败有异常抛出*/
-class CMutex
+class CQMutex
 {
 public:
-    CMutex(void);
-    ~CMutex(void);
+    CQMutex(void);
+    ~CQMutex(void);
     
     /*锁定*/
     void Lock(void);

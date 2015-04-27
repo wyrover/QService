@@ -2,6 +2,8 @@
 加载业务模块
 --]]
 
+cjson = require("cjson")
+
 local tLoad = 
 {
     {"Public/pbc/initpbc", true},
@@ -11,12 +13,13 @@ local tLoad =
     {"Public/Macros", true},    
     {"Public/ErrorCodes", true},    
     {"Public/RegFuncs", true},
-    {"Public/Protocol", true},    
+    {"Public/Protocol", true},
+    {"Public/DispPack", true},
     {"Public/Debug", true},
-    {"Public/RegSV", true},
     
     {"Game/Ping", true},
     {"Game/Test", true},
+    {"Game/EchoSV", true},
 }
 
 local function loadAllFile()

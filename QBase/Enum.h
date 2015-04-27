@@ -47,24 +47,6 @@ enum AESKeyType
     Key256 = 256,
 };
 
-/*加解密方式*/
-enum EncryptType
-{
-    EncryptType_None = 0,
-    EncryptType_AES,
-    EncryptType_Base64,
-    EncryptType_RSA,
-
-    EncryptType_Count,
-};
-
-/*日志类型*/
-enum LOG_TYPE
-{
-    LTYPE_TXT = 0,
-    LTYPE_DB,
-};
-
 /*日志级别,越小越高*/
 enum LOG_LEVEL
 {
@@ -106,10 +88,6 @@ enum SessionStatus
     SessionStatus_Linked,
     SessionStatus_Loging,
     SessionStatus_Logined,
-    SessionStatus_Loading,
-    SessionStatus_Loaded,
-    SessionStatus_Createing,
-    SessionStatus_Created,
     SessionStatus_Playing,
     SessionStatus_GM,
 };
@@ -123,6 +101,35 @@ enum RunStatus
     RunStatus_Runing,//运行
     RunStatus_Stopping,//正在停止
     RunStatus_Stopped,//停止
+};
+
+/*数据类型*/
+enum DataType
+{
+    DType_SINT8 = 0,//char 
+    DType_UINT8,//unsigned char
+    DType_BOOL,//bool
+    DType_SINT16,//short
+    DType_UINT16,//unsigned short
+    DType_SINT32,//int
+    DType_UINT32,//unsigned int
+    DType_SINT64,//int64_t 
+    DType_UINT64,//uint64_t
+    DType_FLOAT,//float
+    DType_DOUBLE,//double
+    DType_STRING,//string
+    DType_BYTE,//byte
+    DType_STRUCT,//struct
+    DType_SKIP,//跳过，控制类型
+};
+
+/*结构体属性*/
+enum StructAttr
+{
+    StAttr_Name = 1,//变量名
+    StAttr_Type,//数据类型
+    StAttr_Size,//字节 DType_STRING 和 DType_SKIP有用
+    StAttr_StAttr,//结构体属性
 };
 
 #endif//Q_ENUM_H_

@@ -65,12 +65,13 @@
 #include "UUID.h"
 #include "pugixml/pugixml.hpp"
 #include "LuaFunc.h"
-#include "Filter.h"
+#include "QFilter.h"
 #include "SnowflakeID.h"
 #include "MMap.h"
 #include "Charset.h"
 #include "HttpClient.h"
 #include "HttpParser.h"
+#include "Binary.h"
 
 using namespace pugi;
 
@@ -95,7 +96,7 @@ extern char g_acModulPath[Q_FILEPATH_LENS];
 
 /*服务器ID*/
 extern int g_iServerID;
-/*服务器类型*/
-extern int g_iServerType;
+/*服务器名称*/
+extern std::string g_strServerName;
 
 #endif//Q_QBASE_H_

@@ -84,6 +84,7 @@
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="TestArithmetic.cpp" />
+    <ClCompile Include="TestBinary.cpp" />
     <ClCompile Include="TestCharset.cpp" />
     <ClCompile Include="TestDataBase.cpp" />
     <ClCompile Include="TestEncypt.cpp" />
@@ -94,6 +95,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TestArithmetic.h" />
+    <ClInclude Include="TestBinary.h" />
     <ClInclude Include="TestCharset.h" />
     <ClInclude Include="TestDataBase.h" />
     <ClInclude Include="TestEncypt.h" />

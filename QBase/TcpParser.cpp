@@ -122,6 +122,13 @@ const char *CTcpParser::parsePack(class CEventBuffer *pBuffer)
         return NULL;
     }
 
+    if (Q_INIT_NUMBER == m_iBufLens)
+    {
+        m_iParsedLens = m_iHeadLens;
+
+        return "";
+    }
+
     char *pMsg = pBuffer->readBuffer(m_iNeedReadLens);
     if (NULL == pMsg)
     {

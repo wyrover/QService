@@ -52,9 +52,9 @@ int getServerID(void)
     return g_iServerID;
 }
 
-int getServerType(void)
+const char *getServerNam(void)
 {
-    return g_iServerType;
+    return g_strServerName.c_str();
 }
 
 void CReg2Lua::Register(void)
@@ -70,6 +70,7 @@ void CReg2Lua::Register(void)
     reg_SessionManager();
     reg_HttpClient();
     reg_HttpBuffer();
+    reg_Binary();
 }
 
 void CReg2Lua::reg_Func(void)
@@ -80,7 +81,7 @@ void CReg2Lua::reg_Func(void)
         .addFunction("Q_LOG", Q_LuaLog)
         .addFunction("Q_DBLOG", Q_DBLog)
         .addFunction("getServerID", getServerID)
-        .addFunction("getServerType", getServerType);
+        .addFunction("getServerNam", getServerNam);
 }
 
 void CReg2Lua::reg_Timer(void)
@@ -201,10 +202,15 @@ void CReg2Lua::reg_SessionManager(void)
             .addFunction("sendToCur", &CSessionManager::sendToCur)
             .addFunction("sendToByID", &CSessionManager::sendToByID)
 
+            .addFunction("sendBToCur", &CSessionManager::sendBToCur)
+            .addFunction("sendBToByID", &CSessionManager::sendBToByID)
+
             .addFunction("checkPing", &CSessionManager::checkPing)
 
             .addFunction("getTimer", &CSessionManager::getTimer)
             .addFunction("getCount", &CSessionManager::getCount)
+
+            .addFunction("getSessionSize", &CSessionManager::getSessionSize)
 
             .addFunction("confirmStop", &CSessionManager::confirmStop)
 
@@ -233,5 +239,57 @@ void CReg2Lua::reg_HttpBuffer(void)
             .addFunction("getPostMsg", &CHttpParser::getPostMsg)
             .addFunction("setReplyContent", &CHttpParser::setReplyContent)
             .addFunction("Reply", &CHttpParser::Reply)
+        .endClass();
+}
+
+void CReg2Lua::reg_Binary(void)
+{
+    luabridge::getGlobalNamespace(m_pstLState)
+        .beginClass<CLuaBinary>("CLuaBinary")
+            .addFunction("getLens", &CLuaBinary::getLens)
+
+            .addFunction("reSetWrite", &CLuaBinary::reSetWrite)
+            .addFunction("skipRead", &CLuaBinary::skipRead)
+            .addFunction("skipWrite", &CLuaBinary::skipWrite)
+
+            .addFunction("setSint8", &CLuaBinary::setSint8)
+            .addFunction("getSint8", &CLuaBinary::getSint8)
+            .addFunction("setUint8", &CLuaBinary::setUint8)
+            .addFunction("getUint8", &CLuaBinary::getUint8)
+
+            .addFunction("setBool", &CLuaBinary::setBool)
+            .addFunction("getBool", &CLuaBinary::getBool)
+
+            .addFunction("setSint16", &CLuaBinary::setSint16)
+            .addFunction("getSint16", &CLuaBinary::getSint16)
+            .addFunction("setUint16", &CLuaBinary::setUint16)
+            .addFunction("getUint16", &CLuaBinary::getUint16)
+
+            .addFunction("setSint32", &CLuaBinary::setSint32)
+            .addFunction("getSint32", &CLuaBinary::getSint32)
+            .addFunction("setUint32", &CLuaBinary::setUint32)
+            .addFunction("getUint32", &CLuaBinary::getUint32)
+
+            .addFunction("setSint64", &CLuaBinary::setSint64)
+            .addFunction("getSint64", &CLuaBinary::getSint64)
+            .addFunction("setUint64", &CLuaBinary::setUint64)
+            .addFunction("getUint64", &CLuaBinary::getUint64)
+
+            .addFunction("setDouble", &CLuaBinary::setDouble)
+            .addFunction("getDouble", &CLuaBinary::getDouble)
+
+            .addFunction("setFloat", &CLuaBinary::setFloat)
+            .addFunction("getFloat", &CLuaBinary::getFloat)
+
+            .addFunction("setString", &CLuaBinary::setString)
+            .addFunction("getString", &CLuaBinary::getString)
+
+            .addFunction("setByte", &CLuaBinary::setByte)
+            .addFunction("getByte", &CLuaBinary::getByte)
+
+            .addFunction("setStruct", &CLuaBinary::setStruct)
+            .addFunction("getStruct", &CLuaBinary::getStruct)
+
+            .addFunction("getBuffer", &CLuaBinary::getBuffer)
         .endClass();
 }

@@ -101,7 +101,7 @@ bool CDBLoger::Link(void)
     {
         m_objLinker.open(m_objUrl);
     }
-    catch (CException &e)
+    catch (CQException &e)
     {
         Q_Printf("%s", e.getErrorMsg());
         Q_SYSLOG(LOGLV_ERROR, "%s", e.getErrorMsg());
@@ -118,7 +118,7 @@ bool CDBLoger::Check(void)
     {
         m_objLinker.execDML(Q_FormatStr("select id from %s limit 1", LOG_TABLE).c_str());
     }
-    catch(CException &)
+    catch(CQException &)
     {
         return false;
     }
@@ -133,7 +133,7 @@ bool CDBLoger::createTable(std::string &strName)
         m_objLinker.execDML(Q_FormatStr("CREATE TABLE IF NOT EXISTS %s like %s;", 
             strName.c_str(), LOG_TABLE).c_str());
     }
-    catch(CException &e)
+    catch(CQException &e)
     {
         Q_Printf("%s", e.getErrorMsg());
         Q_SYSLOG(LOGLV_ERROR, "%s", e.getErrorMsg());
@@ -184,7 +184,7 @@ void CDBLoger::Write(const char *pszMsg, const size_t iLens)
 
         m_pStatement->execDML();
     }
-    catch(CException &e)
+    catch(CQException &e)
     {
         Q_Printf("open mysql link error. code %d, messgae %s", 
             e.getErrorCode(), e.getErrorMsg());

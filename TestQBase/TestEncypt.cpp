@@ -158,7 +158,7 @@ void CTestEncypt::Test_RSA(void)
 
     srand((unsigned int)time(NULL));
     usKeyLens = 512 + rand() % 513;
-    printf("ken lens %d\n", usKeyLens);
+    printf("key lens %d\n", usKeyLens);
 
     Q_FileDel("PrivateKey.txt");
     Q_FileDel("PublicKey.txt");

@@ -989,7 +989,7 @@ void CMySQLLink::close(void)
     }
 }
 
-void CMySQLLink::open(CDBUrl objDBUrl)
+void CMySQLLink::open(CDBUrl &objDBUrl)
 {
     int iRtn = Q_RTN_FAILE;
     char cReConnect = 1;

@@ -5,28 +5,26 @@
 --协议编号
 Protocol = {
     "Sys_Debug", --调试
-    "Sys_DebugRtn",--调试返回
-    "Sys_ReqRegSV", --服务器注册
-    "Sys_RegSVRtn",--服务器注册返回
-    
+    "Sys_DebugRtn",--调试返回    
     "CS_Ping",   --ping 
     "SC_Ping",   --ping 
 }
 Protocol = table.enum(Protocol, 1)
 
---protobuf文件
-local tProtoFile = {
-    "RegSV.proto",
-}
-
 --协议对应的protobuf字符串
 local tProtoStr = {
-    {Protocol.Sys_ReqRegSV, "RegSV.Request"},
-    {Protocol.Sys_RegSVRtn, "RegSV.Response"},
+    {Protocol.Sys_Debug, "Debug.CSDebug"},
+    {Protocol.Sys_DebugRtn, "Debug.SCDebug"},
+}
+
+--protobuf文件
+local tProtoFile = {
+    "Debug.proto",
+    "Echo.proto",
 }
 
 local function loadProto()
-    local strProtoDir = Q_GetModulPath() .. "Lua" .. Q_GetPathSeparator().."Proto"
+    local strProtoDir = Q_GetModulPath() .. "ProtobufStr"
     parser.register(tProtoFile, strProtoDir)
 end
 

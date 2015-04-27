@@ -13,6 +13,7 @@ local function doString(strMsg)
     return callFunc(Func)
 end
 
+
 local function getIndent(level)
     return string.rep("    ", level)
 end

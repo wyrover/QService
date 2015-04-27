@@ -9,6 +9,8 @@ void CTestSnowflakeID::Test_SnowflakeID(void)
     std::map<int64_t, char>::iterator itmapID;
 
     objID.setMachineID(10);
+    const char *pszID = objID.getSnowflakeID();
+    printf("%s\n", pszID);
     for (int i = 0; i < 10000; i++)
     {
         iID = objID.Generate();
@@ -35,7 +37,7 @@ void CTestSnowflakeID::Test_SnowflakeID(void)
     objTimer.reStart();
     for (int i = 0; i < iCount; i++)
     {
-        objUUID.getUUID();
+    objUUID.getUUID();
     }
     std::cout << "UUID time:" << objTimer.Elapsed() << std::endl;*/
 

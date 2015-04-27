@@ -149,7 +149,7 @@ void CTableFile::getValue(std::string &strValue, std::map<int, std::string> &map
     std::list<std::string>::iterator itValue;
     std::map<std::string, std::string> mapVal;
 
-    Q_Split(strValue, m_strSplitFlag, lstValue);
+    Q_Split(strValue, m_strSplitFlag.c_str(), lstValue);
 
     for (itValue = lstValue.begin(); (lstValue.end() != itValue) && ((size_t)iIndex < mapTableHead.size()); 
         itValue++)
@@ -186,7 +186,7 @@ bool CTableFile::getHead(std::string &strHead, std::map<int, std::string> &mapTa
 {
     std::list<std::string> lstTableHead;
 
-    Q_Split(strHead, m_strSplitFlag, lstTableHead);
+    Q_Split(strHead, m_strSplitFlag.c_str(), lstTableHead);
     //记录后面的空值数
     for (std::list<std::string>::reverse_iterator itTmp = lstTableHead.rbegin(); 
         lstTableHead.rend() != itTmp; itTmp++)

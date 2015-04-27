@@ -92,7 +92,7 @@ std::string CDBUrl::getInfo(const char *pszFlag)
     std::list<std::string> lstTmp;
     std::list<std::string>::iterator itTmp;
 
-    Q_Split(m_strUrl, std::string(";"), lstTmp);
+    Q_Split(m_strUrl, ";", lstTmp);
     for (itTmp = lstTmp.begin(); lstTmp.end() != itTmp; itTmp++)
     {
         iPos = itTmp->find("=");

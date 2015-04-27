@@ -38,10 +38,6 @@ int Q_FileExist(const char *pszFileName);
 int Q_FileDel(const char *pszFileName);
 /*文件改名*/
 int Q_FileReName(const char *pszOldNam, const char *pszNewNam);
-/*检查文件读权限*/
-bool Q_File_Access_Read(const char *pszFileName);
-/*检查文件写权限*/
-bool Q_File_Access_Write(const char *pszFileName);
 
 /*返回文件路径*/
 int Q_DirName(const char *pszPath, std::string &strPath);

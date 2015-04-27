@@ -68,11 +68,11 @@ private:
     unsigned int m_uiFreeTime;
     std::list<CDBLink *> m_lstMinLinker;
     std::list<struct stBDMaxPoolInfo *> m_lstMaxLinker;
-    CMutex m_objMinMutex;
-    CMutex m_objMaxMutex;
-    CMutex m_objMutex_Exit;
+    CQMutex m_objMinMutex;
+    CQMutex m_objMaxMutex;
+    CQMutex m_objMutex_Exit;
     CCond m_objCond_Exit;
-    CMutex m_objMutex_Start;
+    CQMutex m_objMutex_Start;
     CCond m_objCond_Start;
 };
 

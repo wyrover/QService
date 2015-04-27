@@ -17,6 +17,11 @@ public:
 
 private:
     void Test_Lua_Tinker(void);
+    void RunLua(void);
+
+private:
+    struct lua_State *m_pLua;
+    CLuaBinary m_objBinary;
 };
 
 #endif//Q_TESTLUA_H_

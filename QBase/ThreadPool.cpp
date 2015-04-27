@@ -40,10 +40,10 @@ enum ThRunStatus
 struct ThreadPool
 {
     unsigned int uiThreadNum;//线程数
-    CMutex objQueueMutex;//消息队列所
-    CMutex objMutex_Thread;//线程接收
+    CQMutex objQueueMutex;//消息队列所
+    CQMutex objMutex_Thread;//线程接收
     CCond objCond_Thread;
-    CMutex objMutex_Main;//主线程接收
+    CQMutex objMutex_Main;//主线程接收
     CCond objCond_Main;
     long lStop;//停止标志
     long lIndex;//运行的线程数
@@ -193,7 +193,7 @@ int CThreadPool::Init(const unsigned int &uiThreadNum)
             m_pstPool->objMutex_Main.unLock();
         }
     }
-    catch(CException &e)
+    catch(CQException &e)
     {
         Q_Printf("run thread exception, code %d, message %s", 
             e.getErrorCode(), e.getErrorMsg());

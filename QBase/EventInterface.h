@@ -68,7 +68,7 @@ public:
     /*http */
     virtual void onHttpRead(class CHttpParser *){};
     /*服务器连接启动*/
-    virtual void onLinkedServer(class CSession *){};
+    virtual void onLinkedOther(class CSession *){};
 
 private:
     class CSessionManager *m_pSessionManager;

@@ -64,7 +64,7 @@ private:
     size_t m_uiLogSize;
     time_t m_LastCheckTime;
     std::string m_strFilePath;
-    CMutex m_objMutex;
+    CQMutex m_objMutex;
     CTcpParser m_objTcpParser;
 };
 

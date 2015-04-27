@@ -98,13 +98,14 @@ static size_t OnWriteData(void* buffer, size_t size, size_t nmemb, void* lpVoid)
 ************************************************************************/
 std::string CHttpClient::Post(const char *const strUrl, const char *const strPost)
 {
-	std::string strResponse;
+    m_strResponse.clear();
+
 	CURLcode res;
 	CURL* curl = curl_easy_init();
 	if (NULL == curl)
 	{
 		Q_Printf("%s", "curl_easy_init failed");
-		return NULL;
+		return m_strResponse;
 	}
 
 	if (m_bDebug)
@@ -118,7 +119,7 @@ std::string CHttpClient::Post(const char *const strUrl, const char *const strPos
 	curl_easy_setopt(curl, CURLOPT_POSTFIELDS, strPost);
 	curl_easy_setopt(curl, CURLOPT_READFUNCTION, NULL);
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, OnWriteData);
-	curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&strResponse);
+	curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&m_strResponse);
 	curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
 	curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 3);
 	curl_easy_setopt(curl, CURLOPT_TIMEOUT, 8);
@@ -126,7 +127,7 @@ std::string CHttpClient::Post(const char *const strUrl, const char *const strPos
 	res = curl_easy_perform(curl);
 	curl_easy_cleanup(curl);
 
-	return strResponse;
+	return m_strResponse;
 }
 
 /************************************************************************
@@ -142,13 +143,14 @@ std::string CHttpClient::Post(const char *const strUrl, const char *const strPos
 ************************************************************************/
 std::string CHttpClient::Get(const char *const strUrl)
 {
-	std::string strResponse;
+    m_strResponse.clear();
+
 	CURLcode res;
 	CURL* curl = curl_easy_init();
 	if (NULL == curl)
 	{
 		Q_Printf("%s", "curl_easy_init failed");
-		return NULL;
+		return m_strResponse;
 	}
 
 	if (m_bDebug)
@@ -160,7 +162,7 @@ std::string CHttpClient::Get(const char *const strUrl)
 	curl_easy_setopt(curl, CURLOPT_URL, strUrl);
 	curl_easy_setopt(curl, CURLOPT_READFUNCTION, NULL);
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, OnWriteData);
-	curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&strResponse);
+	curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&m_strResponse);
 	curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
 	curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 3);
 	curl_easy_setopt(curl, CURLOPT_TIMEOUT, 8);
@@ -168,7 +170,7 @@ std::string CHttpClient::Get(const char *const strUrl)
 	res = curl_easy_perform(curl);
 	curl_easy_cleanup(curl);
 
-	return strResponse;
+	return m_strResponse;
 }
 
 /************************************************************************
@@ -184,13 +186,14 @@ std::string CHttpClient::Get(const char *const strUrl)
 ************************************************************************/
 std::string CHttpClient::Posts(const char *const strUrl, const char *const strPost, const char * pCaPath)
 {
-	std::string strResponse;
+	m_strResponse.clear();
+
 	CURLcode res;
 	CURL* curl = curl_easy_init();
 	if (NULL == curl)
 	{
 		Q_Printf("%s", "curl_easy_init failed");
-		return NULL;
+		return m_strResponse;
 	}
 
 	if (m_bDebug)
@@ -204,7 +207,7 @@ std::string CHttpClient::Posts(const char *const strUrl, const char *const strPo
 	curl_easy_setopt(curl, CURLOPT_POSTFIELDS, strPost);
 	curl_easy_setopt(curl, CURLOPT_READFUNCTION, NULL);
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, OnWriteData);
-	curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&strResponse);
+	curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&m_strResponse);
 	curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
 	if (NULL == pCaPath)
 	{
@@ -224,7 +227,7 @@ std::string CHttpClient::Posts(const char *const strUrl, const char *const strPo
 	res = curl_easy_perform(curl);
 	curl_easy_cleanup(curl);
 
-	return strResponse;
+	return m_strResponse;
 }
 
 /************************************************************************
@@ -241,13 +244,14 @@ std::string CHttpClient::Posts(const char *const strUrl, const char *const strPo
 ************************************************************************/
 std::string CHttpClient::Gets(const char *const strUrl, const char * pCaPath)
 {
-	std::string strResponse;
+	m_strResponse.clear();
+
 	CURLcode res;
 	CURL* curl = curl_easy_init();
 	if (NULL == curl)
 	{
 		Q_Printf("%s", "curl_easy_init failed");
-		return NULL;
+		return m_strResponse;
 	}
 
 	if (m_bDebug)
@@ -259,7 +263,7 @@ std::string CHttpClient::Gets(const char *const strUrl, const char * pCaPath)
 	curl_easy_setopt(curl, CURLOPT_URL, strUrl);
 	curl_easy_setopt(curl, CURLOPT_READFUNCTION, NULL);
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, OnWriteData);
-	curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&strResponse);
+	curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&m_strResponse);
 	curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
 	if (NULL == pCaPath)
 	{
@@ -277,7 +281,7 @@ std::string CHttpClient::Gets(const char *const strUrl, const char * pCaPath)
 	res = curl_easy_perform(curl);
 	curl_easy_cleanup(curl);
 
-	return strResponse;
+	return m_strResponse;
 }
 
 void CHttpClient::setDebug(bool bDebug)

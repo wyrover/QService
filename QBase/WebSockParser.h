@@ -56,7 +56,7 @@ public:
     ~CWebSockParser(void){};
 
     //解析握手
-    const char *shakeHands(class CEventBuffer *pBuffer);
+    std::string *shakeHands(class CEventBuffer *pBuffer);
 
     //解包
     bool parsePack(class CEventBuffer *pBuffer);
@@ -68,9 +68,14 @@ public:
     {
         return m_iParsedLens;
     };
-    std::string *getVal(void)
+    const char *getMsg(void)
     {
-        return &m_strVal;
+        if (NULL == m_pMsg)
+        {
+            return "";
+        }
+
+        return m_pMsg;
     };
     WebSockFram *getHead(void)
     {
@@ -94,11 +99,11 @@ private:
     size_t m_iTotalLens;
     size_t m_iNeedReadLens;
     size_t m_iShakeHandsEndFlagLens;
+    char *m_pMsg;
     unsigned char m_acShaKey[20];
     char m_acWebSockHead[FRAME_HEAD_EXT64_LEN];
     std::string m_strVersion;
     std::string m_strVal;
-    std::string m_strSplitFlag;
     CBase64 m_objbase64;
     CSHA1 m_objSHA1;
     WebSockFram m_stFram;

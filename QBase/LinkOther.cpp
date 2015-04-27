@@ -179,7 +179,6 @@ Q_SOCK CLinkOther::initSock(const char *pszIp, unsigned short usPort)
     }
 
     (void)setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, (char *)&iKeepAlive, sizeof(iKeepAlive));
-    (void)evutil_make_socket_nonblocking(sock);
 
     return sock;
 }
@@ -242,8 +241,7 @@ void CLinkOther::setSockStatus(Q_SOCK sock, SessionStatus emStatus)
 
 int CLinkOther::getSockByName(const char *pszName)
 {
-    if (NULL == pszName
-        || 0 == strlen(pszName))
+    if (NULL == pszName)
     {
         return Q_INVALID_SOCK;
     }

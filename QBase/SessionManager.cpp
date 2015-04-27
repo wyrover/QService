@@ -75,7 +75,10 @@ unsigned int CSessionManager::getCount(void)
 
 void CSessionManager::setLua(struct lua_State *pLua)
 {
+    assert(NULL != pLua);
+
     m_pLua = pLua;
+    m_objBinary.setLua(pLua);
 }
 
 void CSessionManager::setWorkThread(class CWorkThreadEvent *pThread)
@@ -93,8 +96,8 @@ void CSessionManager::dellSession(struct bufferevent *bev)
     std::tr1::unordered_map<int, CSession *>::iterator itSession;    
     evutil_socket_t fd = bufferevent_getfd(bev);
 
-    itSession = m_unmapSession.find(fd);
-    if (m_unmapSession.end() == itSession)
+    itSession = m_umapSession.find(fd);
+    if (m_umapSession.end() == itSession)
     {
         return;
     }
@@ -102,14 +105,14 @@ void CSessionManager::dellSession(struct bufferevent *bev)
     CSession *pSession = itSession->second;
     if (NULL == pSession)
     {
-        m_unmapSession.erase(itSession);
+        m_umapSession.erase(itSession);
 
         return;
     }
 
     pSession->Clear();
     m_quFreeSession.push(pSession);//加进空闲列表
-    m_unmapSession.erase(itSession);
+    m_umapSession.erase(itSession);
 
     return;
 }
@@ -148,7 +151,7 @@ int CSessionManager::addSession(struct bufferevent *bev)
     pSession->setSessionID(fd);
     pSession->setPing(getCount());
 
-    m_unmapSession[fd] = pSession;
+    m_umapSession[fd] = pSession;
 
     return Q_RTN_OK;
 }
@@ -162,8 +165,8 @@ CSession *CSessionManager::getSession(struct bufferevent *bev)
     }
 
     std::tr1::unordered_map<int, CSession *>::iterator itSession;
-    itSession = m_unmapSession.find(fd);
-    if (m_unmapSession.end() == itSession)
+    itSession = m_umapSession.find(fd);
+    if (m_umapSession.end() == itSession)
     {
         return NULL;
     }
@@ -180,6 +183,8 @@ void CSessionManager::confirmStop(void)
 
 int CSessionManager::getLinkOtherID(const char *pszName)
 {
+    assert(NULL != pszName);
+
     return m_objLinkOther.getSockByName(pszName);
 }
 
@@ -189,13 +194,8 @@ void CSessionManager::checkPing(const unsigned int uiTime)
     std::vector<int> vcTimeOut;
     std::vector<int>::iterator itTimeOut;
 
-    for (itMap = m_unmapSession.begin(); m_unmapSession.end() != itMap; itMap++)
+    for (itMap = m_umapSession.begin(); m_umapSession.end() != itMap; itMap++)
     {
-        if (STYPE_TCPCLIENT == itMap->second->getType())
-        {
-            continue;
-        }
-
         if ((getCount() - itMap->second->getPing())*getTimer() >= uiTime)
         {
             vcTimeOut.push_back(itMap->first);
@@ -210,7 +210,7 @@ void CSessionManager::checkPing(const unsigned int uiTime)
 
 size_t CSessionManager::getSessionSize(void)
 {
-    return m_unmapSession.size();
+    return m_umapSession.size();
 }
 
 void CSessionManager::freeAllSession(void)
@@ -218,7 +218,7 @@ void CSessionManager::freeAllSession(void)
     std::tr1::unordered_map<int, CSession *>::iterator itSession;
     CSession *pSession = NULL;
 
-    for (itSession = m_unmapSession.begin(); m_unmapSession.end() != itSession; itSession++)
+    for (itSession = m_umapSession.begin(); m_umapSession.end() != itSession; itSession++)
     {
         bufferevent_free(itSession->second->getBuffer()->getBuffer());
         Q_SafeDelete(itSession->second);
@@ -231,7 +231,7 @@ void CSessionManager::freeAllSession(void)
         Q_SafeDelete(pSession);
     }
 
-    m_unmapSession.clear();
+    m_umapSession.clear();
 
     return;
 }
@@ -239,8 +239,8 @@ void CSessionManager::freeAllSession(void)
 void CSessionManager::closeLinkByID(const int iID)
 {
     std::tr1::unordered_map<int, CSession *>::iterator itSession;
-    itSession = m_unmapSession.find(iID);
-    if (m_unmapSession.end() == itSession)
+    itSession = m_umapSession.find(iID);
+    if (m_umapSession.end() == itSession)
     {
         return;
     }
@@ -272,7 +272,7 @@ void CSessionManager::closeLinkByID(const int iID)
     itSession->second->Clear();
 
     m_quFreeSession.push(itSession->second);
-    m_unmapSession.erase(itSession);
+    m_umapSession.erase(itSession);
 
     return;
 }
@@ -307,8 +307,8 @@ CSession *CSessionManager::getSessionByID(const int iID)
 {
     std::tr1::unordered_map<int, CSession *>::iterator itSession;
 
-    itSession = m_unmapSession.find(iID);
-    if (m_unmapSession.end() == itSession)
+    itSession = m_umapSession.find(iID);
+    if (m_umapSession.end() == itSession)
     {
         return NULL;
     }
@@ -379,6 +379,7 @@ bool CSessionManager::sendToCur(const char *pszData, const size_t uiLens)
     bool bOK = false;
     switch(m_pCurrent->getType())
     {
+    case STYPE_TCPCLIENT:
     case STYPE_TCP:
         {
             bOK = sendTcp(m_pCurrent, pszData, uiLens);
@@ -402,8 +403,8 @@ bool CSessionManager::sendToByID(const int iID, const char *pszData, const size_
 {
     std::tr1::unordered_map<int, CSession *>::iterator itSession;
 
-    itSession = m_unmapSession.find(iID);
-    if (m_unmapSession.end() == itSession)
+    itSession = m_umapSession.find(iID);
+    if (m_umapSession.end() == itSession)
     {
         Q_Printf("no find id %u", iID);
         return false;
@@ -419,6 +420,7 @@ bool CSessionManager::sendToByID(const int iID, const char *pszData, const size_
     bool bOK = false;
     switch(itSession->second->getType())
     {
+    case STYPE_TCPCLIENT:
     case STYPE_TCP:
         {
             bOK = sendTcp(itSession->second, pszData, uiLens);
@@ -436,4 +438,14 @@ bool CSessionManager::sendToByID(const int iID, const char *pszData, const size_
     }
 
     return bOK;
+}
+
+bool CSessionManager::sendBToCur(void)
+{
+    return sendToCur(m_objBinary.getBufferMgr()->getBuffer(), m_objBinary.getBufferMgr()->getLens());
+}
+
+bool CSessionManager::sendBToByID(const int iID)
+{
+    return sendToByID(iID, m_objBinary.getBufferMgr()->getBuffer(), m_objBinary.getBufferMgr()->getLens());
 }

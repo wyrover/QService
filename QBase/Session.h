@@ -70,9 +70,9 @@ public:
     CEventBuffer *getBuffer(void);
 
 private:
-    char m_cSessionType;   
-    int m_iSessionID;//session id  
-    int m_iStatus;
+    SessionType m_emSessionType;   
+    SessionStatus m_emStatus;
+    int m_iSessionID;//session id      
     unsigned int m_uiPing;
     std::string m_strID;//关联的ID
     std::string m_strCheckID;//校验ID

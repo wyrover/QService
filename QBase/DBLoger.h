@@ -62,7 +62,7 @@ private:
     CDBStatement *m_pStatement;
     CMySQLLink m_objLinker;
     CDBUrl m_objUrl;
-    CMutex m_objMutex;
+    CQMutex m_objMutex;
     std::string m_strTable;
     CTcpParser m_objTcpParser;
 };

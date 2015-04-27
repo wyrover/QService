@@ -146,40 +146,6 @@ int Q_FileReName(const char *pszOldNam, const char *pszNewNam)
     return iRtn;
 }
 
-bool Q_File_Access_Read(const char *pszFileName)
-{
-    if (NULL == pszFileName)
-    {
-        Q_Printf("%s", Q_EXCEPTION_NULLPOINTER);
-
-        return false;
-    }
-
-    if (Q_RTN_OK == Q_ACCESS(pszFileName, 4))
-    {
-        return true;
-    }
-    
-    return false;
-}
-
-bool Q_File_Access_Write(const char *pszFileName)
-{
-    if (NULL == pszFileName)
-    {
-        Q_Printf("%s", Q_EXCEPTION_NULLPOINTER);
-
-        return false;
-    }
-
-    if (Q_RTN_OK == Q_ACCESS(pszFileName, 2))
-    {
-        return true;
-    }
-
-    return false;
-}
-
 /*************************************************
 * Function name:Q_DirName
 * Description  :返回文件路径
@@ -413,7 +379,7 @@ int Q_MakeAllDir(const char *pszPath)
     }
 
     strPath = pszPath;
-    Q_Split(strPath, std::string(Q_PATH_SEPARATOR), lstTmp);
+    Q_Split(strPath, Q_PATH_SEPARATOR, lstTmp);
     if (lstTmp.empty())
     {
         Q_Printf("%s", "Invalid path");

@@ -32,6 +32,7 @@
 #include "SessionManager.h"
 #include "WebSockParser.h"
 #include "TcpParser.h"
+#include "HttpParser.h"
 
 struct TriggerSock
 {
@@ -39,7 +40,7 @@ struct TriggerSock
     Q_SOCK iSock;
     TriggerSock(void) : iSock(Q_INVALID_SOCK)
     {
-        
+
     };
 };
 
@@ -67,6 +68,7 @@ public:
     CTcpParser *getTcpParser(void);
     /*获取链接到其他服务器对象*/
     CLinkOther *getLinkOther(void);
+    CHttpParser *getHttpParser(void);
 
 public:
     //接口实现
@@ -99,6 +101,7 @@ private:
     TriggerSock m_stWorkSock;
     CWebSockParser m_objWebSockParser;
     CTcpParser m_objTcpParser;
+    CHttpParser m_objHttpParser;
     std::vector<struct evhttp *> m_vcEvHttp;
     std::tr1::unordered_map<Q_SOCK, std::string> m_mapWebSockPack;
 };

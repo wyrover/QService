@@ -25,13 +25,18 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
+#ifndef Q_HTTP_PARSER_H_
+#define Q_HTTP_PARSER_H_
+
 #include "Macros.h"
 
 class CHttpParser
 {
 public:
-    CHttpParser(struct evhttp_request *req);
+    CHttpParser(void);
     ~CHttpParser(void);
+
+    bool setHttpRequest(struct evhttp_request *req);
 
     /* ªÒ»° */
     const char *getQuery(void);
@@ -42,11 +47,11 @@ public:
     /* ∑µªÿ */
     void Reply(const int iCode, const char *pszReason);
 
-    bool isOK(void);
 private:
-    bool m_bOK;
     struct evbuffer *m_pEventBuf;
     struct evhttp_request *m_Req;
     std::string m_strPostMsg;
     std::string m_strQuery;
 };
+
+#endif//Q_HTTP_PARSER_H_

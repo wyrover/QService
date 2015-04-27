@@ -56,7 +56,7 @@ private:
 CServer::CServer(void)
 {
     m_uiTimer = Q_INIT_NUMBER;
-    m_cRunStatus = RunStatus_Unknown;
+    m_emRunStatus = RunStatus_Unknown;
     m_usThreadNum = 1;
     m_pMainBase = NULL;
     m_pPool = NULL;
@@ -73,22 +73,22 @@ CServer::~CServer(void)
 
 bool CServer::getError(void)
 {
-    return ((RunStatus_Error == getRunStatus()) ? true : false);;
+    return ((RunStatus_Error == *getRunStatus()) ? true : false);;
 }
 
 void CServer::setRunStatus(RunStatus emStatus)
 {
-    m_cRunStatus = emStatus;
+    m_emRunStatus = emStatus;
 }
 
-RunStatus CServer::getRunStatus(void)
+RunStatus *CServer::getRunStatus(void)
 {
-    return (RunStatus)m_cRunStatus;
+    return &m_emRunStatus;
 }
 
 bool CServer::getIsRun(void)
 {
-    return ((RunStatus_Runing == getRunStatus()) ? true : false);
+    return ((RunStatus_Runing == *getRunStatus()) ? true : false);
 }
 
 bool CServer::waitForStarted(void)
@@ -133,18 +133,18 @@ void CServer::listenerAcceptCB(struct evconnlistener *pListener, Q_SOCK sock, st
     CServer *pServer = (CServer *)arg;
     CWorkThreadEvent *pThreadEvent = pServer->getServerThreadEvent();
 
-    if (RunStatus_Runing != pServer->getRunStatus())
+    if (RunStatus_Runing != *(pServer->getRunStatus()))
     {
         evutil_closesocket(sock);
         return;
     }
 
     //取得最小连接数的线程号
-    if (pServer->getThreadNum() > 1)
+    if (*(pServer->getThreadNum()) > 1)
     {
         unsigned int uiCount = Q_INIT_NUMBER;
         unsigned int uiTmp = pThreadEvent[0].getSessionManager()->getSessionSize();
-        for (unsigned short usI = Q_INIT_NUMBER; usI < pServer->getThreadNum(); usI++)
+        for (unsigned short usI = Q_INIT_NUMBER; usI < *(pServer->getThreadNum()); usI++)
         {
             uiCount = pThreadEvent[usI].getSessionManager()->getSessionSize();
             if (uiTmp > uiCount)
@@ -155,11 +155,11 @@ void CServer::listenerAcceptCB(struct evconnlistener *pListener, Q_SOCK sock, st
         }
     }
 
-    TriggerSock stWorkSock;
-    stWorkSock.emType = pServer->getSockType(evconnlistener_get_fd(pListener));
-    stWorkSock.iSock = sock;
+    TriggerSock *pWorkSock = pServer->getTriggerSock();
+    pWorkSock->emType = pServer->getSockType(evconnlistener_get_fd(pListener));
+    pWorkSock->iSock = sock;
     
-    if (Q_RTN_OK != pThreadEvent[usIndex].sendMainMsg((const char*)&stWorkSock, sizeof(stWorkSock)))
+    if (Q_RTN_OK != pThreadEvent[usIndex].sendMainMsg((const char*)pWorkSock, sizeof(TriggerSock)))
     {
         Q_Printf("add socket %d to thread %d error.", sock, usIndex);
         Q_SYSLOG(LOGLV_ERROR, "add socket %d to thread %d error.", sock, usIndex);
@@ -171,7 +171,7 @@ void CServer::listenerAcceptCB(struct evconnlistener *pListener, Q_SOCK sock, st
 void CServer::exitMonitorCB(evutil_socket_t, short event, void *arg)
 {
     CServer *pServer = (CServer *)arg;
-    switch(pServer->getRunStatus())
+    switch(*(pServer->getRunStatus()))
     {
     case RunStatus_Stopping:
         {
@@ -276,7 +276,7 @@ int CServer::initWorkThread(std::vector<CEventInterface * > &vcInterface)
             return Q_ERROR_ALLOCMEMORY;
         }
     }
-    catch(CException &e)
+    catch(CQException &e)
     {
         Q_Printf("get an exception. code %d, message %s", e.getErrorCode(), e.getErrorMsg());
 
@@ -530,7 +530,7 @@ int CServer::Init(const unsigned short &usThreadNum, const unsigned int &uiTime,
             return Q_ERROR_ALLOCMEMORY;
         }
     }
-    catch(CException &e)
+    catch(CQException &e)
     {
         setRunStatus(RunStatus_Error);
         Q_Printf("get an exception. code %d, message %s", e.getErrorCode(), e.getErrorMsg());

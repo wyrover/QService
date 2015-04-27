@@ -67,7 +67,7 @@ void CCond::Destroy(void)
     return;
 }
 
-void CCond::Wait(CMutex *pMutex)
+void CCond::Wait(CQMutex *pMutex)
 {
     if (NULL == pMutex)
     {
@@ -94,7 +94,7 @@ void CCond::Wait(CMutex *pMutex)
     }  
 }
 
-void CCond::Wait(CMutex *pMutex, const unsigned int uimSec)
+void CCond::Wait(CQMutex *pMutex, const unsigned int uimSec)
 {
     if (NULL == pMutex)
     {

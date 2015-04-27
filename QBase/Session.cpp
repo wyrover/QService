@@ -27,8 +27,8 @@
 
 #include "Session.h"
 
-CSession::CSession(void) : m_cSessionType(STYPE_TCP),
-    m_iSessionID(Q_INVALID_ID), m_iStatus(SessionStatus_Closed), 
+CSession::CSession(void) : m_emSessionType(STYPE_TCP),
+    m_emStatus(SessionStatus_Closed), m_iSessionID(Q_INVALID_ID),
     m_uiPing(Q_INIT_NUMBER)
 {
     (void)m_objBuffer.setBuffer(NULL);
@@ -41,12 +41,12 @@ CSession::~CSession(void)
 
 void CSession::setType(const SessionType emType)
 {
-    m_cSessionType = (char)emType;
+    m_emSessionType = emType;
 }
 
 int CSession::getType(void)
 {
-    return (int)m_cSessionType;
+    return m_emSessionType;
 }
 
 void CSession::setSessionID(const int &uiID)
@@ -96,6 +96,7 @@ unsigned int CSession::getPing(void)
 void CSession::setAccount(const char *pszAccount)
 {
     assert(NULL != pszAccount);
+
     m_strAccount = pszAccount;
 }
 
@@ -106,12 +107,12 @@ const char *CSession::getAccount(void)
 
 void CSession::setStatus(const int iStatus)
 {
-    m_iStatus = iStatus;
+    m_emStatus = (SessionStatus)iStatus;
 }
 
 int CSession::getStatus(void)
 {
-    return m_iStatus;
+    return m_emStatus;
 }
 
 CEventBuffer *CSession::getBuffer(void)
@@ -121,9 +122,9 @@ CEventBuffer *CSession::getBuffer(void)
 
 void CSession::Clear(void)
 {
-    m_cSessionType = STYPE_TCP;
+    m_emSessionType = STYPE_TCP;
     m_iSessionID = Q_INVALID_ID;
-    m_iStatus = SessionStatus_Closed;
+    m_emStatus = SessionStatus_Closed;
     m_uiPing = Q_INIT_NUMBER;
     m_strID.clear();
     m_strCheckID.clear();

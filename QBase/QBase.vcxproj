@@ -13,6 +13,7 @@
   <ItemGroup>
     <ClInclude Include="AES.h" />
     <ClInclude Include="Base64.h" />
+    <ClInclude Include="Binary.h" />
     <ClInclude Include="BufferMgr.h" />
     <ClInclude Include="Charset.h" />
     <ClInclude Include="Cond.h" />
@@ -28,7 +29,6 @@
     <ClInclude Include="EventInterface.h" />
     <ClInclude Include="Exception.h" />
     <ClInclude Include="File.h" />
-    <ClInclude Include="Filter.h" />
     <ClInclude Include="HttpClient.h" />
     <ClInclude Include="HttpParser.h" />
     <ClInclude Include="Include.h" />
@@ -128,6 +128,7 @@
     <ClInclude Include="pugixml\pugiconfig.hpp" />
     <ClInclude Include="pugixml\pugixml.hpp" />
     <ClInclude Include="QBase.h" />
+    <ClInclude Include="QFilter.h" />
     <ClInclude Include="QMySQL.h" />
     <ClInclude Include="QRSA.h" />
     <ClInclude Include="QString.h" />
@@ -193,6 +194,7 @@
   <ItemGroup>
     <ClCompile Include="AES.cpp" />
     <ClCompile Include="Base64.cpp" />
+    <ClCompile Include="Binary.cpp" />
     <ClCompile Include="BufferMgr.cpp" />
     <ClCompile Include="Charset.cpp" />
     <ClCompile Include="Cond.cpp" />
@@ -203,7 +205,6 @@
     <ClCompile Include="EventBuffer.cpp" />
     <ClCompile Include="Exception.cpp" />
     <ClCompile Include="File.cpp" />
-    <ClCompile Include="Filter.cpp" />
     <ClCompile Include="HttpClient.cpp" />
     <ClCompile Include="HttpParser.cpp" />
     <ClCompile Include="Ini.cpp" />
@@ -291,6 +292,7 @@
     <ClCompile Include="pbc\wmessage.cpp" />
     <ClCompile Include="pugixml\pugixml.cpp" />
     <ClCompile Include="QBase.cpp" />
+    <ClCompile Include="QFilter.cpp" />
     <ClCompile Include="QMySQL.cpp" />
     <ClCompile Include="QRSA.cpp" />
     <ClCompile Include="QString.cpp" />

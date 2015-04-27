@@ -263,3 +263,35 @@ int Q_ExecCmd(const char *pszCmd, const unsigned int uimSec,
     return ExecCmdLinux(pszCmd, lstRst);
 #endif
 }
+
+static union  
+{
+    char a[4];
+    unsigned long ul;
+}endian = {{'L', '?', '?', 'B'}}; 
+#define ENDIAN ((char)endian.ul) 
+
+uint64_t ntohl64(uint64_t host)
+{
+    if ('L' == ENDIAN)
+    {
+        uint64_t uiRet = 0;
+        unsigned long ulHigh,ulLow;
+
+        ulLow = host & 0xFFFFFFFF;
+        ulHigh = (host >> 32) & 0xFFFFFFFF;
+
+        ulLow = ntohl(ulLow); 
+        ulHigh = ntohl(ulHigh);
+
+        uiRet = ulLow;
+        uiRet <<= 32;
+        uiRet |= ulHigh;
+
+        return uiRet;
+    }
+    else
+    {
+        return host;
+    }
+}

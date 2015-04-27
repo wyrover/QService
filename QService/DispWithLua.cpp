@@ -29,13 +29,12 @@
 
 #define LUA_EVENT_ONSTARTUP   "Lua_OnStartUp"
 #define LUA_EVENT_ONSHUTDOWN  "Lua_OnShutDown"
-#define LUA_EVENT_ONCONNECTED "Lua_OnConnected"
 #define LUA_EVENT_ONCLOSE     "Lua_OnClose"
 #define LUA_EVENT_ONTIMER     "Lua_OnTimer"
 #define LUA_EVENT_ONTCPREAD   "Lua_OnTcpRead"
 #define LUA_EVENT_ONWEBSOCKREAD "Lua_OnWebSockRead"
 #define LUA_EVENT_ONHTTPREAD  "Lua_OnHttpRead"
-#define LUA_EVENT_ONSVLINKED  "Lua_OnLinkedServer"
+#define LUA_EVENT_ONLINKEDOTHER  "Lua_OnLinkedOther"
 
 CDisposeEvent::CDisposeEvent(const char *pszLuaFile) : m_pLua(NULL)
 {
@@ -62,7 +61,7 @@ CDisposeEvent::CDisposeEvent(const char *pszLuaFile) : m_pLua(NULL)
 		}
 
 		Q_EXCEPTION(Q_RTN_FAILE, strLuaError.c_str());      
-	}
+	}    
 }
 
 CDisposeEvent::~CDisposeEvent(void)
@@ -79,7 +78,8 @@ bool CDisposeEvent::onSerciveStartUp(void)
     try
     {
         getSessionManager()->setLua(m_pLua);
-        luabridge::getGlobal(m_pLua, LUA_EVENT_ONSTARTUP)(getSessionManager());
+        luabridge::getGlobal(m_pLua, LUA_EVENT_ONSTARTUP)(getSessionManager(), 
+            getSessionManager()->getBinary());
     }
     catch(luabridge::LuaException &e)
     {
@@ -88,7 +88,7 @@ bool CDisposeEvent::onSerciveStartUp(void)
 
         return false;
     }
-    catch(CException &e)
+    catch(CQException &e)
     {
         Q_Printf("exception. code %d, message %s", 
             e.getErrorCode(), e.getErrorMsg());
@@ -112,7 +112,7 @@ void CDisposeEvent::onSerciveShutDown(void)
         Q_Printf("%s", e.what());
         Q_SYSLOG(LOGLV_ERROR, "%s", e.what());
     }
-    catch(CException &e)
+    catch(CQException &e)
     {
         Q_Printf("exception. code %d, message %s", 
             e.getErrorCode(), e.getErrorMsg());
@@ -132,7 +132,7 @@ void CDisposeEvent::onSocketClose(void)
         Q_Printf("%s", e.what());
         Q_SYSLOG(LOGLV_ERROR, "%s", e.what());
     }
-    catch(CException &e)
+    catch(CQException &e)
     {
         Q_Printf("exception. code %d, message %s", 
             e.getErrorCode(), e.getErrorMsg());
@@ -152,7 +152,7 @@ void CDisposeEvent::onTimerEvent(void)
         Q_Printf("%s", e.what());
         Q_SYSLOG(LOGLV_ERROR, "%s", e.what());
     }
-    catch(CException &e)
+    catch(CQException &e)
     {
         Q_Printf("exception. code %d, message %s", 
             e.getErrorCode(), e.getErrorMsg());
@@ -165,17 +165,15 @@ void CDisposeEvent::onTcpRead(const char *pszMsg, const size_t &iLens)
 {
     try
     {
-        m_stBinaryStr.pBuf = (char*)(pszMsg);
-        m_stBinaryStr.iLens = iLens;
-
-        luabridge::getGlobal(m_pLua, LUA_EVENT_ONTCPREAD)(m_stBinaryStr, iLens);
+        getSessionManager()->getBinary()->setBuffer(pszMsg, iLens);
+        luabridge::getGlobal(m_pLua, LUA_EVENT_ONTCPREAD)();
     }
     catch(luabridge::LuaException &e)
     {
         Q_Printf("%s", e.what());
         Q_SYSLOG(LOGLV_ERROR, "%s", e.what());
     }
-    catch(CException &e)
+    catch(CQException &e)
     {
         Q_Printf("exception. code %d, message %s", 
             e.getErrorCode(), e.getErrorMsg());
@@ -188,17 +186,15 @@ void CDisposeEvent::onWebSockRead(const char *pszMsg, const size_t &iLens)
 {
     try
     {
-        m_stBinaryStr.pBuf = (char*)(pszMsg);
-        m_stBinaryStr.iLens = iLens;
-
-        luabridge::getGlobal(m_pLua, LUA_EVENT_ONWEBSOCKREAD)(m_stBinaryStr, iLens);
+        getSessionManager()->getBinary()->setBuffer(pszMsg, iLens);
+        luabridge::getGlobal(m_pLua, LUA_EVENT_ONWEBSOCKREAD)();
     }
     catch(luabridge::LuaException &e)
     {
         Q_Printf("%s", e.what());
         Q_SYSLOG(LOGLV_ERROR, "%s", e.what());
     }
-    catch(CException &e)
+    catch(CQException &e)
     {
         Q_Printf("exception. code %d, message %s", 
             e.getErrorCode(), e.getErrorMsg());
@@ -218,7 +214,7 @@ void CDisposeEvent::onHttpRead(class CHttpParser *pBuffer)
         Q_Printf("%s", e.what());
         Q_SYSLOG(LOGLV_ERROR, "%s", e.what());
     }
-    catch(CException &e)
+    catch(CQException &e)
     {
         Q_Printf("exception. code %d, message %s", 
             e.getErrorCode(), e.getErrorMsg());
@@ -227,18 +223,18 @@ void CDisposeEvent::onHttpRead(class CHttpParser *pBuffer)
     }
 }
 
-void CDisposeEvent::onLinkedServer(class CSession *pSession)
+void CDisposeEvent::onLinkedOther(class CSession *pSession)
 {
     try
     {
-        luabridge::getGlobal(m_pLua, LUA_EVENT_ONSVLINKED)(pSession);
+        luabridge::getGlobal(m_pLua, LUA_EVENT_ONLINKEDOTHER)(pSession);
     }
     catch(luabridge::LuaException &e)
     {
         Q_Printf("%s", e.what());
         Q_SYSLOG(LOGLV_ERROR, "%s", e.what());
     }
-    catch(CException &e)
+    catch(CQException &e)
     {
         Q_Printf("exception. code %d, message %s", 
             e.getErrorCode(), e.getErrorMsg());

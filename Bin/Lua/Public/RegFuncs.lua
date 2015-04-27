@@ -35,20 +35,15 @@ end
 --]]
 function onDelayEvent()   
     local iNow = os.time()
-    local tDel = {}
     
     for key, val in pairs(RegFuncs.DelayEvent) do
-        if math.abs(iNow - val.RegTime) >= val.Time then
-            table.insert(tDel, key)
-            
+        if math.abs(iNow - val.RegTime) >= val.Time then            
             if val.Func then
                 callFunc(val.Func, table.unpack(val.Param))
             end
+            
+            table.remove(RegFuncs.DelayEvent, key)
         end
-    end
-    
-    for _, val in pairs(tDel) do
-        RegFuncs.DelayEvent[val] = nil
     end
 end
 
@@ -73,7 +68,7 @@ function regDelayEvent(iTime, Func, ...)
     tInfo.Func = Func
     tInfo.Param = {...}
     
-    RegFuncs.DelayEvent[getID()] = tInfo
+    table.insert(RegFuncs.DelayEvent, tInfo)
 end
 
 --[[

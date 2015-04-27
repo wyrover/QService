@@ -57,7 +57,7 @@ private:
 
 private:
     struct event *m_pTimeEvent;
-    CMutex m_objMutex;
+    CQMutex m_objMutex;
     std::list<LogerInfo *> m_lstLoger;
     CTcpParser m_objTcpParser;
 };

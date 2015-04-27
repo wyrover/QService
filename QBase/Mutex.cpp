@@ -28,7 +28,7 @@
 #include "Mutex.h"
 #include "Exception.h"
 
-CMutex::CMutex(void)
+CQMutex::CQMutex(void)
 {
     int iRtn = Init();
     if (Q_RTN_OK != iRtn)
@@ -37,12 +37,12 @@ CMutex::CMutex(void)
     }
 }
 
-CMutex::~CMutex(void)
+CQMutex::~CQMutex(void)
 {
     Destroy();
 }
 
-int CMutex::Init(void)
+int CQMutex::Init(void)
 {
 #ifdef Q_OS_WIN32
     m_Mutex = CreateMutex(NULL, FALSE, NULL);
@@ -52,7 +52,7 @@ int CMutex::Init(void)
 #endif
 }
 
-void CMutex::Destroy(void)
+void CQMutex::Destroy(void)
 {
 #ifdef Q_OS_WIN32
     if (NULL != m_Mutex)
@@ -67,7 +67,7 @@ void CMutex::Destroy(void)
     return;
 }
 
-void CMutex::Lock(void)
+void CQMutex::Lock(void)
 {
     int iRtn = Q_RTN_OK;
 
@@ -84,7 +84,7 @@ void CMutex::Lock(void)
     }
 }
 
-void CMutex::unLock(void)
+void CQMutex::unLock(void)
 {
     int iRtn = Q_RTN_OK;
 
@@ -103,7 +103,7 @@ void CMutex::unLock(void)
     }
 }
 
-Q_Mutex_t *CMutex::getMutex(void)
+Q_Mutex_t *CQMutex::getMutex(void)
 {
     return &m_Mutex;
 }

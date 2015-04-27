@@ -43,7 +43,7 @@ public:
 
     void setMachineID(const int iMachineID);
     int64_t Generate(void);
-    std::string getSnowflakeID(void);
+    const char *getSnowflakeID(void);
 
 private:
     uint64_t getTime(void);
@@ -51,6 +51,8 @@ private:
 private:
     int m_iMachineID;
     int m_iIndex;
+    std::string m_strVali64;
+    std::stringstream m_objStream;
 };
 
 #endif//Q_SNOWFLAKEID_H_

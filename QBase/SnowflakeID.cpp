@@ -56,9 +56,17 @@ void CSnowflakeID::setMachineID(const int iMachineID)
     m_iMachineID = iMachineID;
 }
 
-std::string CSnowflakeID::getSnowflakeID(void)
+const char *CSnowflakeID::getSnowflakeID(void)
 {
-    return Q_ToString(Generate());
+    m_strVali64.clear();
+    m_objStream.clear();
+    m_objStream.str("");
+
+    m_objStream << Generate();
+
+    m_objStream >> m_strVali64;
+
+    return m_strVali64.c_str();
 }
 
 int64_t CSnowflakeID::Generate(void)

@@ -3,10 +3,11 @@
 --]]
 
 --路径添加
-local luaDir = Q_GetModulPath() .. "Lua" .. Q_GetPathSeparator()
-package.path = package.path .. ";" .. luaDir .. "?.lua"
+local luaDir = string.format("%s%s%s", 
+    Q_GetModulPath(), "Lua", Q_GetPathSeparator())
+package.path = string.format("%s;%s?.lua", 
+    package.path, luaDir)
 
-cjson = require("cjson")
 require("Game/InitModule")
 
 local tNowDay = os.date("*t", time)
@@ -15,15 +16,17 @@ local tNowDay = os.date("*t", time)
 if not g_objSessionMgr then
     g_objSessionMgr = nil
 end
-
---非服务器连接，根据状态过滤操作码的函数
-if not g_ProtocolFilterFun then
-    g_ProtocolFilterFun = nil
+--二进制解析
+if not g_objBinary then
+    g_objBinary = nil
 end
-
+--非服务器连接，根据状态过滤操作码的函数
+if not g_ProFilterFun then
+    g_ProFilterFun = nil
+end
 --标记是否启动完成
-if not g_StartCompleted then
-    g_StartCompleted = false
+if not g_Started then
+    g_Started = false
 end
 
 --[[
@@ -31,8 +34,9 @@ end
 参数：
 返回值： 无
 --]]
-function Lua_OnStartUp(objSessionMgr)
+function Lua_OnStartUp(objSessionMgr, objBinary)
     g_objSessionMgr = objSessionMgr
+    g_objBinary = objBinary
     math.randomseed(tonumber(tostring(os.time()):reverse():sub(1,6)))
     
     onGameEvent(GameEvent.Start)--这里一般读取配置文件
@@ -46,6 +50,7 @@ end
 --]]
 function Lua_OnShutDown()
     onGameEvent(GameEvent.ShutDown)
+    
     --确认退出，，，没这个不会退出
     g_objSessionMgr:confirmStop()
 end
@@ -55,23 +60,21 @@ end
 参数：
 返回值：无
 --]]
-function Lua_OnTcpRead(strMsg, iLens)
-    Debug("Lua_OnTcpRead:" .. strMsg)
-    local strMsg = "this is tcp server"
-    g_objSessionMgr:sendToCur(strMsg, string.len(strMsg))
+function Lua_OnTcpRead()
+    EchoSV()
     --[[
     local tbMessage = {}
     if 0 ~= iLens then
-        if CarrierType.Json == MsgCarrier then
+        --if CarrierType.Json == MsgCarrier then
             tbMessage = cjson.decode(strMsg)
-        elseif CarrierType.Protobuf == MsgCarrier then
+        --elseif CarrierType.Protobuf == MsgCarrier then
             local strProro = getProtoStr(iProtocol)
             tbMessage = protobuf.decode(strProro, strMsg, iLens)
             assert(tbMessage, protobuf.lasterror()) 
-        else
+        --else
             Debug("unknown message carrier.")
             return
-        end
+        --end
     end
     
     local objCurSession = g_objSessionMgr:getCurSession()
@@ -82,14 +85,14 @@ function Lua_OnTcpRead(strMsg, iLens)
     
     --检查操作码与状态是否匹配       
     if SessionType.TcpClient ~= objCurSession:getType() then
-        if not g_StartCompleted then
+        if not g_Started then
             Debug("service not start completed.")
             return
         end
         
-        if g_ProtocolFilterFun then
+        if g_ProFilterFun then
             local iStatus = objCurSession:getStatus()
-            if not g_ProtocolFilterFun(iProtocol, iStatus) then
+            if not g_ProFilterFun(iProtocol, iStatus) then
                 Q_LOG(LOGLV_WARN, string.format("session status %d, protocol %d was ignored.", 
                     iStatus, iProtocol))
                 return
@@ -106,8 +109,8 @@ end
 参数：
 返回值：无
 --]]
-function Lua_OnWebSockRead(strMsg, iLens)
-    Debug("Lua_OnWebSockRead:" .. strMsg)
+function Lua_OnWebSockRead()
+    Debug(string.sub(g_objBinary:getString(), 1, g_objBinary:getLens()))
     local strMsg = "this is websock server"
     g_objSessionMgr:sendToCur(strMsg, string.len(strMsg))
 end
@@ -119,6 +122,24 @@ end
 --]]
 function Lua_OnHttpRead(objHttpBuffer)
     onGameEvent(GameEvent.HttpRead, objHttpBuffer)
+end
+
+--[[
+描述：连接断开时调用
+参数：
+返回值：无
+--]]
+function Lua_OnClose()
+    onGameEvent(GameEvent.Close)
+end
+
+--[[
+描述：服务器间连接成功时调用
+参数：
+返回值：无
+--]]
+function Lua_OnLinkedOther(objSession)
+    onGameEvent(GameEvent.LinkedOther, objSession)
 end
 
 --[[
@@ -163,6 +184,11 @@ function Lua_OnTimer()
         end
     end
     
+    --3秒
+    if 0 == (uiElapseTime % (uiOneSecond * 3)) then
+        onGameEvent(GameEvent.ThreeSecond)
+    end
+    
     --5秒
     if 0 == (uiElapseTime % (uiOneSecond * 5)) then
         onGameEvent(GameEvent.FiveSecond)
@@ -176,12 +202,21 @@ function Lua_OnTimer()
     --1分钟
     if 0 == (uiElapseTime % (uiOneSecond * 60)) then
         onGameEvent(GameEvent.OneMinute)
+        local iTotalMem = collectgarbage("count")
+        local strMemUsage = string.format("lua memory usage:%d,session size:%d", 
+            iTotalMem, g_objSessionMgr:getSessionSize())
+        Debug(strMemUsage)
+        Q_LOG(LOGLV_INFO, strMemUsage)
+    end
+    
+    --3分钟
+    if 0 == (uiElapseTime % (uiOneSecond * 60 * 3)) then
+        onGameEvent(GameEvent.ThreeMinute)
     end
     
     --5分钟
     if 0 == (uiElapseTime % (uiOneSecond * 60 * 5)) then
         onGameEvent(GameEvent.FiveMinute)
-        collectgarbage("collect")
     end
     
     --10分钟
@@ -193,22 +228,4 @@ function Lua_OnTimer()
     if 0 == (uiElapseTime % (uiOneSecond * 60 * 60)) then
         onGameEvent(GameEvent.OneHour)
     end
-end
-
---[[
-描述：连接断开时调用
-参数：
-返回值：无
---]]
-function Lua_OnClose()
-    onGameEvent(GameEvent.Close)
-end
-
---[[
-描述：服务器间连接成功时调用
-参数：
-返回值：无
---]]
-function Lua_OnLinkedServer(objSession)
-    --requireRegSV(objSession)
 end

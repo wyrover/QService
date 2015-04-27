@@ -46,13 +46,13 @@ CSysLoger::CSysLoger(void) : m_pFile(NULL), m_pMutex(NULL)
 
     try
     {
-        m_pMutex = new(std::nothrow) CMutex();
+        m_pMutex = new(std::nothrow) CQMutex();
         if (NULL == m_pMutex)
         {
             Q_Printf("%s", Q_EXCEPTION_ALLOCMEMORY);
         }
     }
-    catch (CException &e)
+    catch (CQException &e)
     {
         Q_Printf("get an exception. code %d, message %s", e.getErrorCode(), e.getErrorMsg());
 

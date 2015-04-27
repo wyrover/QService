@@ -457,7 +457,7 @@ struct Stack <std::string const&>
 {
   static inline void push (lua_State* L, std::string const& str)
   {
-    lua_pushstring (L, str.c_str());
+    lua_pushlstring (L, str.c_str(), str.size());
   }
 
   static inline std::string get (lua_State* L, int index)
@@ -466,34 +466,4 @@ struct Stack <std::string const&>
     const char *str = luaL_checklstring(L, index, &len);
     return std::string (str, len);
   }
-};
-
-//------------------------------------------------------------------------------
-/**
-    为了方便向lua传二进制字符串。。。不通过std::string的方式
-*/
-struct BinaryStr
-{
-    char *pBuf;
-    size_t iLens;
-};
-
-template <>
-struct Stack <BinaryStr>
-{
-    static inline void push (lua_State* L, BinaryStr& stBinary)
-    {
-        lua_pushlstring (L, stBinary.pBuf, stBinary.iLens);
-    }
-
-    /*static inline BinaryStr get (lua_State* L, int index)
-    {
-        BinaryStr stBinary;
-        size_t len;
-        const char *str = luaL_checklstring(L, index, &len);
-        stBinary.iLens = len;
-        stBinary.pBuf = (char*)str;
-
-        return stBinary;
-    }*/
 };

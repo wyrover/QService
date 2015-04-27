@@ -28,7 +28,7 @@
 #include "Exception.h"
 #include "QString.h"
 
-CException::CException(const int iErroCode, const char *pszFile, 
+CQException::CQException(const int iErroCode, const char *pszFile, 
     const char *pszFunc, const int iLine, const char *pcFormat, ...)
 {
     std::string strFunc;
@@ -63,17 +63,17 @@ CException::CException(const int iErroCode, const char *pszFile,
     return;
 }
 
-CException:: ~CException(void)
+CQException:: ~CQException(void)
 {
     return;
 }
 
-const char* CException::getErrorMsg(void)
+const char* CQException::getErrorMsg(void)
 {
     return m_strMsg.c_str();
 }
 
-int CException::getErrorCode(void)
+int CQException::getErrorCode(void)
 {
     return m_iErroCode;
 }

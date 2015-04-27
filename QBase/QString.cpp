@@ -259,19 +259,6 @@ std::string &Q_MoveN2Before(std::string &strWord, const size_t n)
     return strWord;
 }
 
-size_t Q_StrHash(const char *pszValues)
-{
-    register size_t uiHash = Q_INIT_NUMBER;
-    register size_t uiTmp = Q_INIT_NUMBER;
-
-    while ((uiTmp = (size_t)(*pszValues++)))
-    {
-        uiHash = uiHash * 131 + uiTmp;
-    }
-
-    return uiHash;
-}
-
 /*************************************************
 * Function name:Q_WideCharToMultiByte
 * Description  :wchar_t ת char
@@ -522,23 +509,21 @@ std::string &Q_Trim(std::string &strSource)
 * Modification 
 * ......record :fist program
 **************************************************/
-void Q_Split(const std::string &strSource, const std::string &strFlag,
+void Q_Split(const std::string &strSource, const char *pszFlag,
     std::list<std::string> &lstRst)
 {
     lstRst.clear();
 
-    if(strSource.empty())
+    if ((NULL == pszFlag)
+        || (0 == strlen(pszFlag))
+        || strSource.empty())
     {
         return;
     }
 
-    if(strFlag.empty())
-    {
-        return;
-    }
-
+    size_t iFlagLens = strlen(pszFlag);
     std::string::size_type loc;
-    loc = strSource.find(strFlag.c_str(), 0);
+    loc = strSource.find(pszFlag, 0);
     if(std::string::npos == loc)
     {
         lstRst.push_back(strSource);
@@ -556,9 +541,9 @@ void Q_Split(const std::string &strSource, const std::string &strFlag,
         strRst.clear();
         strRst = strTmp.substr(0, loc);
         lstRst.push_back(strRst);
-        strTmp = strTmp.substr(loc + strFlag.size());
+        strTmp = strTmp.substr(loc + iFlagLens);
 
-        loc = strTmp.find(strFlag.c_str(), 0);
+        loc = strTmp.find(pszFlag, 0);
         if(std::string::npos == loc)
         {
             strRst = strTmp;
@@ -606,15 +591,18 @@ std::string Q_GetLastOfFlag(const std::string &strSource, const char *pszFlag)
 * Modification 
 * ......record :fist program
 **************************************************/
-std::string &Q_Replace(std::string &strSource, const std::string &strFlag, 
-    const std::string &strReFlag)
+std::string &Q_Replace(std::string &strSource, const char *pszFlag, 
+    const char *pszReFlag)
 {
-    for(std::string::size_type pos = 0; std::string::npos != pos; pos += strReFlag.size())   
+    size_t iFlageLens = strlen(pszFlag);
+    size_t iReFlagLens = strlen(pszReFlag);
+
+    for(std::string::size_type pos = 0; std::string::npos != pos; pos += iReFlagLens)   
     {
-        pos = strSource.find(strFlag, pos);
+        pos = strSource.find(pszFlag, pos);
         if(std::string::npos != pos)
         {
-            strSource.replace(pos, strFlag.length(), strReFlag); 
+            strSource.replace(pos, iFlageLens, pszReFlag); 
         }
         else
         {
@@ -636,17 +624,18 @@ std::string &Q_Replace(std::string &strSource, const std::string &strFlag,
 * Modification 
 * ......record :fist program
 **************************************************/
-std::string &Q_Replace_Depth(std::string &strSource, const std::string &strFlag, 
-    const std::string &strReFlag)
+std::string &Q_Replace_Depth(std::string &strSource, const char *pszFlag, 
+    const char *pszReFlag)
 {
+    size_t iFlageLens = strlen(pszFlag);
     std::string::size_type pos = 0;
 
     while(true)
     {
-        pos = strSource.find(strFlag);
+        pos = strSource.find(pszFlag);
         if(std::string::npos != pos) 
         {
-            strSource.replace(pos, strFlag.size(), strReFlag);
+            strSource.replace(pos, iFlageLens, pszReFlag);
         }
         else
         {

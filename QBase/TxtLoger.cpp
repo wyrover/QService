@@ -129,9 +129,9 @@ void CTxtLoger::Write(const char *pszMsg, const size_t iLens)
             std::string strTmpPath;
 
             strTmpPath = Q_Now();
-            strTmpPath = Q_Replace(strTmpPath, std::string("-"), std::string(""));
-            strTmpPath = Q_Replace(strTmpPath, std::string(":"), std::string(""));
-            strTmpPath = Q_Replace(strTmpPath, std::string(" "), std::string(""));
+            strTmpPath = Q_Replace(strTmpPath, "-", "");
+            strTmpPath = Q_Replace(strTmpPath, ":", "");
+            strTmpPath = Q_Replace(strTmpPath, " ", "");
 
             strTmpPath = m_strFilePath + std::string(".") + strTmpPath;
 

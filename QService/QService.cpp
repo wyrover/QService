@@ -233,7 +233,7 @@ static int Main_ExecuteEntry(InitAppEntry *pEntries)
         {
             m_ServiceStatus.dwCheckPoint++;
             MAIN_SetStatusEX(&m_ServiceStatus);
-            if ((pEntries[iIndex])() != Q_RTN_OK)
+            if (Q_RTN_OK != (pEntries[iIndex])())
             {
                 return Q_RTN_FAILE;
             }
@@ -776,6 +776,8 @@ int main(int argc, char *argv[])
     signal(SIGKILL, SigHandEntry);//立即结束程序
     signal(SIGABRT, SigHandEntry);//中止一个程序
     signal(Q_SIGNAL_EXIT, SigHandEntry);
+
+    Q_Printf("exit service by command \"kill -%d + pid\".", Q_SIGNAL_EXIT);
 
     //可以生产dump文件
     struct rlimit stLimit;

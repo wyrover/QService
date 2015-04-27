@@ -13,6 +13,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestQBase", "TestQBase\Test
 		{3408BBED-EF62-488B-AC43-89C73C962E5A} = {3408BBED-EF62-488B-AC43-89C73C962E5A}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestTool", "TestTool\TestTool.vcxproj", "{A9D83A88-BFCA-410C-BFA9-0DEE56DF61E9}"
+	ProjectSection(ProjectDependencies) = postProject
+		{3408BBED-EF62-488B-AC43-89C73C962E5A} = {3408BBED-EF62-488B-AC43-89C73C962E5A}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -31,6 +36,10 @@ Global
 		{8EEC4BE9-854E-4ED1-8BC6-5AC1EC3CBE33}.Debug|Win32.Build.0 = Debug|Win32
 		{8EEC4BE9-854E-4ED1-8BC6-5AC1EC3CBE33}.Release|Win32.ActiveCfg = Release|Win32
 		{8EEC4BE9-854E-4ED1-8BC6-5AC1EC3CBE33}.Release|Win32.Build.0 = Release|Win32
+		{A9D83A88-BFCA-410C-BFA9-0DEE56DF61E9}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A9D83A88-BFCA-410C-BFA9-0DEE56DF61E9}.Debug|Win32.Build.0 = Debug|Win32
+		{A9D83A88-BFCA-410C-BFA9-0DEE56DF61E9}.Release|Win32.ActiveCfg = Release|Win32
+		{A9D83A88-BFCA-410C-BFA9-0DEE56DF61E9}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
