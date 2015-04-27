@@ -45,8 +45,8 @@ QBase/Debug
 QBase/Release
 QService/Debug
 QService/Release
-StreeTesting/Debug
-StreeTesting/Release
+TestTool/Debug
+TestTool/Release
 TestQBase/Debug
 TestQBase/Release
 *.exp
