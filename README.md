@@ -53,7 +53,9 @@ QService服务器支持http、 tcp 、websocket协议；数据库支持sqlite3�
 	getServerNam 获取配置表中的服务器名称    
 
 * 类 这里主要介绍session、session管理、CLuaBinary    
-	CLuaBinary 二进制操作类  在Lua中不允许实例化     
+
+	CLuaBinary 二进制操作类  在Lua中不允许实例化   
+	
 		getLens 获取要解析的数据总长度    
 		reSetWrite 重置写标记，需要写入新数据前先调用次    
 		skipRead 读 跳过多少字节（结构体内存对齐使用）    
@@ -100,6 +102,7 @@ QService服务器支持http、 tcp 、websocket协议；数据库支持sqlite3�
 		getBuffer 获取写入的数据    
 
 	CSession session类每个连接对应一session 在Lua中不允许实例化  
+	
 		getSessionID 获取session ID号  
         
 		setID  关联的外部ID 如玩家ID,主要通过该ID与玩家对应  
@@ -119,6 +122,7 @@ QService服务器支持http、 tcp 、websocket协议；数据库支持sqlite3�
 		getType 获取session类型 值为Macros.lua中的SessionType枚举    
 
 	CSessionManager session管理 在Lua中不允许实例化 对应于Main.lua中的g_objSessionManager变量  
+	
 		closeLinkByID 关闭连接根据session ID   
 		closeCurLink 关闭当前session连接   
         
@@ -140,6 +144,7 @@ QService服务器支持http、 tcp 、websocket协议；数据库支持sqlite3�
 		getLinkOtherID 根据名称获取链接到其他服务器的ID             
 		
 	CSessionManager session管理 在Lua中不允许实例化 对应于Main.lua中的g_objSessionManager变量  
+	
 		closeLinkByID 关闭连接根据session ID   
 		closeCurLink 关闭当前session连接   
 		getCurSession 获取当前session对象 CSession类型  在网络可读和断开的时候有值其他时候为nil  
