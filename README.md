@@ -44,7 +44,6 @@ QService服务器支持http、 tcp 、websocket协议；数据库支持sqlite3�
 ##五、Lua中使用的c++函数  
 向lua导出的函数参看Reg2Lua.cpp 中的void Register(void)函数   
 
-<<<<<<< HEAD
 * 函数    
 	Q_GetModulPath 获取QService执行文件所在路径  
 	Q_GetPathSeparator 获取路径分隔符("/"或"\")  
@@ -139,19 +138,16 @@ QService服务器支持http、 tcp 、websocket协议；数据库支持sqlite3�
 		getSessionSize 获取链接总数   
 		confirmStop 确认退出服务器   
 		getLinkOtherID 根据名称获取链接到其他服务器的ID             
-           
-##水平有限，如发现bug或有什么意见、建议请联系我，大家一起完善这个框架。email:200309129@163.com。
-=======
-    CSessionManager session管理 在Lua中不允许实例化 对应于Main.lua中的g_objSessionManager变量  
-        closeLinkByID 关闭连接根据session ID   
-        closeCurLink 关闭当前session连接   
-        getCurSession 获取当前session对象 CSession类型  在网络可读和断开的时候有值其他时候为nil  
-        getSessionByID 根据session ID获取session对象  
-        sendToCur 向当前session发送消息  
-        sendToByID 向指定ID的session发送消息   
-        checkPing ping检查，参数为超时时间   
-        getTimer 获取计时器触发时间间隔   
-        getCount 获取计时器触发的次数     
-        confirmStop 确认退出服务器   
-        getLinkOtherID 根据名称获取链接到其他服务器的ID    
->>>>>>> origin/master
+		
+	CSessionManager session管理 在Lua中不允许实例化 对应于Main.lua中的g_objSessionManager变量  
+		closeLinkByID 关闭连接根据session ID   
+		closeCurLink 关闭当前session连接   
+		getCurSession 获取当前session对象 CSession类型  在网络可读和断开的时候有值其他时候为nil  
+		getSessionByID 根据session ID获取session对象  
+		sendToCur 向当前session发送消息  
+		sendToByID 向指定ID的session发送消息   
+		checkPing ping检查，参数为超时时间   
+		getTimer 获取计时器触发时间间隔   
+		getCount 获取计时器触发的次数     
+		confirmStop 确认退出服务器   
+		getLinkOtherID 根据名称获取链接到其他服务器的ID    
