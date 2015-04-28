@@ -72,3 +72,4 @@ TestQBase/Release
 *.pch
 *.cache
 *.rc
+!TestTool.rc
