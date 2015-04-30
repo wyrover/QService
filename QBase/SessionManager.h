@@ -54,6 +54,8 @@ public:
     void checkPing(const unsigned int uiTime);
     /*确认停止服务*/
     void confirmStop(void);
+    /*增加连接到其他服务器的TCP连接*/
+    bool addLinkOther(const char *pszIp, const unsigned short usPort, const char *pszNam);
     /*根据名称获取链接*/
     int getLinkOtherID(const char *pszName);
     /*获取session数量*/

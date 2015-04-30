@@ -189,6 +189,11 @@ void CSessionManager::confirmStop(void)
     m_pWorkThread->setRunStatus(RunStatus_Stopped);
 }
 
+bool CSessionManager::addLinkOther(const char *pszIp, const unsigned short usPort, const char *pszNam)
+{
+    return m_objLinkOther.addHost(pszIp, usPort, pszNam);
+}
+
 int CSessionManager::getLinkOtherID(const char *pszName)
 {
     assert(NULL != pszName);

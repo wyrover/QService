@@ -32,6 +32,14 @@
 class CLinkOtherTask : public CTask
 {
 public:
+    CLinkOtherTask(void) : m_pLinker(NULL)
+    {
+
+    };
+    ~CLinkOtherTask(void)
+    {
+        m_pLinker = NULL;
+    };
     void setHandle(CLinkOther *pLinker)
     {
         m_pLinker = pLinker;
@@ -58,7 +66,8 @@ private:
     CLinkOther *m_pLinker;
 };
 
-CLinkOther::CLinkOther(void) : m_emStatus(RunStatus_Unknown), m_pThreadEvent(NULL)
+CLinkOther::CLinkOther(void) : m_emStatus(RunStatus_Unknown), m_pThreadEvent(NULL),
+    m_objMutex()
 {
 
 }
@@ -68,16 +77,20 @@ CLinkOther::~CLinkOther(void)
     try
     {
         Stop();
-        std::vector<LinkInfo>::iterator itInfo;
-        for (itInfo = m_vcLinkInfo.begin(); m_vcLinkInfo.end() != itInfo; itInfo++)
+        
+        if (!m_vcLinkInfo.empty())
         {
-            if (Q_INVALID_SOCK != itInfo->sock)
+            std::vector<LinkInfo>::iterator itInfo;
+            for (itInfo = m_vcLinkInfo.begin(); m_vcLinkInfo.end() != itInfo; itInfo++)
             {
-                evutil_closesocket(itInfo->sock);
-                itInfo->sock = Q_INVALID_SOCK;
-            }        
-        }
-        m_vcLinkInfo.clear();
+                if (Q_INVALID_SOCK != itInfo->sock)
+                {
+                    evutil_closesocket(itInfo->sock);
+                    itInfo->sock = Q_INVALID_SOCK;
+                }
+            }
+            m_vcLinkInfo.clear();
+        }        
     }
     catch(...)
     {
@@ -105,16 +118,33 @@ RunStatus CLinkOther::getStatus(void) const
     return m_emStatus;
 }
 
-bool CLinkOther::addHost(const char *pszIp, unsigned short usPort, const char *pszName)
+bool CLinkOther::checkHaveHost(const char *pszName)
 {
+    bool bHave = false;
+    std::string strHost = pszName;
     std::vector<LinkInfo>::iterator itInfo;
+
+    m_objMutex.Lock();
     for (itInfo = m_vcLinkInfo.begin(); m_vcLinkInfo.end() != itInfo; itInfo++)
     {
-        if (std::string(pszName) == itInfo->strName)
+        if (strHost == itInfo->strName)
         {
-            Q_Printf("link other name %s already exist.",  pszName);
-            return false;
+            bHave = true;
+            break;
         }
+    }
+    m_objMutex.unLock();
+
+    return bHave;
+}
+
+bool CLinkOther::addHost(const char *pszIp, unsigned short usPort, const char *pszName)
+{
+    if (checkHaveHost(pszName))
+    {
+        Q_Printf("link other name %s already exist.",  pszName);
+
+        return false;
     }
 
     LinkInfo stLinkInfo;
@@ -124,7 +154,9 @@ bool CLinkOther::addHost(const char *pszIp, unsigned short usPort, const char *p
     stLinkInfo.strName = pszName;
     stLinkInfo.usPort = usPort;
 
+    m_objMutex.Lock();
     m_vcLinkInfo.push_back(stLinkInfo);
+    m_objMutex.unLock();
 
     return true;
 }
@@ -196,36 +228,42 @@ void CLinkOther::Link(void)
     TriggerSock stTriggerSock;
     std::vector<LinkInfo>::iterator itInfo;
 
+    m_objMutex.Lock();
     for (itInfo = m_vcLinkInfo.begin(); m_vcLinkInfo.end() != itInfo; itInfo++)
     {
-        if (SessionStatus_Closed == itInfo->emStatus)
+        if (SessionStatus_Closed != itInfo->emStatus)
         {
-            Q_Printf("try link %s on port %d...", itInfo->strIp.c_str(), itInfo->usPort);
-            if (Q_INVALID_SOCK != itInfo->sock)
-            {
-                evutil_closesocket(itInfo->sock);
-                itInfo->sock = Q_INVALID_SOCK;
-            }
+            continue;
+        }
+        
+        Q_Printf("try link %s, ip %s, port %d...", 
+            itInfo->strName.c_str(), itInfo->strIp.c_str(), itInfo->usPort);
+        if (Q_INVALID_SOCK != itInfo->sock)
+        {
+            evutil_closesocket(itInfo->sock);
+            itInfo->sock = Q_INVALID_SOCK;
+        }
 
-            sok = initSock(itInfo->strIp.c_str(), itInfo->usPort);
-            if (Q_INVALID_SOCK == sok)
-            {
-                continue;
-            }
+        sok = initSock(itInfo->strIp.c_str(), itInfo->usPort);
+        if (Q_INVALID_SOCK == sok)
+        {
+            Q_Printf("%s", "link error...");
+            continue;
+        }
 
-            stTriggerSock.emType = STYPE_TCPCLIENT;
-            stTriggerSock.iSock = sok;
-            if (Q_RTN_OK != m_pThreadEvent->sendAssistMsg((const char *)&stTriggerSock, sizeof(stTriggerSock)))
-            {
-                evutil_closesocket(sok);
-            }
-            else
-            {
-                itInfo->emStatus = SessionStatus_Connect;
-                itInfo->sock = sok;
-            }
+        stTriggerSock.emType = STYPE_TCPCLIENT;
+        stTriggerSock.iSock = sok;
+        if (Q_RTN_OK != m_pThreadEvent->sendAssistMsg((const char *)&stTriggerSock, sizeof(stTriggerSock)))
+        {
+            evutil_closesocket(sok);
+        }
+        else
+        {
+            itInfo->emStatus = SessionStatus_Connect;
+            itInfo->sock = sok;
         }
     }
+    m_objMutex.unLock();
 }
 
 void CLinkOther::setSockStatus(Q_SOCK sock, SessionStatus emStatus)
@@ -236,6 +274,8 @@ void CLinkOther::setSockStatus(Q_SOCK sock, SessionStatus emStatus)
     }
 
     std::vector<LinkInfo>::iterator itInfo;
+
+    m_objMutex.Lock();
     for (itInfo = m_vcLinkInfo.begin(); m_vcLinkInfo.end() != itInfo; itInfo++)
     {
         if (itInfo->sock == sock)
@@ -244,6 +284,7 @@ void CLinkOther::setSockStatus(Q_SOCK sock, SessionStatus emStatus)
             break;
         }
     }
+    m_objMutex.unLock();
 }
 
 int CLinkOther::getSockByName(const char *pszName)
@@ -253,14 +294,19 @@ int CLinkOther::getSockByName(const char *pszName)
         return Q_INVALID_SOCK;
     }
 
+    int iSock = Q_INVALID_SOCK;
     std::vector<LinkInfo>::iterator itInfo;
+
+    m_objMutex.Lock();
     for (itInfo = m_vcLinkInfo.begin(); m_vcLinkInfo.end() != itInfo; itInfo++)
     {
         if (itInfo->strName == std::string(pszName))
         {
-            return itInfo->sock;
+            iSock = itInfo->sock;
+            break;
         }
     }
+    m_objMutex.unLock();
 
-    return Q_INVALID_SOCK;
+    return iSock;
 }

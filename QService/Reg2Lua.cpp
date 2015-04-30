@@ -224,6 +224,7 @@ void CReg2Lua::reg_SessionManager(void)
 
             .addFunction("confirmStop", &CSessionManager::confirmStop)
 
+            .addFunction("addLinkOther", &CSessionManager::addLinkOther)
             .addFunction("getLinkOtherID", &CSessionManager::getLinkOtherID)
         .endClass();
 }

@@ -31,11 +31,11 @@
     </ServerInfo>
     
     <!--连接到其他服务器-->
-    <!--<LinkOther>
+    <LinkOther>
         <Name>accounsv</Name>
         <IP>127.0.0.1</IP>
         <Port>15001</Port>
-    </LinkOther> --> 
+    </LinkOther> 
 
     <!-- 文本日志参数配置 --> 
     <TxtLog>

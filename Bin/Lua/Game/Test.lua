@@ -87,10 +87,16 @@ local function onStart()
 end
 regGameEvent(GameEvent.Start, onStart)
 
+local function addLinker()
+    g_objSessionMgr:addLinkOther("127.0.0.1", 15000, "test1")
+    g_objSessionMgr:addLinkOther("127.0.0.1", 15000, "test2")
+end
+
 local function onStarted()
     g_Started = true
     --luaSqlWriteOK()
     Debug("onStarted")
+    addLinker()
 end
 regGameEvent(GameEvent.Started, onStarted)
 

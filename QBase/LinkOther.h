@@ -79,11 +79,13 @@ private:
 
 private:
     Q_SOCK initSock(const char *pszIp, const unsigned short &usPort) const;
+    bool checkHaveHost(const char *pszName);
 
 private:
     RunStatus m_emStatus;
     class CWorkThreadEvent *m_pThreadEvent;
     std::vector<LinkInfo> m_vcLinkInfo;
+    CQMutex m_objMutex;
 };
 
 #endif//Q_LINKOTHER_H_
