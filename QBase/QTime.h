@@ -35,7 +35,7 @@ std::string Q_Now(void);
 /*获取日期*/
 std::string Q_Date(void);
 /*获取tm结构体*/
-tm *Q_LocalTime(time_t *pTm);
+const tm *Q_LocalTime(const time_t *pTm);
 /*获取第几周*/
 int Q_CurWeek(void);
 /*获取星期几*/

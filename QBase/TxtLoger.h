@@ -47,7 +47,7 @@ public:
     void setLogMaxSize(const size_t iSize);
 
     void writeLog(const LOG_LEVEL emInLogLv,
-        const char *pFile, const char *pFunction, const int iLine, Q_SOCK &fd,
+        const char *pFile, const char *pFunction, const int iLine, const Q_SOCK &fd,
         const char *pFormat, ...);
 
     void Open(void);
@@ -56,7 +56,7 @@ public:
     void Write(const char *pszMsg, const size_t iLens);
 
 private:
-    std::string getLV(LOG_LEVEL emInLogLv);
+    std::string getLV(LOG_LEVEL emInLogLv) const;
 
 private:
     FILE *m_pFile;

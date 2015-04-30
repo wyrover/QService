@@ -40,9 +40,13 @@ class CLogSysTask : public CTask
 {
 public:
     CLogSysTask(void) : m_pLog(NULL)
-    {};
+    {
+
+    };
     ~CLogSysTask(void)
-    {};
+    {
+        m_pLog = NULL;
+    };
 
     void setLogSys(CLog *pLog)
     {
@@ -64,9 +68,13 @@ class CServerTask : public CTask
 {
 public:
     CServerTask(void) : m_pSV(NULL)
-    {};
+    {
+
+    };
     ~CServerTask(void)
-    {};
+    {
+        m_pSV = NULL;
+    };
 
     void setServerHandle(CServer *pSV)
     {
@@ -86,13 +94,20 @@ private:
 
 CServerInit::~CServerInit(void)
 {
-    std::vector<CEventInterface * >::iterator itInterface;
-    for (itInterface = m_vcInterface.begin(); m_vcInterface.end() != itInterface; itInterface++)
+    try
     {
-        Q_SafeDelete(*itInterface);
-    }
+        std::vector<CEventInterface * >::iterator itInterface;
+        for (itInterface = m_vcInterface.begin(); m_vcInterface.end() != itInterface; itInterface++)
+        {
+            Q_SafeDelete(*itInterface);
+        }
 
-    m_vcInterface.clear(); 
+        m_vcInterface.clear();
+    }
+    catch(...)
+    {
+
+    }     
 }
 
 int CServerInit::Start(void)
@@ -164,7 +179,7 @@ void CServerInit::Stop(void)
     m_objLog.Stop();
 }
 
-void CServerInit::readLinkOtherConfig(std::vector<LinkOther> &vcLinkOther)
+void CServerInit::readLinkOtherConfig(std::vector<LinkOther> &vcLinkOther) const
 {
     pugi::xpath_node_set objNodeSet;
     pugi::xpath_node_set::const_iterator itNode;
@@ -175,7 +190,7 @@ void CServerInit::readLinkOtherConfig(std::vector<LinkOther> &vcLinkOther)
         LinkOther stLinkOther;
         stLinkOther.strIp = itNode->node().child_value("IP");
         stLinkOther.strName = itNode->node().child_value("Name");
-        stLinkOther.usPort = atoi(itNode->node().child_value("Port"));
+        stLinkOther.usPort = (unsigned short)atoi(itNode->node().child_value("Port"));
 
         vcLinkOther.push_back(stLinkOther);
     }
@@ -202,10 +217,10 @@ bool CServerInit::readConfig(void)
     g_strServerName = itNode->node().child_value("Name");
     Q_Printf("service id %d, name %s.", g_iServerID, g_strServerName.c_str());
 
-    m_stServerConfig.usThreadNum = atoi(itNode->node().child_value("ThreadNum"));
+    m_stServerConfig.usThreadNum = (unsigned short)atoi(itNode->node().child_value("ThreadNum"));
     m_stServerConfig.strScript = std::string(g_acModulPath) + 
         std::string(itNode->node().child_value("Script"));
-    m_stServerConfig.uiTimer = atoi(itNode->node().child_value("Timer"));
+    m_stServerConfig.uiTimer = (unsigned int)atoi(itNode->node().child_value("Timer"));
 
     objNodeSet = m_objXmlDoc.select_nodes("//TCP");
     if (!objNodeSet.empty())
@@ -213,10 +228,10 @@ bool CServerInit::readConfig(void)
         for (itNode = objNodeSet.begin(); objNodeSet.end() != itNode; itNode++)
         {
             strIp = itNode->node().child_value("BindIP");
-            usPort = atoi(itNode->node().child_value("Port"));
+            usPort = (unsigned short)atoi(itNode->node().child_value("Port"));
         }
 
-        m_stServerConfig.mapTcp.insert(std::make_pair(usPort, strIp));
+        (void)m_stServerConfig.mapTcp.insert(std::make_pair(usPort, strIp));
     }
 
     objNodeSet = m_objXmlDoc.select_nodes("//WebSock");
@@ -225,10 +240,10 @@ bool CServerInit::readConfig(void)
         for (itNode = objNodeSet.begin(); objNodeSet.end() != itNode; itNode++)
         {
             strIp = itNode->node().child_value("BindIP");
-            usPort = atoi(itNode->node().child_value("Port"));
+            usPort = (unsigned short)atoi(itNode->node().child_value("Port"));
         }
 
-        m_stServerConfig.mapWebSock.insert(std::make_pair(usPort, strIp));
+        (void)m_stServerConfig.mapWebSock.insert(std::make_pair(usPort, strIp));
     }
 
     objNodeSet = m_objXmlDoc.select_nodes("//Http");
@@ -237,10 +252,10 @@ bool CServerInit::readConfig(void)
         for (itNode = objNodeSet.begin(); objNodeSet.end() != itNode; itNode++)
         {
             strIp = itNode->node().child_value("BindIP");
-            usPort = atoi(itNode->node().child_value("Port"));
+            usPort = (unsigned short)atoi(itNode->node().child_value("Port"));
         }
 
-        m_stServerConfig.mapHttp.insert(std::make_pair(usPort, strIp));
+        (void)m_stServerConfig.mapHttp.insert(std::make_pair(usPort, strIp));
     }
 
     return true;
@@ -401,7 +416,7 @@ bool CServerInit::initDBLog(void)
         strUser = m_objXmlNode.child_value("User");
         strPWD = m_objXmlNode.child_value("PWD");
         strDB = m_objXmlNode.child_value("DB");
-        usPort = atoi(m_objXmlNode.child_value("Port"));
+        usPort = (unsigned short)atoi(m_objXmlNode.child_value("Port"));
         Q_Printf("link to mysql.ip %s port %d user name %s password %s database %s...", 
             strIp.c_str(), usPort, strUser.c_str(), strPWD.c_str(), strDB.c_str());
         if (!g_pDBLoger->Init(strIp.c_str(), usPort, strUser.c_str(), strPWD.c_str(), strDB.c_str()))

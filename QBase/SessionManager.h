@@ -34,7 +34,6 @@
 #include "TcpParser.h"
 #include "LinkOther.h"
 #include "Binary.h"
-#include "LuaBridge/LuaBridge.h"
 
 /*session管理*/
 class CSessionManager
@@ -58,7 +57,7 @@ public:
     /*根据名称获取链接*/
     int getLinkOtherID(const char *pszName);
     /*获取session数量*/
-    size_t getSessionSize(void);
+    size_t getSessionSize(void) const;
 
     /*发送*/
     bool sendToCur(const char *pszData, const size_t uiLens);
@@ -79,11 +78,11 @@ public:
     void setInterface(class CEventInterface *pInterface);
     class CEventInterface *getInterface(void);
     /*定时器触发时间*/
-    void setTimer(unsigned int &uiMS);
-    unsigned int getTimer(void);
+    void setTimer(const unsigned int &uiMS);
+    unsigned int getTimer(void) const;
     /*定时器触发次数*/
     void addCount(void);
-    unsigned int getCount(void);
+    unsigned int getCount(void) const;
     /*设置lua虚拟机*/
     void setLua(struct lua_State *pLua);
     /*设置工作线程指针*/
@@ -113,11 +112,11 @@ private:
     class CWorkThreadEvent *m_pWorkThread;
     std::tr1::unordered_map<int, CSession *> m_umapSession;//所有Session
     std::queue<CSession *> m_quFreeSession;//空闲的session
+    std::tr1::unordered_map<std::string, int> m_umapLinkOther;
     CWebSockParser m_objWebSockParser;
     CTcpParser m_objTcpParser;
     CLinkOther m_objLinkOther;
-    CLuaBinary m_objBinary;
-    std::tr1::unordered_map<std::string, int> m_umapLinkOther;
+    CLuaBinary m_objBinary;    
 };
 
 #endif//Q_SESSION_MANAGER_H_

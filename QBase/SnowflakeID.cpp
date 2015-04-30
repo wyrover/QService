@@ -26,11 +26,11 @@
 *****************************************************************************/
 
 #include "SnowflakeID.h"
-#include "QString.h"
 
-CSnowflakeID::CSnowflakeID(void) : m_iMachineID(Q_INIT_NUMBER), m_iIndex(Q_INIT_NUMBER)
+CSnowflakeID::CSnowflakeID(void) : m_iMachineID(Q_INIT_NUMBER), m_iIndex(Q_INIT_NUMBER),
+    m_uTime64(Q_INIT_NUMBER), m_uID64(Q_INIT_NUMBER), m_objStream()
 {
-
+    evutil_timerclear(&m_stTimeVal);
 }
 
 CSnowflakeID::~CSnowflakeID(void)
@@ -40,15 +40,14 @@ CSnowflakeID::~CSnowflakeID(void)
 
 uint64_t CSnowflakeID::getTime(void)
 {
-    struct timeval stTV;
-    uint64_t uiTime = Q_INIT_NUMBER;
+    m_uTime64 = Q_INIT_NUMBER;
+    evutil_timerclear(&m_stTimeVal);
+    evutil_gettimeofday(&m_stTimeVal, NULL);
 
-    evutil_gettimeofday(&stTV, NULL);
+    m_uTime64 = static_cast<uint64_t>(m_stTimeVal.tv_usec) / 1000;//取毫秒
+    m_uTime64 += static_cast<uint64_t>(m_stTimeVal.tv_sec) * 1000;
 
-    uiTime = stTV.tv_usec / 1000;//取毫秒
-    uiTime += ((uint64_t)stTV.tv_sec * 1000);
-
-    return uiTime;
+    return m_uTime64;
 }
 
 void CSnowflakeID::setMachineID(const int iMachineID)
@@ -69,21 +68,20 @@ const char *CSnowflakeID::getSnowflakeID(void)
     return m_strVali64.c_str();
 }
 
-int64_t CSnowflakeID::Generate(void)
+uint64_t CSnowflakeID::Generate(void)
 {
-    int64_t iValue = Q_INIT_NUMBER;
-    uint64_t uiTime = getTime();
+    m_uID64 = Q_INIT_NUMBER;
 
     // 保留后41位时间
-    iValue = uiTime << 22;
+    m_uID64 = getTime() << 22;
     // 中间10位是机器ID
-    iValue |= (m_iMachineID & 0x3FF) << 12;
+    m_uID64 |= (m_iMachineID & 0x3FF) << 12;
     // 最后12位是m_iIndex
-    iValue |= m_iIndex++ & 0xFFF;
+    m_uID64 |= m_iIndex++ & 0xFFF;
     if (m_iIndex == 0x1000)
     {
         m_iIndex = Q_INIT_NUMBER;
     }
 
-    return iValue;
+    return m_uID64;
 }

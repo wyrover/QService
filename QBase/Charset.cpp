@@ -26,20 +26,11 @@
 *****************************************************************************/
 
 #include "Charset.h"
-#include "uchardet/uchardet.h"
+#include <uchardet/uchardet.h>
 
 CCharset::CCharset(void) : m_pCharset(NULL)
-{
-    try
-    {
-        m_pCharset = uchardet_new(); 
-    }
-    catch (std::bad_alloc &)
-    {
-        m_pCharset = NULL;
-
-        Q_Printf("%s", Q_EXCEPTION_ALLOCMEMORY);
-    }
+{    
+    m_pCharset = uchardet_new(); 
 }
 
 CCharset::~CCharset(void)

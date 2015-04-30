@@ -34,13 +34,20 @@ CLibrary::CLibrary(const char *pszLib) : m_pHandle(NULL)
 
 CLibrary::~CLibrary(void)
 {
-    Destroy();
+    try
+    {
+        Destroy();
+    }
+    catch(...)
+    {
+
+    }
 }
 
-const char *CLibrary::getError(void)
+const char *CLibrary::getError(void) const
 {
 #ifdef Q_OS_WIN32
-    return Q_Error2Str(Q_Error());
+    return Q_Error2Str((int)Q_Error());
 #else
     return dlerror();
 #endif

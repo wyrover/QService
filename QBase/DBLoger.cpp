@@ -31,23 +31,31 @@
 
 #define LOG_TABLE "log"
 
-CDBLoger::CDBLoger(void) : m_pStatement(NULL)
+CDBLoger::CDBLoger(void) : m_pStatement(NULL), 
+    m_objLinker(), m_objUrl(), m_objMutex(), m_objTcpParser()
 {
     m_strTable = getTableNam();
 }
 
 CDBLoger::~CDBLoger(void)
 {
-    if (NULL != m_pStatement)
+    try
     {
-        m_pStatement->finalize();
-        m_pStatement = NULL;
-    }
+        if (NULL != m_pStatement)
+        {
+            m_pStatement->finalize();
+            m_pStatement = NULL;
+        }
 
-    m_objLinker.close();
+        m_objLinker.close();
+    }
+    catch (...)
+    {
+    	
+    }    
 }
 
-std::string CDBLoger::getTableNam(void)
+std::string CDBLoger::getTableNam(void) const
 {
     time_t now = time(NULL);
     struct tm *pstTM =localtime(&now);
@@ -69,7 +77,7 @@ bool CDBLoger::Init(const char *pszIp, unsigned short &usPort,
     return false;
 }
 
-void CDBLoger::writeDBLog(Q_SOCK &fd, const char *pszPlayerID, const short sType, 
+void CDBLoger::writeDBLog(const Q_SOCK &fd, const char *pszPlayerID, const short sType, 
     const char *pszMsg, const size_t iLens)
 {
     if (Q_INVALID_SOCK == fd)
@@ -84,13 +92,13 @@ void CDBLoger::writeDBLog(Q_SOCK &fd, const char *pszPlayerID, const short sType
     const char *pszHead = m_objTcpParser.createHead(iBufferLens, iHeadLens);
 
     m_objMutex.Lock();
-    Q_SockWrite(fd, pszHead, iHeadLens);
-    Q_SockWrite(fd, (const char *)&iPlayerID, sizeof(iPlayerID));
-    Q_SockWrite(fd, (const char *)&sType, sizeof(sType));
+    (void)Q_SockWrite(fd, pszHead, iHeadLens);
+    (void)Q_SockWrite(fd, (const char *)&iPlayerID, sizeof(iPlayerID));
+    (void)Q_SockWrite(fd, (const char *)&sType, sizeof(sType));
     if (0 != iLens
         && NULL != pszMsg)
     {
-        Q_SockWrite(fd, pszMsg, iLens);
+        (void)Q_SockWrite(fd, pszMsg, iLens);
     }
     m_objMutex.unLock();
 }
@@ -116,7 +124,7 @@ bool CDBLoger::Check(void)
 {
     try
     {
-        m_objLinker.execDML(Q_FormatStr("select id from %s limit 1", LOG_TABLE).c_str());
+        (void)m_objLinker.execDML(Q_FormatStr("select id from %s limit 1", LOG_TABLE).c_str());
     }
     catch(CQException &)
     {
@@ -126,11 +134,11 @@ bool CDBLoger::Check(void)
     return true;
 }
 
-bool CDBLoger::createTable(std::string &strName)
+bool CDBLoger::createTable(const std::string &strName)
 {
     try
     {
-        m_objLinker.execDML(Q_FormatStr("CREATE TABLE IF NOT EXISTS %s like %s;", 
+        (void)m_objLinker.execDML(Q_FormatStr("CREATE TABLE IF NOT EXISTS %s like %s;", 
             strName.c_str(), LOG_TABLE).c_str());
     }
     catch(CQException &e)
@@ -150,7 +158,7 @@ void CDBLoger::Write(const char *pszMsg, const size_t iLens)
     int64_t iPlayerID = *((int64_t *)pszMsg);
     short sType = *((short *)(pszMsg + sizeof(iPlayerID)));
     const char *pszBuffer = pszMsg + sizeof(sType) + sizeof(iPlayerID);
-    size_t iBufLens = iLens - sizeof(sType) - sizeof(iPlayerID);
+    size_t iBufLens = iLens - (sizeof(sType) + sizeof(iPlayerID));
 
     //±íÃû¼ì²é
     std::string strNewTable = getTableNam();
@@ -182,7 +190,7 @@ void CDBLoger::Write(const char *pszMsg, const size_t iLens)
         m_pStatement->bindInt64(2, time(NULL));
         m_pStatement->bindBlob(3, (const unsigned char *)pszBuffer, iBufLens);
 
-        m_pStatement->execDML();
+        (void)m_pStatement->execDML();
     }
     catch(CQException &e)
     {
@@ -210,5 +218,5 @@ void CDBLoger::Write(const char *pszMsg, const size_t iLens)
     }
 
     m_objLinker.close();
-    Link();
+    (void)Link();
 }

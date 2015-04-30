@@ -29,6 +29,6 @@ void CTestArithmetic::Test_Filter(void)
 
     bOK = objFilter.checkHave(acWord, strlen(acWord));
     CPPUNIT_ASSERT_EQUAL(true , bOK);
-    objFilter.checkAndModify(acWord, strlen(acWord));
-    CPPUNIT_ASSERT_EQUAL(strTmp , std::string(acWord));
+    std::string strVal = objFilter.Filter(acWord, strlen(acWord));
+    CPPUNIT_ASSERT_EQUAL(strTmp , strVal);
 }

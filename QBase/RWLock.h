@@ -54,7 +54,7 @@ private:
     enum emReadLockCount
     {
         ReadLock_UnLock = 0,
-        ReadLock_Lock = 1,
+        ReadLock_Lock = 1
     };
 };
 

@@ -27,6 +27,19 @@
 
 #include "EventBuffer.h"
 
+CEventBuffer::CEventBuffer(void) : m_pBev(NULL), m_pReadBuffer(NULL),
+    m_pWriteBuffer(NULL), m_FD(Q_INVALID_SOCK)
+{
+
+}
+
+CEventBuffer::~CEventBuffer(void)
+{
+    m_pBev = NULL;
+    m_pReadBuffer = NULL;
+    m_pWriteBuffer = NULL;
+}
+
 /************************************************************************
 * Function name:setBuffer
 * Description  :根据传入的bufferevent获取读写buffer及socket句柄
@@ -109,7 +122,7 @@ struct bufferevent *CEventBuffer::getBuffer(void)
 * Modification 
 * ......record :first program
 ************************************************************************/
-Q_SOCK CEventBuffer::getFD(void)
+Q_SOCK CEventBuffer::getFD(void) const
 {
     return m_FD;
 }
@@ -125,7 +138,7 @@ Q_SOCK CEventBuffer::getFD(void)
 * Modification 
 * ......record :first program
 ************************************************************************/
-size_t CEventBuffer::getTotalLens(void)
+size_t CEventBuffer::getTotalLens(void) const
 {
     if (NULL == m_pReadBuffer)
     {
@@ -153,7 +166,7 @@ char *CEventBuffer::readBuffer(const size_t &iLens)
         return NULL;
     }
 
-    return (char*)evbuffer_pullup(m_pReadBuffer, iLens);
+    return (char*)evbuffer_pullup(m_pReadBuffer, (ev_ssize_t)iLens);
 }
 
 /************************************************************************

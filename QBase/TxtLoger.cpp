@@ -76,7 +76,7 @@ void CTxtLoger::Open(void)
     return;
 }
 
-std::string CTxtLoger::getLV(LOG_LEVEL emInLogLv)
+std::string CTxtLoger::getLV(LOG_LEVEL emInLogLv) const
 {
     std::string strRst;
 
@@ -157,7 +157,7 @@ void CTxtLoger::Write(const char *pszMsg, const size_t iLens)
 }
 
 void CTxtLoger::writeLog(const LOG_LEVEL emInLogLv,
-    const char *pFile, const char *pFunction, const int iLine, Q_SOCK &fd,
+    const char *pFile, const char *pFunction, const int iLine, const Q_SOCK &fd,
     const char *pFormat, ...)
 {
     if (emInLogLv > m_emPriorityLV)

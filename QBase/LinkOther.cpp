@@ -65,17 +65,24 @@ CLinkOther::CLinkOther(void) : m_emStatus(RunStatus_Unknown), m_pThreadEvent(NUL
 
 CLinkOther::~CLinkOther(void)
 {
-    Stop();
-    std::vector<LinkInfo>::iterator itInfo;
-    for (itInfo = m_vcLinkInfo.begin(); m_vcLinkInfo.end() != itInfo; itInfo++)
+    try
     {
-        if (Q_INVALID_SOCK != itInfo->sock)
+        Stop();
+        std::vector<LinkInfo>::iterator itInfo;
+        for (itInfo = m_vcLinkInfo.begin(); m_vcLinkInfo.end() != itInfo; itInfo++)
         {
-            evutil_closesocket(itInfo->sock);
-            itInfo->sock = Q_INVALID_SOCK;
-        }        
+            if (Q_INVALID_SOCK != itInfo->sock)
+            {
+                evutil_closesocket(itInfo->sock);
+                itInfo->sock = Q_INVALID_SOCK;
+            }        
+        }
+        m_vcLinkInfo.clear();
     }
-    m_vcLinkInfo.clear();
+    catch(...)
+    {
+
+    }
 }
 
 void CLinkOther::setThreadEvent(class CWorkThreadEvent *pThreadEvent)
@@ -93,7 +100,7 @@ void CLinkOther::setStatus(const RunStatus emStatus)
     m_emStatus = emStatus;
 }
 
-RunStatus CLinkOther::getStatus(void)
+RunStatus CLinkOther::getStatus(void) const
 {
     return m_emStatus;
 }
@@ -155,7 +162,7 @@ void CLinkOther::Stop(void)
     }   
 }
 
-Q_SOCK CLinkOther::initSock(const char *pszIp, unsigned short usPort)
+Q_SOCK CLinkOther::initSock(const char *pszIp, const unsigned short &usPort) const
 {
     CNETAddr objAddr;
     int iKeepAlive = 1;

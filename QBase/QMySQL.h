@@ -31,7 +31,7 @@
 #include "DataBase.h"
 
 #ifdef Q_WITHMYSQL
-#include "mysql/mysql.h"
+#include <mysql/mysql.h>
 
 struct BindInfo
 {

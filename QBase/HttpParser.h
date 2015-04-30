@@ -39,8 +39,8 @@ public:
     bool setHttpRequest(struct evhttp_request *req);
 
     /* 获取 */
-    const char *getQuery(void);
-    const char *getPostMsg(void);    
+    const char *getQuery(void) const;
+    const char *getPostMsg(void) const;
 
     /* 设置输出数据 */
     void setReplyContent(const char *pszMsg);

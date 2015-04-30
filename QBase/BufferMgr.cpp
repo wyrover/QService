@@ -43,15 +43,15 @@ CBuffer::CBuffer(const size_t iInitSize) : m_pBuffer(NULL),
 
 CBuffer::~CBuffer(void)
 {
-    Q_SafeDelete(m_pBuffer);
+    Q_SafeDelete_Array(m_pBuffer);
 }
 
-const char *CBuffer::getBuffer(void)
+const char *CBuffer::getBuffer(void) const
 {
     return m_pBuffer;
 }
 
-const size_t CBuffer::getLens(void)
+const size_t CBuffer::getLens(void) const
 {
     return m_iOffset;
 }
@@ -91,7 +91,7 @@ void CBuffer::pushBuff(const void *pBuff, const size_t &iLens)
             memcpy(pTmp, m_pBuffer, m_iOffset);
         }
 
-        Q_SafeDelete(m_pBuffer);
+        Q_SafeDelete_Array(m_pBuffer);
         m_iTotalSize = m_iOffset + iLens;
         m_pBuffer = pTmp;
     }

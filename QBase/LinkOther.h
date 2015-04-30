@@ -44,7 +44,7 @@ public:
 
     //服务运行状态
     void setStatus(const RunStatus emStatus);
-    RunStatus getStatus(void);
+    RunStatus getStatus(void) const;
 
     //增加要连接的主机信息
     bool addHost(const char *pszIp, unsigned short usPort, const char *pszName);
@@ -78,7 +78,7 @@ private:
     };
 
 private:
-    Q_SOCK initSock(const char *pszIp, unsigned short usPort);
+    Q_SOCK initSock(const char *pszIp, const unsigned short &usPort) const;
 
 private:
     RunStatus m_emStatus;

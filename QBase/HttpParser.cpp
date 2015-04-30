@@ -27,7 +27,7 @@
 
 #include "HttpParser.h"
 
-CHttpParser::CHttpParser(void) : m_pEventBuf(NULL)
+CHttpParser::CHttpParser(void) : m_pEventBuf(NULL), m_Req(NULL)
 {
     
 }
@@ -39,6 +39,8 @@ CHttpParser::~CHttpParser(void)
         evbuffer_free(m_pEventBuf);
         m_pEventBuf = NULL;
     }
+
+    m_Req = NULL;
 }
 
 bool CHttpParser::setHttpRequest(struct evhttp_request *req)
@@ -65,7 +67,7 @@ bool CHttpParser::setHttpRequest(struct evhttp_request *req)
     size_t iLens = evbuffer_get_length(pBuf);
     if (iLens > 0)
     {
-        m_strPostMsg.append((const char *)evbuffer_pullup(pBuf, iLens), iLens);
+        m_strPostMsg.append((const char *)evbuffer_pullup(pBuf, (ev_ssize_t)iLens), iLens);
         evbuffer_drain(pBuf, iLens);
     }
 
@@ -76,12 +78,12 @@ bool CHttpParser::setHttpRequest(struct evhttp_request *req)
     return true;
 }
 
-const char *CHttpParser::getQuery(void)
+const char *CHttpParser::getQuery(void) const
 {
     return m_strQuery.c_str();
 }
 
-const char *CHttpParser::getPostMsg(void)
+const char *CHttpParser::getPostMsg(void) const
 {
     return m_strPostMsg.c_str();
 }

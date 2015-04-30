@@ -47,9 +47,9 @@ public:
     void reSet(void);
 
     /*返回buffer*/
-    const char *getBuffer(void);
+    const char *getBuffer(void) const;
     /*获取buffer长度*/
-    const size_t getLens(void);
+    const size_t getLens(void) const;
 
 private:
     char *m_pBuffer;

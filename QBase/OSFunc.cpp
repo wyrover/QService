@@ -107,7 +107,7 @@ int ExecCmdLinux(const char *acCmd, std::list<std::string> *lstRst)
     }
 }
 #else
-int ExecCmdWindows(const char *acCmd, const int iTimeOut, 
+int ExecCmdWindows(const char *acCmd, const unsigned int &uiTimeOut, 
     std::list<std::string> *lstRst, unsigned long *ulRST)
 {
     int iRtn = Q_RTN_OK;
@@ -136,7 +136,7 @@ int ExecCmdWindows(const char *acCmd, const int iTimeOut,
 
     ZeroMemory(&processInfo,sizeof(processInfo));
     if(!CreateProcess(NULL,
-        TEXT((char*)acCmd),
+        TEXT(const_cast<char*>(acCmd)),
         NULL,
         NULL,
         TRUE,
@@ -153,7 +153,7 @@ int ExecCmdWindows(const char *acCmd, const int iTimeOut,
 
     CloseHandle(hWrite);   //¹Ø±Õ¹ÜµÀ¾ä±ú
 
-    if (WAIT_TIMEOUT == WaitForSingleObject(processInfo.hProcess, 1000 * iTimeOut))
+    if (WAIT_TIMEOUT == WaitForSingleObject(processInfo.hProcess, (DWORD)(1000 * uiTimeOut)))
     {
         BOOL bRNT;
         HANDLE handle;

@@ -46,17 +46,17 @@ public:
     /*停止事件循环*/
     void Stop(void);
     /*等待进入事件循环*/
-    bool waitForStarted(void);
+    bool waitForStarted(void) const;
     /*状态设置*/
     void setRunStatus(RunStatus emStatus);
-    RunStatus getRunStatus(void);
+    RunStatus getRunStatus(void) const;
     /*onStop是否执行*/
     void setRunOnStop(bool bRun);
-    bool getRunOnStop(void);
+    bool getRunOnStop(void) const;
 
     /*写入数据*/
-    int sendMainMsg(const char *pszBuff, const size_t &iSize);
-    int sendAssistMsg(const char *pszBuff, const size_t &iSize);
+    int sendMainMsg(const char *pszBuff, const size_t &iSize) const;
+    int sendAssistMsg(const char *pszBuff, const size_t &iSize) const;
     /*获取event_base*/
     struct event_base *getBase(void)
     {
@@ -83,18 +83,18 @@ public:
         return true;
     };
 public:
-    static void mainReadCB(struct bufferevent *bev, void *arg);
-    static void assistReadCB(struct bufferevent *bev, void *arg);
-    static void eventCB(struct bufferevent *bev, short event, void *arg);
-    static void exitMonitorCB(evutil_socket_t, short event, void *arg);
+    static void mainReadCB(struct bufferevent *, void *arg);
+    static void assistReadCB(struct bufferevent *, void *arg);
+    static void eventCB(struct bufferevent *, short event, void *arg);
+    static void exitMonitorCB(evutil_socket_t, short, void *arg);
 
 private:
     void freeAll(void);
     int initMainEvent(void);
     int initAssistEvent(void);
     int initExitMonitor(unsigned int uiMS);
-    bool getError(void);
-    bool getIsRun(void);
+    bool getError(void) const;
+    bool getIsRun(void) const;
 
 private:
     bool m_bRunOnStop;
@@ -133,7 +133,7 @@ T *Q_GetEventValue(CEventBuffer *pBuffer)
 
     char *pTmp = pBuffer->readBuffer(iSize);
     *pDate = *((T *)pTmp);
-    pBuffer->delBuffer(iSize);
+    (void)pBuffer->delBuffer(iSize);
 
     return pDate;
 }
@@ -152,7 +152,7 @@ bool Q_GetEventValue(CEventBuffer *pBuffer, T &Date)
 
     char *pTmp = pBuffer->readBuffer(iSize);
     Date = *((T*)pTmp);
-    pBuffer->delBuffer(iSize);
+    (void)pBuffer->delBuffer(iSize);
 
     return true;
 }

@@ -44,7 +44,7 @@ void CSession::setType(const SessionType emType)
     m_emSessionType = emType;
 }
 
-int CSession::getType(void)
+int CSession::getType(void) const
 {
     return m_emSessionType;
 }
@@ -54,7 +54,7 @@ void CSession::setSessionID(const int &uiID)
     m_iSessionID = uiID;
 }
 
-int CSession::getSessionID(void)
+int CSession::getSessionID(void) const
 {
     return m_iSessionID;
 }
@@ -66,7 +66,7 @@ void CSession::setID(const char *pszID)
     m_strID = pszID;
 }
 
-const char * CSession::getID(void)
+const char * CSession::getID(void) const
 {
     return m_strID.c_str();
 }
@@ -78,7 +78,7 @@ void CSession::setCheckID(const char *pszID)
     m_strCheckID = pszID;
 }
 
-const char * CSession::getCheckID(void)
+const char * CSession::getCheckID(void) const
 {
     return m_strCheckID.c_str();
 }
@@ -88,7 +88,7 @@ void CSession::setPing(const unsigned int uiPing)
     m_uiPing = uiPing;
 }
 
-unsigned int CSession::getPing(void)
+unsigned int CSession::getPing(void) const
 {
     return m_uiPing;
 }
@@ -100,7 +100,7 @@ void CSession::setAccount(const char *pszAccount)
     m_strAccount = pszAccount;
 }
 
-const char *CSession::getAccount(void)
+const char *CSession::getAccount(void) const
 {
     return m_strAccount.c_str();
 }
@@ -110,7 +110,7 @@ void CSession::setStatus(const int iStatus)
     m_emStatus = (SessionStatus)iStatus;
 }
 
-int CSession::getStatus(void)
+int CSession::getStatus(void) const
 {
     return m_emStatus;
 }

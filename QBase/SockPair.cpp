@@ -39,10 +39,17 @@ CSockPair::CSockPair(void) : m_ReadFD(Q_INVALID_SOCK), m_WriteFD(Q_INVALID_SOCK)
 
 CSockPair::~CSockPair(void)
 {
-    Destroy();
+    try
+    {
+        Destroy();
+    }
+    catch (...)
+    {
+    	
+    }    
 }
 
-int CSockPair::creatListener(Q_SOCK &Listener)
+int CSockPair::creatListener(Q_SOCK &Listener) const
 {
     CNETAddr objListen_addr;
     int iRtn = Q_RTN_OK;
@@ -64,7 +71,7 @@ int CSockPair::creatListener(Q_SOCK &Listener)
         return Q_RTN_FAILE;
     }
 
-    if (Q_RTN_FAILE == bind(Listener, objListen_addr.getAddr(), objListen_addr.getAddrSize()))
+    if (Q_RTN_FAILE == bind(Listener, objListen_addr.getAddr(), (int)objListen_addr.getAddrSize()))
     {
         iRtn = Q_SockError();
         Q_Printf("bind port error. error code %d, message %s ", iRtn, Q_SockError2Str(iRtn));
@@ -87,7 +94,7 @@ int CSockPair::creatListener(Q_SOCK &Listener)
     return Q_RTN_OK;
 }
 
-int CSockPair::creatSockPair(Q_SOCK aeSock[2])
+int CSockPair::creatSockPair(Q_SOCK aeSock[2]) const
 {
     Q_SOCK Listener = Q_INVALID_SOCK;
     Q_SOCK Connector = Q_INVALID_SOCK;
@@ -185,8 +192,8 @@ int CSockPair::creatSockPair(Q_SOCK aeSock[2])
         return Q_RTN_FAILE;
     }
 
-    (void)setsockopt(Connector, SOL_SOCKET, SO_KEEPALIVE, (char *)&iKeepAlive, sizeof(iKeepAlive));
-    (void)setsockopt(Acceptor, SOL_SOCKET, SO_KEEPALIVE, (char *)&iKeepAlive, sizeof(iKeepAlive));
+    (void)setsockopt(Connector, SOL_SOCKET, SO_KEEPALIVE, (char *)&iKeepAlive, (int)sizeof(iKeepAlive));
+    (void)setsockopt(Acceptor, SOL_SOCKET, SO_KEEPALIVE, (char *)&iKeepAlive, (int)sizeof(iKeepAlive));
     (void)evutil_make_socket_nonblocking(Acceptor);
     (void)evutil_make_socket_nonblocking(Connector);
 
@@ -198,7 +205,7 @@ int CSockPair::creatSockPair(Q_SOCK aeSock[2])
 
 int CSockPair::Init(void)
 {
-    Q_SOCK acSockPair[2] = {Q_INVALID_SOCK};
+    Q_SOCK acSockPair[2] = {Q_INVALID_SOCK, Q_INVALID_SOCK};
 
     if (Q_RTN_OK != creatSockPair(acSockPair))
     {
@@ -222,7 +229,7 @@ int CSockPair::Init(void)
 * Modification 
 * ......record :first program
 ************************************************************************/
-int CSockPair::Read(char *pBuf, const size_t &iLens)
+int CSockPair::Read(char *pBuf, const size_t &iLens) const
 {
     if (NULL == pBuf)
     {
@@ -243,7 +250,7 @@ int CSockPair::Read(char *pBuf, const size_t &iLens)
 * Modification 
 * ......record :first program
 ************************************************************************/
-int CSockPair::Write(const char *pBuf, const size_t &iLens)
+int CSockPair::Write(const char *pBuf, const size_t &iLens) const
 {
     if (NULL == pBuf)
     {

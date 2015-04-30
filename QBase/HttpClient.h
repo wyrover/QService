@@ -47,6 +47,9 @@ public:
 	void setDebug(bool bDebug);
 
 private:
+    void setDebug(CURL* pCurl);
+
+private:
 	bool m_bDebug;
     std::string m_strResponse;
 };

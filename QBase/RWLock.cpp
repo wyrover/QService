@@ -26,7 +26,6 @@
 *****************************************************************************/
 
 #include "RWLock.h"
-#include "Exception.h"
 
 #ifdef Q_OS_WIN32
 
@@ -87,6 +86,8 @@ void CRWLock::unLock(void)
 }
 
 #else
+
+#include "Exception.h"
 
 CRWLock::CRWLock(void)
 {

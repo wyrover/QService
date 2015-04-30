@@ -122,5 +122,10 @@
 #include "event2/http_struct.h"
 #include "event2/event.h"
 #include "Lua5.2/lua.hpp"
+#include "LuaBridge/LuaBridge.h"
+extern "C"
+{
+    #include "curl/curl.h"
+}
 
 #endif//Q_INCLUDE_H_

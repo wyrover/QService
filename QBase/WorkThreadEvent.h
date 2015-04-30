@@ -38,7 +38,7 @@ struct TriggerSock
 {
     SessionType emType;
     Q_SOCK iSock;
-    TriggerSock(void) : iSock(Q_INVALID_SOCK)
+    TriggerSock(void) : emType(STYPE_TCP), iSock(Q_INVALID_SOCK)
     {
 
     };
@@ -72,15 +72,15 @@ public:
 
 public:
     //接口实现
-    void onMainRead(CEventBuffer *pBuffer);
-    void onAssistRead(CEventBuffer *pBuffer);
+    void onMainRead(CEventBuffer *);
+    void onAssistRead(CEventBuffer *);
     void onStop(void);
     bool onStartUp(void);
 
 public:
     static void workThreadReadCB(struct bufferevent *bev, void *arg);
-    static void workThreadEventCB(struct bufferevent *bev, short event, void *arg);
-    static void workThreadTimerCB(evutil_socket_t, short event, void *arg);
+    static void workThreadEventCB(struct bufferevent *bev, short, void *arg);
+    static void workThreadTimerCB(evutil_socket_t, short, void *arg);
     static void workThreadHttpCB(struct evhttp_request *req, void *arg);
 
     //不同类型协议读取

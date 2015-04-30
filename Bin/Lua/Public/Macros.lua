@@ -13,6 +13,10 @@ SessionStatus = {
     "Linked",
     "Logining",  --登陆中
     "Logined",  --已经登陆
+    "Loading",
+    "Loaded",
+    "Creating",
+    "Created",
     "Playing",  --游戏中
     "GM",--GM登录
 }

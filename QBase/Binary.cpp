@@ -33,7 +33,8 @@
 #define STATTRTAB_MINLENS 2
 
 CLuaBinary::CLuaBinary(void) : m_pParseBuffer(NULL), m_pLua(NULL), 
-    m_iParseBufLens(Q_INIT_NUMBER), m_iCurParseLens(Q_INIT_NUMBER)
+    m_iParseBufLens(Q_INIT_NUMBER), m_iCurParseLens(Q_INIT_NUMBER),
+    m_objWritBuffer()
 {
     Q_Zero(acTmp, sizeof(acTmp));
     Q_Zero(acEmpty, sizeof(acEmpty));
@@ -41,7 +42,8 @@ CLuaBinary::CLuaBinary(void) : m_pParseBuffer(NULL), m_pLua(NULL),
 
 CLuaBinary::~CLuaBinary(void)
 {
-
+    m_pLua = NULL;
+    m_pParseBuffer = NULL;
 }
 
 void CLuaBinary::setLua(struct lua_State *pLua)
@@ -60,7 +62,7 @@ void CLuaBinary::setBuffer(const char *pszBuf, const size_t iLens)
     m_iCurParseLens = Q_INIT_NUMBER;
 }
 
-size_t CLuaBinary::getLens(void)
+size_t CLuaBinary::getLens(void) const
 {
     return m_iParseBufLens;
 }
@@ -94,7 +96,7 @@ bool CLuaBinary::skipWrite(const size_t iLens)
 
         Q_Zero(pTmp, iLens);
         bOk = setVal(pTmp, iLens);
-        Q_SafeDelete(pTmp);
+        Q_SafeDelete_Array(pTmp);
     }
     else
     {
@@ -619,7 +621,7 @@ luabridge::LuaRef CLuaBinary::getStruct(luabridge::LuaRef objAttr)
     return objVal;
 }
 
-std::string CLuaBinary::getBuffer(void)
+std::string CLuaBinary::getBuffer(void) const
 {
     return std::string(m_objWritBuffer.getBuffer(), m_objWritBuffer.getLens());
 }

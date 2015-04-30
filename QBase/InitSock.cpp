@@ -26,7 +26,6 @@
 *****************************************************************************/
 
 #include "InitSock.h"
-#include "Exception.h"
 
 CSockInit::CSockInit(void)
 {
@@ -35,10 +34,17 @@ CSockInit::CSockInit(void)
 
 CSockInit::~CSockInit(void)
 {
-    Destroy();
+    try
+    {
+        Destroy();
+    }
+    catch(...)
+    {
+
+    }
 }
 
-int CSockInit::Init(void)
+int CSockInit::Init(void) const
 {
 #ifdef Q_OS_WIN32
     WORD wVersionReq;
@@ -59,9 +65,9 @@ int CSockInit::Init(void)
     return Q_RTN_OK;
 }
 
-void CSockInit::Destroy(void)
+void CSockInit::Destroy(void) const
 {
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN32    
     (void)WSACleanup();
 #endif
 }
@@ -77,14 +83,14 @@ void CSockInit::Destroy(void)
 * Modification 
 * ......record :first program
 ************************************************************************/
-int Q_SockRead(Q_SOCK &fd, char *pBuf, const size_t &iLens)
+int Q_SockRead(const Q_SOCK &fd, char *pBuf, const size_t &iLens)
 {
     int iRecvSize = Q_INIT_NUMBER;
     size_t iRecvTotalSize = Q_INIT_NUMBER;
 
     do 
     {
-        iRecvSize = recv(fd, pBuf + iRecvTotalSize, iLens - iRecvTotalSize, 0);
+        iRecvSize = recv(fd, pBuf + iRecvTotalSize, (int)(iLens - iRecvTotalSize), 0);
         if (iRecvSize <= 0)
         {
             int iRtn = Q_SockError();
@@ -93,7 +99,7 @@ int Q_SockRead(Q_SOCK &fd, char *pBuf, const size_t &iLens)
             return Q_RTN_FAILE;
         }
 
-        iRecvTotalSize += iRecvSize;
+        iRecvTotalSize += (size_t)iRecvSize;
 
     } while (iRecvTotalSize < iLens);
 
@@ -111,14 +117,14 @@ int Q_SockRead(Q_SOCK &fd, char *pBuf, const size_t &iLens)
 * Modification 
 * ......record :first program
 ************************************************************************/
-int Q_SockWrite(Q_SOCK &fd, const char *pBuf, const size_t &iLens)
+int Q_SockWrite(const Q_SOCK &fd, const char *pBuf, const size_t &iLens)
 {
     int iSendSize = Q_INIT_NUMBER;
     size_t iSendTotalSize = Q_INIT_NUMBER;
 
     do 
     {
-        iSendSize = send(fd, pBuf + iSendTotalSize, iLens - iSendTotalSize, 0);
+        iSendSize = send(fd, pBuf + iSendTotalSize, (int)(iLens - iSendTotalSize), 0);
         if (iSendSize <= 0)
         {
             int iRtn = Q_SockError();
@@ -127,7 +133,7 @@ int Q_SockWrite(Q_SOCK &fd, const char *pBuf, const size_t &iLens)
             return Q_RTN_FAILE;
         }
 
-        iSendTotalSize += iSendSize;
+        iSendTotalSize += (size_t)iSendSize;
 
     } while (iLens > iSendTotalSize);
 

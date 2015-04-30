@@ -45,7 +45,7 @@ public:
     void setBuffer(const char *pszBuf, const size_t iLens);
 
     //获取要解析的数据长度
-    size_t getLens(void);
+    size_t getLens(void) const;
 
     //控制函数
     //重置写
@@ -105,7 +105,7 @@ public:
     luabridge::LuaRef getStruct(luabridge::LuaRef objAttr);
 
     //获取写入的buffer
-    std::string getBuffer(void);
+    std::string getBuffer(void) const;
 
     CBuffer *getBufferMgr(void)
     {

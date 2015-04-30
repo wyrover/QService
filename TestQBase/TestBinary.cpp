@@ -17,7 +17,7 @@ void CTestBinary::Test_Binary(void)
     m_objBinary.setUint64("5996902341083680779");
     m_objBinary.setUint32(strTest.size());
     m_objBinary.setString(strTest.c_str());
-    m_objBinary.setFloat(9.01);
+    m_objBinary.setFloat(float(9.01));
     m_objBinary.setByte(strTest.c_str(), 100);
     m_objBinary.setDouble(10.23);
 

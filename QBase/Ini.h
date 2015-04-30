@@ -67,13 +67,13 @@ public:
 
 private:
     void readInfo(void);
-    bool isNote(std::string &str);
-    void removeNote(std::string &str);
-    bool isNode(std::string &str);    
-    std::string getNode(std::string &str);
-    bool isKey(std::string &str);
-    std::string getKey(std::string &str);
-    std::string getVal(std::string &str);
+    bool isNote(const std::string &str) const;
+    void removeNote(std::string &str) const;
+    bool isNode(const std::string &str) const;    
+    std::string getNode(const std::string &str) const;
+    bool isKey(const std::string &str) const;
+    std::string getKey(const std::string &str) const;
+    std::string getVal(const std::string &str) const;
 
 private:
     struct stIniKey

@@ -27,12 +27,14 @@
 
 #include "QRSA.h"
 
-CRSA::CRSA(void) : m_pRSAKey(NULL)
+CRSA::CRSA(void) : m_pRSAKey(NULL), m_objBuffer()
 {
+    Q_Zero(m_acOutBuf, sizeof(m_acOutBuf));
 }
 
 CRSA::~CRSA(void)
 {
+    m_pRSAKey = NULL;
 }
 
 void CRSA::setKey(CRSAKey *pRSAKey)
@@ -51,7 +53,7 @@ const char *CRSA::RSAEncrypt(RSAEncryptType emEnType, const char* pszData,
 
     m_objBuffer.reSet();
     iOutLens = Q_INIT_NUMBER;
-    pTmp = (unsigned char*)pszData;
+    pTmp = (unsigned char*)(pszData);
     if (RSAEncryptType_Public == emEnType)
     {
         if (NULL == m_pRSAKey->getPublicKey()
@@ -144,7 +146,7 @@ const char *CRSA::RSADecrypt(RSADecryptType emEnType, const char* pszData,
 
     m_objBuffer.reSet();
     iOutLens = Q_INIT_NUMBER;
-    pTmp = (unsigned char*)pszData;
+    pTmp = (unsigned char*)(pszData);
     if (RSADecryptType_Public == emEnType)
     {
         if (NULL == m_pRSAKey->getPublicKey())

@@ -30,14 +30,14 @@
 
 #include "AES.h"
 #include "Base64.h"
-#include "RSAEuro/rsa.h"
+#include <RSAEuro/rsa.h>
 
 /*RSA算法密码类*/
 class CRSAKey
 {
 public:
-    CRSAKey(void){};
-    ~CRSAKey(void){};
+    CRSAKey(void);
+    ~CRSAKey(void);
 
     /*生成key(长度512 - 1024)*/
     int creatKey(const unsigned short usKeyLens);
@@ -64,17 +64,17 @@ public:
     R_RANDOM_STRUCT *getRandom(void);
 
 private:
-    char *Decode(const char *pszMsg, const size_t iLens, size_t &iOutLens);
+    const char *Decode(const char *pszMsg, const size_t iLens, size_t &iOutLens);
     int Encode(const char *pszMsg, const size_t iLens, std::string &strBase64);
-    int fileWrite(const char *pszMsg, const size_t iLens, const char *pszFile);
-    std::string fileRead(const char *pszFile);
+    int fileWrite(const char *pszMsg, const size_t iLens, const char *pszFile) const;
+    std::string fileRead(const char *pszFile) const;
     int loadInfo(char *pInfo, const size_t iLens, const char *pszFile);
 
 private:
     enum RSAKeyLen
     {
         RSAKeyMinLen = 512,
-        RSAKeyMaxLen = 1024,
+        RSAKeyMaxLen = 1024
     };
 
     R_RANDOM_STRUCT m_stRandom;

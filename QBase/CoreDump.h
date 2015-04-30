@@ -34,16 +34,16 @@
 //dump¿‡
 class CCoreDump
 {
-public:
+public:    
     explicit CCoreDump(bool bPromptUserForMiniDump);
     ~CCoreDump(void);
 
 private:
     static LONG WINAPI unhandledExceptionHandler(struct _EXCEPTION_POINTERS *pExceptionInfo);
     void setMiniDumpFileName(void);
-    bool getImpersonationToken(HANDLE* phToken);
-    BOOL enablePrivilege(LPCTSTR pszPriv, HANDLE hToken, TOKEN_PRIVILEGES* ptpOld);
-    BOOL restorePrivilege(HANDLE hToken, TOKEN_PRIVILEGES* ptpOld);
+    bool getImpersonationToken(HANDLE* phToken) const;
+    BOOL enablePrivilege(LPCTSTR pszPriv, HANDLE hToken, TOKEN_PRIVILEGES* ptpOld) const;
+    BOOL restorePrivilege(HANDLE hToken, TOKEN_PRIVILEGES* ptpOld) const;
     LONG writeMiniDump(_EXCEPTION_POINTERS *pExceptionInfo );
 
     _EXCEPTION_POINTERS *m_pExceptionInfo;
@@ -54,6 +54,9 @@ private:
 
     static CCoreDump* s_pMiniDumper;
     static LPCRITICAL_SECTION s_pCriticalSection;
+
+private:
+    CCoreDump(void);
 };
 #endif
 

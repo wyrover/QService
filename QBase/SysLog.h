@@ -45,7 +45,7 @@ public:
         const char *pFormat, ...);
 
 private:
-    std::string getLV(LOG_LEVEL emInLogLv);
+    std::string getLV(LOG_LEVEL emInLogLv) const;
 
 private:
     FILE *m_pFile;

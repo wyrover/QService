@@ -40,26 +40,26 @@ public:
     ~CSockPair(void);
     
     /*获取读sock句柄*/
-    Q_SOCK getReadFD(void)
+    Q_SOCK getReadFD(void) const
     {
         return m_ReadFD;
     };
     /*获取写sock句柄*/
-    Q_SOCK getWriteFD(void)
+    Q_SOCK getWriteFD(void) const
     {
         return m_WriteFD;
     };
     
     /*从读句柄读取数据*/
-    int Read(char *pBuf, const size_t &iLens);
+    int Read(char *pBuf, const size_t &iLens) const;
     /*向写句柄写入数据*/
-    int Write(const char *pBuf, const size_t &iLens);
+    int Write(const char *pBuf, const size_t &iLens) const;
 
 private:
     int Init(void);
     void Destroy(void);
-    int creatSockPair(Q_SOCK aeSock[2]);
-    int creatListener(Q_SOCK &Listener);
+    int creatSockPair(Q_SOCK aeSock[2]) const;
+    int creatListener(Q_SOCK &Listener) const;
 
 private:
     Q_SOCK m_ReadFD;

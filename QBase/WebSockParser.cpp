@@ -42,11 +42,19 @@ CWebSockParser::CWebSockParser(void) : m_bClose(false), m_iParsedLens(Q_INIT_NUM
     m_iHeadLens(Q_INIT_NUMBER), m_iTotalLens(Q_INIT_NUMBER), m_iNeedReadLens(Q_INIT_NUMBER),
     m_pMsg(NULL)
 {
+    Q_Zero(m_acShaKey, sizeof(m_acShaKey));
+    Q_Zero(m_acWebSockHead, sizeof(m_acWebSockHead));
     m_iShakeHandsEndFlagLens = strlen(WebSock_ShakeHands_EndFlag);
     m_strVersion = Q_FormatStr("%d-%d-%d", Q_MAJOR, Q_MINOR, Q_RELEASE);
+    m_stPos.pos = -1;
 }
 
-std::string CWebSockParser::parseShakeHands(std::list<std::string> &lstShakeHands)
+CWebSockParser::~CWebSockParser(void)
+{
+    m_pMsg = NULL;
+}
+
+std::string CWebSockParser::parseShakeHands(std::list<std::string> &lstShakeHands) const
 {
     if (lstShakeHands.empty())
     {
@@ -158,7 +166,7 @@ std::string CWebSockParser::createChallengeKey(std::string &strKey)
     return m_objbase64.Encode(m_acShaKey, sizeof(m_acShaKey));
 }
 
-std::string CWebSockParser::createHandshakeResponse(std::string &strKey)
+std::string CWebSockParser::createHandshakeResponse(const std::string &strKey) const
 {
     std::string strRtn =
         "HTTP/1.1 101 Switching Protocols\r\n"
@@ -172,7 +180,7 @@ std::string CWebSockParser::createHandshakeResponse(std::string &strKey)
     return strRtn;
 }
 
-std::string *CWebSockParser::shakeHands(class CEventBuffer *pBuffer)
+const std::string *CWebSockParser::shakeHands(class CEventBuffer *pBuffer)
 {
     m_bClose = false;
     m_iParsedLens = Q_INIT_NUMBER;
@@ -184,7 +192,7 @@ std::string *CWebSockParser::shakeHands(class CEventBuffer *pBuffer)
         return NULL;
     }
 
-    m_iNeedReadLens = m_stPos.pos + m_iShakeHandsEndFlagLens;
+    m_iNeedReadLens = (size_t)m_stPos.pos + m_iShakeHandsEndFlagLens;
     char *pShakeHands = pBuffer->readBuffer(m_iNeedReadLens);
     if (NULL == pShakeHands)
     {
@@ -212,7 +220,7 @@ std::string *CWebSockParser::shakeHands(class CEventBuffer *pBuffer)
     }
 
     m_strVal = createHandshakeResponse(m_strVal);
-    m_iParsedLens = m_stPos.pos + m_iShakeHandsEndFlagLens;
+    m_iParsedLens = (size_t)m_stPos.pos + m_iShakeHandsEndFlagLens;
 
     return &m_strVal;
 }
@@ -369,7 +377,7 @@ const char *CWebSockParser::createHead(const bool &bFin, const WebSockOpCode emC
     else if ((iDataLens > PAYLOADLENS_125) && (iDataLens <= 0xFFFF))
     {
         m_acWebSockHead[1] = PAYLOADLENS_126;
-        uint16_t uiLen16 = htons(iDataLens);
+        uint16_t uiLen16 = htons((u_short)iDataLens);
         memcpy(m_acWebSockHead + 2, &uiLen16, sizeof(uiLen16));
 
         iOutLens = FRAME_HEAD_EXT16_LEN - 4;
@@ -377,7 +385,7 @@ const char *CWebSockParser::createHead(const bool &bFin, const WebSockOpCode emC
     else 
     {
         m_acWebSockHead[1] = PAYLOADLENS_127;
-        uint64_t uiLens64 = ntohl64(iDataLens);
+        uint64_t uiLens64 = ntohl64((uint64_t)iDataLens);
         memcpy(m_acWebSockHead + 2, &uiLens64, sizeof(uiLens64));
 
         iOutLens = FRAME_HEAD_EXT64_LEN - 4;

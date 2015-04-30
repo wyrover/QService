@@ -142,7 +142,7 @@ BOOL CTestToolDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
 
 	// TODO: 在此添加额外的初始化代码
-    srand(time(NULL));
+    srand((unsigned int)time(NULL));
 
     g_iServerID = rand() % 1023 + 1;
     std::string strProPath;

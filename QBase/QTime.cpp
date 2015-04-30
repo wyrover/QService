@@ -80,7 +80,7 @@ std::string Q_Date(void)
 * Modification 
 * ......record :fist program
 **************************************************/
-tm *Q_LocalTime(time_t *pTm)
+const tm *Q_LocalTime(const time_t *pTm)
 {
     return localtime(pTm);
 }
@@ -159,7 +159,7 @@ time_t Q_StrToTime(const std::string &strTime)
 {
     time_t t;
     t = (time_t)NULL;
-    char *pBeginPos = (char*) strTime.c_str();
+    char *pBeginPos = const_cast<char*>(strTime.c_str());
     char *pPos = strstr(pBeginPos, "-");
     if(pPos == NULL)
     {
@@ -197,7 +197,7 @@ time_t Q_StrToTime(const std::string &strTime)
 
     struct tm sourcedate;
 
-    Q_Zero((void*)&sourcedate, sizeof(sourcedate));
+    Q_Zero(&sourcedate, sizeof(sourcedate));
 
     sourcedate.tm_sec = iSec;
     sourcedate.tm_min = iMin; 

@@ -29,7 +29,6 @@
 
 #ifdef Q_OS_WIN32
 #include <stdio.h>
-#include <assert.h>
 #include <time.h>
 #include <stdlib.h>
 #include <strsafe.h>
@@ -78,6 +77,8 @@ CCoreDump::~CCoreDump(void)
         Q_SafeDelete(s_pCriticalSection);
     }
 
+    m_pExceptionInfo = NULL;
+
     return;
 }
 
@@ -102,7 +103,7 @@ void CCoreDump::setMiniDumpFileName(void)
     return;
 }
 
-bool CCoreDump::getImpersonationToken(HANDLE* phToken)
+bool CCoreDump::getImpersonationToken(HANDLE* phToken) const
 {
     *phToken = NULL;
 
@@ -129,7 +130,7 @@ bool CCoreDump::getImpersonationToken(HANDLE* phToken)
     return true;
 }
 
-BOOL CCoreDump::enablePrivilege(LPCTSTR pszPriv, HANDLE hToken, TOKEN_PRIVILEGES* ptpOld)
+BOOL CCoreDump::enablePrivilege(LPCTSTR pszPriv, HANDLE hToken, TOKEN_PRIVILEGES* ptpOld) const
 {
     BOOL bOk = false;
 
@@ -147,7 +148,7 @@ BOOL CCoreDump::enablePrivilege(LPCTSTR pszPriv, HANDLE hToken, TOKEN_PRIVILEGES
     return (bOk && (ERROR_NOT_ALL_ASSIGNED != GetLastError()));
 }
 
-BOOL CCoreDump::restorePrivilege(HANDLE hToken, TOKEN_PRIVILEGES* ptpOld)
+BOOL CCoreDump::restorePrivilege(HANDLE hToken, TOKEN_PRIVILEGES* ptpOld) const
 {
     BOOL bOk = AdjustTokenPrivileges(hToken, false, ptpOld, 0, NULL, NULL);
 
@@ -233,7 +234,7 @@ LONG CCoreDump::writeMiniDump( _EXCEPTION_POINTERS *pExceptionInfo )
 
                 if(bPrivilegeEnabled)
                 {
-                    restorePrivilege(hImpersonationToken, &tp);
+                    (void)restorePrivilege(hImpersonationToken, &tp);
                 }
 
                 if(bOk)

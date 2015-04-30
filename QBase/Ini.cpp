@@ -52,7 +52,7 @@ void CIniFile::setFile(const char *pszFile)
     readInfo();
 }
 
-bool CIniFile::isNote(std::string &str)
+bool CIniFile::isNote(const std::string &str) const
 {    
     if ((std::string("//") == str.substr(0, strlen("//")))
         || (std::string("#") == str.substr(0, strlen("#"))))
@@ -63,13 +63,13 @@ bool CIniFile::isNote(std::string &str)
     return false;
 }
 
-void CIniFile::removeNote(std::string &str)
+void CIniFile::removeNote(std::string &str) const
 {
     str = Q_GetFrontOfFlag(str, "//");
     str = Q_GetFrontOfFlag(str, "#");
 }
 
-bool CIniFile::isNode(std::string &str)
+bool CIniFile::isNode(const std::string &str) const
 {
     if ((std::string("[") == str.substr(0, strlen("[")))
         && (std::string("]") == str.substr(str.size() - 1, strlen("]")))
@@ -81,14 +81,14 @@ bool CIniFile::isNode(std::string &str)
     return false;
 }
 
-std::string CIniFile::getNode(std::string &str)
+std::string CIniFile::getNode(const std::string &str) const
 {
     std::string strTmp = str.substr(1, str.size() - 2);
 
     return Q_Trim(strTmp);
 }
 
-bool CIniFile::isKey(std::string &str)
+bool CIniFile::isKey(const std::string &str) const
 {
     if (std::string::npos == str.find("="))
     {
@@ -98,14 +98,14 @@ bool CIniFile::isKey(std::string &str)
     return true;
 }
 
-std::string CIniFile::getKey(std::string &str)
+std::string CIniFile::getKey(const std::string &str) const
 {   
     std::string strTmp = Q_GetFrontOfFlag(str, "=");
 
     return Q_Trim(strTmp);
 }
 
-std::string CIniFile::getVal(std::string &str)
+std::string CIniFile::getVal(const std::string &str) const
 {
     std::string::size_type iPos = Q_INIT_NUMBER;
 
@@ -141,7 +141,7 @@ void CIniFile::readInfo(void)
     {
         Q_Zero(pBuffer, sizeof(pBuffer));
 
-        inStream.getline(pBuffer, sizeof(pBuffer) - 1);
+        inStream.getline(pBuffer, (std::streamsize)(sizeof(pBuffer) - 1));
 
         strTmp = std::string(pBuffer);
         strTmp = Q_Trim(strTmp);

@@ -39,31 +39,31 @@ public:
 
     /*session id号*/
     void setSessionID(const int &uiID);
-    int getSessionID(void);
+    int getSessionID(void) const;
 
     /*关联的ID*/
     void setID(const char *pszID);
-    const char * getID(void);
+    const char * getID(void) const;
 
     /*校验ID*/
     void setCheckID(const char *pszID);
-    const char * getCheckID(void);
+    const char * getCheckID(void) const;
 
     /*ping*/
     void setPing(const unsigned int uiPing);
-    unsigned int getPing(void);
+    unsigned int getPing(void) const;
 
     /*账号*/
     void setAccount(const char *pszAccount);
-    const char *getAccount(void);
+    const char *getAccount(void) const;
 
     /*状态*/
     void setStatus(const int iStatus);
-    int getStatus(void);
+    int getStatus(void) const;
 
     /*session 类型  enum SessionType*/
     void setType(const SessionType emType);
-    int getType(void);
+    int getType(void) const;
 
     void Clear(void);
 

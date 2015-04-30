@@ -36,7 +36,15 @@ CFilter::~CFilter(void)
 {
     if (NULL != m_pmapFilter)
     {
-        freeNode(m_pmapFilter);
+        try
+        {
+            freeNode(m_pmapFilter);
+        }
+        catch(...)
+        {
+            
+        }
+
         m_pmapFilter = NULL;
     }
 }
@@ -205,13 +213,13 @@ void CFilter::checkAndModify(char *pWord, const size_t uiLens, const char cRepla
         {
             if (-1 == iBegain)
             {
-                iBegain = i;
+                iBegain = (int)i;
             }
 
             pSearchMap = itVal->second;
             if (pSearchMap->mapFilterMap.empty())
             {
-                memset(pWord + iBegain, cReplace, i + 1 - iBegain);
+                memset(pWord + iBegain, cReplace, (size_t)(i + 1 - (size_t)iBegain));
                 iBegain = -1;
                 pSearchMap = m_pmapFilter;
             }
@@ -226,13 +234,13 @@ void CFilter::checkAndModify(char *pWord, const size_t uiLens, const char cRepla
         {
             if (-1 == iBegain)
             {
-                iBegain = i;
+                iBegain = (int)i;
             }
 
             pSearchMap = itVal->second;
             if (pSearchMap->mapFilterMap.empty())
             {
-                memset(pWord + iBegain, cReplace, i + 1 - iBegain);
+                memset(pWord + iBegain, cReplace, (size_t)(i + 1 - (size_t)iBegain));
                 iBegain = -1;
                 pSearchMap = m_pmapFilter;
             }
@@ -244,7 +252,7 @@ void CFilter::checkAndModify(char *pWord, const size_t uiLens, const char cRepla
 
 const char * CFilter::Filter(const char *pWord, const size_t uiLens)
 {
-    checkAndModify((char*)pWord, uiLens);
+    checkAndModify(const_cast<char*>(pWord), uiLens);
 
     return pWord;
 }

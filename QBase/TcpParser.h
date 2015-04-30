@@ -40,11 +40,11 @@ public:
 
     //½âÎö°ü 
     const char *parsePack(class CEventBuffer *pBuffer);
-    size_t getParsedLens(void)
+    size_t getParsedLens(void) const
     {
         return m_iParsedLens;
     };
-    size_t getBufLens(void)
+    size_t getBufLens(void) const
     {
         return m_iBufLens;
     };
@@ -55,13 +55,13 @@ public:
 private:
     bool parseHead(class CEventBuffer *pBuffer);
 
-private:
-    char m_acHead[TCP_HRAD_MAXLENS];
+private:    
     size_t m_iParsedLens;
     size_t m_iBufLens;
     size_t m_iHeadLens;
     size_t m_iTotalLens;
     size_t m_iNeedReadLens;
+    char m_acHead[TCP_HRAD_MAXLENS];
 };
 
 #endif//Q_TCP_PARSER_H_

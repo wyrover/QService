@@ -57,6 +57,16 @@ const char *getServerNam(void)
     return g_strServerName.c_str();
 }
 
+CReg2Lua::CReg2Lua(void) : m_pstLState(NULL)
+{
+
+}
+
+CReg2Lua::~CReg2Lua(void)
+{
+    m_pstLState = NULL;
+}
+
 void CReg2Lua::Register(void)
 {
     reg_Func();

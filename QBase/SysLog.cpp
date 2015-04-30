@@ -35,7 +35,7 @@
 CSysLoger::CSysLoger(void) : m_pFile(NULL), m_pMutex(NULL)
 {
     std::string strCurPath;
-    Q_GetProPath(strCurPath);
+    (void)Q_GetProPath(strCurPath);
     m_pFile = fopen((strCurPath + std::string(QService) + std::string(".syslog")).c_str(), "a");
     if (NULL == m_pFile)
     {
@@ -62,16 +62,23 @@ CSysLoger::CSysLoger(void) : m_pFile(NULL), m_pMutex(NULL)
 
 CSysLoger::~CSysLoger(void)
 {
-    if (NULL != m_pFile)
+    try
     {
-        fclose(m_pFile);
-        m_pFile = NULL;
-    }
+        if (NULL != m_pFile)
+        {
+            fclose(m_pFile);
+            m_pFile = NULL;
+        }
 
-    Q_SafeDelete(m_pMutex);
+        Q_SafeDelete(m_pMutex);
+    }
+    catch(...)
+    {
+
+    }
 }
 
-std::string CSysLoger::getLV(LOG_LEVEL emInLogLv)
+std::string CSysLoger::getLV(LOG_LEVEL emInLogLv) const
 {
     std::string strRst;
 

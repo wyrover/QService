@@ -47,28 +47,34 @@ struct WebSockFram
     unsigned char ucPayloadLen;
     size_t uiDataLens;
     char acMaskKey[4];
+    WebSockFram(void) : cFin(Q_INIT_NUMBER), cRsv1(Q_INIT_NUMBER),
+        cRsv2(Q_INIT_NUMBER), cRsv3(Q_INIT_NUMBER), emOpCode(CONTINUATION),
+        cMask(Q_INIT_NUMBER), ucPayloadLen(Q_INIT_NUMBER), uiDataLens(Q_INIT_NUMBER)
+    {
+        Q_Zero(acMaskKey, sizeof(acMaskKey));
+    };
 };
 
 class CWebSockParser
 {
 public:
     CWebSockParser(void);
-    ~CWebSockParser(void){};
+    ~CWebSockParser(void);
 
     //解析握手
-    std::string *shakeHands(class CEventBuffer *pBuffer);
+    const std::string *shakeHands(class CEventBuffer *pBuffer);
 
     //解包
     bool parsePack(class CEventBuffer *pBuffer);
-    bool getClose(void)
+    bool getClose(void) const
     {
         return m_bClose;
     };
-    size_t getParsedLens(void)
+    size_t getParsedLens(void) const
     {
         return m_iParsedLens;
     };
-    const char *getMsg(void)
+    const char *getMsg(void) const
     {
         if (NULL == m_pMsg)
         {
@@ -77,7 +83,7 @@ public:
 
         return m_pMsg;
     };
-    WebSockFram *getHead(void)
+    const WebSockFram *getHead(void) const
     {
         return &m_stFram;
     };
@@ -87,9 +93,9 @@ public:
         const size_t &iDataLens, size_t &iOutLens);
 
 private:
-    std::string parseShakeHands(std::list<std::string> &lstShakeHands);
+    std::string parseShakeHands(std::list<std::string> &lstShakeHands) const;
     std::string createChallengeKey(std::string &strKey);
-    std::string createHandshakeResponse(std::string &strKey);
+    std::string createHandshakeResponse(const std::string &strKey) const;
     bool parseHead(class CEventBuffer *pBuffer);
 
 private:

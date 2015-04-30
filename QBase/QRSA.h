@@ -58,14 +58,14 @@ private:
     enum RSAEncryptType
     {
         RSAEncryptType_Public = 0,//公钥加密
-        RSAEncryptType_Private,   //私钥加密
+        RSAEncryptType_Private   //私钥加密
     };
 
     /*解密方式*/
     enum RSADecryptType
     {
         RSADecryptType_Public = 0,//公钥解密
-        RSADecryptType_Private,   //私钥解密
+        RSADecryptType_Private   //私钥解密
     };
 
 private:

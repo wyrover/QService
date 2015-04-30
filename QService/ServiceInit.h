@@ -63,7 +63,7 @@ private:
     bool initDBLog(void);
     bool readConfig(void);
     int initServer(void);
-    void readLinkOtherConfig(std::vector<LinkOther> &vcLinkOther);
+    void readLinkOtherConfig(std::vector<LinkOther> &vcLinkOther) const;
 
 private:
     CThread m_objThread;

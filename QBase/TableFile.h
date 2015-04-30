@@ -45,14 +45,14 @@ public:
 
     //文件名
     void setFile(const char *pszFile);
-    const char *getFile(void);
+    const char *getFile(void) const;
     //拆分标志
     void setSplitFlag(const char *pszSplitFlag);
 
     //解析
     int Parse(void);
     //是否还有未读行
-    bool eof(void);
+    bool eof(void) const;
     //下一行
     void nextRow(void);
     //返回到第一行
@@ -64,18 +64,18 @@ public:
     double getFloatValue(const char *pszName, const double dDefault = 0.0);
 
     /*返回头*/
-    const std::map<int, std::string> *getHead(void)
+    const std::map<int, std::string> *getHead(void) const
     {
         return &m_mapTableHead;
     };
 
 private:
-    void getValue(std::string &strValue, std::map<int, std::string> &mapTableHead);
-    bool getHead(std::string &strHead, std::map<int, std::string> &mapTableHead);
-    bool checkHead(std::list<std::string> &lstTableHead);
-    bool parseHead(std::list<std::string> &lstTableHead, std::map<int, std::string> &mapTableHead);
+    void getValue(const std::string &strValue, std::map<int, std::string> &mapTableHead);
+    bool getHead(const std::string &strHead, std::map<int, std::string> &mapTableHead);
+    bool checkHead(std::list<std::string> &lstTableHead) const;
+    bool parseHead(std::list<std::string> &lstTableHead, std::map<int, std::string> &mapTableHead) const;
     void checkEof(void);
-    bool checkNote(std::string &strMsg);
+    bool checkNote(const std::string &strMsg) const;
 
 private:
     bool m_bEof;

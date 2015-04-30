@@ -45,7 +45,7 @@ public:
         const char *pszUser, const char *pszPWD, const char *pszDB);
 
     //д
-    void writeDBLog(Q_SOCK &fd, const char *pszPlayerID, const short sType, 
+    void writeDBLog(const Q_SOCK &fd, const char *pszPlayerID, const short sType, 
         const char *pszMsg, const size_t iLens);
 
 public:
@@ -55,16 +55,16 @@ public:
 
 private:
     bool Link(void);
-    std::string getTableNam(void);
-    bool createTable(std::string &strName);
+    std::string getTableNam(void) const;
+    bool createTable(const std::string &strName);
 
 private:
     CDBStatement *m_pStatement;
+    std::string m_strTable;
     CMySQLLink m_objLinker;
     CDBUrl m_objUrl;
     CQMutex m_objMutex;
-    std::string m_strTable;
-    CTcpParser m_objTcpParser;
+    CTcpParser m_objTcpParser;        
 };
 
 #endif//Q_DBLOGER_H_

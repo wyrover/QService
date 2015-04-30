@@ -27,7 +27,7 @@
 
 #include "Base64.h"
 
-CBase64::CBase64(void)
+CBase64::CBase64(void) : m_objBuffer()
 {
 }
 
@@ -46,7 +46,7 @@ CBase64::~CBase64(void)
 * Modification 
 * ......record :first program
 **************************************************/
-std::string CBase64::Encode(const unsigned char *pszData, const size_t &iLens)
+std::string CBase64::Encode(const unsigned char *pszData, const size_t &iLens) const
 {
     //±àÂë±í
     static const char EncodeTable[] = 

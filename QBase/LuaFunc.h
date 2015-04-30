@@ -28,7 +28,7 @@
 #ifndef Q_LUAFUNCS_H_
 #define Q_LUAFUNCS_H_
 
-#include "LuaBridge/LuaBridge.h"
+#include "Macros.h"
 
 template<typename T>
 luabridge::LuaRef Q_ListToLua(struct lua_State *pLua, std::list<T> *pList)

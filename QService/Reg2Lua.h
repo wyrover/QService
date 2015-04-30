@@ -34,8 +34,8 @@
 class CReg2Lua
 {
 public:
-    CReg2Lua(void){};
-    ~CReg2Lua(void){};
+    CReg2Lua(void);
+    ~CReg2Lua(void);
 
     void setLState(struct lua_State *pstLState)
     {

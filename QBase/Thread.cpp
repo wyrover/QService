@@ -41,7 +41,14 @@ CThread::CThread(void)
 
 CThread::~CThread(void)
 {
-    Destroy();
+    try
+    {
+        Destroy();
+    }
+    catch(...)
+    {
+
+    }    
 }
 
 int CThread::Init(void)
@@ -68,7 +75,7 @@ void CThread::Destroy(void)
     (void)attrDestroy(&m_Attr);
 }
 
-int CThread::attrInit(Q_Thread_Attr_t *pAttr)
+int CThread::attrInit(Q_Thread_Attr_t *pAttr) const
 {
 #ifdef Q_OS_WIN32
     *pAttr = 0;
@@ -79,7 +86,7 @@ int CThread::attrInit(Q_Thread_Attr_t *pAttr)
 #endif
 }
 
-int CThread::attrDestroy(Q_Thread_Attr_t *pAttr)
+int CThread::attrDestroy(Q_Thread_Attr_t *pAttr) const
 {
 #ifdef Q_OS_WIN32
     *pAttr = 0;
@@ -90,7 +97,7 @@ int CThread::attrDestroy(Q_Thread_Attr_t *pAttr)
 #endif
 }
 
-int CThread::attrSetDetaChstate(Q_Thread_Attr_t *pAttr, int iDetachstate)
+int CThread::attrSetDetaChstate(Q_Thread_Attr_t *pAttr, int iDetachstate) const
 {
 #ifdef Q_OS_WIN32
     *pAttr |= iDetachstate;
@@ -102,11 +109,11 @@ int CThread::attrSetDetaChstate(Q_Thread_Attr_t *pAttr, int iDetachstate)
 }
 
 int CThread::Create(Q_Thread_t *pThread, Q_Thread_Attr_t *pAttr,
-                                Q_Thread_Func_t myfunc, void *args)
+                                Q_Thread_Func_t myfunc, void *args) const
 {
 #ifdef Q_OS_WIN32
     HANDLE handle = (HANDLE)_beginthreadex(NULL, 0, myfunc, args, 0, pThread);
-    return (handle > 0 ? Q_RTN_OK : Q_Error());
+    return (int)((NULL ==handle) ? Q_Error() : Q_RTN_OK);
 #else
     if (NULL == pAttr)
     {

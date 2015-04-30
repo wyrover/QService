@@ -119,7 +119,7 @@ void CTestLua::RunLua(void)
         stTest1.sVal = 2;
         stTest1.iVal = 3;
         stTest1.bVal = true;
-        stTest1.fVal = 4.1;
+        stTest1.fVal = float(4.1);
         stTest1.dVal = 5.1;
         stTest1.iVal2 = 6;
         strcpy(stTest1.acVal, "this is test!");
@@ -141,7 +141,7 @@ void CTestLua::RunLua(void)
         stTest3.stTest2.stTest1.sVal = 2;
         stTest3.stTest2.stTest1.iVal = 3;
         stTest3.stTest2.stTest1.bVal = true;
-        stTest3.stTest2.stTest1.fVal = 4.1;
+        stTest3.stTest2.stTest1.fVal = float(4.1);
         stTest3.stTest2.stTest1.dVal = 5.1;
         stTest3.stTest2.stTest1.iVal2 = 6;
         strcpy(stTest3.stTest2.stTest1.acVal, "this is test!");

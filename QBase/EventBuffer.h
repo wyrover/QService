@@ -36,11 +36,8 @@ bufferevent操作类
 class CEventBuffer
 {
 public:
-    CEventBuffer(void) : m_pBev(NULL), m_pReadBuffer(NULL),
-        m_pWriteBuffer(NULL), m_FD(Q_INVALID_SOCK)
-    { };
-    ~CEventBuffer(void)
-    { };
+    CEventBuffer(void);
+    ~CEventBuffer(void);
 
     /*根据传入的bufferevent获取读写buffer及socket句柄*/
     int setBuffer(struct bufferevent *pBev);
@@ -48,7 +45,7 @@ public:
     struct bufferevent *getBuffer(void);    
 
     /*获取读缓冲区中数据的长度*/
-    size_t getTotalLens(void);
+    size_t getTotalLens(void) const;
     /*从读缓冲区中取出iLens个字节的数据*/
     char *readBuffer(const size_t &iLens);
     /*删除读缓冲区的数据*/
@@ -60,7 +57,7 @@ public:
     /*查找*/
     struct evbuffer_ptr Search(const char *pszWhat, size_t iLens, const struct evbuffer_ptr *pStart = NULL);
     /*获取socket句柄*/
-    Q_SOCK getFD(void);
+    Q_SOCK getFD(void) const;
 
 private:
     struct bufferevent *m_pBev; 

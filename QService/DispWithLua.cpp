@@ -36,7 +36,8 @@
 #define LUA_EVENT_ONHTTPREAD  "Lua_OnHttpRead"
 #define LUA_EVENT_ONLINKEDOTHER  "Lua_OnLinkedOther"
 
-CDisposeEvent::CDisposeEvent(const char *pszLuaFile) : m_pLua(NULL)
+CDisposeEvent::CDisposeEvent(const char *pszLuaFile) : m_pLua(NULL),
+    m_objReg2Lua()
 {
     m_pLua = luaL_newstate();
     if (NULL == m_pLua)

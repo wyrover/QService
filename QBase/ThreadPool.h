@@ -43,9 +43,10 @@ public:
     /*获取等待队列中任务数量*/
     unsigned int getTaskNumber(void);
     /*获取线程池大小*/
-    unsigned int getPoolSize(void);
+    unsigned int getPoolSize(void) const;
 
 private:
+    CThreadPool(void);
     int Init(const unsigned int &uiThreadNum);
     void Destroy(void);
 

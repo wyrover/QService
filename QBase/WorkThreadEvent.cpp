@@ -29,25 +29,33 @@
 
 #define Http_TimeOut  10
 
-CWorkThreadEvent::CWorkThreadEvent(void) : m_pEvent(NULL)
+CWorkThreadEvent::CWorkThreadEvent(void) : m_pEvent(NULL), m_objSessionManager(),
+    m_objWebSockParser(), m_objTcpParser(), m_objHttpParser()
 {
     m_objSessionManager.setWorkThread(this);
 }
 
 CWorkThreadEvent::~CWorkThreadEvent(void)
 {
-    if (NULL != m_pEvent)
+    try
     {
-        event_free(m_pEvent);
-        m_pEvent = NULL;
-    }
+        if (NULL != m_pEvent)
+        {
+            event_free(m_pEvent);
+            m_pEvent = NULL;
+        }
 
-    std::vector<struct evhttp *>::iterator itHttp;
-    for (itHttp = m_vcEvHttp.begin(); m_vcEvHttp.end() != itHttp; itHttp++)
-    {
-        evhttp_free(*itHttp);
+        std::vector<struct evhttp *>::iterator itHttp;
+        for (itHttp = m_vcEvHttp.begin(); m_vcEvHttp.end() != itHttp; itHttp++)
+        {
+            evhttp_free(*itHttp);
+        }
+        m_vcEvHttp.clear();
     }
-    m_vcEvHttp.clear();
+    catch(...)
+    {
+
+    }
 }
 
 CSessionManager *CWorkThreadEvent::getSessionManager(void)
@@ -156,7 +164,7 @@ int CWorkThreadEvent::setHttpSock(std::vector<Q_SOCK> &vcHttpSock)
     return Q_RTN_OK;
 }
 
-void CWorkThreadEvent::onMainRead(CEventBuffer *pBuffer)
+void CWorkThreadEvent::onMainRead(CEventBuffer *)
 {
     struct bufferevent *pBev = NULL;
     CSession *pSession = NULL;
@@ -206,7 +214,7 @@ void CWorkThreadEvent::onMainRead(CEventBuffer *pBuffer)
     }
 }
 
-void CWorkThreadEvent::onAssistRead(CEventBuffer *pBuffer)
+void CWorkThreadEvent::onAssistRead(CEventBuffer *)
 {
     struct bufferevent *pBev = NULL;
     CSession *pSession = NULL;
@@ -293,7 +301,7 @@ void CWorkThreadEvent::dispWebSock(CWorkThreadEvent *pWorkThreadEvent,
     //握手处理
     if (SessionStatus_Connect == pSession->getStatus())
     {
-        std::string *pStrShakeHandsRtn = pParser->shakeHands(pSession->getBuffer());
+        const std::string *pStrShakeHandsRtn = pParser->shakeHands(pSession->getBuffer());
         if (pParser->getClose())
         {
             pSessionManager->closeLinkByID(pSession->getSessionID());
@@ -315,7 +323,6 @@ void CWorkThreadEvent::dispWebSock(CWorkThreadEvent *pWorkThreadEvent,
     
     //正常数据处理
     bool bOk = false;
-    WebSockFram *pHead = NULL;
     bool bControl = false;
     while(true)
     {
@@ -333,7 +340,7 @@ void CWorkThreadEvent::dispWebSock(CWorkThreadEvent *pWorkThreadEvent,
             return;
         }
 
-        pHead = pParser->getHead();
+        const WebSockFram * pHead = pParser->getHead();
 
         //控制帧
         bControl = false;
@@ -346,14 +353,13 @@ void CWorkThreadEvent::dispWebSock(CWorkThreadEvent *pWorkThreadEvent,
 
                 return;
             }
-            break;
         case PING:
             {
                 bControl = true;
                 size_t iOutLens = Q_INIT_NUMBER;
-                const char *pHead = pParser->createHead(true, PONG, 0, iOutLens);
+                const char *pPingHead = pParser->createHead(true, PONG, 0, iOutLens);
 
-                pSession->getBuffer()->writeBuffer(pHead, iOutLens);
+                (void)pSession->getBuffer()->writeBuffer(pPingHead, iOutLens);
                 pSession->setPing(pSessionManager->getCount());
             }
             break;
@@ -429,8 +435,6 @@ void CWorkThreadEvent::dispWebSock(CWorkThreadEvent *pWorkThreadEvent,
             (void)pSession->getBuffer()->delBuffer(pParser->getParsedLens());
         }
     }
-
-    return;
 }
 
 void CWorkThreadEvent::workThreadReadCB(struct bufferevent *bev, void *arg)
@@ -468,7 +472,7 @@ void CWorkThreadEvent::workThreadReadCB(struct bufferevent *bev, void *arg)
     pSessionManager->setCurSession(NULL);
 }
 
-void CWorkThreadEvent::workThreadEventCB(struct bufferevent *bev, short event, void *arg)
+void CWorkThreadEvent::workThreadEventCB(struct bufferevent *bev, short, void *arg)
 {
     CWorkThreadEvent *pWorkThreadEvent = (CWorkThreadEvent *)arg;
     CSessionManager *pSessionManager = pWorkThreadEvent->getSessionManager();
@@ -507,7 +511,7 @@ void CWorkThreadEvent::workThreadEventCB(struct bufferevent *bev, short event, v
     bufferevent_free(bev);
 }
 
-void CWorkThreadEvent::workThreadTimerCB(evutil_socket_t, short event, void *arg)
+void CWorkThreadEvent::workThreadTimerCB(evutil_socket_t, short, void *arg)
 {
     CWorkThreadEvent *pWorkThreadEvent = (CWorkThreadEvent *)arg;
     CSessionManager *pSessionManager = pWorkThreadEvent->getSessionManager();
@@ -535,7 +539,7 @@ void CWorkThreadEvent::addContinuation(const Q_SOCK &sock, const char *pszData, 
     if (m_mapWebSockPack.end() == itFram)
     {
         std::string strBuf(pszData, iLens);
-        m_mapWebSockPack.insert(std::make_pair(sock, strBuf));
+        (void)m_mapWebSockPack.insert(std::make_pair(sock, strBuf));
 
         return;
     }

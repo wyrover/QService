@@ -29,7 +29,7 @@
 #include "Exception.h"
 #include "QString.h"
 
-#define LOG_EVTIME 5 * 60 * 1000
+#define LOG_EVTIME (5 * 60 * 1000)
 
 struct LogerInfo
 {
@@ -80,8 +80,8 @@ int CLog::setTimer(unsigned int uiMS)
     evutil_timerclear(&tVal);
     if (uiMS >= 1000)
     {
-        tVal.tv_sec = uiMS / 1000;
-        tVal.tv_usec = (uiMS % 1000) * (1000);
+        tVal.tv_sec = (uiMS / 1000);
+        tVal.tv_usec = ((uiMS % 1000) * (1000));
     }
     else
     {
@@ -160,7 +160,7 @@ Q_SOCK CLog::addLoger(CLoger *pLoger)
     return objLogInfo.pPair->getWriteFD();
 }
 
-void CLog::timerCB(evutil_socket_t, short event, void *arg)
+void CLog::timerCB(evutil_socket_t, short, void *arg)
 {
     std::list<LogerInfo *>::iterator itLoger;
     std::list<LogerInfo *> *pLoger = (std::list<LogerInfo *> *)arg;
@@ -170,7 +170,7 @@ void CLog::timerCB(evutil_socket_t, short event, void *arg)
     }
 }
 
-void CLog::LogerReadCB(struct bufferevent *bev, void *arg)
+void CLog::LogerReadCB(struct bufferevent *, void *arg)
 {
     LogerInfo *pLogerInfo = (LogerInfo*)arg;
     CTcpParser *pParser = pLogerInfo->pParser;

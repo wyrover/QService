@@ -40,7 +40,7 @@ void CTableFile::setFile(const char *pszFile)
     m_strFile = pszFile;
 }
 
-const char *CTableFile::getFile(void)
+const char *CTableFile::getFile(void) const
 {
     return m_strFile.c_str();
 }
@@ -51,7 +51,7 @@ void CTableFile::setSplitFlag(const char *pszSplitFlag)
     m_strSplitFlag = pszSplitFlag;
 }
 
-bool CTableFile::checkNote(std::string &strMsg)
+bool CTableFile::checkNote(const std::string &strMsg) const
 {
     if ((std::string("//") == strMsg.substr(0, strlen("//")))
         || (std::string("#") == strMsg.substr(0, strlen("#"))))
@@ -82,7 +82,7 @@ int CTableFile::Parse(void)
     //∂¡»°±ÌÕ∑
     while(inStream.good())
     {
-        inStream.getline(pBuffer, sizeof(pBuffer) - 1);
+        inStream.getline(pBuffer, (std::streamsize)(sizeof(pBuffer) - 1));
         strTmp = pBuffer;
         strTmp = Q_Trim(strTmp);
         if (strTmp.empty())
@@ -117,7 +117,7 @@ int CTableFile::Parse(void)
     while(inStream.good())
     {
         Q_Zero(pBuffer, sizeof(pBuffer));
-        inStream.getline(pBuffer, sizeof(pBuffer) - 1);
+        inStream.getline(pBuffer, (std::streamsize)(sizeof(pBuffer) - 1));
         strTmp = pBuffer;
 
         if (strTmp.empty())
@@ -141,7 +141,7 @@ int CTableFile::Parse(void)
     return Q_RTN_OK;
 }
 
-void CTableFile::getValue(std::string &strValue, std::map<int, std::string> &mapTableHead)
+void CTableFile::getValue(const std::string &strValue, std::map<int, std::string> &mapTableHead)
 {
     bool bAllEmpty = true;
     int iIndex = Q_INIT_NUMBER;
@@ -169,12 +169,12 @@ void CTableFile::getValue(std::string &strValue, std::map<int, std::string> &map
     for (itValue = lstValue.begin(); (lstValue.end() != itValue) && ((size_t)iIndex < mapTableHead.size()); 
         itValue++)
     {
-        if (iCount >= (lstValue.size() - m_iRemoveCount))
+        if (iCount >= (lstValue.size() - (size_t)m_iRemoveCount))
         {
             break;
         }
 
-        mapVal.insert(std::make_pair((mapTableHead.find(iIndex)->second), *itValue));
+        (void)mapVal.insert(std::make_pair((mapTableHead.find(iIndex)->second), *itValue));
         iIndex++;
         iCount++;
     }
@@ -182,7 +182,7 @@ void CTableFile::getValue(std::string &strValue, std::map<int, std::string> &map
     m_lstAllValue.push_back(mapVal);
 }
 
-bool CTableFile::getHead(std::string &strHead, std::map<int, std::string> &mapTableHead)
+bool CTableFile::getHead(const std::string &strHead, std::map<int, std::string> &mapTableHead)
 {
     std::list<std::string> lstTableHead;
 
@@ -215,7 +215,7 @@ bool CTableFile::getHead(std::string &strHead, std::map<int, std::string> &mapTa
     return true;
 }
 
-bool CTableFile::parseHead(std::list<std::string> &lstTableHead, std::map<int, std::string> &mapTableHead)
+bool CTableFile::parseHead(std::list<std::string> &lstTableHead, std::map<int, std::string> &mapTableHead) const
 {
     int iIndex = Q_INIT_NUMBER;
     std::string strTmp;
@@ -225,7 +225,7 @@ bool CTableFile::parseHead(std::list<std::string> &lstTableHead, std::map<int, s
     size_t iCount = Q_INIT_NUMBER;
     for (itHead = lstTableHead.begin(); lstTableHead.end() != itHead; itHead++)
     {
-        if (iCount >= (lstTableHead.size() - m_iRemoveCount))
+        if (iCount >= (lstTableHead.size() - (size_t)m_iRemoveCount))
         {
             break;
         }
@@ -243,7 +243,7 @@ bool CTableFile::parseHead(std::list<std::string> &lstTableHead, std::map<int, s
             }
         }
 
-        mapTableHead.insert(std::make_pair(iIndex, strTmp));
+        (void)mapTableHead.insert(std::make_pair(iIndex, strTmp));
         iIndex++;
         iCount++;
     }
@@ -251,7 +251,7 @@ bool CTableFile::parseHead(std::list<std::string> &lstTableHead, std::map<int, s
     return true;
 }
 
-bool CTableFile::checkHead(std::list<std::string> &lstTableHead)
+bool CTableFile::checkHead(std::list<std::string> &lstTableHead) const
 {
     if (lstTableHead.empty())
     {
@@ -262,7 +262,7 @@ bool CTableFile::checkHead(std::list<std::string> &lstTableHead)
     std::list<std::string>::iterator itHead;
     for (itHead = lstTableHead.begin(); lstTableHead.end() != itHead; itHead++)
     {
-        if (iCount >= (lstTableHead.size() - m_iRemoveCount))
+        if (iCount >= (lstTableHead.size() - (size_t)m_iRemoveCount))
         {
             break;
         }
@@ -290,7 +290,7 @@ void CTableFile::checkEof(void)
     }
 }
 
-bool CTableFile::eof(void)
+bool CTableFile::eof(void) const
 {
     return m_bEof;
 }

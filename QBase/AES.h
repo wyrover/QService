@@ -45,15 +45,15 @@ public:
 private:
     enum BlockSize
     {
-        AES_BlockSize = 16,
+        AES_BlockSize = 16
     };
 
 private:
     unsigned long *m_pRK;
-    unsigned char *m_pKey;
+    unsigned char *m_pKey;    
+    int m_iRounds;
     unsigned char m_uacPlain[AES_BlockSize];
     unsigned char m_uacCipher[AES_BlockSize];
-    int m_iRounds;
     CBuffer m_objBuffer;
 };
 
@@ -72,15 +72,15 @@ public:
 private:
     enum BlockSize
     {
-        AES_BlockSize = 16,
+        AES_BlockSize = 16
     };
 
 private:
     unsigned long *m_pRK;
     unsigned char *m_pKey;
+    int m_iRounds;
     unsigned char m_uacPlain[AES_BlockSize];
     unsigned char m_uacCipher[AES_BlockSize];
-    int m_iRounds;
     CBuffer m_objBuffer;
 };
 

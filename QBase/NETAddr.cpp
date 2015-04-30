@@ -64,7 +64,7 @@ void CNETAddr::Clear(void)
 * Modification 
 * ......record :first program
 ************************************************************************/
-int CNETAddr::setAddr(const char *pszHostName, unsigned short usPort, bool is_ipv6)
+int CNETAddr::setAddr(const char *pszHostName, unsigned short usPort, bool bIpv6)
 {
     struct addrinfo stAddrInfo = {0};
     struct addrinfo *pAddrInfo = NULL;
@@ -72,7 +72,7 @@ int CNETAddr::setAddr(const char *pszHostName, unsigned short usPort, bool is_ip
 
     Clear();
 
-    if (!is_ipv6)
+    if (!bIpv6)
     {
         m_Addr_Type = IPV4;
         stAddrInfo.ai_flags  = AI_PASSIVE;
@@ -160,7 +160,7 @@ int	CNETAddr::setAddr(const struct sockaddr *pAddr)
 * Modification 
 * ......record :first program
 ************************************************************************/
-int CNETAddr::setRemoteAddr(Q_SOCK &fd)
+int CNETAddr::setRemoteAddr(const Q_SOCK &fd)
 {
     if (Q_INVALID_SOCK == fd)
     {
@@ -196,7 +196,7 @@ int CNETAddr::setRemoteAddr(Q_SOCK &fd)
 * Modification 
 * ......record :first program
 ************************************************************************/
-int CNETAddr::setLocalAddr(Q_SOCK &fd)
+int CNETAddr::setLocalAddr(const Q_SOCK &fd)
 {
     sockaddr_storage stSockAddrStor;
     int iSockAddrStorLen = sizeof(sockaddr_storage);
@@ -227,15 +227,15 @@ int CNETAddr::setLocalAddr(Q_SOCK &fd)
 * Modification 
 * ......record :first program
 ************************************************************************/
-sockaddr *CNETAddr::getAddr(void)
+const sockaddr *CNETAddr::getAddr(void) const
 {
     if (IPV4 == m_Addr_Type)
     {
-        return (sockaddr*)&m_ipv4;
+        return (const sockaddr*)&m_ipv4;
     }
     else
     {
-        return (sockaddr*)&m_ipv6;
+        return (const sockaddr*)&m_ipv6;
     }
 }
 
@@ -250,7 +250,7 @@ sockaddr *CNETAddr::getAddr(void)
 * Modification 
 * ......record :first program
 ************************************************************************/
-size_t CNETAddr::getAddrSize(void)
+size_t CNETAddr::getAddrSize(void) const
 {
     if (IPV4 == m_Addr_Type)
     {
@@ -273,19 +273,19 @@ size_t CNETAddr::getAddrSize(void)
 * Modification 
 * ......record :first program
 ************************************************************************/
-std::string CNETAddr::getIp(void)
+std::string CNETAddr::getIp(void) const
 {
     int iRtn = Q_RTN_OK;
     char acTmp[200] = {0};
     int iLen = sizeof(acTmp);
 
     if (IPV4 == m_Addr_Type)
-    {
-        iRtn = getnameinfo((sockaddr*)&m_ipv4, sizeof(m_ipv4), acTmp, iLen, NULL, 0, NI_NUMERICHOST);
+    {        
+        iRtn = getnameinfo((const sockaddr*)&m_ipv4, (socklen_t)sizeof(m_ipv4), acTmp, iLen, NULL, 0, NI_NUMERICHOST);
     }
     else
     {
-        iRtn = getnameinfo((sockaddr*)&m_ipv6, sizeof(m_ipv6), acTmp, iLen, NULL, 0, NI_NUMERICHOST);
+        iRtn = getnameinfo((const sockaddr*)&m_ipv6, (socklen_t)sizeof(m_ipv6), acTmp, iLen, NULL, 0, NI_NUMERICHOST);
     }
 
     if (Q_RTN_OK != iRtn)
@@ -321,12 +321,12 @@ unsigned short CNETAddr::getPort(void)
     }
 }
 
-bool CNETAddr::is_ipv4()
+bool CNETAddr::is_ipv4() const
 {
     return (IPV4 == m_Addr_Type);
 }
 
-bool CNETAddr::is_ipv6()
+bool CNETAddr::is_ipv6() const
 {
     return (IPV6 == m_Addr_Type);
 }
@@ -342,7 +342,7 @@ bool CNETAddr::is_ipv6()
 * Modification 
 * ......record :first program
 ************************************************************************/
-unsigned long CNETAddr::IpToNumber(const char *pszIp)
+unsigned long CNETAddr::IpToNumber(const char *pszIp) const
 {
     return inet_addr(pszIp);
 }

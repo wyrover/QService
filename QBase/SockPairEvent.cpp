@@ -31,7 +31,9 @@
 #include "SysLog.h"
 
 CSockPairEvent::CSockPairEvent(void) : m_bRunOnStop(false), m_emStatus(RunStatus_Unknown), 
-    m_pBase(NULL), m_pMainBev(NULL),m_pAssistBev(NULL), m_pExitEvent(NULL)
+    m_pBase(NULL), m_pMainBev(NULL),m_pAssistBev(NULL), m_pExitEvent(NULL),
+    m_objMainSockPair(), m_objAssistSockPair(), m_objMainBuffer(), m_objAssistBuffer(),
+    m_Mutex(), m_Cond()
 {
     m_pBase = event_base_new();
     if (NULL == m_pBase)
@@ -43,7 +45,14 @@ CSockPairEvent::CSockPairEvent(void) : m_bRunOnStop(false), m_emStatus(RunStatus
 
 CSockPairEvent::~CSockPairEvent(void)
 {
-    freeAll();
+    try
+    {
+        freeAll();
+    }
+    catch(...)
+    {
+
+    }    
 }
 
 void CSockPairEvent::freeAll(void)
@@ -79,8 +88,8 @@ int CSockPairEvent::initExitMonitor(unsigned int uiMS)
     evutil_timerclear(&tVal);
     if (uiMS >= 1000)
     {
-        tVal.tv_sec = uiMS / 1000;
-        tVal.tv_usec = (uiMS % 1000) * (1000);
+        tVal.tv_sec = (uiMS / 1000);
+        tVal.tv_usec = ((uiMS % 1000) * (1000));
     }
     else
     {
@@ -199,7 +208,7 @@ void CSockPairEvent::setRunStatus(RunStatus emStatus)
     m_emStatus = emStatus;
 }
 
-RunStatus CSockPairEvent::getRunStatus(void)
+RunStatus CSockPairEvent::getRunStatus(void) const
 {
     return (RunStatus)m_emStatus;
 }
@@ -209,17 +218,17 @@ void CSockPairEvent::setRunOnStop(bool bRun)
     m_bRunOnStop = bRun;
 }
 
-bool CSockPairEvent::getRunOnStop(void)
+bool CSockPairEvent::getRunOnStop(void) const
 {
     return m_bRunOnStop;
 }
 
-bool CSockPairEvent::getError(void)
+bool CSockPairEvent::getError(void) const
 {
     return ((RunStatus_Error == getRunStatus()) ? true : false);
 }
 
-bool CSockPairEvent::getIsRun(void)
+bool CSockPairEvent::getIsRun(void) const
 {
     return ((RunStatus_Runing == getRunStatus()) ? true : false);
 }
@@ -235,7 +244,7 @@ bool CSockPairEvent::getIsRun(void)
 * Modification 
 * ......record :first program
 ************************************************************************/
-bool CSockPairEvent::waitForStarted(void)
+bool CSockPairEvent::waitForStarted(void) const
 {
     while(true)
     {
@@ -319,17 +328,17 @@ int CSockPairEvent::initMainEvent(void)
     return Q_RTN_OK;
 }
 
-int CSockPairEvent::sendMainMsg(const char *pszBuff, const size_t &iSize)
+int CSockPairEvent::sendMainMsg(const char *pszBuff, const size_t &iSize) const
 {
     return m_objMainSockPair.Write(pszBuff, iSize);
 }
 
-int CSockPairEvent::sendAssistMsg(const char *pszBuff, const size_t &iSize)
+int CSockPairEvent::sendAssistMsg(const char *pszBuff, const size_t &iSize) const
 {
     return m_objAssistSockPair.Write(pszBuff, iSize);
 }
 
-void CSockPairEvent::eventCB(struct bufferevent *bev, short event, void *arg)
+void CSockPairEvent::eventCB(struct bufferevent *, short event, void *arg)
 {
     CSockPairEvent *pParam = (CSockPairEvent*)arg;
     int iSockError = EVUTIL_SOCKET_ERROR();
@@ -360,19 +369,19 @@ void CSockPairEvent::eventCB(struct bufferevent *bev, short event, void *arg)
          event, iSockError, evutil_socket_error_to_string(iSockError));
 }
 
-void CSockPairEvent::assistReadCB(struct bufferevent *bev, void *arg)
+void CSockPairEvent::assistReadCB(struct bufferevent *, void *arg)
 {
     CSockPairEvent *pParam = (CSockPairEvent*)arg;
     pParam->onAssistRead(pParam->getAssistBuffer());
 }
 
-void CSockPairEvent::mainReadCB(struct bufferevent *bev, void *arg)
+void CSockPairEvent::mainReadCB(struct bufferevent *, void *arg)
 {
     CSockPairEvent *pParam = (CSockPairEvent*)arg;
     pParam->onMainRead(pParam->getMainBuffer());
 }
 
-void CSockPairEvent::exitMonitorCB(evutil_socket_t, short event, void *arg)
+void CSockPairEvent::exitMonitorCB(evutil_socket_t, short, void *arg)
 {
     CSockPairEvent *pParam = (CSockPairEvent*)arg;
 

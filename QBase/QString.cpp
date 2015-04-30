@@ -45,9 +45,9 @@ void Q_Convert2Upper(char *pszWord)
         return;
     }
 
-    int iLens = strlen(pszWord);
+    size_t iLens = strlen(pszWord);
 
-    for (int i = 0; i < iLens; i++)
+    for (size_t i = 0; i < iLens; i++)
     {
         if (*(pszWord + i) >= 'a' && *(pszWord + i) <= 'z')
         {
@@ -71,7 +71,7 @@ void Q_Convert2Upper(char *pszWord)
 **************************************************/
 std::string &Q_Convert2Upper(std::string &strWord)
 {
-    transform(strWord.begin(), strWord.end(), strWord.begin(), ::toupper);  
+    (void)std::transform(strWord.begin(), strWord.end(), strWord.begin(), ::toupper);  
 
     return strWord;
 }
@@ -94,9 +94,8 @@ void Q_Convert2Lower(char *pszWord)
         return;
     }
 
-    int iLens = strlen(pszWord);
-
-    for (int i = 0; i < iLens; i++)
+    size_t iLens = strlen(pszWord);
+    for (size_t i = 0; i < iLens; i++)
     {
         if (*(pszWord + i) >= 'A' && *(pszWord + i) <= 'Z')
         {
@@ -120,7 +119,7 @@ void Q_Convert2Lower(char *pszWord)
 **************************************************/
 std::string &Q_Convert2Lower(std::string &strWord)
 {
-    transform(strWord.begin(), strWord.end(), strWord.begin(), ::tolower);  
+    (void)std::transform(strWord.begin(), strWord.end(), strWord.begin(), ::tolower);  
 
     return strWord;
 }
@@ -148,8 +147,8 @@ void Q_ReverseStr(char *pszWord, const size_t iBg, const size_t iEnd)
         return;
     }
 
-    int iBgTmp = Q_INIT_NUMBER;
-    int iEndTmp = Q_INIT_NUMBER;
+    size_t iBgTmp = Q_INIT_NUMBER;
+    size_t iEndTmp = Q_INIT_NUMBER;
     size_t iLens = strlen(pszWord);
 
     iBgTmp = (iBg >= iLens ? (iLens - 1) : iBg);
@@ -180,8 +179,8 @@ std::string &Q_ReverseStr(std::string &strWord, const size_t iBg, const size_t i
         return strWord;
     }
 
-    int iBgTmp = Q_INIT_NUMBER;
-    int iEndTmp = Q_INIT_NUMBER;
+    size_t iBgTmp = Q_INIT_NUMBER;
+    size_t iEndTmp = Q_INIT_NUMBER;
     size_t iLens = strWord.size();
     std::string::iterator itStr;
 
@@ -228,7 +227,7 @@ void Q_MoveN2Before(char *pszWord, const size_t n)
 
     size_t iLens = strlen(pszWord);
     if (n >= iLens
-        || n <= 0
+        || 0 == n
         || 0 == iLens)
     {
         return;
@@ -246,7 +245,7 @@ std::string &Q_MoveN2Before(std::string &strWord, const size_t n)
     size_t iLens = strWord.size();
 
     if (n >= iLens
-        || n <= 0
+        || 0 == n
         || 0 == iLens)
     {
         return strWord;
@@ -481,6 +480,7 @@ std::string &Q_TrimRight(std::string &strSource)
 
     return strSource;
 }
+//lint =e838
 
 /*************************************************
 * Function name:Q_Trim
@@ -596,7 +596,7 @@ std::string &Q_Replace(std::string &strSource, const char *pszFlag,
 {
     size_t iFlageLens = strlen(pszFlag);
     size_t iReFlagLens = strlen(pszReFlag);
-
+    
     for(std::string::size_type pos = 0; std::string::npos != pos; pos += iReFlagLens)   
     {
         pos = strSource.find(pszFlag, pos);
@@ -669,20 +669,20 @@ std::string Q_FormatVa(const char *pcFormat, va_list args)
             && (iNum < (int)uiSize))
         {
             strRtn = pcBuff;
-            Q_SafeDelete(pcBuff);
+            Q_SafeDelete_Array(pcBuff);
 
             return strRtn;
         }
         //分配更大空间
-        uiSize = (iNum > -1) ? (int)(iNum + 1) : uiSize*2;
-        Q_SafeDelete(pcBuff);
+        uiSize = (size_t)((iNum > -1) ? (iNum + 1) : uiSize*2);
+        Q_SafeDelete_Array(pcBuff);
         pcBuff = new(std::nothrow) char[uiSize];
         if (NULL == pcBuff)
         {
             return "";
         }
     }
-    Q_SafeDelete(pcBuff);
+    Q_SafeDelete_Array(pcBuff);
 
     return "";
 }

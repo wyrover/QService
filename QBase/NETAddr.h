@@ -44,35 +44,36 @@ public:
     void Clear(void);
 
     /*设置sockaddr_in*/
-    int setAddr(const char *pszHostName, unsigned short usPort, bool is_ipv6 = false);
+    int setAddr(const char *pszHostName, unsigned short usPort, bool bIpv6 = false);
     /*设置sockaddr_in*/
     int	setAddr(const struct sockaddr *pAddr);
     /*根据socket句柄获取远端地址信息*/
-    int setRemoteAddr(Q_SOCK &fd);
+    int setRemoteAddr(const Q_SOCK &fd);
     /*根据socket句柄获取本地地址信息*/
-    int setLocalAddr(Q_SOCK &fd);
+    int setLocalAddr(const Q_SOCK &fd);
     /*返回sockaddr句柄*/
-    sockaddr *getAddr(void);
+    const sockaddr *getAddr(void) const;
     /*获取地址内存长度*/
-    size_t getAddrSize(void);
+    size_t getAddrSize(void) const;
     /*获取IP*/
-    std::string getIp(void);
+    std::string getIp(void) const;
     /*获取端口*/
     unsigned short getPort(void);
     /*是否为ipv4*/
-    bool is_ipv4();
+    bool is_ipv4() const;
     /*是否为ipv6*/
-    bool is_ipv6();
+    bool is_ipv6() const;
     /*ip转数字*/
-    unsigned long IpToNumber(const char *pszIp);
+    unsigned long IpToNumber(const char *pszIp) const;
 
 private:
-    enum
+    enum NetAdrrType
     {
         IPV4,
-        IPV6,
-    }m_Addr_Type;
+        IPV6
+    };
 
+    NetAdrrType m_Addr_Type;
     sockaddr_in	m_ipv4;
     sockaddr_in6 m_ipv6;
     CSockInit m_sockInit;

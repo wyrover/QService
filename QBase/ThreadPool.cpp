@@ -34,7 +34,7 @@
 enum ThRunStatus
 {
     RUN = 0,
-    STOP,
+    STOP
 };
 
 struct ThreadPool
@@ -60,7 +60,10 @@ public:
         m_pPool = pPool;
     };
 
-    ~CThreadPoolTask(void) {};
+    ~CThreadPoolTask(void) 
+    {
+        m_pPool = NULL;
+    };
 
     void Run(void)
     {
@@ -92,6 +95,7 @@ public:
     };
 
 private:
+    CThreadPoolTask(void);
     CTask *getTaskFromQueue(std::queue<CTask *> &taskQueue)
     {
         CTask *pTask = NULL;
@@ -149,7 +153,14 @@ CThreadPool::CThreadPool(const unsigned int uiThreadNum) : m_pstPool(NULL)
 
 CThreadPool::~CThreadPool(void)
 {
-    Destroy();
+    try
+    {
+        Destroy();
+    }
+    catch(...)
+    {
+
+    }
 }
 
 int CThreadPool::Init(const unsigned int &uiThreadNum)
@@ -263,7 +274,7 @@ unsigned int CThreadPool::getTaskNumber(void)
     return uiSize;
 }
 
-unsigned int CThreadPool::getPoolSize(void)
+unsigned int CThreadPool::getPoolSize(void) const
 {
     return m_pstPool->uiThreadNum;
 }

@@ -39,14 +39,21 @@ CCond::CCond(void)
 
 CCond::~CCond(void)
 {
-    Destroy();
+    try
+    {
+        Destroy();
+    }
+    catch (...)
+    {
+    	
+    }    
 }
 
 int CCond::Init(void)
 {
 #ifdef Q_OS_WIN32
     m_Cond = CreateEvent(NULL, FALSE, FALSE, NULL);
-    return (NULL == m_Cond ? Q_Error() : Q_RTN_OK);
+    return (int)(NULL == m_Cond ? Q_Error() : Q_RTN_OK);
 #else
     return pthread_cond_init(&m_Cond, (const pthread_condattr_t*)NULL);
 #endif
@@ -78,10 +85,10 @@ void CCond::Wait(CQMutex *pMutex)
 
 #ifdef Q_OS_WIN32
     pMutex->unLock();
-    iRtn = WaitForSingleObject(m_Cond, INFINITE);
-    if (WAIT_OBJECT_0 != iRtn)
+    iRtn = (int)WaitForSingleObject(m_Cond, INFINITE);
+    if ((int)WAIT_OBJECT_0 != iRtn)
     {
-        iRtn = Q_Error();
+        iRtn = (int)Q_Error();
     }
     pMutex->Lock();
 #else
@@ -105,11 +112,11 @@ void CCond::Wait(CQMutex *pMutex, const unsigned int uimSec)
 
 #ifdef Q_OS_WIN32
     pMutex->unLock();
-    iRtn = WaitForSingleObject(m_Cond, uimSec);
+    iRtn = (int)WaitForSingleObject(m_Cond, uimSec);
     if (WAIT_TIMEOUT != iRtn
-        && WAIT_OBJECT_0 != iRtn)
+        && (int)WAIT_OBJECT_0 != iRtn)
     {
-        iRtn = Q_Error();
+        iRtn = (int)Q_Error();
     }
     pMutex->Lock();
 #else
@@ -153,7 +160,7 @@ void CCond::Signal(void)
     BOOL bRtn = FALSE;
 
     bRtn = SetEvent(m_Cond);
-    iRtn = (FALSE == bRtn ? Q_Error() : Q_RTN_OK);
+    iRtn = (int)(FALSE == bRtn ? Q_Error() : Q_RTN_OK);
 #else
     iRtn = pthread_cond_signal(&m_Cond);
 #endif

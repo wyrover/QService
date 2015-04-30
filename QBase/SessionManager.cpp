@@ -32,7 +32,8 @@
 
 CSessionManager::CSessionManager(void) : m_uiTimer(Q_INIT_NUMBER),
     m_uiCount(Q_INIT_NUMBER), m_pLua(NULL), m_pCurrent(NULL), m_pInterface(NULL),
-    m_pWorkThread(NULL)
+    m_pWorkThread(NULL) ,m_objWebSockParser(), m_objTcpParser(), m_objLinkOther(),
+    m_objBinary()
 {
     for (int i = 0; i < Q_INITSESSIONSIZE; i++)
     {
@@ -50,15 +51,22 @@ CSessionManager::CSessionManager(void) : m_uiTimer(Q_INIT_NUMBER),
 
 CSessionManager::~CSessionManager(void)
 {
-    freeAllSession();
+    try
+    {
+        freeAllSession();
+    }
+    catch(...)
+    {
+
+    }    
 }
 
-void CSessionManager::setTimer(unsigned int &uiMS)
+void CSessionManager::setTimer(const unsigned int &uiMS)
 {
     m_uiTimer = uiMS;
 }
 
-unsigned int CSessionManager::getTimer(void)
+unsigned int CSessionManager::getTimer(void) const
 {
     return m_uiTimer;
 }
@@ -68,7 +76,7 @@ void CSessionManager::addCount(void)
     m_uiCount++;
 }
 
-unsigned int CSessionManager::getCount(void)
+unsigned int CSessionManager::getCount(void) const
 {
     return m_uiCount;
 }
@@ -208,7 +216,7 @@ void CSessionManager::checkPing(const unsigned int uiTime)
     }
 }
 
-size_t CSessionManager::getSessionSize(void)
+size_t CSessionManager::getSessionSize(void) const
 {
     return m_umapSession.size();
 }

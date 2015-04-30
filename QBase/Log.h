@@ -49,8 +49,8 @@ public:
     void onStop(void);
 
 public:
-    static void LogerReadCB(struct bufferevent *bev, void *arg);
-    static void timerCB(evutil_socket_t, short event, void *arg);
+    static void LogerReadCB(struct bufferevent *, void *arg);
+    static void timerCB(evutil_socket_t, short, void *arg);
 
 private:
     int setTimer(unsigned int uiMS);

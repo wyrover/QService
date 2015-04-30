@@ -58,7 +58,7 @@ int Q_FileSize(const char *pszFileName, unsigned long &ulSize)
         return iRtn;
     }
 
-    ulSize = stBuffer.st_size;
+    ulSize = (unsigned long)stBuffer.st_size;
 
     return Q_RTN_OK;
 }
@@ -177,7 +177,7 @@ int Q_DirName(const char *pszPath, std::string &strPath)
     strPath.clear();
 
 #ifdef Q_OS_WIN32
-    int iPos = Q_INIT_NUMBER;
+    size_t iPos = Q_INIT_NUMBER;
 
     strPath = pszPath;
     iPos = strPath.find_last_of(Q_PATH_SEPARATOR);
@@ -212,7 +212,7 @@ int Q_DirExits(const char *pszPath)
         return Q_ERROR_NULLPOINTER;
     }
 
-    int iLens = strlen(pszPath);
+    size_t iLens = strlen(pszPath);
 
     if (0 == iLens
         || iLens >= Q_FILEPATH_LENS)
@@ -308,10 +308,10 @@ int Q_GetDrivce(std::list<std::string> &lstDrivce)
 #ifdef Q_OS_WIN32
     std::string strTmp;
     char acDriverStr[Q_ONEK] = {0};
-    int iLen = GetLogicalDriveStrings(sizeof(acDriverStr), acDriverStr);
+    int iLen = (int)GetLogicalDriveStrings(sizeof(acDriverStr), acDriverStr);
     if (0 == iLen)
     {
-        return Q_Error();
+        return (int)Q_Error();
     }
 
     for(int i = 0; i < iLen; i++)
@@ -463,7 +463,7 @@ int Q_GetProPath(std::string &strPath)
     char acPath[Q_FILEPATH_LENS] = {0};
 
 #ifdef Q_OS_WIN32 
-    iSize = GetModuleFileName(NULL, acPath, sizeof(acPath) - 1);   
+    iSize = (int)GetModuleFileName(NULL, acPath, sizeof(acPath) - 1);   
 #else
     iSize = readlink("/proc/self/exe", acPath, sizeof(acPath) - 1);
 #endif

@@ -74,8 +74,8 @@ public:
 
 public:
     static void listenerAcceptCB(struct evconnlistener *pListener, Q_SOCK sock, struct sockaddr *, 
-        int iSockLen, void *arg);
-    static void exitMonitorCB(evutil_socket_t, short event, void *arg);
+        int, void *arg);
+    static void exitMonitorCB(evutil_socket_t, short, void *arg);
 
 private:
     struct evconnlistener * initListener(const char *pszHost, const unsigned short usPort);
@@ -86,7 +86,7 @@ private:
     bool getError(void);
     bool getIsRun(void);
     int initExitMonitor(unsigned int uiMS);
-    Q_SOCK initHttpSock(const char *pszIp, const unsigned short &usPort);
+    Q_SOCK initHttpSock(const char *pszIp, const unsigned short &usPort) const;
 
 private:
     RunStatus m_emRunStatus;

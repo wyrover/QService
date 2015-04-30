@@ -49,25 +49,25 @@ int Q_WideCharToMultiByte(const wchar_t *pszSrc, char *pszDest);
 int Q_MultiByteToWideChar(const char *pszSrc, wchar_t *pszDest);
 
 /*×ª×Ö·û´®*/
-template<class T>
+template<typename T>
 std::string Q_ToString(T number)
 {
-    std::stringstream strStream;
+    std::stringstream objStream;
 
-    strStream << number;
+    objStream << number;
 
-    return strStream.str();
+    return objStream.str();
 };
 
 /*×ªÊý×Ö*/
-template<class T>
+template<typename T>
 T Q_ToNumber(const char *pszNumber)
 {
-    T  iValue;
-    std::stringstream strValue;
+    T  iValue = Q_INIT_NUMBER;
+    std::stringstream objStream;
 
-    strValue << pszNumber;
-    strValue >> iValue;
+    objStream << pszNumber;
+    objStream >> iValue;
 
     return iValue;
 };

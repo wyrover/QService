@@ -26,7 +26,7 @@
 *****************************************************************************/
 
 #include "AES.h"
-#include "rijndael/rijndael.h"
+#include <rijndael/rijndael.h>
 
 /*
 最后一块的剩余字节中全部填上多余的字节数，比如最后一块大小为16字节，5字节有效，
@@ -36,14 +36,16 @@
 */
 
 CAESEncode::CAESEncode(void) : m_pRK(NULL), m_pKey(NULL), 
-    m_iRounds(Q_INIT_NUMBER)
+    m_iRounds(Q_INIT_NUMBER), m_objBuffer()
 {
+    Q_Zero(m_uacPlain, sizeof(m_uacPlain));
+    Q_Zero(m_uacCipher, sizeof(m_uacCipher));
 }
 
 CAESEncode::~CAESEncode(void)
 {
-    Q_SafeDelete(m_pRK);
-    Q_SafeDelete(m_pKey);
+    Q_SafeDelete_Array(m_pRK);
+    Q_SafeDelete_Array(m_pKey);
 }
 
 /************************************************************************
@@ -67,8 +69,8 @@ int CAESEncode::setKey(const char *pszKey, AESKeyType emKeyType)
         return Q_RTN_FAILE;
     }
 
-    int iRKLens = RKLENGTH(emKeyType);
-    int iKeyLens = KEYLENGTH(emKeyType);
+    size_t iRKLens = RKLENGTH(emKeyType);
+    size_t iKeyLens = KEYLENGTH(emKeyType);
 
     m_pRK = new(std::nothrow) unsigned long[iRKLens + 1];
     if (NULL == m_pRK)
@@ -83,7 +85,7 @@ int CAESEncode::setKey(const char *pszKey, AESKeyType emKeyType)
     m_pKey = new(std::nothrow) unsigned char[iKeyLens + 1];
     if (NULL == m_pKey)
     {
-        Q_SafeDelete(m_pRK);
+        Q_SafeDelete_Array(m_pRK);
         Q_Printf("%s", Q_EXCEPTION_ALLOCMEMORY);
 
         return Q_ERROR_ALLOCMEMORY;
@@ -91,7 +93,7 @@ int CAESEncode::setKey(const char *pszKey, AESKeyType emKeyType)
 
     Q_Zero(m_pKey, iKeyLens + 1);
 
-    memcpy(m_pKey, pszKey, strlen(pszKey) > (size_t)iKeyLens ? iKeyLens : strlen(pszKey));
+    memcpy(m_pKey, pszKey, strlen(pszKey) > iKeyLens ? iKeyLens : strlen(pszKey));
     m_iRounds = rijndaelSetupEncrypt(m_pRK, m_pKey, emKeyType);
 
     return Q_RTN_OK;
@@ -134,7 +136,7 @@ const char *CAESEncode::Encode(const char *pszPlaint, const size_t &iLens, size_
         memcpy(m_uacPlain, pszPlaint + i, iCopyLen);
         if (iCopyLen < AES_BlockSize)//不足一块的以差的字节数填充
         {
-            memset(m_uacPlain + iCopyLen, AES_BlockSize - iCopyLen, AES_BlockSize - iCopyLen);
+            memset(m_uacPlain + iCopyLen, (int)(AES_BlockSize - iCopyLen), AES_BlockSize - iCopyLen);
         }
 
         rijndaelEncrypt(m_pRK, m_iRounds, m_uacPlain, m_uacCipher);
@@ -158,14 +160,16 @@ const char *CAESEncode::Encode(const char *pszPlaint, const size_t &iLens, size_
 
 /*************************************************/
 CAESDecode::CAESDecode(void) : m_pRK(NULL), m_pKey(NULL), 
-    m_iRounds(Q_INIT_NUMBER)
+    m_iRounds(Q_INIT_NUMBER), m_objBuffer()
 {
+    Q_Zero(m_uacPlain, sizeof(m_uacPlain));
+    Q_Zero(m_uacCipher, sizeof(m_uacCipher));
 }
 
 CAESDecode::~CAESDecode(void)
 {
-    Q_SafeDelete(m_pRK);
-    Q_SafeDelete(m_pKey);
+    Q_SafeDelete_Array(m_pRK);
+    Q_SafeDelete_Array(m_pKey);
 }
 
 /************************************************************************
@@ -189,8 +193,8 @@ int CAESDecode::setKey(const char *pszKey, AESKeyType emKeyType)
         return Q_RTN_FAILE;
     }
 
-    int iRKLens = RKLENGTH(emKeyType);
-    int iKeyLens = KEYLENGTH(emKeyType);
+    size_t iRKLens = RKLENGTH(emKeyType);
+    size_t iKeyLens = KEYLENGTH(emKeyType);
 
     m_pRK = new(std::nothrow) unsigned long[iRKLens + 1];
     if (NULL == m_pRK)
@@ -205,7 +209,7 @@ int CAESDecode::setKey(const char *pszKey, AESKeyType emKeyType)
     m_pKey = new(std::nothrow) unsigned char[iKeyLens + 1];
     if (NULL == m_pKey)
     {
-        Q_SafeDelete(m_pRK);
+        Q_SafeDelete_Array(m_pRK);
         Q_Printf("%s", Q_EXCEPTION_ALLOCMEMORY);
 
         return Q_ERROR_ALLOCMEMORY;
@@ -213,7 +217,7 @@ int CAESDecode::setKey(const char *pszKey, AESKeyType emKeyType)
 
     Q_Zero(m_pKey, iKeyLens + 1);
 
-    memcpy(m_pKey, pszKey, strlen(pszKey) > (size_t)iKeyLens ? iKeyLens : strlen(pszKey));
+    memcpy(m_pKey, pszKey, strlen(pszKey) > iKeyLens ? iKeyLens : strlen(pszKey));
     m_iRounds = rijndaelSetupDecrypt(m_pRK, m_pKey, emKeyType);
 
     return Q_RTN_OK;

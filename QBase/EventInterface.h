@@ -42,6 +42,7 @@ public:
 
     virtual ~CEventInterface(void)
     {
+        m_pSessionManager = NULL;
     };
 
     void setSessionManager(class CSessionManager *pSessionManager)

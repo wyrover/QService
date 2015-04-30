@@ -34,8 +34,13 @@ class CWorkerThreadTask : public CTask
 {
 public:
     CWorkerThreadTask(void) : m_pThreadEvent(NULL)
-    {};
-    ~CWorkerThreadTask(void){};
+    {
+
+    };
+    ~CWorkerThreadTask(void)
+    {
+        m_pThreadEvent = NULL;
+    };
 
     void setWorkerHandle(CWorkThreadEvent *pThreadEvent)
     {
@@ -44,7 +49,7 @@ public:
 
     void Run(void)
     {
-        m_pThreadEvent->Start();
+        (void)m_pThreadEvent->Start();
     }
 
 private:
@@ -66,14 +71,21 @@ CServer::CServer(void)
 
 CServer::~CServer(void)
 {
-    Q_SafeDelete_Array(m_pServerThreadEvent);
-    Q_SafeDelete(m_pPool);
-    freeMainEvent();
+    try
+    {
+        Q_SafeDelete_Array(m_pServerThreadEvent);
+        Q_SafeDelete(m_pPool);
+        freeMainEvent();
+    }
+    catch(...)
+    {
+
+    }
 }
 
 bool CServer::getError(void)
 {
-    return ((RunStatus_Error == *getRunStatus()) ? true : false);;
+    return ((RunStatus_Error == *getRunStatus()) ? true : false);
 }
 
 void CServer::setRunStatus(RunStatus emStatus)
@@ -127,7 +139,7 @@ SessionType CServer::getSockType(evutil_socket_t uiSock)
 }
 
 void CServer::listenerAcceptCB(struct evconnlistener *pListener, Q_SOCK sock, struct sockaddr *, 
-    int iSockLen, void *arg)
+    int, void *arg)
 {
     unsigned short usIndex = Q_INIT_NUMBER;  
     CServer *pServer = (CServer *)arg;
@@ -168,7 +180,7 @@ void CServer::listenerAcceptCB(struct evconnlistener *pListener, Q_SOCK sock, st
     }
 }
 
-void CServer::exitMonitorCB(evutil_socket_t, short event, void *arg)
+void CServer::exitMonitorCB(evutil_socket_t, short, void *arg)
 {
     CServer *pServer = (CServer *)arg;
     switch(*(pServer->getRunStatus()))
@@ -192,10 +204,15 @@ void CServer::exitMonitorCB(evutil_socket_t, short event, void *arg)
     }
 }
 
-Q_SOCK CServer::initHttpSock(const char *pszIp, const unsigned short &usPort)
+Q_SOCK CServer::initHttpSock(const char *pszIp, const unsigned short &usPort) const
 {
     CNETAddr objAddr;
     Q_SOCK sock = Q_INVALID_SOCK;
+
+    if (Q_RTN_OK != objAddr.setAddr(pszIp, usPort))
+    {
+        return Q_INVALID_SOCK;
+    }
 
     sock = socket(AF_INET, SOCK_STREAM, 0);
     if (Q_INVALID_SOCK == sock)
@@ -210,8 +227,7 @@ Q_SOCK CServer::initHttpSock(const char *pszIp, const unsigned short &usPort)
         evutil_closesocket(sock);
         return Q_INVALID_SOCK;
     }
-
-    objAddr.setAddr(pszIp, usPort);
+    
     if (bind(sock, objAddr.getAddr(), objAddr.getAddrSize()) < 0)
     {
         Q_Printf("bind socket on port: %d ip: %s error.", usPort, pszIp);
@@ -478,7 +494,7 @@ int CServer::Init(const unsigned short &usThreadNum, const unsigned int &uiTime,
         }
 
         m_vcAllListener.push_back(pListener);
-        m_mapType.insert(std::make_pair(evconnlistener_get_fd(pListener), STYPE_WEBSOCK));
+        (void)m_mapType.insert(std::make_pair(evconnlistener_get_fd(pListener), STYPE_WEBSOCK));
     }    
 
     /*初始化tcp监听*/
@@ -497,7 +513,7 @@ int CServer::Init(const unsigned short &usThreadNum, const unsigned int &uiTime,
         }
 
         m_vcAllListener.push_back(pListener);
-        m_mapType.insert(std::make_pair(evconnlistener_get_fd(pListener), STYPE_TCP));
+        (void)m_mapType.insert(std::make_pair(evconnlistener_get_fd(pListener), STYPE_TCP));
     }
 
     /*初始化退出*/

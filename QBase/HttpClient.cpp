@@ -26,10 +26,6 @@
 *****************************************************************************/
 
 #include "HttpClient.h"
-extern "C"
-{
-    #include "curl.h"
-}
 
 CHttpClient::CHttpClient(void) :m_bDebug(false)
 {
@@ -41,7 +37,7 @@ CHttpClient::~CHttpClient(void)
 
 }
 
-static void OnDebug(CURL *, curl_infotype itype, char * pData, size_t size, void *)
+static void OnDebug(CURL *, curl_infotype itype, char * pData, size_t, void *)
 {
     switch(itype)
     {
@@ -76,13 +72,20 @@ static size_t OnWriteData(void* buffer, size_t size, size_t nmemb, void* lpVoid)
 	if (NULL == str 
         || NULL == buffer)
 	{
-		return Q_RTN_FAILE;
+		return 0;
 	}
 
+    size_t iLens = size * nmemb;
 	char* pData = (char*)buffer;
-	str->append(pData, size * nmemb);
+	str->append(pData, iLens);
 
-	return nmemb;
+	return iLens;
+}
+
+void CHttpClient::setDebug(CURL* pCurl)
+{
+    (void)curl_easy_setopt(pCurl, CURLOPT_VERBOSE, 1);
+    (void)curl_easy_setopt(pCurl, CURLOPT_DEBUGFUNCTION, OnDebug);
 }
 
 /************************************************************************
@@ -100,9 +103,8 @@ std::string CHttpClient::Post(const char *const strUrl, const char *const strPos
 {
     m_strResponse.clear();
 
-	CURLcode res;
-	CURL* curl = curl_easy_init();
-	if (NULL == curl)
+	CURL* pCurl = curl_easy_init();
+	if (NULL == pCurl)
 	{
 		Q_Printf("%s", "curl_easy_init failed");
 		return m_strResponse;
@@ -110,22 +112,22 @@ std::string CHttpClient::Post(const char *const strUrl, const char *const strPos
 
 	if (m_bDebug)
 	{
-		curl_easy_setopt(curl, CURLOPT_VERBOSE, 1);
-		curl_easy_setopt(curl, CURLOPT_DEBUGFUNCTION, OnDebug);
+		setDebug(pCurl);
 	}
 
-	curl_easy_setopt(curl, CURLOPT_URL, strUrl);
-	curl_easy_setopt(curl, CURLOPT_POST, 1);
-	curl_easy_setopt(curl, CURLOPT_POSTFIELDS, strPost);
-	curl_easy_setopt(curl, CURLOPT_READFUNCTION, NULL);
-	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, OnWriteData);
-	curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&m_strResponse);
-	curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
-	curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 3);
-	curl_easy_setopt(curl, CURLOPT_TIMEOUT, 8);
+	(void)curl_easy_setopt(pCurl, CURLOPT_URL, strUrl);
+	(void)curl_easy_setopt(pCurl, CURLOPT_POST, 1);
+	(void)curl_easy_setopt(pCurl, CURLOPT_POSTFIELDS, strPost);
+	(void)curl_easy_setopt(pCurl, CURLOPT_READFUNCTION, NULL);
+	(void)curl_easy_setopt(pCurl, CURLOPT_WRITEFUNCTION, OnWriteData);
+	(void)curl_easy_setopt(pCurl, CURLOPT_WRITEDATA, (void *)&m_strResponse);
+	(void)curl_easy_setopt(pCurl, CURLOPT_NOSIGNAL, 1);
+	(void)curl_easy_setopt(pCurl, CURLOPT_CONNECTTIMEOUT, 3);
+	(void)curl_easy_setopt(pCurl, CURLOPT_TIMEOUT, 8);
 
-	res = curl_easy_perform(curl);
-	curl_easy_cleanup(curl);
+	(void)curl_easy_perform(pCurl);
+	curl_easy_cleanup(pCurl);
+    
 
 	return m_strResponse;
 }
@@ -145,9 +147,8 @@ std::string CHttpClient::Get(const char *const strUrl)
 {
     m_strResponse.clear();
 
-	CURLcode res;
-	CURL* curl = curl_easy_init();
-	if (NULL == curl)
+	CURL* pCurl = curl_easy_init();
+	if (NULL == pCurl)
 	{
 		Q_Printf("%s", "curl_easy_init failed");
 		return m_strResponse;
@@ -155,20 +156,19 @@ std::string CHttpClient::Get(const char *const strUrl)
 
 	if (m_bDebug)
 	{
-		curl_easy_setopt(curl, CURLOPT_VERBOSE, 1);
-		curl_easy_setopt(curl, CURLOPT_DEBUGFUNCTION, OnDebug);
+		setDebug(pCurl);
 	}
 
-	curl_easy_setopt(curl, CURLOPT_URL, strUrl);
-	curl_easy_setopt(curl, CURLOPT_READFUNCTION, NULL);
-	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, OnWriteData);
-	curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&m_strResponse);
-	curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
-	curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 3);
-	curl_easy_setopt(curl, CURLOPT_TIMEOUT, 8);
+	(void)curl_easy_setopt(pCurl, CURLOPT_URL, strUrl);
+	(void)curl_easy_setopt(pCurl, CURLOPT_READFUNCTION, NULL);
+	(void)curl_easy_setopt(pCurl, CURLOPT_WRITEFUNCTION, OnWriteData);
+	(void)curl_easy_setopt(pCurl, CURLOPT_WRITEDATA, (void *)&m_strResponse);
+	(void)curl_easy_setopt(pCurl, CURLOPT_NOSIGNAL, 1);
+	(void)curl_easy_setopt(pCurl, CURLOPT_CONNECTTIMEOUT, 3);
+	(void)curl_easy_setopt(pCurl, CURLOPT_TIMEOUT, 8);
 
-	res = curl_easy_perform(curl);
-	curl_easy_cleanup(curl);
+	(void)curl_easy_perform(pCurl);
+	curl_easy_cleanup(pCurl);
 
 	return m_strResponse;
 }
@@ -188,9 +188,8 @@ std::string CHttpClient::Posts(const char *const strUrl, const char *const strPo
 {
 	m_strResponse.clear();
 
-	CURLcode res;
-	CURL* curl = curl_easy_init();
-	if (NULL == curl)
+	CURL* pCurl = curl_easy_init();
+	if (NULL == pCurl)
 	{
 		Q_Printf("%s", "curl_easy_init failed");
 		return m_strResponse;
@@ -198,34 +197,33 @@ std::string CHttpClient::Posts(const char *const strUrl, const char *const strPo
 
 	if (m_bDebug)
 	{
-		curl_easy_setopt(curl, CURLOPT_VERBOSE, 1);
-		curl_easy_setopt(curl, CURLOPT_DEBUGFUNCTION, OnDebug);
+		setDebug(pCurl);
 	}
 
-	curl_easy_setopt(curl, CURLOPT_URL, strUrl);
-	curl_easy_setopt(curl, CURLOPT_POST, 1);
-	curl_easy_setopt(curl, CURLOPT_POSTFIELDS, strPost);
-	curl_easy_setopt(curl, CURLOPT_READFUNCTION, NULL);
-	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, OnWriteData);
-	curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&m_strResponse);
-	curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
+	(void)curl_easy_setopt(pCurl, CURLOPT_URL, strUrl);
+	(void)curl_easy_setopt(pCurl, CURLOPT_POST, 1);
+	(void)curl_easy_setopt(pCurl, CURLOPT_POSTFIELDS, strPost);
+	(void)curl_easy_setopt(pCurl, CURLOPT_READFUNCTION, NULL);
+	(void)curl_easy_setopt(pCurl, CURLOPT_WRITEFUNCTION, OnWriteData);
+	(void)curl_easy_setopt(pCurl, CURLOPT_WRITEDATA, (void *)&m_strResponse);
+	(void)curl_easy_setopt(pCurl, CURLOPT_NOSIGNAL, 1);
 	if (NULL == pCaPath)
 	{
-		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, false);
-		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, false);
+		(void)curl_easy_setopt(pCurl, CURLOPT_SSL_VERIFYPEER, false);
+		(void)curl_easy_setopt(pCurl, CURLOPT_SSL_VERIFYHOST, false);
 	}
 	else
 	{
 		//缺省情况就是PEM，所以无需设置，另外支持DER
 		//curl_easy_setopt(curl,CURLOPT_SSLCERTTYPE,"PEM");
-		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, true);
-		curl_easy_setopt(curl, CURLOPT_CAINFO, pCaPath);
+		(void)curl_easy_setopt(pCurl, CURLOPT_SSL_VERIFYPEER, true);
+		(void)curl_easy_setopt(pCurl, CURLOPT_CAINFO, pCaPath);
 	}
-	curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 3);
-	curl_easy_setopt(curl, CURLOPT_TIMEOUT, 8);
+	(void)curl_easy_setopt(pCurl, CURLOPT_CONNECTTIMEOUT, 3);
+	(void)curl_easy_setopt(pCurl, CURLOPT_TIMEOUT, 8);
 
-	res = curl_easy_perform(curl);
-	curl_easy_cleanup(curl);
+	(void)curl_easy_perform(pCurl);
+	curl_easy_cleanup(pCurl);
 
 	return m_strResponse;
 }
@@ -246,9 +244,8 @@ std::string CHttpClient::Gets(const char *const strUrl, const char * pCaPath)
 {
 	m_strResponse.clear();
 
-	CURLcode res;
-	CURL* curl = curl_easy_init();
-	if (NULL == curl)
+	CURL* pCurl = curl_easy_init();
+	if (NULL == pCurl)
 	{
 		Q_Printf("%s", "curl_easy_init failed");
 		return m_strResponse;
@@ -256,30 +253,29 @@ std::string CHttpClient::Gets(const char *const strUrl, const char * pCaPath)
 
 	if (m_bDebug)
 	{
-		curl_easy_setopt(curl, CURLOPT_VERBOSE, 1);
-		curl_easy_setopt(curl, CURLOPT_DEBUGFUNCTION, OnDebug);
+		setDebug(pCurl);
 	}
 
-	curl_easy_setopt(curl, CURLOPT_URL, strUrl);
-	curl_easy_setopt(curl, CURLOPT_READFUNCTION, NULL);
-	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, OnWriteData);
-	curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&m_strResponse);
-	curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1);
+	(void)curl_easy_setopt(pCurl, CURLOPT_URL, strUrl);
+	(void)curl_easy_setopt(pCurl, CURLOPT_READFUNCTION, NULL);
+	(void)curl_easy_setopt(pCurl, CURLOPT_WRITEFUNCTION, OnWriteData);
+	(void)curl_easy_setopt(pCurl, CURLOPT_WRITEDATA, (void *)&m_strResponse);
+	(void)curl_easy_setopt(pCurl, CURLOPT_NOSIGNAL, 1);
 	if (NULL == pCaPath)
 	{
-		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, false);
-		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, false);
+		(void)curl_easy_setopt(pCurl, CURLOPT_SSL_VERIFYPEER, false);
+		(void)curl_easy_setopt(pCurl, CURLOPT_SSL_VERIFYHOST, false);
 	}
 	else
 	{
-		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, true);
-		curl_easy_setopt(curl, CURLOPT_CAINFO, pCaPath);
+		(void)curl_easy_setopt(pCurl, CURLOPT_SSL_VERIFYPEER, true);
+		(void)curl_easy_setopt(pCurl, CURLOPT_CAINFO, pCaPath);
 	}
-	curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 3);
-	curl_easy_setopt(curl, CURLOPT_TIMEOUT, 8);
+	(void)curl_easy_setopt(pCurl, CURLOPT_CONNECTTIMEOUT, 3);
+	(void)curl_easy_setopt(pCurl, CURLOPT_TIMEOUT, 8);
 
-	res = curl_easy_perform(curl);
-	curl_easy_cleanup(curl);
+	(void)curl_easy_perform(pCurl);
+	curl_easy_cleanup(pCurl);
 
 	return m_strResponse;
 }

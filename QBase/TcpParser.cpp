@@ -35,7 +35,7 @@
 CTcpParser::CTcpParser(void) : m_iParsedLens(Q_INIT_NUMBER), m_iBufLens(Q_INIT_NUMBER),
     m_iHeadLens(Q_INIT_NUMBER), m_iTotalLens(Q_INIT_NUMBER), m_iNeedReadLens(Q_INIT_NUMBER)
 {
-
+    Q_Zero(m_acHead, sizeof(m_acHead));
 }
 
 CTcpParser::~CTcpParser(void)
@@ -56,7 +56,7 @@ bool CTcpParser::parseHead(class CEventBuffer *pBuffer)
     if (cFlag <= TCPBUFLENS_125)
     {
         m_iHeadLens = sizeof(cFlag);
-        m_iBufLens = cFlag;
+        m_iBufLens = (size_t)cFlag;
     }
     else if (TCPBUFLENS_126 == cFlag)
     {
@@ -106,7 +106,7 @@ const char *CTcpParser::parsePack(class CEventBuffer *pBuffer)
     m_iParsedLens = Q_INIT_NUMBER;
     m_iTotalLens = pBuffer->getTotalLens();
 
-    if (0 >= m_iTotalLens)
+    if (0 == m_iTotalLens)
     {
         return NULL;
     }
@@ -152,7 +152,7 @@ const char *CTcpParser::createHead(const size_t &iLens, size_t &iHeadLens)
     else if ((iLens > TCPBUFLENS_125) && (iLens <= 0xFFFF))
     {
         m_acHead[0] = TCPBUFLENS_126;
-        unsigned short usLen = ntohs(iLens);
+        unsigned short usLen = ntohs((unsigned short)iLens);
         memcpy(m_acHead + 1, &usLen, sizeof(usLen));
 
         iHeadLens = sizeof(char) + sizeof(usLen);
