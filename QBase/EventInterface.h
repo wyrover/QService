@@ -58,16 +58,20 @@ public:
     virtual bool onSerciveStartUp(void){return true;};
     /*工作线程关闭时执行*/
     virtual void onSerciveShutDown(void){};
-    /*socket断开时执行*/
-    virtual void onSocketClose(void){};
+
     /*定时器触发时执行*/
     virtual void onTimerEvent(void){};
+
+    /*连接成功*/
+    virtual void onConnected(class CSession *){};
     /*tcp读取到完整包时执行*/
-    virtual void onTcpRead(const char *, const size_t &){};
-    /*websock 读取到完整包时执行*/
-    virtual void onWebSockRead(const char *, const size_t &){};
+    virtual void onSockRead(const char *, const size_t &){};
+    /*socket断开时执行*/
+    virtual void onSockClose(class CSession *){};  
+
     /*http */
     virtual void onHttpRead(class CHttpParser *){};
+
     /*服务器连接启动*/
     virtual void onLinkedOther(class CSession *){};
 

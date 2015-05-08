@@ -31,8 +31,8 @@
 #define LUA_EVENT_ONSHUTDOWN  "Lua_OnShutDown"
 #define LUA_EVENT_ONCLOSE     "Lua_OnClose"
 #define LUA_EVENT_ONTIMER     "Lua_OnTimer"
-#define LUA_EVENT_ONTCPREAD   "Lua_OnTcpRead"
-#define LUA_EVENT_ONWEBSOCKREAD "Lua_OnWebSockRead"
+#define LUA_EVENT_ONSOCKREAD   "Lua_OnSockRead"
+#define LUA_EVENT_ONCONNECTED "Lua_OnConnected"
 #define LUA_EVENT_ONHTTPREAD  "Lua_OnHttpRead"
 #define LUA_EVENT_ONLINKEDOTHER  "Lua_OnLinkedOther"
 
@@ -69,6 +69,7 @@ CDisposeEvent::~CDisposeEvent(void)
 {
     if (NULL != m_pLua)
     {
+        Q_Printf("%s", "close lua vm...");
         lua_close(m_pLua);
         m_pLua = NULL;
     }
@@ -122,11 +123,11 @@ void CDisposeEvent::onSerciveShutDown(void)
     }
 }
 
-void CDisposeEvent::onSocketClose(void)
+void CDisposeEvent::onSockClose(class CSession *pSession)
 {
     try
     {
-        luabridge::getGlobal(m_pLua, LUA_EVENT_ONCLOSE)();
+        luabridge::getGlobal(m_pLua, LUA_EVENT_ONCLOSE)(pSession);
     }
     catch(luabridge::LuaException &e)
     {
@@ -162,12 +163,12 @@ void CDisposeEvent::onTimerEvent(void)
     }
 }
 
-void CDisposeEvent::onTcpRead(const char *pszMsg, const size_t &iLens)
+void CDisposeEvent::onSockRead(const char *pszMsg, const size_t &iLens)
 {
     try
     {
         getSessionManager()->getBinary()->setBuffer(pszMsg, iLens);
-        luabridge::getGlobal(m_pLua, LUA_EVENT_ONTCPREAD)();
+        luabridge::getGlobal(m_pLua, LUA_EVENT_ONSOCKREAD)();
     }
     catch(luabridge::LuaException &e)
     {
@@ -183,12 +184,11 @@ void CDisposeEvent::onTcpRead(const char *pszMsg, const size_t &iLens)
     }
 }
 
-void CDisposeEvent::onWebSockRead(const char *pszMsg, const size_t &iLens)
+void CDisposeEvent::onConnected(class CSession *pSession)
 {
     try
     {
-        getSessionManager()->getBinary()->setBuffer(pszMsg, iLens);
-        luabridge::getGlobal(m_pLua, LUA_EVENT_ONWEBSOCKREAD)();
+        luabridge::getGlobal(m_pLua, LUA_EVENT_ONCONNECTED)(pSession);
     }
     catch(luabridge::LuaException &e)
     {

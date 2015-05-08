@@ -56,12 +56,22 @@ function Lua_OnShutDown()
 end
 
 --[[
-描述：tcp可读事件
+描述：新连接事件
 参数：
 返回值：无
 --]]
-function Lua_OnTcpRead()
+function Lua_OnConnected(objSession)
+    onGameEvent(GameEvent.OnConnected, objSession)
+end
+
+--[[
+描述：可读事件
+参数：
+返回值：无
+--]]
+function Lua_OnSockRead()
     EchoSV()
+    
     --[[
     local tbMessage = {}
     if 0 ~= iLens then
@@ -105,14 +115,12 @@ function Lua_OnTcpRead()
 end
 
 --[[
-描述：websock可读事件
+描述：连接断开时调用
 参数：
 返回值：无
 --]]
-function Lua_OnWebSockRead()
-    Debug(string.sub(g_objBinary:getString(), 1, g_objBinary:getLens()))
-    local strMsg = "this is websock server"
-    g_objSessionMgr:sendToCur(strMsg, string.len(strMsg))
+function Lua_OnClose(objSession)
+    onGameEvent(GameEvent.Close, objSession)
 end
 
 --[[
@@ -122,15 +130,6 @@ end
 --]]
 function Lua_OnHttpRead(objHttpBuffer)
     onGameEvent(GameEvent.HttpRead, objHttpBuffer)
-end
-
---[[
-描述：连接断开时调用
-参数：
-返回值：无
---]]
-function Lua_OnClose()
-    onGameEvent(GameEvent.Close)
 end
 
 --[[
@@ -154,12 +153,12 @@ function Lua_OnTimer()
     local uiOneSecond = 1000
     
     --每帧处理
-    onGameEvent(GameEvent.FPS, uiClick)
+    onGameEvent(GameEvent.FPS, uiClick)    
     
     --1秒
-    if 0 == (uiElapseTime % uiOneSecond) then
+    if 0 == (uiElapseTime % uiOneSecond) then 
         onDelayEvent()
-        onGameEvent(GameEvent.OneSecond)
+        onGameEvent(GameEvent.OneSecond)        
         
         --检查变天
         local tDay = os.date("*t", time)

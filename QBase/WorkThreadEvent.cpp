@@ -211,6 +211,8 @@ void CWorkThreadEvent::onMainRead(CEventBuffer *)
         {
             pSession->setStatus(SessionStatus_Connect);
         }
+
+        m_objSessionManager.getInterface()->onConnected(pSession);
     }
 }
 
@@ -281,7 +283,7 @@ void CWorkThreadEvent::dispTcp(CWorkThreadEvent *pWorkThreadEvent,
             return;
         }
 
-        pSessionManager->getInterface()->onTcpRead(pszBuf, pParser->getBufLens());
+        pSessionManager->getInterface()->onSockRead(pszBuf, pParser->getBufLens());
         if (SessionStatus_Closed != pSession->getStatus())
         {
             (void)pSession->getBuffer()->delBuffer(pParser->getParsedLens());
@@ -386,7 +388,7 @@ void CWorkThreadEvent::dispWebSock(CWorkThreadEvent *pWorkThreadEvent,
         if ((CONTINUATION != pHead->emOpCode)
             && (1 == pHead->cFin))
         {
-            pSessionManager->getInterface()->onWebSockRead(pParser->getMsg(), pHead->uiDataLens);
+            pSessionManager->getInterface()->onSockRead(pParser->getMsg(), pHead->uiDataLens);
             if (SessionStatus_Closed == pSession->getStatus())
             {
                 pWorkThreadEvent->delContinuation(sock);
@@ -411,7 +413,7 @@ void CWorkThreadEvent::dispWebSock(CWorkThreadEvent *pWorkThreadEvent,
             if (NULL != pStrBuf)
             {
                 pStrBuf->append(pParser->getMsg(), pHead->uiDataLens);
-                pSessionManager->getInterface()->onWebSockRead(pStrBuf->c_str(), pStrBuf->size());
+                pSessionManager->getInterface()->onSockRead(pStrBuf->c_str(), pStrBuf->size());
                 if (SessionStatus_Closed == pSession->getStatus())
                 {
                     pWorkThreadEvent->delContinuation(sock);
@@ -484,9 +486,7 @@ void CWorkThreadEvent::workThreadEventCB(struct bufferevent *bev, short, void *a
         return;
     }
 
-    pSessionManager->setCurSession(pSession);
-    pSessionManager->getInterface()->onSocketClose();
-    pSessionManager->setCurSession(NULL);
+    pSessionManager->getInterface()->onSockClose(pSession);
 
     switch(pSession->getType())
     {

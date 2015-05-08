@@ -78,11 +78,70 @@ local function testpairsByKeys()
     end
 end
 
+local m_iMaxTime = 60 * 60 * 24 * 30 * 12
+local m_iMinRandTime = 1
+local m_PreTime = 0
+local function OnDelayEvent(iTime)
+    local uiCount = g_objSessionMgr:getCount()
+    Debug(string.format("OnDelayEvent: need run time %d, now time %d", iTime, uiCount))
+    if (iTime - m_PreTime) ~= 1 then
+        Debug("OnDelayEvent: 1111 error.  error  error  error  error")
+        fileWrite("test.txt", "%s\n", 
+            string.format("pre time %d, now time %d", m_PreTime, iTime))
+    end    
+    m_PreTime = iTime
+    
+    if (uiCount ~= iTime) then
+        Debug("OnDelayEvent: 2222 error.  error  error  error  error")
+        fileWrite("test.txt", "%s\n", 
+            string.format("need run time %d, now time %d", iTime, uiCount))
+    end
+    
+    if iTime == m_iMaxTime then
+        fileWrite("test.txt", "%s\n", "OnDelayEvent run over")
+    end
+end
+
+local function TestDelayEvent()
+    Debug("Begin register DelayEvent..")
+    for i = 1, m_iMaxTime do
+        regDelayEvent(i, OnDelayEvent, i)
+    end
+    Debug("End register DelayEvent..")
+end
+
+local function OnRandDelayEvent(iTime, uiCount, iID)
+    local uiCurCount = g_objSessionMgr:getCount()
+    Debug(string.format("OnRandDelayEvent: id %d, now time %d, need run time %d, reg time %d", 
+        iID, uiCurCount, (iTime + uiCount), uiCount))
+    if (uiCount + iTime) ~= uiCurCount then
+        Debug("OnRandDelayEvent: error.  error  error  error  error")
+        fileWrite("test2.txt", "%s\n", 
+            string.format("id %d, now time %d, delay time %d, register time %d", 
+            iID, uiCurCount, iTime, uiCount))
+    end
+    
+    local iTime = math.random(m_iMinRandTime, m_iMaxTime)
+    regDelayEvent(iTime, OnRandDelayEvent, iTime, uiCurCount, iID)
+end
+
+local function TestRandDelayEvent()
+    Debug("Begin register RandDelayEvent..")
+    local uiCount = g_objSessionMgr:getCount()
+    for  i = 1, 500000 do
+        local iTime = math.random(m_iMinRandTime, m_iMaxTime)
+        regDelayEvent(iTime, OnRandDelayEvent, iTime, uiCount, i)
+    end
+    Debug("End register RandDelayEvent..")
+end
+
 local function onStart()
     --luaSqlTestRead()
     --luaSqlWriteError()
     Debug("onStart")
-    testpairsByKeys()
+    --TestRandDelayEvent()
+    --TestDelayEvent()
+    --testpairsByKeys()
     --testRedis()
 end
 regGameEvent(GameEvent.Start, onStart)

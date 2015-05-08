@@ -11,15 +11,16 @@ local tLoad =
     {"Public/redis/initredis", true},
     {"Public/Utile", true},
     {"Public/Macros", true},    
-    {"Public/ErrorCodes", true},    
+    {"Public/ErrorCodes", true},
+    {"Public/TimeWheel", true},
     {"Public/RegFuncs", true},
     {"Public/Protocol", true},
     {"Public/DispPack", true},
-    {"Public/Debug", true},
+    {"Public/Debug", true},    
     
     {"Game/Ping", true},
     {"Game/Test", true},
-    {"Game/EchoSV", true},
+    --{"Game/EchoSV", true},
 }
 
 local function loadAllFile()

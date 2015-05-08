@@ -27,7 +27,7 @@ public:
 
 private:
     Q_SOCK initSock(const char *pszIp, const unsigned short usPort);
-    void initLua(void);
+    bool initLua(void);
 
 private:
     struct lua_State *m_pLua;

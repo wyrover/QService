@@ -43,6 +43,7 @@ GameEvent = {
     "Close",--连接关闭
     "HttpRead",--http
     "LinkedOther",--服务器间连接成功
+    "OnConnected",--连接成功
 }
 GameEvent = table.enum(GameEvent, 1)
 

@@ -12,7 +12,7 @@ if not RegFuncs then
     --游戏事件
     RegFuncs.GameEvent = {}
     --延迟事件
-    RegFuncs.DelayEvent = {}
+    RegFuncs.DelayEvent = WheelMgr:new()
 end
 
 --proto消息字符串
@@ -29,22 +29,12 @@ function getProtoStr(iProtocol)
 end
 
 --[[
-描述：延迟事件回调,执行后便删除
+描述：延迟事件执行
 参数：
 返回值：无
 --]]
 function onDelayEvent()   
-    local iNow = os.time()
-    
-    for key, val in pairs(RegFuncs.DelayEvent) do
-        if math.abs(iNow - val.RegTime) >= val.Time then            
-            if val.Func then
-                callFunc(val.Func, table.unpack(val.Param))
-            end
-            
-            table.remove(RegFuncs.DelayEvent, key)
-        end
-    end
+    RegFuncs.DelayEvent:onTime()
 end
 
 --[[
@@ -53,22 +43,7 @@ end
 返回值：无
 --]]
 function regDelayEvent(iTime, Func, ...)
-    if "function" ~= type(Func) then
-        return
-    end
-    
-    if 0 >= iTime then
-        return
-    end
-    
-    local tInfo = {}
-    
-    tInfo.RegTime = os.time()
-    tInfo.Time = iTime
-    tInfo.Func = Func
-    tInfo.Param = {...}
-    
-    table.insert(RegFuncs.DelayEvent, tInfo)
+    RegFuncs.DelayEvent:addTimer(Func, iTime, table.unpack({...}))
 end
 
 --[[

@@ -50,8 +50,6 @@ public:
     CSession *getCurSession(void);
     /*根据ID获取session*/
     CSession *getSessionByID(const int iID);
-    /*ping 检查(uiTime 超时时间(ms))*/
-    void checkPing(const unsigned int uiTime);
     /*确认停止服务*/
     void confirmStop(void);
     /*增加连接到其他服务器的TCP连接*/

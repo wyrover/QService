@@ -201,26 +201,6 @@ int CSessionManager::getLinkOtherID(const char *pszName)
     return m_objLinkOther.getSockByName(pszName);
 }
 
-void CSessionManager::checkPing(const unsigned int uiTime)
-{
-    std::tr1::unordered_map<int, CSession *>::iterator itMap;
-    std::vector<int> vcTimeOut;
-    std::vector<int>::iterator itTimeOut;
-
-    for (itMap = m_umapSession.begin(); m_umapSession.end() != itMap; itMap++)
-    {
-        if ((getCount() - itMap->second->getPing())*getTimer() >= uiTime)
-        {
-            vcTimeOut.push_back(itMap->first);
-        }
-    }
-
-    for (itTimeOut = vcTimeOut.begin(); vcTimeOut.end() != itTimeOut; itTimeOut++)
-    {
-        closeLinkByID(*itTimeOut);
-    }
-}
-
 size_t CSessionManager::getSessionSize(void) const
 {
     return m_umapSession.size();
@@ -258,9 +238,7 @@ void CSessionManager::closeLinkByID(const int iID)
         return;
     }
 
-    setCurSession(itSession->second);
-    m_pInterface->onSocketClose();
-    setCurSession(NULL);
+    m_pInterface->onSockClose(itSession->second);
 
     switch(itSession->second->getType())
     {
@@ -280,7 +258,6 @@ void CSessionManager::closeLinkByID(const int iID)
         break;
     }
 
-    getLinkOther()->setSockStatus(itSession->second->getBuffer()->getFD(), SessionStatus_Closed);
     bufferevent_free(itSession->second->getBuffer()->getBuffer());
     itSession->second->Clear();
 

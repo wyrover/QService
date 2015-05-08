@@ -59,14 +59,14 @@ int CSession::getSessionID(void) const
     return m_iSessionID;
 }
 
-void CSession::setID(const char *pszID)
+void CSession::setExterID(const char *pszID)
 {
     assert(NULL != pszID);
 
     m_strID = pszID;
 }
 
-const char * CSession::getID(void) const
+const char * CSession::getExterID(void) const
 {
     return m_strID.c_str();
 }
@@ -81,6 +81,18 @@ void CSession::setCheckID(const char *pszID)
 const char * CSession::getCheckID(void) const
 {
     return m_strCheckID.c_str();
+}
+
+void CSession::setIDCard(const char *pszID)
+{
+    assert(NULL != pszID);
+
+    m_strIDCard = pszID;
+}
+
+const char * CSession::getIDCard(void) const
+{
+    return m_strIDCard.c_str();
 }
 
 void CSession::setPing(const unsigned int uiPing)
@@ -129,5 +141,6 @@ void CSession::Clear(void)
     m_strID.clear();
     m_strCheckID.clear();
     m_strAccount.clear();
+    m_strIDCard.clear();
     (void)m_objBuffer.setBuffer(NULL);
 }

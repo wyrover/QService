@@ -88,6 +88,28 @@ void CHttpClient::setDebug(CURL* pCurl)
     (void)curl_easy_setopt(pCurl, CURLOPT_DEBUGFUNCTION, OnDebug);
 }
 
+struct curl_slist *CHttpClient::setHttpHeader(CURL* pCurl, const char *pszHeader)
+{
+    if ((NULL == pszHeader)
+        || (0 == strlen(pszHeader)))
+    {
+        return NULL;
+    }
+
+    struct curl_slist *pstList = curl_slist_append(NULL, pszHeader);
+    curl_easy_setopt(pCurl, CURLOPT_HTTPHEADER, pstList);
+
+    return pstList;
+}
+
+void CHttpClient::freeHttpList(struct curl_slist *pHttpHeadList)
+{
+    if (NULL != pHttpHeadList)
+    {
+        curl_slist_free_all(pHttpHeadList);
+    }
+}
+
 /************************************************************************
 * Function name:Post
 * Description  :POST«Î«Û
@@ -99,7 +121,7 @@ void CHttpClient::setDebug(CURL* pCurl)
 * Modification 
 * ......record :first program
 ************************************************************************/
-std::string CHttpClient::Post(const char *const strUrl, const char *const strPost)
+std::string CHttpClient::Post(const char *const strUrl, const char *const strPost, const char *pszHttpHeader)
 {
     m_strResponse.clear();
 
@@ -115,7 +137,8 @@ std::string CHttpClient::Post(const char *const strUrl, const char *const strPos
 		setDebug(pCurl);
 	}
 
-	(void)curl_easy_setopt(pCurl, CURLOPT_URL, strUrl);
+	(void)curl_easy_setopt(pCurl, CURLOPT_URL, strUrl);   
+    struct curl_slist *pHttpHead = setHttpHeader(pCurl, pszHttpHeader);
 	(void)curl_easy_setopt(pCurl, CURLOPT_POST, 1);
 	(void)curl_easy_setopt(pCurl, CURLOPT_POSTFIELDS, strPost);
 	(void)curl_easy_setopt(pCurl, CURLOPT_READFUNCTION, NULL);
@@ -128,6 +151,8 @@ std::string CHttpClient::Post(const char *const strUrl, const char *const strPos
 	(void)curl_easy_perform(pCurl);
 	curl_easy_cleanup(pCurl);
     
+    freeHttpList(pHttpHead);
+    pHttpHead = NULL;
 
 	return m_strResponse;
 }
@@ -143,7 +168,7 @@ std::string CHttpClient::Post(const char *const strUrl, const char *const strPos
 * Modification 
 * ......record :first program
 ************************************************************************/
-std::string CHttpClient::Get(const char *const strUrl)
+std::string CHttpClient::Get(const char *const strUrl, const char *pszHttpHeader)
 {
     m_strResponse.clear();
 
@@ -160,6 +185,7 @@ std::string CHttpClient::Get(const char *const strUrl)
 	}
 
 	(void)curl_easy_setopt(pCurl, CURLOPT_URL, strUrl);
+    struct curl_slist *pHttpHead = setHttpHeader(pCurl, pszHttpHeader);
 	(void)curl_easy_setopt(pCurl, CURLOPT_READFUNCTION, NULL);
 	(void)curl_easy_setopt(pCurl, CURLOPT_WRITEFUNCTION, OnWriteData);
 	(void)curl_easy_setopt(pCurl, CURLOPT_WRITEDATA, (void *)&m_strResponse);
@@ -169,6 +195,9 @@ std::string CHttpClient::Get(const char *const strUrl)
 
 	(void)curl_easy_perform(pCurl);
 	curl_easy_cleanup(pCurl);
+
+    freeHttpList(pHttpHead);
+    pHttpHead = NULL;
 
 	return m_strResponse;
 }
@@ -184,7 +213,8 @@ std::string CHttpClient::Get(const char *const strUrl)
 * Modification 
 * ......record :first program
 ************************************************************************/
-std::string CHttpClient::Posts(const char *const strUrl, const char *const strPost, const char * pCaPath)
+std::string CHttpClient::Posts(const char *const strUrl, const char *const strPost, const char *pszHttpHeader,
+    const char * pCaPath)
 {
 	m_strResponse.clear();
 
@@ -201,6 +231,7 @@ std::string CHttpClient::Posts(const char *const strUrl, const char *const strPo
 	}
 
 	(void)curl_easy_setopt(pCurl, CURLOPT_URL, strUrl);
+    struct curl_slist *pHttpHead = setHttpHeader(pCurl, pszHttpHeader);
 	(void)curl_easy_setopt(pCurl, CURLOPT_POST, 1);
 	(void)curl_easy_setopt(pCurl, CURLOPT_POSTFIELDS, strPost);
 	(void)curl_easy_setopt(pCurl, CURLOPT_READFUNCTION, NULL);
@@ -225,6 +256,9 @@ std::string CHttpClient::Posts(const char *const strUrl, const char *const strPo
 	(void)curl_easy_perform(pCurl);
 	curl_easy_cleanup(pCurl);
 
+    freeHttpList(pHttpHead);
+    pHttpHead = NULL;
+
 	return m_strResponse;
 }
 
@@ -240,7 +274,8 @@ std::string CHttpClient::Posts(const char *const strUrl, const char *const strPo
 * Modification 
 * ......record :first program
 ************************************************************************/
-std::string CHttpClient::Gets(const char *const strUrl, const char * pCaPath)
+std::string CHttpClient::Gets(const char *const strUrl, const char *pszHttpHeader,
+    const char * pCaPath)
 {
 	m_strResponse.clear();
 
@@ -257,6 +292,7 @@ std::string CHttpClient::Gets(const char *const strUrl, const char * pCaPath)
 	}
 
 	(void)curl_easy_setopt(pCurl, CURLOPT_URL, strUrl);
+    struct curl_slist *pHttpHead = setHttpHeader(pCurl, pszHttpHeader);
 	(void)curl_easy_setopt(pCurl, CURLOPT_READFUNCTION, NULL);
 	(void)curl_easy_setopt(pCurl, CURLOPT_WRITEFUNCTION, OnWriteData);
 	(void)curl_easy_setopt(pCurl, CURLOPT_WRITEDATA, (void *)&m_strResponse);
@@ -276,6 +312,9 @@ std::string CHttpClient::Gets(const char *const strUrl, const char * pCaPath)
 
 	(void)curl_easy_perform(pCurl);
 	curl_easy_cleanup(pCurl);
+
+    freeHttpList(pHttpHead);
+    pHttpHead = NULL;
 
 	return m_strResponse;
 }

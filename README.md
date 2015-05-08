@@ -30,6 +30,8 @@ QService服务器支持http、 tcp 、websocket协议；数据库支持sqlite3�
 	debug   
 * DBManager.lua  
 	数据库  
+* TimeWheel.lua   
+	时间轮   
 * 其他Lua文件  
 
 ##四、事件  
@@ -105,13 +107,17 @@ QService服务器支持http、 tcp 、websocket协议；数据库支持sqlite3�
 	
 		getSessionID 获取session ID号  
         
-		setID  关联的外部ID 如玩家ID,主要通过该ID与玩家对应  
-		getID  获取关联的外部ID  
+		setExterID  关联的外部ID 如玩家ID,主要通过该ID与玩家对应  
+		getExterID  获取关联的外部ID  
         
 		setCheckID 设置校验ID  
 		getCheckID 获取校验ID  
         
-		setPing  设置ping  
+		setIDCard 设置session全局唯一标识  
+		getIDCard 获取session全局唯一标识  
+        
+		setPing  设置ping   
+		getPing  获取ping  
         
 		setAccount 设置关联的账号   
 		getAccount 获取关联的账号  
@@ -132,9 +138,7 @@ QService服务器支持http、 tcp 、websocket协议；数据库支持sqlite3�
 		sendToCur 向当前session发送消息   
 		sendToByID 向指定ID的session发送消息 
 		sendBToCur 向当前session发送CLuaBinary中的消息  
-		sendBToByID 向指定ID的session发送CLuaBinary中的消息        
-        
-		checkPing ping检查，参数为超时时间   
+		sendBToByID 向指定ID的session发送CLuaBinary中的消息         
         
 		getTimer 获取计时器触发时间间隔   
 		getCount 获取计时器触发的次数     

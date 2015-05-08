@@ -151,15 +151,17 @@ BOOL CTestToolDlg::OnInitDialog()
     g_hWnd = m_hWnd;
     m_Sock = Q_INVALID_SOCK;
 
-    initLua();
-    m_objBinary.setLua(m_pLua);
-    m_objWorker.initLua();
-    m_objWorker.setTimer(Q_CLINETTIMER);
+    if (initLua())
+    {
+        m_objBinary.setLua(m_pLua);
+        m_objWorker.initLua();
+        m_objWorker.setTimer(Q_CLINETTIMER);
 
-    CWorkerTask *pTask = new CWorkerTask();
-    pTask->setWorker(&m_objWorker);
-    CThread objThread;    
-    objThread.Execute(pTask);
+        CWorkerTask *pTask = new CWorkerTask();
+        pTask->setWorker(&m_objWorker);
+        CThread objThread;    
+        objThread.Execute(pTask);
+    }    
 
     m_CtrIp.SetWindowTextA("127.0.0.1");
     m_CtrPort.SetWindowTextA("15000");
@@ -296,12 +298,12 @@ Q_SOCK CTestToolDlg::initSock(const char *pszIp, const unsigned short usPort)
     return sock;
 }
 
-void CTestToolDlg::initLua(void)
+bool CTestToolDlg::initLua(void)
 {
     m_pLua = luaL_newstate();
     if (NULL == m_pLua)
     {
-        return;
+        return false;
     }
 
     luaL_openlibs(m_pLua);
@@ -333,8 +335,10 @@ void CTestToolDlg::initLua(void)
 
         showMfcMsg(strLuaError.c_str(), strLuaError.size());
 
-        return;
+        return false;
     }
+
+    return true;
 }
 
 void CTestToolDlg::sendMainMsg(const char *pszMsg, const size_t iLens)

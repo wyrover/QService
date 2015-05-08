@@ -181,13 +181,17 @@ void CReg2Lua::reg_Session(void)
         .beginClass<CSession>("CSession")
             .addFunction("getSessionID", &CSession::getSessionID)
 
-            .addFunction("setID", &CSession::setID)
-            .addFunction("getID", &CSession::getID)
+            .addFunction("setExterID", &CSession::setExterID)
+            .addFunction("getExterID", &CSession::getExterID)
 
             .addFunction("setCheckID", &CSession::setCheckID)
             .addFunction("getCheckID", &CSession::getCheckID)
 
+            .addFunction("setIDCard", &CSession::setIDCard)
+            .addFunction("getIDCard", &CSession::getIDCard)
+
             .addFunction("setPing", &CSession::setPing)
+            .addFunction("getPing", &CSession::getPing)
 
             .addFunction("setAccount", &CSession::setAccount)
             .addFunction("getAccount", &CSession::getAccount)
@@ -214,8 +218,6 @@ void CReg2Lua::reg_SessionManager(void)
 
             .addFunction("sendBToCur", &CSessionManager::sendBToCur)
             .addFunction("sendBToByID", &CSessionManager::sendBToByID)
-
-            .addFunction("checkPing", &CSessionManager::checkPing)
 
             .addFunction("getTimer", &CSessionManager::getTimer)
             .addFunction("getCount", &CSessionManager::getCount)

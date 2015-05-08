@@ -77,20 +77,6 @@ CLinkOther::~CLinkOther(void)
     try
     {
         Stop();
-        
-        if (!m_vcLinkInfo.empty())
-        {
-            std::vector<LinkInfo>::iterator itInfo;
-            for (itInfo = m_vcLinkInfo.begin(); m_vcLinkInfo.end() != itInfo; itInfo++)
-            {
-                if (Q_INVALID_SOCK != itInfo->sock)
-                {
-                    evutil_closesocket(itInfo->sock);
-                    itInfo->sock = Q_INVALID_SOCK;
-                }
-            }
-            m_vcLinkInfo.clear();
-        }        
     }
     catch(...)
     {
@@ -238,12 +224,6 @@ void CLinkOther::Link(void)
         
         Q_Printf("try link %s, ip %s, port %d...", 
             itInfo->strName.c_str(), itInfo->strIp.c_str(), itInfo->usPort);
-        if (Q_INVALID_SOCK != itInfo->sock)
-        {
-            evutil_closesocket(itInfo->sock);
-            itInfo->sock = Q_INVALID_SOCK;
-        }
-
         sok = initSock(itInfo->strIp.c_str(), itInfo->usPort);
         if (Q_INVALID_SOCK == sok)
         {
