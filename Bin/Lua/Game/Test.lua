@@ -78,9 +78,10 @@ local function testpairsByKeys()
     end
 end
 
-local m_iMaxTime = 60 * 60 * 24 * 30 * 12
+local m_iMaxTime = 60 * 60 * 24 --* 30 * 12
 local m_iMinRandTime = 1
 local m_PreTime = 0
+local m_iDelayEventRunCount = 0
 local function OnDelayEvent(iTime)
     local uiCount = g_objSessionMgr:getCount()
     Debug(string.format("OnDelayEvent: need run time %d, now time %d", iTime, uiCount))
@@ -100,6 +101,9 @@ local function OnDelayEvent(iTime)
     if iTime == m_iMaxTime then
         fileWrite("test.txt", "%s\n", "OnDelayEvent run over")
     end
+    
+    m_iDelayEventRunCount = m_iDelayEventRunCount + 1
+    Debug(string.format("OnDelayEvent: run count %d", m_iDelayEventRunCount))
 end
 
 local function TestDelayEvent()
@@ -110,6 +114,7 @@ local function TestDelayEvent()
     Debug("End register DelayEvent..")
 end
 
+local m_iRandDelayEventCount = 30000
 local function OnRandDelayEvent(iTime, uiCount, iID)
     local uiCurCount = g_objSessionMgr:getCount()
     Debug(string.format("OnRandDelayEvent: id %d, now time %d, need run time %d, reg time %d", 
@@ -128,11 +133,60 @@ end
 local function TestRandDelayEvent()
     Debug("Begin register RandDelayEvent..")
     local uiCount = g_objSessionMgr:getCount()
-    for  i = 1, 500000 do
+    for  i = 1, m_iRandDelayEventCount do
         local iTime = math.random(m_iMinRandTime, m_iMaxTime)
         regDelayEvent(iTime, OnRandDelayEvent, iTime, uiCount, i)
     end
     Debug("End register RandDelayEvent..")
+end
+
+local m_iRunDelayEventWhithRemoveCount = 0
+local function onDelayEventWhithRemove(iID, uiToTick)
+    local uiCurCount = g_objSessionMgr:getCount()
+    Debug(string.format("onDelayEventWhithRemove: id %d now time %d, need run time %d ", 
+        iID, uiCurCount, uiToTick))
+    if uiCurCount ~= uiToTick then
+        Debug("onDelayEventWhithRemove: error.  error  error  error  error")
+        fileWrite("test3.txt", "%s\n", 
+            string.format("id %d now time %d, delay time %d", 
+            iID, uiCurCount, uiToTick))
+    end
+    
+    m_iRunDelayEventWhithRemoveCount = m_iRunDelayEventWhithRemoveCount + 1
+    Debug(string.format("onDelayEventWhithRemove: run count %d", m_iRunDelayEventWhithRemoveCount))
+end
+
+local function onRemoveDelayEvent(objTvecBase, iID, uiTimeOutTick)
+    local iRegTick = objTvecBase:getRegTick()
+    local iNowTick = getDelayEventTick()
+    local iTimeOut = objTvecBase:getTime() - (iNowTick - iRegTick)
+    
+    removDelayEvent(objTvecBase)
+    objTvecBase:setTime(iTimeOut)
+    regDelayEventByBase(objTvecBase)
+    
+    if iTimeOut > 1 then
+        local iRemoveTime = math.random(1, iTimeOut - 1)
+        regDelayEvent(iRemoveTime, onRemoveDelayEvent, objTvecBase, iID, uiTimeOutTick)
+    end
+end
+
+local m_iDelayEventWhithRemoveCount = 30000
+local function TestDelayEventWhithRemove()
+    Debug("Begin register DelayEventWhithRemove..")
+    local uiCurTick = g_objSessionMgr:getCount()
+    for i = 1, m_iDelayEventWhithRemoveCount do
+        local iTime = math.random(m_iMinRandTime, m_iMaxTime)
+        if 1 == iTime then
+            iTime = iTime + 1
+        end
+        
+        local iRemoveTime = math.random(1, iTime - 1)
+        
+        local objTvecBase = regDelayEvent(iTime, onDelayEventWhithRemove, i, uiCurTick + iTime)
+        regDelayEvent(iRemoveTime, onRemoveDelayEvent, objTvecBase, i, uiCurTick + iTime)        
+    end
+    Debug("End register DelayEventWhithRemove..")
 end
 
 local function onStart()
@@ -141,6 +195,7 @@ local function onStart()
     Debug("onStart")
     --TestRandDelayEvent()
     --TestDelayEvent()
+    TestDelayEventWhithRemove()
     --testpairsByKeys()
     --testRedis()
 end

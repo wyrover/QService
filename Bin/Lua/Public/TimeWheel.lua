@@ -18,31 +18,84 @@ function TvecBase:new(Func, tParam, iTimeOut)
     self.Param = tParam
     self.TimeOut = iTimeOut
     self.CompTime = 0
+    self.Run = false
+    
+    --该定时器在轮中的信息
+    self.RegWheel = nil    
+    self.RegSlot = 0
+    self.RegIndex = 0 
+    
+    self.RegTick = 0
 	
     return self
+end
+
+--注册在那个轮
+function TvecBase:setRegWheel(objWheel)
+    self.RegWheel = objWheel
+end
+function TvecBase:getRegWheel()
+    return self.RegWheel
+end
+
+--注册在轮的那个槽
+function TvecBase:setRegSlot(iSlot)
+    self.RegSlot = iSlot
+end
+function TvecBase:getRegSlot()
+    return self.RegSlot
+end
+
+--注册在槽的那个位置
+function TvecBase:setRegIndex(iIndex)
+    self.RegIndex = iIndex
+end
+function TvecBase:getRegIndex()
+    return self.RegIndex
+end
+
+--注册时的时间tick
+function TvecBase:setRegTick(iTick)
+    self.RegTick = iTick
+end
+--对外接口
+function TvecBase:getRegTick()
+    return self.RegTick
+end
+
+--是否执行
+function TvecBase:setRun(bRun)
+    self.Run = bRun
+end
+--对外接口
+function TvecBase:getRun()
+    return self.Run
+end
+
+--超时间
+--对外接口
+function TvecBase:setTime(iTime)
+    self.TimeOut = iTime
+end
+--对外接口
+function TvecBase:getTime()
+    return self.TimeOut
+end
+function TvecBase:subTime(iVal)
+    self.TimeOut = self.TimeOut - iVal
 end
 
 --下次移动的补偿时间
 function TvecBase:setCompTime(iCompTime)
     self.CompTime = iCompTime
 end
-
 function TvecBase:getCompTime()
     return self.CompTime
 end
 
---获取超时时间
-function TvecBase:getTime()
-    return self.TimeOut
-end
-
---超时时间 减
-function TvecBase:subTime(iVal)
-    self.TimeOut = self.TimeOut - iVal
-end
-
 --执行回调函数
 function TvecBase:Call()
+    self:setRun(true)
     callFunc(self.Func, table.unpack(self.Param))
 end
 
@@ -73,7 +126,6 @@ end
 function Wheel:getRange()
     return self.Range
 end
-
 --获取时间跨度参数
 function Wheel:getParam()
     return self.Param
@@ -90,23 +142,25 @@ function Wheel:Add(iIndex, objTvecBase)
     table.insert(self.Slot[iIndex], objTvecBase)
 end
 
---获取
+--获取槽
 function Wheel:Get(iIndex)
     assert(iIndex <= self.Count)
     return self.Slot[iIndex]
 end
 
---获取当前槽数
+--获取槽中元素个数
+function Wheel:getSlotNum(iIndex)
+    assert(iIndex <= self.Count)
+    return #(self.Slot[iIndex])
+end
+
+--当前槽数
 function Wheel:getCurWheel()
     return self.CurWheel
 end
-
---当前槽加1
 function Wheel:addCurWheel()
     self.CurWheel = self.CurWheel + 1
 end
-
---重置当前槽
 function Wheel:resetCurWheel()
     self.CurWheel = 0
 end
@@ -123,8 +177,15 @@ function WheelMgr:new()
     self.Hor = Wheel:new(24, 60 * 60)--时
     self.Day = Wheel:new(30, 60 * 60 * 24)--天
     self.Mon = Wheel:new(12, 60 * 60 * 24 * 30)--月
+    self.Tick = 0
     
     return self
+end
+
+--获取执行了的时间
+--对外接口
+function WheelMgr:getTick()
+    return self.Tick
 end
 
 --获取当前槽与要插入的槽间隔的槽数
@@ -141,28 +202,22 @@ function WheelMgr:getCurCompTime(objWheel, iIndex)
     return iCount
 end
 
---获取分补偿时间
+--获取补偿时间
 function WheelMgr:getMinCompTime(iIndex)
     return self:getCurCompTime(self.Min, iIndex) * self.Min:getParam() - 
         self.Sec:getCurWheel() * self.Sec:getParam()
 end
-
---获取小时补偿时间
 function WheelMgr:getHorCompTime(iIndex)
     return self:getCurCompTime(self.Hor, iIndex) * self.Hor:getParam() -
         self.Min:getCurWheel() * self.Min:getParam() -
         self.Sec:getCurWheel() * self.Sec:getParam()
 end
-
---获取天补偿时间
 function WheelMgr:getDayCompTime(iIndex)
     return self:getCurCompTime(self.Day, iIndex) * self.Day:getParam() -
         self.Hor:getCurWheel() * self.Hor:getParam() -
         self.Min:getCurWheel() * self.Min:getParam() -
         self.Sec:getCurWheel() * self.Sec:getParam()
 end
-
---获取月补偿时间
 function WheelMgr:getMonCompTime(iIndex)
     return self:getCurCompTime(self.Mon, iIndex) * self.Mon:getParam() -
         self.Day:getCurWheel() * self.Day:getParam() -
@@ -171,12 +226,60 @@ function WheelMgr:getMonCompTime(iIndex)
         self.Sec:getCurWheel() * self.Sec:getParam()
 end
 
+--清除注册时的信息
+function WheelMgr:clearRegInfo(objTvecBase)
+    objTvecBase:setRegWheel(nil)
+    objTvecBase:setRegSlot(0)
+    objTvecBase:setRegIndex(0)
+end
+
+--移除一个事件
+--对外接口
+function WheelMgr:Remove(objTvecBase)
+    local objWheel = objTvecBase:getRegWheel()
+    local iSlot = objTvecBase:getRegSlot()
+    local iIndex = objTvecBase:getRegIndex()
+    
+    if ((not objWheel)
+        or (0 == iSlot)
+        or (0 == iIndex)) then
+       return
+    end
+    
+    local tSlot = objWheel:Get(iSlot)
+    local iSlotSize = #tSlot
+    
+    table.remove(tSlot, iIndex)
+    self:clearRegInfo(objTvecBase)
+    
+    if iIndex >= iSlotSize then        
+        return
+    end
+    
+    --后续标识前移
+    for i = iIndex, #tSlot do
+        tSlot[i]:setRegIndex(i)
+    end
+end
+
+--设置注册时的信息,主要用于移除
+function WheelMgr:setRegInfo(objTvecBase, objWheel, iSlot)
+    objTvecBase:setRegWheel(objWheel)
+    objTvecBase:setRegSlot(iSlot)
+    objTvecBase:setRegIndex(objWheel:getSlotNum(iSlot) + 1)
+    objTvecBase:setRegTick(self.Tick)
+end
+
+--对外接口
 function WheelMgr:Add(iTimeOut, objTvecBase)
     assert(iTimeOut <= self.Mon:getRange())
+    
+    objTvecBase:setRun(false)
+    
     --已经到期
     if iTimeOut <= 0 then
         objTvecBase:Call()
-        return
+        return objTvecBase
     end
     
     local iIndex = 0
@@ -184,6 +287,9 @@ function WheelMgr:Add(iTimeOut, objTvecBase)
         --秒
         --计算放入位置
         iIndex = ((iTimeOut + self.Sec:getCurWheel() - 1) % self.Sec:getCount()) + 1
+        --设置注册时的信息
+        self:setRegInfo(objTvecBase, self.Sec, iIndex)
+        --注册
         self.Sec:Add(iIndex, objTvecBase)
     elseif iTimeOut <= self.Min:getRange() then
         --分
@@ -193,6 +299,9 @@ function WheelMgr:Add(iTimeOut, objTvecBase)
         iIndex = ((iMin + self.Min:getCurWheel() - 1) % self.Min:getCount()) + 1
         --设置执行时减去的时间差
         objTvecBase:setCompTime(self:getMinCompTime(iIndex))
+        --设置注册时的信息
+        self:setRegInfo(objTvecBase, self.Min, iIndex)
+        --注册
         self.Min:Add(iIndex, objTvecBase)
     elseif iTimeOut <= self.Hor:getRange() then
         --小时
@@ -202,6 +311,9 @@ function WheelMgr:Add(iTimeOut, objTvecBase)
         iIndex = ((iHor + self.Hor:getCurWheel() - 1) % self.Hor:getCount()) + 1
         --设置执行时减去的时间差
         objTvecBase:setCompTime(self:getHorCompTime(iIndex))
+        --设置注册时的信息
+        self:setRegInfo(objTvecBase, self.Hor, iIndex)
+        --注册
         self.Hor:Add(iIndex, objTvecBase)
     elseif iTimeOut <= self.Day:getRange() then
         --天
@@ -211,6 +323,9 @@ function WheelMgr:Add(iTimeOut, objTvecBase)
         iIndex = ((iDay + self.Day:getCurWheel() - 1) % self.Day:getCount()) + 1
         --设置执行时减去的时间差
         objTvecBase:setCompTime(self:getDayCompTime(iIndex))
+        --设置注册时的信息
+        self:setRegInfo(objTvecBase, self.Day, iIndex)
+        --注册
         self.Day:Add(iIndex, objTvecBase)
     else
         --月
@@ -220,14 +335,21 @@ function WheelMgr:Add(iTimeOut, objTvecBase)
         iIndex = ((iMon + self.Mon:getCurWheel() - 1) % self.Mon:getCount()) + 1
         --设置执行时减去的时间差
         objTvecBase:setCompTime(self:getMonCompTime(iIndex))
+        --设置注册时的信息
+        self:setRegInfo(objTvecBase, self.Mon, iIndex)
+        --注册
         self.Mon:Add(iIndex, objTvecBase)
     end
+    
+    return objTvecBase
 end
 
 --增加timer
+--对外接口
 function WheelMgr:addTimer(Func, iTimeOut, ...)
     local objTvecBase = TvecBase:new(Func, {...}, iTimeOut)
-    self:Add(iTimeOut, objTvecBase)
+    
+    return self:Add(iTimeOut, objTvecBase)
 end
 
 --数据移动
@@ -300,7 +422,11 @@ function WheelMgr:cashAll()
     end
 end
 
+--对外接口
 function WheelMgr:onTime()
+    --流逝的时间+1
+    self.Tick = self.Tick + 1
+    
     --槽+1
     self.Sec:addCurWheel()
     

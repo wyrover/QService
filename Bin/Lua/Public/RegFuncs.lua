@@ -40,10 +40,31 @@ end
 --[[
 描述：延迟事件注册
 参数：iTime --延后时间（秒）
-返回值：无
+返回值：TvecBase
 --]]
 function regDelayEvent(iTime, Func, ...)
-    RegFuncs.DelayEvent:addTimer(Func, iTime, table.unpack({...}))
+    return RegFuncs.DelayEvent:addTimer(Func, iTime, table.unpack({...}))
+end
+function regDelayEventByBase(objTvecBase)
+    return RegFuncs.DelayEvent:Add(objTvecBase:getTime(), objTvecBase)
+end
+
+--[[
+描述：延迟事件移除
+参数：objTvecBase
+返回值：无
+--]]
+function removDelayEvent(objTvecBase)
+    RegFuncs.DelayEvent:Remove(objTvecBase)
+end
+
+--[[
+描述：延迟事件总共走过多少时间
+参数：无
+返回值：无
+--]]
+function getDelayEventTick()
+    return RegFuncs.DelayEvent:getTick()
 end
 
 --[[
