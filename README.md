@@ -144,19 +144,8 @@ QService服务器支持http、 tcp 、websocket协议；数据库支持sqlite3�
 		getCount 获取计时器触发的次数     
         
 		getSessionSize 获取链接总数   
-		confirmStop 确认退出服务器   
+		confirmStop 确认退出服务器  
+        
+		addLinkOther 增加连接到其他服务器    
 		getLinkOtherID 根据名称获取链接到其他服务器的ID             
-		
-	CSessionManager session管理 在Lua中不允许实例化 对应于Main.lua中的g_objSessionManager变量  
-	
-		closeLinkByID 关闭连接根据session ID   
-		closeCurLink 关闭当前session连接   
-		getCurSession 获取当前session对象 CSession类型  在网络可读和断开的时候有值其他时候为nil  
-		getSessionByID 根据session ID获取session对象  
-		sendToCur 向当前session发送消息  
-		sendToByID 向指定ID的session发送消息   
-		checkPing ping检查，参数为超时时间   
-		getTimer 获取计时器触发时间间隔   
-		getCount 获取计时器触发的次数     
-		confirmStop 确认退出服务器   
-		getLinkOtherID 根据名称获取链接到其他服务器的ID    
+        
