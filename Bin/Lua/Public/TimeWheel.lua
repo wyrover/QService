@@ -438,8 +438,10 @@ function WheelMgr:onTime()
     end
     for i = #tRunKey, 1, -1 do
         --执行
-        tCurWheel[i]:Call()
-        table.remove(tCurWheel, i)
+        if tCurWheel[i] then
+            tCurWheel[i]:Call()
+            table.remove(tCurWheel, i)
+        end
     end
     
     self:cashAll()
