@@ -62,10 +62,6 @@ enum SessionStatus
     SessionStatus_Linked,
     SessionStatus_Logining,
     SessionStatus_Logined,
-    SessionStatus_Loading,
-    SessionStatus_Loaded,
-    SessionStatus_Creating,
-    SessionStatus_Created,
     SessionStatus_Playing,
     SessionStatus_GM
 };

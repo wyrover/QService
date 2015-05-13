@@ -16,7 +16,8 @@ local tLoad =
     {"Public/RegFuncs", true},
     {"Public/Protocol", true},
     {"Public/DispPack", true},
-    {"Public/Debug", true},    
+    {"Public/Debug", true},
+    {"Public/LogLuaMemory", true},
     
     {"Game/Ping", true},
     {"Game/Test", true},

@@ -146,85 +146,12 @@ end
 参数：
 返回值：无
 --]]
-function Lua_OnTimer()
-    local uiCount = g_objSessionMgr:getCount()
-    local uiClick = g_objSessionMgr:getTimer()
-    local uiElapseTime = uiClick * uiCount
-    local uiOneSecond = 1000
-    
+function Lua_OnTimer()    
     --每帧处理
-    onGameEvent(GameEvent.FPS, uiClick)    
+    onGameEvent(GameEvent.FPS, uiClick)
     
     --1秒
-    if 0 == (uiElapseTime % uiOneSecond) then 
+    if 0 == ((g_objSessionMgr:getCount() * g_objSessionMgr:getTimer()) % 1000) then 
         onDelayEvent()
-        onGameEvent(GameEvent.OneSecond)        
-        
-        --检查变天
-        local tDay = os.date("*t", time)
-        if (tDay.year ~= tNowDay.year) 
-            or (tDay.month ~= tNowDay.month) 
-            or (tDay.day ~= tNowDay.day) then
-                --变天事件
-                tNowDay = tDay
-                Debug("day changed.")
-                onGameEvent(GameEvent.DayChange)
-                
-                local iNewWeek = tonumber(os.date("%U", os.time(tDay)))
-                local iOldWeek = tonumber(os.date("%U", os.time(tNowDay)))
-                if iNewWeek ~= iOldWeek then
-                    onGameEvent(GameEvent.WeekChange)
-                end
-                if tDay.month ~= tNowDay.month then
-                    onGameEvent(GameEvent.MonthChange)
-                end
-                
-                tNowDay = tDay
-        end
-    end
-    
-    --3秒
-    if 0 == (uiElapseTime % (uiOneSecond * 3)) then
-        onGameEvent(GameEvent.ThreeSecond)
-    end
-    
-    --5秒
-    if 0 == (uiElapseTime % (uiOneSecond * 5)) then
-        onGameEvent(GameEvent.FiveSecond)
-    end
-    
-    --10秒
-    if 0 == (uiElapseTime % (uiOneSecond * 10)) then
-        onGameEvent(GameEvent.TenSecond)
-    end
-    
-    --1分钟
-    if 0 == (uiElapseTime % (uiOneSecond * 60)) then
-        onGameEvent(GameEvent.OneMinute)
-        local iTotalMem = collectgarbage("count")
-        local strMemUsage = string.format("lua memory usage:%d,session size:%d", 
-            iTotalMem, g_objSessionMgr:getSessionSize())
-        Debug(strMemUsage)
-        Q_LOG(LOGLV_INFO, strMemUsage)
-    end
-    
-    --3分钟
-    if 0 == (uiElapseTime % (uiOneSecond * 60 * 3)) then
-        onGameEvent(GameEvent.ThreeMinute)
-    end
-    
-    --5分钟
-    if 0 == (uiElapseTime % (uiOneSecond * 60 * 5)) then
-        onGameEvent(GameEvent.FiveMinute)
-    end
-    
-    --10分钟
-    if 0 == (uiElapseTime % (uiOneSecond * 60 * 10)) then
-        onGameEvent(GameEvent.TenMinute)
-    end
-	
-    --1小时
-    if 0 == (uiElapseTime % (uiOneSecond * 60 * 60)) then
-        onGameEvent(GameEvent.OneHour)
     end
 end

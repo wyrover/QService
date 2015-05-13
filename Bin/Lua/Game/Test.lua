@@ -189,6 +189,20 @@ local function TestDelayEventWhithRemove()
     Debug("End register DelayEventWhithRemove..")
 end
 
+local function onDelayEventAtTime(strTime)
+    local tNow = os.date("*t", time)
+    Debug("req time:"..strTime)
+    Debug(string.format("now time:%s:%s:%s",  tNow.hour, tNow.min, tNow.sec))
+end
+
+local function testDelayEventAtTime()
+    local strTime1 = "11:20:59"
+    local strTime2 = "10:01:25"
+    
+    regDelayEventAtTime(strTime1, onDelayEventAtTime, strTime1)
+    regDelayEventAtTime(strTime2, onDelayEventAtTime, strTime2)
+end
+
 local function onStart()
     --luaSqlTestRead()
     --luaSqlWriteError()
@@ -196,6 +210,7 @@ local function onStart()
     --TestRandDelayEvent()
     --TestDelayEvent()
     --TestDelayEventWhithRemove()
+    testDelayEventAtTime()
     --testpairsByKeys()
     --testRedis()
 end
@@ -213,39 +228,3 @@ local function onStarted()
     addLinker()
 end
 regGameEvent(GameEvent.Started, onStarted)
-
-local iCount = 0
-local function testDBLog()
-    iCount = iCount + 1
-    local strMsg = string.format("%d", iCount)
-    Q_DBLOG("13245346543", -1, strMsg, string.len(strMsg)) 
-end
-
-local function testTxtLog()
-    local str = "!"
-    for i = 1, 12 do
-        str = str .. "a"
-    end
-    str = str .. "!"    
-    Q_LOG(LOGLV_INFO, str)
-    
-    str = "!"
-    for i = 1, 655 do
-        str = str .. "a"
-    end
-    str = str .. "!"
-    Q_LOG(LOGLV_INFO, str)
-    
-    str = "!"
-    for i = 1, 65535 do
-        str = str .. "a"
-    end
-    str = str .. "!"
-    Q_LOG(LOGLV_INFO, str)
-end
-
-local function onFiveSecond()
-    --testDBLog()
-    --testTxtLog()
-end
-regGameEvent(GameEvent.FiveSecond, onFiveSecond)

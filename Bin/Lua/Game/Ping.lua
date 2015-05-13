@@ -3,7 +3,7 @@ ping
 --]]
 
 --ping 超时时间(秒)
-local m_PingTimeOut = 5 * 60
+local m_iPingTimeOut = 5 * 60
 
 --[[
 描述：ping
@@ -44,14 +44,14 @@ local function pingCheck(strIDCard, iSessionID)
     end
     
     if ((g_objSessionMgr:getCount() - objSession:getPing()) * 
-        g_objSessionMgr:getTimer()) >= m_PingTimeOut then
+        g_objSessionMgr:getTimer()) >= m_iPingTimeOut then
         
         Debug(string.format("ID Card %s, session id %d timeout.", strIDCard, iSessionID))
         closeLink(iSessionID)
         return
     end
     
-    regDelayEvent(m_PingTimeOut, pingCheck, strIDCard, iSessionID)
+    regDelayEvent(m_iPingTimeOut, pingCheck, strIDCard, iSessionID)
 end
 
 --[[
@@ -63,7 +63,7 @@ local function pingOnConnected(objSession)
     local strIDCard = getID()
     objSession:setIDCard(strIDCard)
     
-    regDelayEvent(m_PingTimeOut, pingCheck, strIDCard, objSession:getSessionID())
+    regDelayEvent(m_iPingTimeOut, pingCheck, strIDCard, objSession:getSessionID())
 end
 regGameEvent(GameEvent.OnConnected, pingOnConnected)
 
@@ -76,7 +76,7 @@ local function pingOnLinkedOther(objSession)
     local strIDCard = getID()
     objSession:setIDCard(strIDCard)
     
-    regDelayEvent(m_PingTimeOut, pingCheck, strIDCard, objSession:getSessionID())
+    regDelayEvent(m_iPingTimeOut, pingCheck, strIDCard, objSession:getSessionID())
     --还的注册个发ping的
 end
 regGameEvent(GameEvent.LinkedOther, pingOnLinkedOther)
