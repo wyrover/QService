@@ -8,10 +8,7 @@ class CMySqlLibInit
 public:
     CMySqlLibInit(void)
     {
-        if (Q_RTN_OK != mysql_library_init(0, NULL, NULL))
-        {
-            Q_EXCEPTION(Q_RTN_ERROR, "%s", "init mysql library error.");
-        }
+        
     };
     ~CMySqlLibInit(void)
     {
@@ -849,7 +846,7 @@ void CMySQLStatement::bindString(const int iField, const char* pszValue)
 
     m_pBinder_Param[iField].buffer = (void*)stBindInfo.pMem;
     m_pBinder_Param[iField].buffer_type = MYSQL_TYPE_STRING;
-    m_pBinder_Param[iField].buffer_length = iLens;
+    m_pBinder_Param[iField].buffer_length = (unsigned long)iLens;
 }
 
 void CMySQLStatement::bindInt(const int iField, const int iValue)
@@ -866,7 +863,7 @@ void CMySQLStatement::bindInt(const int iField, const int iValue)
 
     m_pBinder_Param[iField].buffer = (void*)stBindInfo.pMem;
     m_pBinder_Param[iField].buffer_type = MYSQL_TYPE_LONG;
-    m_pBinder_Param[iField].buffer_length = iLens;
+    m_pBinder_Param[iField].buffer_length = (unsigned long)iLens;
 }
 
 void CMySQLStatement::bindInt64(const int iField, const int64_t iValue)
@@ -883,7 +880,7 @@ void CMySQLStatement::bindInt64(const int iField, const int64_t iValue)
 
     m_pBinder_Param[iField].buffer = (void*)stBindInfo.pMem;
     m_pBinder_Param[iField].buffer_type = MYSQL_TYPE_LONGLONG;
-    m_pBinder_Param[iField].buffer_length = iLens;
+    m_pBinder_Param[iField].buffer_length = (unsigned long)iLens;
 }
 
 void CMySQLStatement::bindFloat(const int iField, const double dValue)
@@ -900,7 +897,7 @@ void CMySQLStatement::bindFloat(const int iField, const double dValue)
 
     m_pBinder_Param[iField].buffer = (void*)stBindInfo.pMem;
     m_pBinder_Param[iField].buffer_type = MYSQL_TYPE_DOUBLE;
-    m_pBinder_Param[iField].buffer_length = iLens;
+    m_pBinder_Param[iField].buffer_length = (unsigned long)iLens;
 }
 
 void CMySQLStatement::bindBlob(const int iField, const unsigned char* blobValue, const size_t iLen)
@@ -916,7 +913,7 @@ void CMySQLStatement::bindBlob(const int iField, const unsigned char* blobValue,
 
     m_pBinder_Param[iField].buffer = (void*)stBindInfo.pMem;
     m_pBinder_Param[iField].buffer_type = MYSQL_TYPE_BLOB;
-    m_pBinder_Param[iField].buffer_length = iLen;
+    m_pBinder_Param[iField].buffer_length = (unsigned long)iLen;
 }
 
 void CMySQLStatement::bindNull(const int iField)
@@ -1041,7 +1038,7 @@ CDBQuery* CMySQLLink::execQuery(const char* szSQL)
 
     CMySQLQuery *pobj = NULL;
 
-    int iRtn = mysql_real_query(m_pDb_Ptr, szSQL, strlen(szSQL));    
+    int iRtn = mysql_real_query(m_pDb_Ptr, szSQL, (unsigned long)strlen(szSQL));    
     if (Q_RTN_OK == iRtn)
     {
         MYSQL_RES *Mysql_Res = mysql_store_result(m_pDb_Ptr);
@@ -1081,7 +1078,7 @@ CDBStatement *CMySQLLink::compileStatement(const char* pszSQL)
         Q_EXCEPTION(mysql_errno(m_pDb_Ptr), "%s", mysql_error(m_pDb_Ptr));
     }
     
-    int iStatus = mysql_stmt_prepare(pStmt, pszSQL, strlen(pszSQL));
+    int iStatus = mysql_stmt_prepare(pStmt, pszSQL, (unsigned long)strlen(pszSQL));
     if (Q_RTN_OK == iStatus)
     {
         CMySQLStatement *pStatement = NULL;
@@ -1123,7 +1120,7 @@ int CMySQLLink::execDML(const char* szSQL)
         Q_EXCEPTION(Q_ERROR_NULLPOINTER, "%s", Q_EXCEPTION_NULLPOINTER);
     }
 
-    int iRtn = mysql_real_query(m_pDb_Ptr, szSQL, strlen(szSQL));    
+    int iRtn = mysql_real_query(m_pDb_Ptr, szSQL, (unsigned long)strlen(szSQL));    
     if (Q_RTN_OK == iRtn)
     {
         //得到受影响的行数

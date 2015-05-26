@@ -3,16 +3,17 @@
 #include "Exception.h"
 
 CBuffer::CBuffer(void) : m_pBuffer(NULL), 
-    m_iOffset(0), m_iTotalSize(Q_ONEK * 2)
+    m_iOffset(Q_INIT_NUMBER), m_iTotalSize(Q_INIT_NUMBER)
 {
-
+    (void)New(5 * Q_ONEK);
 }
 
-CBuffer::CBuffer(const size_t iInitSize) : m_pBuffer(NULL),
-    m_iOffset(0)
+CBuffer::CBuffer(const size_t iInitSize) : m_pBuffer(NULL), 
+    m_iOffset(Q_INIT_NUMBER), m_iTotalSize(Q_INIT_NUMBER)
 {
-    assert(iInitSize > 0);
-    m_iTotalSize = iInitSize;
+    m_iTotalSize = (0 == iInitSize ? 1 : iInitSize);
+
+    (void)New(m_iTotalSize);
 }
 
 CBuffer::~CBuffer(void)
@@ -30,6 +31,61 @@ const size_t CBuffer::getLens(void) const
     return m_iOffset;
 }
 
+size_t CBuffer::getTotalLens(void) const
+{
+    return m_iTotalSize;
+}
+
+char *CBuffer::New(const size_t iLens)
+{
+    if ((NULL == m_pBuffer)
+        || (iLens > m_iTotalSize))
+    {
+        Q_SafeDelete_Array(m_pBuffer);
+        m_pBuffer = new(std::nothrow) char[iLens];
+        if (NULL == m_pBuffer)
+        {
+            m_iTotalSize = Q_INIT_NUMBER;
+
+            return NULL;
+        }
+
+        m_iTotalSize = iLens;
+    }
+
+    return m_pBuffer;
+}
+
+char *CBuffer::reNew(const size_t iLens)
+{
+    if (NULL == m_pBuffer)
+    {
+        return New(iLens);
+    }
+
+    if (iLens <= m_iTotalSize)
+    {
+        return m_pBuffer;
+    }
+
+    /* need more memory */
+    char *pTmp = new(std::nothrow) char[iLens];
+    if (NULL == pTmp)
+    {
+        Q_SafeDelete_Array(m_pBuffer);
+        m_iTotalSize = Q_INIT_NUMBER;
+
+        return NULL;
+    }
+
+    memcpy(pTmp, m_pBuffer, m_iTotalSize);
+    Q_SafeDelete_Array(m_pBuffer);
+    m_pBuffer = pTmp;
+    m_iTotalSize = iLens;
+
+    return m_pBuffer;
+}
+
 /************************************************************************
 * Function name:pushBuff
 * Description  :添加信息进buffer(可能抛出异常)
@@ -43,34 +99,21 @@ const size_t CBuffer::getLens(void) const
 ************************************************************************/
 void CBuffer::pushBuff(const void *pBuff, const size_t &iLens)
 {
-    if (NULL == m_pBuffer)
+    size_t iNewSize = m_iOffset + iLens;
+    if (NULL == reNew(iNewSize))
     {
-        m_pBuffer = new(std::nothrow) char[m_iTotalSize];
-        if (NULL == m_pBuffer)
-        {
-            Q_EXCEPTION(Q_ERROR_ALLOCMEMORY, "%s size %u", Q_EXCEPTION_ALLOCMEMORY, m_iTotalSize);
-        }
+        Q_EXCEPTION(Q_ERROR_ALLOCMEMORY, "%s size %u", Q_EXCEPTION_ALLOCMEMORY, iNewSize);
     }
 
-    if (m_iOffset + iLens > m_iTotalSize)
+    if (NULL == pBuff)
     {
-        char * pTmp = new(std::nothrow) char[m_iOffset + iLens];
-        if (NULL == pTmp)
-        {
-            Q_EXCEPTION(Q_ERROR_ALLOCMEMORY, "%s size %u", Q_EXCEPTION_ALLOCMEMORY, m_iOffset + iLens);
-        }
-
-        if (0 != m_iOffset)
-        {
-            memcpy(pTmp, m_pBuffer, m_iOffset);
-        }
-
-        Q_SafeDelete_Array(m_pBuffer);
-        m_iTotalSize = m_iOffset + iLens;
-        m_pBuffer = pTmp;
+        Q_Zero(m_pBuffer + m_iOffset, iLens);
     }
-
-    memcpy(m_pBuffer + m_iOffset, pBuff, iLens);
+    else
+    {
+        memcpy(m_pBuffer + m_iOffset, pBuff, iLens);
+    }
+    
     m_iOffset += iLens;
 }
 

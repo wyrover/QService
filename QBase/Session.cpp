@@ -2,7 +2,7 @@
 #include "Session.h"
 
 CSession::CSession(void) : m_emSessionType(STYPE_TCP),
-    m_emStatus(SessionStatus_Closed), m_iSessionID(Q_INVALID_ID),
+    m_emStatus(SESSSTATUS_CLOSED), m_iSessionID(Q_INVALID_ID),
     m_uiPing(Q_INIT_NUMBER)
 {
     (void)m_objBuffer.setBuffer(NULL);
@@ -23,14 +23,14 @@ int CSession::getType(void) const
     return m_emSessionType;
 }
 
-void CSession::setSessionID(const int &uiID)
+void CSession::setSessionID(const Q_SOCK &uiID)
 {
     m_iSessionID = uiID;
 }
 
 int CSession::getSessionID(void) const
 {
-    return m_iSessionID;
+    return (int)m_iSessionID;
 }
 
 void CSession::setExterID(const char *pszID)
@@ -43,18 +43,6 @@ void CSession::setExterID(const char *pszID)
 const char * CSession::getExterID(void) const
 {
     return m_strID.c_str();
-}
-
-void CSession::setCheckID(const char *pszID)
-{
-    assert(NULL != pszID);
-
-    m_strCheckID = pszID;
-}
-
-const char * CSession::getCheckID(void) const
-{
-    return m_strCheckID.c_str();
 }
 
 void CSession::setIDCard(const char *pszID)
@@ -110,10 +98,9 @@ void CSession::Clear(void)
 {
     m_emSessionType = STYPE_TCP;
     m_iSessionID = Q_INVALID_ID;
-    m_emStatus = SessionStatus_Closed;
+    m_emStatus = SESSSTATUS_CLOSED;
     m_uiPing = Q_INIT_NUMBER;
     m_strID.clear();
-    m_strCheckID.clear();
     m_strAccount.clear();
     m_strIDCard.clear();
     (void)m_objBuffer.setBuffer(NULL);

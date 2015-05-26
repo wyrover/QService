@@ -5,21 +5,21 @@
 
 CUUID::CUUID(void)
 {
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
     (void)CoInitialize(NULL);
 #endif
 }
 
 CUUID::~CUUID(void)
 {
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
     CoUninitialize();
 #endif
 }
 
 int CUUID::createGuid(GUID &stUUID)
 {
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
     if (S_OK != CoCreateGuid(&stUUID))
     {
         return Q_RTN_FAILE;

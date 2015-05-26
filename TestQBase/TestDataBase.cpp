@@ -1,6 +1,7 @@
 #define _CRT_SECURE_NO_DEPRECATE
 #include "TestDataBase.h"
 
+#if 0
 #define MYSQL_HOST "127.0.0.1"
 #define MYSQL_PORT 3306
 #define MYSQL_USER "root"
@@ -179,7 +180,7 @@ void CTestDataBase::Test_MySql(void)
     MySqlPool.setMaxFreeTime(10000);
     MySqlPool.setMaxSize(iMaxPoolSize);
     MySqlPool.setMinSize(iMinPoolSize);
-    MySqlPool.setType(DBType_MySql);
+    MySqlPool.setType(DBTYPE_MYSQL);
     MySqlPool.setUrl(objDBUrl);
 
     iRtn = MySqlPool.Start();
@@ -206,7 +207,7 @@ void CTestDataBase::Test_Sqlite(void)
     Sqlit3Pool.setMaxFreeTime(10000);
     Sqlit3Pool.setMaxSize(iMaxPoolSize);
     Sqlit3Pool.setMinSize(iMinPoolSize);
-    Sqlit3Pool.setType(DBType_Sqlite3);
+    Sqlit3Pool.setType(DBTYPE_SQLITE3);
     Sqlit3Pool.setUrl(objDBUrl);
 
     iRtn = Sqlit3Pool.Start();
@@ -218,3 +219,5 @@ void CTestDataBase::Test_Sqlite(void)
     iRtn = TestDB(&Sqlit3Pool);
     CPPUNIT_ASSERT_EQUAL(Q_RTN_OK , iRtn);
 }
+
+#endif

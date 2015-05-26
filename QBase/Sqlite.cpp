@@ -432,7 +432,7 @@ void CSQLite3Statement::bindBlob(const int iField, const unsigned char* blobValu
     CheckParam(iField);
 
     int iRtn = sqlite3_bind_blob(m_pVM, iField + 1,
-        (const void*)blobValue, iLen, SQLITE_TRANSIENT);
+        (const void*)blobValue, (int)iLen, SQLITE_TRANSIENT);
     if (iRtn != SQLITE_OK)
     {
         Q_EXCEPTION(sqlite3_errcode(m_pDB), "%s", sqlite3_errmsg(m_pDB));

@@ -1,103 +1,27 @@
 
 #include "Server.h"
-#include "ThreadPool.h"
-#include "Exception.h"
-#include "SysLog.h"
+#include "Thread.h"
 
-class CWorkerThreadTask : public CTask
-{
-public:
-    CWorkerThreadTask(void) : m_pThreadEvent(NULL)
-    {
-
-    };
-    ~CWorkerThreadTask(void)
-    {
-        m_pThreadEvent = NULL;
-    };
-
-    void setWorkerHandle(CWorkThreadEvent *pThreadEvent)
-    {
-        m_pThreadEvent = pThreadEvent;
-    };
-
-    void Run(void)
-    {
-        (void)m_pThreadEvent->Start();
-    }
-
-private:
-    CWorkThreadEvent *m_pThreadEvent;
-};
-
-/*****************************************************************************/
+SINGLETON_INIT(CServer)
+CServer objServer;
 
 CServer::CServer(void)
 {
-    m_uiTimer = Q_INIT_NUMBER;
-    m_emRunStatus = RunStatus_Unknown;
-    m_usThreadNum = 1;
     m_pMainBase = NULL;
-    m_pPool = NULL;
-    m_pServerThreadEvent = NULL;
     m_pExitEvent = NULL;
+    m_pMainBase = m_objInitBase.getBase();
 }
 
 CServer::~CServer(void)
 {
     try
     {
-        Q_SafeDelete_Array(m_pServerThreadEvent);
-        Q_SafeDelete(m_pPool);
         freeMainEvent();
     }
     catch(...)
     {
 
     }
-}
-
-bool CServer::getError(void)
-{
-    return ((RunStatus_Error == *getRunStatus()) ? true : false);
-}
-
-void CServer::setRunStatus(RunStatus emStatus)
-{
-    m_emRunStatus = emStatus;
-}
-
-RunStatus *CServer::getRunStatus(void)
-{
-    return &m_emRunStatus;
-}
-
-bool CServer::getIsRun(void)
-{
-    return ((RunStatus_Runing == *getRunStatus()) ? true : false);
-}
-
-bool CServer::waitForStarted(void)
-{
-    while(true)
-    {
-        if (getIsRun())
-        {
-            return true;
-        }
-
-        if (getError())
-        {
-            return false;
-        }
-
-        Q_Sleep(10);
-    }
-}
-
-CWorkThreadEvent *CServer::getServerThreadEvent(void)
-{
-    return m_pServerThreadEvent;
 }
 
 SessionType CServer::getSockType(evutil_socket_t uiSock)
@@ -114,41 +38,23 @@ SessionType CServer::getSockType(evutil_socket_t uiSock)
 
 void CServer::listenerAcceptCB(struct evconnlistener *pListener, Q_SOCK sock, struct sockaddr *, 
     int, void *arg)
-{
-    unsigned short usIndex = Q_INIT_NUMBER;  
-    CServer *pServer = (CServer *)arg;
-    CWorkThreadEvent *pThreadEvent = pServer->getServerThreadEvent();
+{ 
+    CServer *pServer = CServer::getSingletonPtr();
+    CWorkThreadEvent *pThreadEvent = CWorkThreadEvent::getSingletonPtr();
 
-    if (RunStatus_Runing != *(pServer->getRunStatus()))
+    if (RUNSTATUS_RUNING != pServer->getRunStatus())
     {
         evutil_closesocket(sock);
         return;
-    }
-
-    //取得最小连接数的线程号
-    if (*(pServer->getThreadNum()) > 1)
-    {
-        unsigned int uiCount = Q_INIT_NUMBER;
-        unsigned int uiTmp = pThreadEvent[0].getSessionManager()->getSessionSize();
-        for (unsigned short usI = Q_INIT_NUMBER; usI < *(pServer->getThreadNum()); usI++)
-        {
-            uiCount = pThreadEvent[usI].getSessionManager()->getSessionSize();
-            if (uiTmp > uiCount)
-            {
-                uiTmp = uiCount;
-                usIndex = usI;
-            }
-        }
     }
 
     TriggerSock *pWorkSock = pServer->getTriggerSock();
     pWorkSock->emType = pServer->getSockType(evconnlistener_get_fd(pListener));
     pWorkSock->iSock = sock;
     
-    if (Q_RTN_OK != pThreadEvent[usIndex].sendMainMsg((const char*)pWorkSock, sizeof(TriggerSock)))
+    if (Q_RTN_OK != pThreadEvent->sendMainMsg((const char*)pWorkSock, sizeof(TriggerSock)))
     {
-        Q_Printf("add socket %d to thread %d error.", sock, usIndex);
-        Q_SYSLOG(LOGLV_ERROR, "add socket %d to thread %d error.", sock, usIndex);
+        Q_Printf("add socket %d to thread error.", sock);
 
         evutil_closesocket(sock);
     }
@@ -156,19 +62,19 @@ void CServer::listenerAcceptCB(struct evconnlistener *pListener, Q_SOCK sock, st
 
 void CServer::exitMonitorCB(evutil_socket_t, short, void *arg)
 {
-    CServer *pServer = (CServer *)arg;
-    switch(*(pServer->getRunStatus()))
+    CServer *pServer = CServer::getSingletonPtr();
+
+    switch(pServer->getRunStatus())
     {
-    case RunStatus_Stopping:
+    case RUNSTATUS_STOPPING:
         {
-            Q_Printf("ready stop main thread.");
-            pServer->setRunStatus(RunStatus_Stopped);            
+            Q_Printf("ready stop listener service.");
+            pServer->setRunStatus(RUNSTATUS_STOPPED);            
         }
         break;
 
-    case RunStatus_Stopped:
+    case RUNSTATUS_STOPPED:
         {
-            Q_Printf("stop main thread successfully.");
             event_base_loopbreak(pServer->getBase());
         }
         break;
@@ -202,7 +108,7 @@ Q_SOCK CServer::initHttpSock(const char *pszIp, const unsigned short &usPort) co
         return Q_INVALID_SOCK;
     }
     
-    if (bind(sock, objAddr.getAddr(), objAddr.getAddrSize()) < 0)
+    if (bind(sock, objAddr.getAddr(), (int)objAddr.getAddrSize()) < 0)
     {
         Q_Printf("bind socket on port: %d ip: %s error.", usPort, pszIp);
         evutil_closesocket(sock);
@@ -239,9 +145,9 @@ struct evconnlistener * CServer::initListener(const char *pszHost, const unsigne
         return NULL;
     }
 
-    struct evconnlistener *pListener = evconnlistener_new_bind(m_pMainBase, listenerAcceptCB, this, 
+    struct evconnlistener *pListener = evconnlistener_new_bind(m_pMainBase, listenerAcceptCB, NULL, 
         LEV_OPT_CLOSE_ON_FREE, -1, 
-        objAddr.getAddr(), objAddr.getAddrSize());
+        objAddr.getAddr(), (int)objAddr.getAddrSize());
     if (NULL == pListener)
     {
         iRtn = EVUTIL_SOCKET_ERROR();
@@ -254,53 +160,17 @@ struct evconnlistener * CServer::initListener(const char *pszHost, const unsigne
     return pListener;
 }
 
-int CServer::initWorkThread(std::vector<CEventInterface * > &vcInterface)
-{
-    try
-    {
-        m_pServerThreadEvent = new(std::nothrow) CWorkThreadEvent[m_usThreadNum];
-        if (NULL == m_pServerThreadEvent)
-        {
-            Q_Printf("%s", Q_EXCEPTION_ALLOCMEMORY);
-
-            return Q_ERROR_ALLOCMEMORY;
-        }
-    }
-    catch(CQException &e)
-    {
-        Q_Printf("get an exception. code %d, message %s", e.getErrorCode(), e.getErrorMsg());
-
-        return e.getErrorCode();
-    }
-
-    for (unsigned short usI = 0; usI < m_usThreadNum; usI++)
-    {
-        m_pServerThreadEvent[usI].setInterface(vcInterface[usI]);         
-        if (Q_RTN_OK != m_pServerThreadEvent[usI].setTimer(m_uiTimer))
-        {
-            return Q_RTN_FAILE;
-        }
-
-        if (Q_RTN_OK != m_pServerThreadEvent[usI].setHttpSock(m_vcHttpSock))
-        {
-            return Q_RTN_FAILE;
-        }
-    }
-
-    return Q_RTN_OK;
-}
-
 void CServer::exitWorkThread(void)
 {
-    if (NULL == m_pServerThreadEvent)
-    {
-        return;
-    }
+    CWorkThreadEvent::getSingletonPtr()->Stop();
+    //放这里释放是因为CSessionManager为全局的，他对应的struct event_base *可能在他释放之前就已经释放，
+    //造成执行bufferevent_free错误
+    CSessionManager::getSingletonPtr()->freeAllSession();
+}
 
-    for (int i = 0; i < m_usThreadNum; i++)
-    {
-        m_pServerThreadEvent[i].Stop();
-    }
+void CServer::exitTimerTrigger(void)
+{
+    CTimerTrigger::getSingletonPtr()->Stop();
 }
 
 void CServer::freeMainEvent(void)
@@ -324,54 +194,43 @@ void CServer::freeMainEvent(void)
         event_free(m_pExitEvent);
         m_pExitEvent = NULL;
     }
-
-    if (NULL != m_pMainBase)
-    {
-        event_base_free(m_pMainBase);
-        m_pMainBase = NULL;
-    }
 }
 
 int CServer::Loop(void)
 {
     int iRtn = Q_RTN_OK;
-    CWorkerThreadTask *pTask = NULL;
+    CThread objThread;
 
-    for (unsigned short us = 0; us < m_usThreadNum; us++)
+    setRunStatus(RUNSTATUS_STARTING);
+
+    objThread.Execute(CWorkThreadEvent::getSingletonPtr(), false);
+    if (!CWorkThreadEvent::getSingletonPtr()->waitForStarted())
     {
-        pTask = new(std::nothrow) CWorkerThreadTask();
-        if (NULL == pTask)
-        {
-            setRunStatus(RunStatus_Error);
-            Q_Printf("%s", Q_EXCEPTION_ALLOCMEMORY);
+        setRunStatus(RUNSTATUS_ERROR);
+        Q_Printf("%s", "wait work thread start error.");
 
-            return Q_ERROR_ALLOCMEMORY;
-        }
-
-        pTask->setWorkerHandle(&m_pServerThreadEvent[us]);
-        m_pPool->Append(pTask, Q_ThreadLV_High);
-        if (!m_pServerThreadEvent[us].waitForStarted())
-        {
-            setRunStatus(RunStatus_Error);
-            Q_Printf("%s", "wait work thread start error.");
-
-            return Q_RTN_FAILE;
-        }
-
-        m_pServerThreadEvent[us].getLinkOther()->setThreadEvent(&m_pServerThreadEvent[us]);
-        if (!(m_pServerThreadEvent[us].getLinkOther()->Start()))
-        {
-            return Q_RTN_FAILE;
-        }   
+        return Q_RTN_FAILE;
     }
 
-    setRunStatus(RunStatus_Runing);
+    objThread.Execute(CTimerTrigger::getSingletonPtr(), false);
+    if (!CTimerTrigger::getSingletonPtr()->waitForStarted())
+    {
+        setRunStatus(RUNSTATUS_ERROR);
+        Q_Printf("%s", "wait timer trigger start error.");
+
+        return Q_RTN_FAILE;
+    }
+
+    setRunStatus(RUNSTATUS_RUNING);
+    Q_Printf("%s", "listener service running...");
     iRtn = event_base_dispatch(m_pMainBase);
-    setRunStatus(RunStatus_Stopped);
+    setRunStatus(RUNSTATUS_STOPPED);
 
     m_objMutex_Exit.Lock();
     m_objCond_Exit.Signal();
     m_objMutex_Exit.unLock();
+
+    Q_Printf("%s", "listener service stopped.");
 
     return iRtn;
 }
@@ -391,7 +250,7 @@ int CServer::initExitMonitor(unsigned int uiMS)
     }
 
     m_pExitEvent = event_new(m_pMainBase, 
-        -1, EV_PERSIST, exitMonitorCB, this);
+        -1, EV_PERSIST, exitMonitorCB, NULL);
     if (NULL == m_pExitEvent)
     {
         Q_Printf("%s", "event_new error");
@@ -412,8 +271,9 @@ int CServer::initExitMonitor(unsigned int uiMS)
     return Q_RTN_OK;
 }
 
-int CServer::Init(const unsigned short &usThreadNum, const unsigned int &uiTime,
-    std::vector<CEventInterface * > &vcInterface,
+int CServer::Init(const unsigned int &uiMS, class CEventInterface *pInterface,
+    struct lua_State *pLua, 
+    std::map<unsigned short, std::string> &mapDebug, 
     std::map<unsigned short, std::string> &mapTcp, 
     std::map<unsigned short, std::string> &mapWebSock, 
     std::map<unsigned short, std::string> &mapHttp)
@@ -421,20 +281,17 @@ int CServer::Init(const unsigned short &usThreadNum, const unsigned int &uiTime,
     int iRtn = Q_RTN_OK;
     struct evconnlistener *pListener = NULL;
     std::map<unsigned short, std::string>::iterator itHost;
+    
+    CSessionManager::getSingletonPtr()->setTimer(uiMS);
+    CSessionManager::getSingletonPtr()->setInterface(pInterface);
+    CSessionManager::getSingletonPtr()->setLua(pLua);
 
-    m_usThreadNum = ((0 == usThreadNum) ? 1 : usThreadNum);
-    m_uiTimer = uiTime;
-
-    setRunStatus(RunStatus_Starting);
-    /*主线程循环*/
-    m_pMainBase = event_base_new();
-    if (NULL == m_pMainBase)
+    /*初始化定时器触发器*/
+    iRtn = CTimerTrigger::getSingletonPtr()->setTime(uiMS);
+    if (Q_RTN_OK != iRtn)
     {
-        Q_Printf("%s", "event_base_new error.");
-        setRunStatus(RunStatus_Error);
-
-        return Q_RTN_FAILE;
-    }    
+        return iRtn;
+    }
 
     /*初始化HTTP*/
     if (!mapHttp.empty())
@@ -452,6 +309,25 @@ int CServer::Init(const unsigned short &usThreadNum, const unsigned int &uiTime,
         m_vcHttpSock.push_back(httpSock);
     }
 
+    CWorkThreadEvent::getSingletonPtr()->setHttpSock(m_vcHttpSock);
+
+    /*初始化debug监听*/
+    if (!mapDebug.empty())
+    {
+        Q_Printf("%s", "init debug server...");
+    }
+    for (itHost = mapDebug.begin(); mapDebug.end() != itHost; itHost++)
+    {
+        pListener = initListener(itHost->second.c_str(), itHost->first);
+        if (NULL == pListener)
+        {
+            return Q_RTN_FAILE;
+        }
+
+        m_vcAllListener.push_back(pListener);
+        (void)m_mapType.insert(std::make_pair(evconnlistener_get_fd(pListener), STYPE_DEBUG));
+    } 
+
     /*初始化websock监听*/
     if (!mapWebSock.empty())
     {
@@ -462,8 +338,6 @@ int CServer::Init(const unsigned short &usThreadNum, const unsigned int &uiTime,
         pListener = initListener(itHost->second.c_str(), itHost->first);
         if (NULL == pListener)
         {
-            setRunStatus(RunStatus_Error);
-
             return Q_RTN_FAILE;
         }
 
@@ -477,12 +351,10 @@ int CServer::Init(const unsigned short &usThreadNum, const unsigned int &uiTime,
         Q_Printf("%s", "init tcp listener...");
     }
     for (itHost = mapTcp.begin(); mapTcp.end() != itHost; itHost++)
-    {        
+    {
         pListener = initListener(itHost->second.c_str(), itHost->first);
         if (NULL == pListener)
         {
-            setRunStatus(RunStatus_Error);
-
             return Q_RTN_FAILE;
         }
 
@@ -494,38 +366,7 @@ int CServer::Init(const unsigned short &usThreadNum, const unsigned int &uiTime,
     iRtn = initExitMonitor(100);
     if (Q_RTN_OK != iRtn)
     {
-        setRunStatus(RunStatus_Error);
-
         return iRtn;
-    }
-
-    /*初始化工作线程*/
-    Q_Printf("%s", "init work thread...");
-    iRtn = initWorkThread(vcInterface);
-    if (Q_RTN_OK != iRtn)
-    {
-        setRunStatus(RunStatus_Error);
-
-        return iRtn;
-    }
-
-    try
-    {
-        m_pPool = new(std::nothrow) CThreadPool(m_usThreadNum);
-        if (NULL == m_pPool)
-        {
-            setRunStatus(RunStatus_Error);
-            Q_Printf("%s", Q_EXCEPTION_ALLOCMEMORY);
-
-            return Q_ERROR_ALLOCMEMORY;
-        }
-    }
-    catch(CQException &e)
-    {
-        setRunStatus(RunStatus_Error);
-        Q_Printf("get an exception. code %d, message %s", e.getErrorCode(), e.getErrorMsg());
-
-        return e.getErrorCode();
     }
 
     return Q_RTN_OK;
@@ -541,15 +382,17 @@ void CServer::Stop(void)
 {
     if (!getIsRun())
     {
+        exitTimerTrigger();
         exitWorkThread();
 
         return;
     }
     
+    exitTimerTrigger();
     exitWorkThread();
 
     m_objMutex_Exit.Lock();
-    setRunStatus(RunStatus_Stopping);
+    setRunStatus(RUNSTATUS_STOPPING);
     m_objCond_Exit.Wait(&m_objMutex_Exit);    
     m_objMutex_Exit.unLock();
 }

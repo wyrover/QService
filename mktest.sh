@@ -6,7 +6,8 @@
 # Date Time  :2011/06/15 
 #***********************************************
 
-UsAge="UsAge:\"./mktest\""
+UsAge="UsAge:\"./mktest.sh\" or \"./mktest.sh x64\""
+X64=$1
 OSNAME=`uname`
 #############################################
 #业务处理文件路径
@@ -17,9 +18,10 @@ PROGRAMNAME="TestQBase"
 
 #############################################
 #QServer文件夹
-QServerDir="QBase QBase/event2 QBase/mysql QBase/pugixml QBase/RSAEuro QBase/uchardet QBase/curl"
+QServerDir="QBase QBase/event2 QBase/pugixml QBase/RSAEuro QBase/uchardet QBase/curl"
 QServerDir=$QServerDir" QBase/Lua5.2 QBase/LuaCJson QBase/LuaSql QBase/Lpeg QBase/pbc QBase/LuaSocket"
-QServerDir=$QServerDir" QBase/rijndael QBase/Sqlite"
+QServerDir=$QServerDir" QBase/rijndael QBase/Sqlite QBase/mysql QBase/zlib QBase/jwsmtp"
+QServerDir=$QServerDir" QBase/jsoncpp"
 QServerDir=$QServerDir" cppunit"
 QServerDir=$QServerDir" TestQBase"
 
@@ -33,10 +35,19 @@ MAINFILE="Main.cpp"
 
 #结果存放路径
 RSTPATH="Bin"
+if [ "$X64" = "x64" ]
+then
+    RSTPATH="BinX64"
+fi
 
 #附加包含库
 INCLUDELIB="-lrt -lz -levent_core -levent_extra"
-INCLUDELIB=$INCLUDELIB" -levent_pthreads -lcrypto -lidn -lssl -lcurl -lmysqlclient -lcppunit"
+if [ "$X64" != "x64" ] 
+then
+    INCLUDELIB=$INCLUDELIB" -lcrypto -lidn -lssl"
+fi
+INCLUDELIB=$INCLUDELIB" -levent_pthreads  -lcurl -lmysqlclient"
+INCLUDELIB=$INCLUDELIB" -lcppunit"
 
 #中间库文件名
 LIBNAME="QServiceLib"
@@ -50,7 +61,12 @@ ARCH="ar -rv"
 INCLUDEPATH=""
 LIBAPP=""
 OBJFILE=""
-CFLAGS="-Wall -march=native"
+ZLIBCFLAGS=" -D_LARGEFILE64_SOURCE=1 -DHAVE_HIDDEN "
+CFLAGS=" -Wall -g -march=native "
+if [ "$X64" = "x64" ]
+then
+    CFLAGS=$CFLAGS" -m64 "
+fi
 CC=""
 GCC=""
 
@@ -115,10 +131,10 @@ Make()
     do
         echo ---------------------$EachSub--------------------------- 
         cd $EachSub
-	if [ "$?" != "0" ]
-	then
-	    exit 1
-	fi
+        if [ "$?" != "0" ]
+        then
+            exit 1
+        fi
 
         SourceFile=`ls *.cpp 2>/dev/null`
         for EachFile in $SourceFile
@@ -142,8 +158,14 @@ Make()
             IsExcePTL $EachFile
             if [ "$?" = "0" ]
             then
-                echo "$CC $CFLAGS -c $EachFile"
-                $CC $CFLAGS -c $EachFile $INCLUDEPATH
+                if [ $EachSub = "QBase/zlib" ]
+                then
+                    echo "$CC $CFLAGS $ZLIBCFLAGS -c $EachFile"
+                    $CC $CFLAGS $ZLIBCFLAGS -c $EachFile $INCLUDEPATH
+                else
+                    echo "$CC $CFLAGS -c $EachFile"
+                    $CC $CFLAGS -c $EachFile $INCLUDEPATH
+                fi
                 if [ "$?" != "0" ]
                 then
                     echo "---------------------Error---------------------"
@@ -190,21 +212,31 @@ Clean()
     cd $MAKEFILEPATH
 }
 
-if [ $# -eq 1 ]
-then
-    if [ "$1" = "clean" ]
+while [ 1 = 1 ]
+do
+    if [ $# -eq 1 ]
     then
-        Clean
-        exit 0
+        if [ "$1" = "clean" ]
+        then
+            Clean
+            exit 0
+        fi
+        
+        if [ "$1" = "x64" ]
+        then
+            break
+        fi
+        
+        echo "$UsAge"
+        exit 1
+    elif [ $# -gt 1 ]
+    then
+        echo "$UsAge"
+        exit 1
+    else
+        break
     fi
-    
-    echo "$UsAge"
-    exit 1
-elif [ $# -gt 1 ]
-then
-    echo "$UsAge"
-    exit 1
-fi
+done
 
 GetIncludePath
 Make

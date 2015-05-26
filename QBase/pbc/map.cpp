@@ -4,6 +4,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef WIN32
+#pragma warning(disable:4244)
+#pragma warning(disable:4267)
+#endif
+
 struct _pbcM_ip_slot {
 	int id;
 	void * pointer;

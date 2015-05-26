@@ -22,7 +22,7 @@ struct WebSockFram
     size_t uiDataLens;
     char acMaskKey[4];
     WebSockFram(void) : cFin(Q_INIT_NUMBER), cRsv1(Q_INIT_NUMBER),
-        cRsv2(Q_INIT_NUMBER), cRsv3(Q_INIT_NUMBER), emOpCode(CONTINUATION),
+        cRsv2(Q_INIT_NUMBER), cRsv3(Q_INIT_NUMBER), emOpCode(WSOCK_CONTINUATION),
         cMask(Q_INIT_NUMBER), ucPayloadLen(Q_INIT_NUMBER), uiDataLens(Q_INIT_NUMBER)
     {
         Q_Zero(acMaskKey, sizeof(acMaskKey));

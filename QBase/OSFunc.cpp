@@ -33,7 +33,7 @@ std::string Q_HostName(void)
     return std::string(acHostName);
 }
 
-#ifndef Q_OS_WIN32
+#ifndef Q_OS_WIN
 int ExecCmdLinux(const char *acCmd, std::list<std::string> *lstRst)
 {
     int iRtn = Q_RTN_OK;
@@ -221,7 +221,7 @@ int Q_ExecCmd(const char *pszCmd, const unsigned int uimSec,
         lstRst->clear();
     }
 
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
     unsigned long ulReCode = Q_INIT_NUMBER;
     int iRtn = Q_RTN_OK;
 
@@ -238,16 +238,17 @@ int Q_ExecCmd(const char *pszCmd, const unsigned int uimSec,
 #endif
 }
 
+//¥Û–°∂À
 static union  
 {
     char a[4];
-    unsigned long ul;
+    unsigned int ul;
 }endian = {{'L', '?', '?', 'B'}}; 
-#define ENDIAN ((char)endian.ul) 
+#define Q_ENDIAN ((char)endian.ul) 
 
 uint64_t ntohl64(uint64_t host)
 {
-    if ('L' == ENDIAN)
+    if ('L' == Q_ENDIAN)
     {
         uint64_t uiRet = 0;
         unsigned long ulHigh,ulLow;

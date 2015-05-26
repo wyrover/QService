@@ -143,5 +143,5 @@ function regNetEvent(iProtocol, Func)
     end
     
     RegFuncs.NetEvent[iProtocol] = Func
-    Debug("register protocol "..iProtocol)
+    Debug("register protocol %d", iProtocol)
 end

@@ -12,11 +12,11 @@ public:
     CThread(void);
     ~CThread(void);
 
-    /*启动一线程执行任务,任务指针在执行完成后自动删除*/
-    void Execute(CTask *pTask);
+    /*启动一线程执行任务*/
+    void Execute(CTask *pTask, bool bDel = true);
 
-    /*启动一线程执行任务,任务指针在执行完成后自动删除*/
-    void Execute(CTask *pTask, Q_Thread_t *pThread);    
+    /*启动一线程执行任务*/
+    void Execute(CTask *pTask, Q_Thread_t *pThread, bool bDel = true);    
 
 private:
     int attrInit(Q_Thread_Attr_t *pAttr) const;
@@ -32,7 +32,7 @@ private:
 };
 
 /*获取线程ID*/
-Q_Thread_t Q_ThreadId(void);
+Q_Thread_t Q_ThreadID(void);
 /*休眠(ms)*/
 void Q_Sleep(const unsigned int iMsec);
 

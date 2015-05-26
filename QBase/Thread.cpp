@@ -51,7 +51,7 @@ void CThread::Destroy(void)
 
 int CThread::attrInit(Q_Thread_Attr_t *pAttr) const
 {
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
     *pAttr = 0;
 
     return Q_RTN_OK;
@@ -62,7 +62,7 @@ int CThread::attrInit(Q_Thread_Attr_t *pAttr) const
 
 int CThread::attrDestroy(Q_Thread_Attr_t *pAttr) const
 {
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
     *pAttr = 0;
 
     return Q_RTN_OK;
@@ -73,7 +73,7 @@ int CThread::attrDestroy(Q_Thread_Attr_t *pAttr) const
 
 int CThread::attrSetDetaChstate(Q_Thread_Attr_t *pAttr, int iDetachstate) const
 {
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
     *pAttr |= iDetachstate;
 
     return Q_RTN_OK;
@@ -85,7 +85,7 @@ int CThread::attrSetDetaChstate(Q_Thread_Attr_t *pAttr, int iDetachstate) const
 int CThread::Create(Q_Thread_t *pThread, Q_Thread_Attr_t *pAttr,
                                 Q_Thread_Func_t myfunc, void *args) const
 {
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
     HANDLE handle = (HANDLE)_beginthreadex(NULL, 0, myfunc, args, 0, pThread);
     return (int)((NULL ==handle) ? Q_Error() : Q_RTN_OK);
 #else
@@ -106,7 +106,7 @@ Q_Thread_Result_t Q_THREAD_CALL Run(void *args)
 
     try
     {
-        pTask->Run();        
+        pTask->Run();
     }
     catch(CQException &e)
     {
@@ -118,12 +118,15 @@ Q_Thread_Result_t Q_THREAD_CALL Run(void *args)
         Q_Printf("%s", "run task get an exception.");
     }
 
-    Q_SafeDelete(pTask);
+    if (pTask->getDel())
+    {
+        Q_SafeDelete(pTask);
+    }
 
     return NULL;
 }
 
-void CThread::Execute(CTask *pTask, Q_Thread_t *pThread)
+void CThread::Execute(CTask *pTask, Q_Thread_t *pThread, bool bDel)
 {
     if (NULL == pThread)
     {
@@ -141,6 +144,7 @@ void CThread::Execute(CTask *pTask, Q_Thread_t *pThread)
 
     int iRtn = Q_RTN_OK;
 
+    pTask->setDel(bDel);
     iRtn = Create(pThread, &m_Attr, Run, pTask);
     if (Q_RTN_OK != iRtn)
     {
@@ -159,11 +163,11 @@ void CThread::Execute(CTask *pTask, Q_Thread_t *pThread)
 * Modification 
 * ......record :first program
 ************************************************************************/
-void CThread::Execute(CTask *pTask)
+void CThread::Execute(CTask *pTask, bool bDel)
 {
     Q_Thread_t Thread;
 
-    Execute(pTask, &Thread);
+    Execute(pTask, &Thread, bDel);
 }
 
 /************************************************************************
@@ -179,7 +183,7 @@ void CThread::Execute(CTask *pTask)
 ************************************************************************/
 void Q_Sleep(const unsigned int iMsec)
 {
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
     Sleep(iMsec);
 #else
     pthread_mutex_t fakeMutex = PTHREAD_MUTEX_INITIALIZER;
@@ -208,9 +212,9 @@ void Q_Sleep(const unsigned int iMsec)
     return;
 }
 
-Q_Thread_t Q_ThreadId(void)
+Q_Thread_t Q_ThreadID(void)
 {
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
     return GetCurrentThreadId();
 #else
     return pthread_self();

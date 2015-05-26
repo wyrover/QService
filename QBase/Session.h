@@ -12,18 +12,14 @@ public:
     ~CSession(void);
 
     /*session id号*/
-    void setSessionID(const int &uiID);
+    void setSessionID(const Q_SOCK &uiID);
     int getSessionID(void) const;
 
     /*关联的ID*/
     void setExterID(const char *pszID);
     const char * getExterID(void) const;
 
-    /*校验ID*/
-    void setCheckID(const char *pszID);
-    const char * getCheckID(void) const;
-
-    /*标识该session唯一ID*/
+    /*标识该session唯一ID 连接成功后会自动设置*/
     void setIDCard(const char *pszID);
     const char * getIDCard(void) const;
 
@@ -50,10 +46,9 @@ public:
 private:
     SessionType m_emSessionType;   
     SessionStatus m_emStatus;
-    int m_iSessionID;//session id      
+    Q_SOCK m_iSessionID;//session id      
     unsigned int m_uiPing;
     std::string m_strID;//关联的ID
-    std::string m_strCheckID;//校验ID
     std::string m_strAccount;
     std::string m_strIDCard;
     CEventBuffer m_objBuffer;

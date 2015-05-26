@@ -10,6 +10,11 @@
 #include <stdbool.h>
 #endif
 
+#ifdef WIN32
+#pragma warning(disable:4244)
+#pragma warning(disable:4267)
+#endif
+
 #define INNER_ATOM ((PBC_CONTEXT_CAP - sizeof(struct context)) / sizeof(struct atom))
 
 static char * 

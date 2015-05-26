@@ -3,6 +3,9 @@
 #include "WorkThreadEvent.h"
 #include "Thread.h"
 
+SINGLETON_INIT(CLinkOther)
+CLinkOther objLinkOther;
+
 class CLinkOtherTask : public CTask
 {
 public:
@@ -20,10 +23,11 @@ public:
     };
     void Run(void)
     {
-        m_pLinker->setStatus(RunStatus_Runing);
+        Q_Printf("%s", "link other monitor service running...");
+        m_pLinker->setRunStatus(RUNSTATUS_RUNING);
         unsigned long long ullCount = Q_INIT_NUMBER;
 
-        while(RunStatus_Runing == m_pLinker->getStatus())
+        while(RUNSTATUS_RUNING == m_pLinker->getRunStatus())
         {
             if (0 == (ullCount % 10))
             {
@@ -34,14 +38,15 @@ public:
             ullCount++;
         }
 
-        m_pLinker->setStatus(RunStatus_Stopped);
+        m_pLinker->setRunStatus(RUNSTATUS_STOPPED);
+
+        Q_Printf("%s", "link other monitor service stopped.");
     };
 private:
     CLinkOther *m_pLinker;
 };
 
-CLinkOther::CLinkOther(void) : m_emStatus(RunStatus_Unknown), m_pThreadEvent(NULL),
-    m_objMutex()
+CLinkOther::CLinkOther(void) : m_objMutex()
 {
 
 }
@@ -56,26 +61,6 @@ CLinkOther::~CLinkOther(void)
     {
 
     }
-}
-
-void CLinkOther::setThreadEvent(class CWorkThreadEvent *pThreadEvent)
-{
-    m_pThreadEvent = pThreadEvent;
-}
-
-class CWorkThreadEvent *CLinkOther::getThreadEvent(void)
-{
-    return m_pThreadEvent;
-}
-
-void CLinkOther::setStatus(const RunStatus emStatus)
-{
-    m_emStatus = emStatus;
-}
-
-RunStatus CLinkOther::getStatus(void) const
-{
-    return m_emStatus;
 }
 
 bool CLinkOther::checkHaveHost(const char *pszName)
@@ -98,7 +83,8 @@ bool CLinkOther::checkHaveHost(const char *pszName)
     return bHave;
 }
 
-bool CLinkOther::addHost(const char *pszIp, unsigned short usPort, const char *pszName)
+bool CLinkOther::addHost(const char *pszIp, const unsigned short usPort, 
+    const char *pszName, const unsigned short usType)
 {
     if (checkHaveHost(pszName))
     {
@@ -108,11 +94,12 @@ bool CLinkOther::addHost(const char *pszIp, unsigned short usPort, const char *p
     }
 
     LinkInfo stLinkInfo;
-    stLinkInfo.emStatus = SessionStatus_Closed;
+    stLinkInfo.emStatus = SESSSTATUS_CLOSED;
     stLinkInfo.sock = Q_INVALID_SOCK;
     stLinkInfo.strIp = pszIp;
     stLinkInfo.strName = pszName;
     stLinkInfo.usPort = usPort;
+    stLinkInfo.usType = usType;
 
     m_objMutex.Lock();
     m_vcLinkInfo.push_back(stLinkInfo);
@@ -121,37 +108,47 @@ bool CLinkOther::addHost(const char *pszIp, unsigned short usPort, const char *p
     return true;
 }
 
-bool CLinkOther::Start(void)
+int CLinkOther::Start(void)
 {
     CThread objThread;
+
+    setRunStatus(RUNSTATUS_STARTING);
     CLinkOtherTask *pTask = new(std::nothrow)CLinkOtherTask(); 
     if (NULL == pTask)
     {
-        return false;
+        setRunStatus(RUNSTATUS_ERROR);
+
+        return Q_RTN_FAILE;
     }
 
     pTask->setHandle(this);
 
     objThread.Execute(pTask);
+    if (!waitForStarted())
+    {
+        setRunStatus(RUNSTATUS_ERROR);
 
-    return true;
+        return Q_RTN_FAILE;
+    }
+
+    return Q_RTN_OK;
 }
 
 void CLinkOther::Stop(void)
 {
-    if (RunStatus_Runing == getStatus())
+    if (RUNSTATUS_RUNING == getRunStatus())
     {
-        setStatus(RunStatus_Stopping);
+        setRunStatus(RUNSTATUS_STOPPING);
         while(true)
         {
-            if (RunStatus_Stopped == getStatus())
+            if (RUNSTATUS_STOPPED == getRunStatus())
             {
                 break;
             }
 
             Q_Sleep(10);
         }
-    }   
+    }
 }
 
 Q_SOCK CLinkOther::initSock(const char *pszIp, const unsigned short &usPort) const
@@ -171,7 +168,7 @@ Q_SOCK CLinkOther::initSock(const char *pszIp, const unsigned short &usPort) con
         return sock;
     }
 
-    if (Q_RTN_OK != connect(sock, objAddr.getAddr(), objAddr.getAddrSize()))
+    if (Q_RTN_OK != connect(sock, objAddr.getAddr(), (int)objAddr.getAddrSize()))
     {
         evutil_closesocket(sock);
         return Q_INVALID_SOCK;
@@ -188,10 +185,15 @@ void CLinkOther::Link(void)
     TriggerSock stTriggerSock;
     std::vector<LinkInfo>::iterator itInfo;
 
+    if (!CWorkThreadEvent::getSingletonPtr()->getIsRun())
+    {
+        return;
+    }
+
     m_objMutex.Lock();
     for (itInfo = m_vcLinkInfo.begin(); m_vcLinkInfo.end() != itInfo; itInfo++)
     {
-        if (SessionStatus_Closed != itInfo->emStatus)
+        if (SESSSTATUS_CLOSED != itInfo->emStatus)
         {
             continue;
         }
@@ -207,13 +209,14 @@ void CLinkOther::Link(void)
 
         stTriggerSock.emType = STYPE_TCPCLIENT;
         stTriggerSock.iSock = sok;
-        if (Q_RTN_OK != m_pThreadEvent->sendAssistMsg((const char *)&stTriggerSock, sizeof(stTriggerSock)))
+        if (Q_RTN_OK != CWorkThreadEvent::getSingletonPtr()->
+                sendAssistMsg((const char *)&stTriggerSock, sizeof(stTriggerSock)))
         {
             evutil_closesocket(sok);
         }
         else
         {
-            itInfo->emStatus = SessionStatus_Connect;
+            itInfo->emStatus = SESSSTATUS_CONNECT;
             itInfo->sock = sok;
         }
     }
@@ -241,14 +244,14 @@ void CLinkOther::setSockStatus(Q_SOCK sock, SessionStatus emStatus)
     m_objMutex.unLock();
 }
 
-int CLinkOther::getSockByName(const char *pszName)
+Q_SOCK CLinkOther::getSockByName(const char *pszName)
 {
     if (NULL == pszName)
     {
         return Q_INVALID_SOCK;
     }
 
-    int iSock = Q_INVALID_SOCK;
+    Q_SOCK iSock = Q_INVALID_SOCK;
     std::vector<LinkInfo>::iterator itInfo;
 
     m_objMutex.Lock();
@@ -263,4 +266,23 @@ int CLinkOther::getSockByName(const char *pszName)
     m_objMutex.unLock();
 
     return iSock;
+}
+
+std::vector<int> CLinkOther::getSockByType(const unsigned short usType)
+{
+    std::vector<LinkInfo>::iterator itInfo;
+    std::vector<int> vcSock;
+
+    m_objMutex.Lock();
+    for (itInfo = m_vcLinkInfo.begin(); m_vcLinkInfo.end() != itInfo; itInfo++)
+    {
+        if ((usType == itInfo->usType)
+            && (Q_INVALID_SOCK != itInfo->sock))
+        {
+            vcSock.push_back((int)(itInfo->sock));
+        }
+    }
+    m_objMutex.unLock();
+
+    return vcSock;
 }

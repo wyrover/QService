@@ -1,5 +1,7 @@
 #include "Worker.h"
 
+int g_iChecked = 0;
+
 CWorker::CWorker(void) : m_pEvent(NULL), m_pLua(NULL)
 {
 
@@ -20,11 +22,17 @@ CWorker::~CWorker(void)
     }
 }
 
+bool getChecked(void)
+{
+    return 1 == g_iChecked ? true : false;
+}
+
 void CWorker::regMFCFunc(void)
 {
     luabridge::getGlobalNamespace(m_pLua)
         .addFunction("showMfcMsg", showMfcMsg)
-        .addFunction("showLuaMemory", showLuaMemory);
+        .addFunction("showLuaMemory", showLuaMemory)
+        .addFunction("getChecked", getChecked);
 }
 
 bool CWorker::initLua(void)
@@ -32,7 +40,7 @@ bool CWorker::initLua(void)
     m_pLua = luaL_newstate();
     if (NULL == m_pLua)
     {
-        setRunStatus(RunStatus_Error);
+        setRunStatus(RUNSTATUS_ERROR);
         return false;
     }
 
@@ -55,12 +63,12 @@ bool CWorker::initLua(void)
         }
 
         showMfcMsg(strLuaError.c_str(), strLuaError.size());
-        setRunStatus(RunStatus_Error);
+        setRunStatus(RUNSTATUS_ERROR);
 
         return false;
     }
 
-    m_objSessionManager.setLua(m_pLua);
+    CSessionManager::getSingletonPtr()->setLua(m_pLua);
 
     return true;
 }
@@ -71,7 +79,7 @@ void CWorker::workThreadTimerCB(evutil_socket_t, short event, void *arg)
 
     try
     {
-        pWorker->getSessionManager()->addCount();
+        CSessionManager::getSingletonPtr()->addCount();
         luabridge::getGlobal(pWorker->getLua(), "Lua_onTime")();
     }
     catch(luabridge::LuaException &e)
@@ -84,7 +92,7 @@ void CWorker::setTimer(unsigned int uiMS)
 {
     timeval tVal;
 
-    m_objSessionManager.setTimer(uiMS);
+    CSessionManager::getSingletonPtr()->setTimer(uiMS);
 
     evutil_timerclear(&tVal);
     if (uiMS >= 1000)
@@ -102,7 +110,7 @@ void CWorker::setTimer(unsigned int uiMS)
     if (NULL == m_pEvent)
     {
         Q_Printf("%s", "event_new error");
-        setRunStatus(RunStatus_Error);
+        setRunStatus(RUNSTATUS_ERROR);
 
         return;
     }
@@ -110,7 +118,7 @@ void CWorker::setTimer(unsigned int uiMS)
     if (Q_RTN_OK != event_add(m_pEvent, &tVal))
     {
         Q_Printf("%s", "event_add error");
-        setRunStatus(RunStatus_Error);
+        setRunStatus(RUNSTATUS_ERROR);
         event_free(m_pEvent);
         m_pEvent = NULL;
 
@@ -121,7 +129,7 @@ void CWorker::setTimer(unsigned int uiMS)
 void CWorker::mainReadCB(struct bufferevent *bev, void *arg)
 {
     CWorker *pWorker = (CWorker*)arg;
-    CSessionManager *pSessionManager = pWorker->getSessionManager();
+    CSessionManager *pSessionManager = CSessionManager::getSingletonPtr();
     CSession *pSession = pSessionManager->getSession(bev);
     CTcpParser *pParser = pWorker->getTcpParser();
     if (NULL == pSession)
@@ -152,7 +160,7 @@ void CWorker::mainReadCB(struct bufferevent *bev, void *arg)
             showMfcMsg(e.what(), strlen(e.what()));
         }
 
-        if (SessionStatus_Closed != pSession->getStatus())
+        if (SESSSTATUS_CLOSED != pSession->getStatus())
         {
             (void)pSession->getBuffer()->delBuffer(pParser->getParsedLens());
         }
@@ -167,7 +175,7 @@ void CWorker::mainReadCB(struct bufferevent *bev, void *arg)
 void CWorker::mainEventCB(struct bufferevent *bev, short event, void *arg)
 {
     CWorker *pWorker = (CWorker*)arg;
-    CSessionManager *pSessionManager = pWorker->getSessionManager();
+    CSessionManager *pSessionManager = CSessionManager::getSingletonPtr();
     CSession *pSession = pSessionManager->getSession(bev);
     if (NULL == pSession)
     {
@@ -210,7 +218,7 @@ void CWorker::onMainRead(CEventBuffer *pBuffer)
             evutil_closesocket(sock);
             continue;
         }
-        if (Q_RTN_OK != m_objSessionManager.addSession(pBev))
+        if (Q_RTN_OK != CSessionManager::getSingletonPtr()->addSession(pBev))
         {
             enableLinkButt();
             evutil_closesocket(sock);
@@ -224,16 +232,16 @@ void CWorker::onMainRead(CEventBuffer *pBuffer)
         if (Q_RTN_OK != bufferevent_enable(pBev, EV_READ | EV_WRITE))
         {
             enableLinkButt();
-            m_objSessionManager.dellSession(pBev);
+            CSessionManager::getSingletonPtr()->dellSession(pBev);
             evutil_closesocket(sock);
             bufferevent_free(pBev);
 
             continue;
         }
 
-        pSession = m_objSessionManager.getSession(pBev);
+        pSession = CSessionManager::getSingletonPtr()->getSession(pBev);
         pSession->setType(STYPE_TCPCLIENT);
-        pSession->setStatus(SessionStatus_Linked);
+        pSession->setStatus(SESSSTATUS_LINKED);
 
         try
         {
@@ -249,7 +257,7 @@ void CWorker::onMainRead(CEventBuffer *pBuffer)
 void CWorker::assistReadCB(struct bufferevent *bev, void *arg)
 {
     CWorker *pWorker = (CWorker*)arg;
-    CSessionManager *pSessionManager = pWorker->getSessionManager();
+    CSessionManager *pSessionManager = CSessionManager::getSingletonPtr();
     CSession *pSession = pSessionManager->getSession(bev);
     CTcpParser *pParser = pWorker->getTcpParser();
     if (NULL == pSession)
@@ -280,7 +288,7 @@ void CWorker::assistReadCB(struct bufferevent *bev, void *arg)
             showMfcMsg(e.what(), strlen(e.what()));
         }
 
-        if (SessionStatus_Closed != pSession->getStatus())
+        if (SESSSTATUS_CLOSED != pSession->getStatus())
         {
             (void)pSession->getBuffer()->delBuffer(pParser->getParsedLens());
         }
@@ -295,7 +303,7 @@ void CWorker::assistReadCB(struct bufferevent *bev, void *arg)
 void CWorker::assistEventCB(struct bufferevent *bev, short event, void *arg)
 {
     CWorker *pWorker = (CWorker*)arg;
-    CSessionManager *pSessionManager = pWorker->getSessionManager();
+    CSessionManager *pSessionManager = CSessionManager::getSingletonPtr();
     CSession *pSession = pSessionManager->getSession(bev);
     if (NULL == pSession)
     {
@@ -349,7 +357,7 @@ void CWorker::onAssistRead(CEventBuffer *pBuffer)
             evutil_closesocket(sock);
             continue;
         }
-        if (Q_RTN_OK != m_objSessionManager.addSession(pBev))
+        if (Q_RTN_OK != CSessionManager::getSingletonPtr()->addSession(pBev))
         {
             enableLinkButt();
             evutil_closesocket(sock);
@@ -363,16 +371,16 @@ void CWorker::onAssistRead(CEventBuffer *pBuffer)
         if (Q_RTN_OK != bufferevent_enable(pBev, EV_READ | EV_WRITE))
         {
             enableLinkButt();
-            m_objSessionManager.dellSession(pBev);
+            CSessionManager::getSingletonPtr()->dellSession(pBev);
             evutil_closesocket(sock);
             bufferevent_free(pBev);
 
             continue;
         }
 
-        pSession = m_objSessionManager.getSession(pBev);
+        pSession = CSessionManager::getSingletonPtr()->getSession(pBev);
         pSession->setType(STYPE_TCPCLIENT);
-        pSession->setStatus(SessionStatus_Linked);
+        pSession->setStatus(SESSSTATUS_LINKED);
 
         try
         {
@@ -389,7 +397,8 @@ bool CWorker::onStartUp(void)
 {
     try
     {
-        luabridge::getGlobal(getLua(), "Lua_onStartUp")(&m_objSessionManager, m_objSessionManager.getBinary());
+        luabridge::getGlobal(getLua(), "Lua_onStartUp")(CSessionManager::getSingletonPtr(), 
+            CSessionManager::getSingletonPtr()->getBinary());
     }
     catch(luabridge::LuaException &e)
     {
@@ -412,5 +421,5 @@ void CWorker::onStop(void)
         showMfcMsg(e.what(), strlen(e.what()));
     }
 
-    setRunStatus(RunStatus_Stopped);
+    setRunStatus(RUNSTATUS_STOPPED);
 }

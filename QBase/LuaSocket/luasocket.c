@@ -31,6 +31,11 @@
 #include "udp.h"
 #include "select.h"
 
+#ifdef WIN32
+#pragma warning(disable:4244)
+#pragma warning(disable:4267)
+#endif
+
 /*-------------------------------------------------------------------------*\
 * Internal function prototypes
 \*-------------------------------------------------------------------------*/

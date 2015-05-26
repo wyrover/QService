@@ -1,8 +1,9 @@
 
 #include "RSAKey.h"
+#include "Base64.h"
 #include "File.h"
 
-CRSAKey::CRSAKey(void) : m_objAESEncode(), m_objAESDecode(), m_objBase64()
+CRSAKey::CRSAKey(void)
 {
     Q_Zero(&m_stRandom, sizeof(m_stRandom));
     Q_Zero(&m_stPublicKey, sizeof(m_stPublicKey));
@@ -60,40 +61,6 @@ R_RANDOM_STRUCT *CRSAKey::getRandom(void)
     return &m_stRandom;
 }
 
-/*************************************************
-* Function name:setAESKey
-* Description  :设置AES加密密码,主要为RSA Key加密
-* IN           :pszKey --AES密码
-* OUT          :None
-* Return       :Q_RTN_OK --成功 其他 --失败
-* Make By      :lqf/200309129@163.com
-* Date Time    :2013/08/10
-* Modification 
-* ......record :first program
-**************************************************/
-int CRSAKey::setAESKey(const char *pszKey)
-{
-    int iRtn = Q_RTN_OK;
-
-    iRtn = m_objAESEncode.setKey(pszKey, Key256);
-    if (Q_RTN_OK != iRtn)
-    {
-        Q_Printf("%s", "set aes encode key error.");
-
-        return iRtn;
-    }
-
-    iRtn = m_objAESDecode.setKey(pszKey, Key256);
-    if (Q_RTN_OK != iRtn)
-    {
-        Q_Printf("%s", "set aes decode key error.");
-
-        return iRtn;
-    }
-
-    return Q_RTN_OK;
-}
-
 int CRSAKey::fileWrite(const char *pszMsg, const size_t iLens, const char *pszFile) const
 {
     FILE *pFile = NULL;
@@ -119,21 +86,9 @@ int CRSAKey::fileWrite(const char *pszMsg, const size_t iLens, const char *pszFi
     return Q_RTN_OK;
 }
 
-int CRSAKey::Encode(const char *pszMsg, const size_t iLens, std::string &strBase64)
+std::string CRSAKey::Encode(const char *pszMsg, const size_t &iLens)
 {
-    size_t iOutLens = Q_INIT_NUMBER;
-
-    const char *pAES = m_objAESEncode.Encode(pszMsg, iLens, iOutLens);
-    if (NULL == pAES)
-    {
-        Q_Printf("%s", "aes encode error.");
-
-        return Q_RTN_FAILE;
-    }
-
-    strBase64 = m_objBase64.Encode((const unsigned char*)pAES, iOutLens);
-
-    return Q_RTN_OK;
+    return CBase64::Encode((const unsigned char*)pszMsg, iLens);
 }
 
 /*************************************************
@@ -149,14 +104,7 @@ int CRSAKey::Encode(const char *pszMsg, const size_t iLens, std::string &strBase
 **************************************************/
 int CRSAKey::saveRandom(const char *pszFile)
 {
-    int iRtn = Q_RTN_OK;
-    std::string strBase64;
-
-    iRtn = Encode((const char*)(&m_stRandom), sizeof(m_stRandom), strBase64);
-    if (Q_RTN_OK != iRtn)
-    {
-        return iRtn;
-    }
+    std::string strBase64 = Encode((const char*)(&m_stRandom), sizeof(m_stRandom));
 
     return fileWrite(strBase64.c_str(), strBase64.size(), pszFile);
 }
@@ -174,14 +122,7 @@ int CRSAKey::saveRandom(const char *pszFile)
 **************************************************/
 int CRSAKey::savePublicKey(const char *pszFile)
 {
-    int iRtn = Q_RTN_OK;
-    std::string strBase64;
-
-    iRtn = Encode((const char*)(&m_stPublicKey), sizeof(m_stPublicKey), strBase64);
-    if (Q_RTN_OK != iRtn)
-    {
-        return iRtn;
-    }
+    std::string strBase64 = Encode((const char*)(&m_stPublicKey), sizeof(m_stPublicKey));
 
     return fileWrite(strBase64.c_str(), strBase64.size(), pszFile);
 }
@@ -199,14 +140,7 @@ int CRSAKey::savePublicKey(const char *pszFile)
 **************************************************/
 int CRSAKey::savePrivateKey(const char *pszFile)
 {
-    int iRtn = Q_RTN_OK;
-    std::string strBase64;
-
-    iRtn = Encode((const char*)(&m_stPrivateKey), sizeof(m_stPrivateKey), strBase64);
-    if (Q_RTN_OK != iRtn)
-    {
-        return iRtn;
-    }
+    std::string strBase64 = Encode((const char*)(&m_stPrivateKey), sizeof(m_stPrivateKey));
 
     return fileWrite(strBase64.c_str(), strBase64.size(), pszFile);
 }
@@ -264,38 +198,14 @@ std::string CRSAKey::fileRead(const char *pszFile) const
     return strMsg;
 }
 
-const char *CRSAKey::Decode(const char *pszMsg, const size_t iLens, size_t &iOutLens)
+std::string CRSAKey::Decode(std::string &strVal)
 {
-    size_t iAESOutLens = Q_INIT_NUMBER;
-    size_t iBase64OutLens = Q_INIT_NUMBER;
-
-    iOutLens = Q_INIT_NUMBER;
-
-    const char *pBase64Buf = m_objBase64.Decode(pszMsg, iLens, iBase64OutLens);
-    if (NULL == pBase64Buf)
-    {
-        Q_Printf("%s", "base64 decode error.");
-
-        return NULL;
-    }
-
-    const char *pAESBuf = m_objAESDecode.Decode(pBase64Buf, iBase64OutLens, iAESOutLens);
-    if (NULL == pAESBuf)
-    {
-        Q_Printf("%s", "aes decode error.");
-
-        return NULL;
-    }
-
-    iOutLens = iAESOutLens;
-
-    return pAESBuf;
+    return CBase64::Decode(strVal);
 }
 
 int CRSAKey::loadInfo(char *pInfo, const size_t iLens, const char *pszFile)
 {
     std::string strFileInfo;
-    size_t iOutLens = Q_INIT_NUMBER;
 
     strFileInfo = fileRead(pszFile);
     if (strFileInfo.empty())
@@ -303,18 +213,13 @@ int CRSAKey::loadInfo(char *pInfo, const size_t iLens, const char *pszFile)
         return Q_RTN_FAILE;
     }
 
-    const char *pBuf = Decode(strFileInfo.c_str(), strFileInfo.size(), iOutLens);
-    if (NULL == pBuf)
+    std::string strBuf = Decode(strFileInfo);
+    if (strBuf.size() != iLens)
     {
         return Q_RTN_FAILE;
     }
 
-    if (iOutLens != iLens)
-    {
-        return Q_RTN_FAILE;
-    }
-
-    memcpy(pInfo, pBuf, iLens);
+    memcpy(pInfo, strBuf.c_str(), iLens);
 
     return Q_RTN_OK;
 }

@@ -6,9 +6,14 @@ void Q_LuaLog(int iLV, const char *pszMsg)
     Q_LOG((LOG_LEVEL)iLV, "%s", pszMsg);
 }
 
-void Q_DBLog(const char *pszPlayerID, unsigned short sType, const char *pszMsg, const size_t iLens)
+void Q_DBLog(const char *pszPlayerID, unsigned short sType, const char *pszMsg, const unsigned int iLens)
 {
     Q_DBLOG(pszPlayerID, sType, pszMsg, iLens);
+}
+
+void sendMail(std::string strMail)
+{
+    CMailSender::getSingletonPtr()->sendMail(strMail);
 }
 
 const char *Q_GetModulPath(void)
@@ -55,6 +60,7 @@ void CReg2Lua::Register(void)
     reg_HttpClient();
     reg_HttpBuffer();
     reg_Binary();
+    reg_Encrypt();
 }
 
 void CReg2Lua::reg_Func(void)
@@ -64,6 +70,7 @@ void CReg2Lua::reg_Func(void)
         .addFunction("Q_GetPathSeparator", Q_GetPathSeparator)
         .addFunction("Q_LOG", Q_LuaLog)
         .addFunction("Q_DBLOG", Q_DBLog)
+        .addFunction("sendMail", sendMail)
         .addFunction("getServerID", getServerID)
         .addFunction("getServerNam", getServerNam);
 }
@@ -98,7 +105,7 @@ void CReg2Lua::reg_Filter(void)
 
             .addFunction("Clear", &CFilter::Clear)
 
-            .addFunction("addSensitiveWord", &CFilter::addSensitiveWord)
+            .addFunction("addFilterWord", &CFilter::addFilterWord)
 
             .addFunction("checkHave", &CFilter::checkHave)
             .addFunction("Filter", &CFilter::Filter)
@@ -158,9 +165,6 @@ void CReg2Lua::reg_Session(void)
             .addFunction("setExterID", &CSession::setExterID)
             .addFunction("getExterID", &CSession::getExterID)
 
-            .addFunction("setCheckID", &CSession::setCheckID)
-            .addFunction("getCheckID", &CSession::getCheckID)
-
             .addFunction("setIDCard", &CSession::setIDCard)
             .addFunction("getIDCard", &CSession::getIDCard)
 
@@ -202,6 +206,7 @@ void CReg2Lua::reg_SessionManager(void)
 
             .addFunction("addLinkOther", &CSessionManager::addLinkOther)
             .addFunction("getLinkOtherID", &CSessionManager::getLinkOtherID)
+            .addFunction("getLinkOtherByType", &CSessionManager::getLinkOtherByType)
         .endClass();
 }
 
@@ -278,5 +283,34 @@ void CReg2Lua::reg_Binary(void)
             .addFunction("getStruct", &CLuaBinary::getStruct)
 
             .addFunction("getBuffer", &CLuaBinary::getBuffer)
+        .endClass();
+}
+
+void CReg2Lua::reg_Encrypt(void)
+{
+    luabridge::getGlobalNamespace(m_pstLState)
+        .beginClass<CEncrypt>("CEncrypt")
+            .addFunction("b64Encode", &CEncrypt::b64Encode)
+            .addFunction("b64Decode", &CEncrypt::b64Decode)
+
+            .addFunction("md5Str", &CEncrypt::md5Str)
+            .addFunction("md5File", &CEncrypt::md5File)
+
+            .addFunction("sha1Str", &CEncrypt::sha1Str)
+            .addFunction("sha1File", &CEncrypt::sha1File)
+
+            .addFunction("aesEncode", &CEncrypt::aesEncode)
+            .addFunction("aesDecode", &CEncrypt::aesDecode)
+
+            .addFunction("rsaPubEncode", &CEncrypt::rsaPubEncode)
+            .addFunction("rsaPriDecode", &CEncrypt::rsaPriDecode)
+            .addFunction("rsaPriEncode", &CEncrypt::rsaPriEncode)
+            .addFunction("rsaPubDecode", &CEncrypt::rsaPubDecode)
+
+            .addFunction("urlEncode", &CEncrypt::urlEncode)
+            .addFunction("urlDecode", &CEncrypt::urlDecode)
+
+            .addFunction("zlibEncode", &CEncrypt::zlibEncode)
+            .addFunction("zlibDecode", &CEncrypt::zlibDecode)
         .endClass();
 }

@@ -35,19 +35,19 @@ int startSV(void)
     return Q_RTN_OK;
 }
 
-#ifdef Q_OS_WIN32
-
+#ifdef Q_OS_WIN
 #include "../vld/vld.h"
 #pragma comment(lib, "ws2_32.lib")
-#pragma comment(lib, "../Bin/libmysql.lib")
-#pragma comment(lib, "../Bin/libevent_core.lib")
-#pragma comment(lib, "../Bin/libevent_extras.lib")
+#pragma comment(lib, "libmysql.lib")
+#pragma comment(lib, "libevent.lib")
+#pragma comment(lib, "libevent_core.lib")
+#pragma comment(lib, "libevent_extras.lib")
 #if _DEBUG
-#pragma comment(lib, "../Bin/libcurl_a_debug.lib")
+#pragma comment(lib, "libcurl_a_debug.lib")
 #else
-#pragma comment(lib, "../Bin/libcurl_a.lib")
+#pragma comment(lib, "libcurl_a.lib")
 #endif
-#pragma comment(lib, "../Bin/QBase.lib")
+#pragma comment(lib, "QBase.lib")
 
 #define Q_STOP_SERVICE_TIMEOUT       60 * 1000      //windows 服务停止超时时间
 #define Q_START_SERVICE_TIMEOUT      60 * 1000       //windows 服务启动超时时间
@@ -57,7 +57,7 @@ static SERVICE_STATUS_HANDLE m_hServiceStatus;
 static SERVICE_STATUS m_ServiceStatus;
 static HANDLE m_hStopEvent = NULL;
 int m_UnhandelExceptionHappen = 0;
-char m_serviceDescription[] = {QService};
+char m_serviceDescription[] = {QSERVICE};
 
 CCoreDump g_objDump(true);
 

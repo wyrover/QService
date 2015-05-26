@@ -7,12 +7,28 @@
 参数：字符串
 返回值：无
 --]]
-local function doString(strMsg)
-    local Func = load(strMsg) 
+local function doString(strDebugMsg)
+    local Func, strMsg = load(strDebugMsg)
+    local tRtn = {}
     
-    return callFunc(Func)
+    if Func then
+        local bRtn, rtnMsg = callFunc(Func)
+        if bRtn then
+            tRtn.Rtn = ErrorCode.OK
+        else
+            tRtn.Rtn = ErrorCode.FAILE
+        end
+        
+        tRtn.Info = rtnMsg
+    else
+        Debug(strMsg)
+        tRtn.Rtn = ErrorCode.ERROR
+    end
+    
+    local strJson = cjson.encode(tRtn)
+    g_objSessionMgr:sendToCur(strJson, string.len(strJson))
 end
-
+regGameEvent(GameEvent.Debug, doString)
 
 local function getIndent(level)
     return string.rep("    ", level)

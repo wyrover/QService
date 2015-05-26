@@ -4,10 +4,11 @@
 
 #include "Reg2Lua.h"
 
-class CDisposeEvent : public CEventInterface
+class CDisposeEvent : public CEventInterface,
+    public CSingleton<CDisposeEvent>
 {
 public:
-    CDisposeEvent(const char *pszLuaFile);
+    CDisposeEvent(void);
     ~CDisposeEvent(void);
 
     /*工作线程启动时执行*/
@@ -22,6 +23,8 @@ public:
     void onConnected(class CSession *pSession);
     /*socket读取到完整包时执行*/
     void onSockRead(const char *pszMsg, const size_t &iLens);
+    /*debug*/
+    void onDebug(const char *pszMsg, const size_t &iLens);
     /*socket断开时执行*/
     void onSockClose(class CSession *pSession);
 
@@ -31,8 +34,12 @@ public:
     /*服务器连接启动*/
     void onLinkedOther(class CSession *pSession);
 
-private:
-    CDisposeEvent(void);
+    int initLua(const std::string &strLua);
+
+    struct lua_State *getLua(void)
+    {
+        return m_pLua;
+    };
 
 private:
     struct lua_State *m_pLua;//lua句柄

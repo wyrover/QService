@@ -6,14 +6,19 @@
 # Date Time  :2011/06/15 
 #***********************************************
 
-UsAge="UsAge:\"./mklib\""
+UsAge="UsAge:\"./mklib.sh\" or \"./mklib.sh x64\""
 
+X64=$1
 OSName=`uname`
 LibPath=`pwd`
 LibPath=$LibPath/
+RstPath="Bin"
 echo current path $LibPath
+if [ "$X64" = "x64" ]
+then
+    RstPath="BinX64"
+fi
 
-RstPath=Bin
 DepLib=DependLib
 
 #±‡“Î---------------------------∞¸–≈œ¢---------------------------
@@ -23,8 +28,8 @@ cppunit_path=cppunit-1.12.1
 curl_tar=curl-7.38.0.tar.gz
 curl_path=curl-7.38.0
 
-libevent_tar=libevent-2.0.22-stable.tar.gz
-libevent_path=libevent-2.0.22-stable
+libevent_tar=libevent-2.1.5-beta.tar.gz
+libevent_path=libevent-2.1.5-beta
 
 #±‡“Î---------------------------cppunit---------------------------
 makecppunit=0

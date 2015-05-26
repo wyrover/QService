@@ -9,6 +9,11 @@
 #include <stddef.h>
 #include <string.h>
 
+#ifdef WIN32
+#pragma warning(disable:4244)
+#pragma warning(disable:4267)
+#endif
+
 struct pbc_rmessage {
 		struct _message * msg;
 		struct map_sp * index;	// key -> struct value *

@@ -1,7 +1,7 @@
 
 #include "CoreDump.h"
 
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
 #include <stdio.h>
 #include <time.h>
 #include <stdlib.h>
@@ -9,7 +9,7 @@
 #include <dbghelp.h>
 #endif
 
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
 
 #pragma warning(disable:4995)
 

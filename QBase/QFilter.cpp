@@ -56,7 +56,7 @@ void CFilter::Clear(void)
 * Modification 
 * ......record :first program
 ************************************************************************/
-bool CFilter::addSensitiveWord(const char *pszWord, const size_t uiLens)
+bool CFilter::addFilterWord(const char *pszWord, const unsigned int uiLens)
 {
     if (NULL == pszWord
         || 0 == uiLens)
@@ -79,7 +79,7 @@ bool CFilter::addSensitiveWord(const char *pszWord, const size_t uiLens)
     std::tr1::unordered_map<char, FilterMap*>::iterator itVal;
 
     //¹¹Ôì×Öµä
-    for (size_t i = 0; i < uiLens; i++)
+    for (unsigned int i = 0; i < uiLens; i++)
     {
         itVal = pSearchMap->mapFilterMap.find(pszWord[i]);
         if (pSearchMap->mapFilterMap.end() == itVal)
@@ -115,7 +115,7 @@ bool CFilter::addSensitiveWord(const char *pszWord, const size_t uiLens)
 * Modification 
 * ......record :first program
 ************************************************************************/
-bool CFilter::checkHave(const char *pszWord, const size_t uiLens)
+bool CFilter::checkHave(const char *pszWord, const unsigned int uiLens)
 {
     if (NULL == pszWord
         || 0 == uiLens
@@ -127,7 +127,7 @@ bool CFilter::checkHave(const char *pszWord, const size_t uiLens)
     FilterMap *pSearchMap = m_pmapFilter;
     std::tr1::unordered_map<char, FilterMap*>::iterator itVal;
 
-    for (size_t i = 0; i < uiLens; i++)
+    for (unsigned int i = 0; i < uiLens; i++)
     {
         itVal = pSearchMap->mapFilterMap.find(pszWord[i]);
         if (pSearchMap->mapFilterMap.end() != itVal)
@@ -167,7 +167,7 @@ bool CFilter::checkHave(const char *pszWord, const size_t uiLens)
 * Modification 
 * ......record :first program
 ************************************************************************/
-void CFilter::checkAndModify(char *pWord, const size_t uiLens, const char cReplace)
+void CFilter::checkAndModify(char *pWord, const unsigned int &uiLens, const char cReplace)
 {
     if (NULL == pWord
         || 0 == uiLens
@@ -180,7 +180,7 @@ void CFilter::checkAndModify(char *pWord, const size_t uiLens, const char cRepla
     FilterMap *pSearchMap = m_pmapFilter;
     std::tr1::unordered_map<char, FilterMap*>::iterator itVal;
 
-    for (size_t i = 0; i < uiLens; i++)
+    for (unsigned int i = 0; i < uiLens; i++)
     {
         itVal = pSearchMap->mapFilterMap.find(pWord[i]);
         if (pSearchMap->mapFilterMap.end() != itVal)
@@ -224,7 +224,7 @@ void CFilter::checkAndModify(char *pWord, const size_t uiLens, const char cRepla
     return;
 }
 
-const char * CFilter::Filter(const char *pWord, const size_t uiLens)
+const char * CFilter::Filter(const char *pWord, const unsigned int uiLens)
 {
     checkAndModify(const_cast<char*>(pWord), uiLens);
 

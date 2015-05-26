@@ -3,6 +3,7 @@
 
 #include "TestInclude.h"
 
+#if 0
 class CTestDataBase : public CPPUNIT_NS::TestFixture
 {
     CPPUNIT_TEST_SUITE(CTestDataBase);   
@@ -29,5 +30,6 @@ private:
     size_t m_iFileLens;    
     std::string m_strPath;
 };
+#endif
 
 #endif//Q_TESTDATABASE_H_

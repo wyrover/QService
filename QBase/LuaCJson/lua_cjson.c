@@ -52,6 +52,8 @@
 #define isinf(x) (!_finite(x) && !_isnan(x))  
 #define strncasecmp  _strnicmp 
 #pragma warning(disable:4996)
+#pragma warning(disable:4244)
+#pragma warning(disable:4267)
 #endif
 
 #ifndef CJSON_MODNAME

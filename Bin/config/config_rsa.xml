@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<QServer>
+    <!--RSA参数配置 不需要则屏蔽该节点--> 
+    <RSA>
+		<!--公钥文件-->
+		<PubKey>RSAPubKey.txt</PubKey>
+	    <!--私钥文件-->
+		<PriKey>RSAPriKey.txt</PriKey>
+        <!--Random文件-->
+		<RandKey>RSARandKey.txt</RandKey>
+    </RSA>
+</QServer>

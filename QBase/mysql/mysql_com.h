@@ -1,4 +1,5 @@
-/* Copyright (c) 2000, 2011, Oracle and/or its affiliates. All rights reserved.
+/* Copyright (c) 2000, 2011, Oracle and/or its affiliates.
+   Copyright (c) 2010, 2013, Monty Program Ab
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -23,22 +24,51 @@
 #define HOSTNAME_LENGTH 60
 #define SYSTEM_CHARSET_MBMAXLEN 3
 #define NAME_CHAR_LEN	64              /* Field/table name length */
-#define USERNAME_CHAR_LENGTH 16
+#define USERNAME_CHAR_LENGTH 128
 #define NAME_LEN                (NAME_CHAR_LEN*SYSTEM_CHARSET_MBMAXLEN)
 #define USERNAME_LENGTH         (USERNAME_CHAR_LENGTH*SYSTEM_CHARSET_MBMAXLEN)
+#define DEFINER_CHAR_LENGTH     (USERNAME_CHAR_LENGTH + HOSTNAME_LENGTH + 1)
+#define DEFINER_LENGTH          (USERNAME_LENGTH + HOSTNAME_LENGTH + 1)
 
 #define MYSQL_AUTODETECT_CHARSET_NAME "auto"
 
+#define MYSQL50_TABLE_NAME_PREFIX         "#mysql50#"
+#define MYSQL50_TABLE_NAME_PREFIX_LENGTH  (sizeof(MYSQL50_TABLE_NAME_PREFIX)-1)
+#define SAFE_NAME_LEN (NAME_LEN + MYSQL50_TABLE_NAME_PREFIX_LENGTH)
+
+/*
+  MDEV-4088
+
+  MySQL (and MariaDB 5.x before the fix) was using the first character of the
+  server version string (as sent in the first handshake protocol packet) to
+  decide on the replication event formats. And for 10.x the first character
+  is "1", which the slave thought comes from some ancient 1.x version
+  (ignoring the fact that the first ever MySQL version was 3.x).
+
+  To support replication to these old clients, we fake the version in the
+  first handshake protocol packet to start from "5.5.5-" (for example,
+  it might be "5.5.5-10.0.1-MariaDB-debug-log".
+
+  On the client side we remove this fake version prefix to restore the
+  correct server version. The version "5.5.5" did not support
+  pluggable authentication, so any version starting from "5.5.5-" and
+  claiming to support pluggable auth, must be using this fake prefix.
+*/
+/* this version must be the one that *does not* support pluggable auth */
+#define RPL_VERSION_HACK "5.5.5-"
+
 #define SERVER_VERSION_LENGTH 60
 #define SQLSTATE_LENGTH 5
+#define LIST_PROCESS_HOST_LEN 64
 
 /*
   Maximum length of comments
 */
-#define TABLE_COMMENT_INLINE_MAXLEN 180 /* pre 6.0: 60 characters */
+#define TABLE_COMMENT_INLINE_MAXLEN 180 /* pre 5.5: 60 characters */
 #define TABLE_COMMENT_MAXLEN 2048
 #define COLUMN_COMMENT_MAXLEN 1024
 #define INDEX_COMMENT_MAXLEN 1024
+#define TABLE_PARTITION_COMMENT_MAXLEN 1024
 
 /*
   USER_HOST_BUFF_SIZE -- length of string buffer, that is enough to contain
@@ -77,10 +107,11 @@ enum enum_server_command
   COM_END
 };
 
-
+/* sql type stored in .frm files for virtual fields */
+#define MYSQL_TYPE_VIRTUAL 245
 /*
   Length of random string sent by server on handshake; this is also length of
-  obfuscated password, recieved from client
+  obfuscated password, received from client
 */
 #define SCRAMBLE_LENGTH 20
 #define SCRAMBLE_LENGTH_323 8
@@ -112,39 +143,55 @@ enum enum_server_command
 #define BINCMP_FLAG	131072		/* Intern: Used by sql_yacc */
 #define GET_FIXED_FIELDS_FLAG (1 << 18) /* Used to get fields in item tree */
 #define FIELD_IN_PART_FUNC_FLAG (1 << 19)/* Field part of partition func */
-#define FIELD_IN_ADD_INDEX (1<< 20)	/* Intern: Field used in ADD INDEX */
-#define FIELD_IS_RENAMED (1<< 21)       /* Intern: Field is being renamed */
-#define FIELD_FLAGS_STORAGE_MEDIA 22    /* Field storage media, bit 22-23,
-                                           reserved by MySQL Cluster */
-#define FIELD_FLAGS_COLUMN_FORMAT 24    /* Field column format, bit 24-25,
-                                           reserved by MySQL Cluster */
 
-#define REFRESH_GRANT		1	/* Refresh grant tables */
-#define REFRESH_LOG		2	/* Start on new log file */
-#define REFRESH_TABLES		4	/* close all tables */
-#define REFRESH_HOSTS		8	/* Flush host cache */
-#define REFRESH_STATUS		16	/* Flush status variables */
-#define REFRESH_THREADS		32	/* Flush thread cache */
-#define REFRESH_SLAVE           64      /* Reset master info and restart slave
-					   thread */
-#define REFRESH_MASTER          128     /* Remove all bin logs in the index
-					   and truncate the index */
-#define REFRESH_ERROR_LOG       256 /* Rotate only the erorr log */
-#define REFRESH_ENGINE_LOG      512 /* Flush all storage engine logs */
-#define REFRESH_BINARY_LOG     1024 /* Flush the binary log */
-#define REFRESH_RELAY_LOG      2048 /* Flush the relay log */
-#define REFRESH_GENERAL_LOG    4096 /* Flush the general log */
-#define REFRESH_SLOW_LOG       8192 /* Flush the slow query log */
+/**
+  Intern: Field in TABLE object for new version of altered table,
+          which participates in a newly added index.
+*/
+#define FIELD_IN_ADD_INDEX (1 << 20)
+#define FIELD_IS_RENAMED (1<< 21)       /* Intern: Field is being renamed */
+#define FIELD_FLAGS_STORAGE_MEDIA 22    /* Field storage media, bit 22-23 */
+#define FIELD_FLAGS_STORAGE_MEDIA_MASK (3 << FIELD_FLAGS_STORAGE_MEDIA)
+#define FIELD_FLAGS_COLUMN_FORMAT 24    /* Field column format, bit 24-25 */
+#define FIELD_FLAGS_COLUMN_FORMAT_MASK (3 << FIELD_FLAGS_COLUMN_FORMAT)
+#define FIELD_IS_DROPPED (1<< 26)       /* Intern: Field is being dropped */
+#define HAS_EXPLICIT_VALUE (1 << 27)    /* An INSERT/UPDATE operation supplied
+                                          an explicit default value */
+
+#define REFRESH_GRANT           (1ULL << 0)  /* Refresh grant tables */
+#define REFRESH_LOG             (1ULL << 1)  /* Start on new log file */
+#define REFRESH_TABLES          (1ULL << 2)  /* close all tables */
+#define REFRESH_HOSTS           (1ULL << 3)  /* Flush host cache */
+#define REFRESH_STATUS          (1ULL << 4)  /* Flush status variables */
+#define REFRESH_THREADS         (1ULL << 5)  /* Flush thread cache */
+#define REFRESH_SLAVE           (1ULL << 6)  /* Reset master info and restart slave
+                                             thread */
+#define REFRESH_MASTER          (1ULL << 7)  /* Remove all bin logs in the index
+                                             and truncate the index */
 
 /* The following can't be set with mysql_refresh() */
-#define REFRESH_READ_LOCK	16384	/* Lock tables for read */
-#define REFRESH_FAST		32768	/* Intern flag */
+#define REFRESH_ERROR_LOG       (1ULL << 8)  /* Rotate only the erorr log */
+#define REFRESH_ENGINE_LOG      (1ULL << 9)  /* Flush all storage engine logs */
+#define REFRESH_BINARY_LOG      (1ULL << 10) /* Flush the binary log */
+#define REFRESH_RELAY_LOG       (1ULL << 11) /* Flush the relay log */
+#define REFRESH_GENERAL_LOG     (1ULL << 12) /* Flush the general log */
+#define REFRESH_SLOW_LOG        (1ULL << 13) /* Flush the slow query log */
 
-/* RESET (remove all queries) from query cache */
-#define REFRESH_QUERY_CACHE	65536
-#define REFRESH_QUERY_CACHE_FREE 0x20000L /* pack query cache */
-#define REFRESH_DES_KEY_FILE	0x40000L
-#define REFRESH_USER_RESOURCES	0x80000L
+#define REFRESH_READ_LOCK       (1ULL << 14) /* Lock tables for read */
+#define REFRESH_CHECKPOINT      (1ULL << 15) /* With REFRESH_READ_LOCK: block checkpoints too */
+
+#define REFRESH_QUERY_CACHE     (1ULL << 16) /* clear the query cache */
+#define REFRESH_QUERY_CACHE_FREE (1ULL << 17) /* pack query cache */
+#define REFRESH_DES_KEY_FILE    (1ULL << 18)
+#define REFRESH_USER_RESOURCES  (1ULL << 19)
+#define REFRESH_FOR_EXPORT      (1ULL << 20) /* FLUSH TABLES ... FOR EXPORT */
+
+#define REFRESH_TABLE_STATS     (1ULL << 27) /* Refresh table stats hash table */
+#define REFRESH_INDEX_STATS     (1ULL << 28) /* Refresh index stats hash table */
+#define REFRESH_USER_STATS      (1ULL << 29) /* Refresh user stats hash table */
+#define REFRESH_CLIENT_STATS    (1ULL << 30) /* Refresh client stats hash table */
+
+#define REFRESH_FAST            (1ULL << 31) /* Intern flag */
 
 #define CLIENT_LONG_PASSWORD	1	/* new more secure passwords */
 #define CLIENT_FOUND_ROWS	2	/* Found instead of affected rows */
@@ -168,7 +215,24 @@ enum enum_server_command
 
 #define CLIENT_PLUGIN_AUTH  (1UL << 19) /* Client supports plugin authentication */
 
+#define CLIENT_PLUGIN_AUTH  (1UL << 19) /* Client supports plugin authentication */
+#define CLIENT_CONNECT_ATTRS (1UL << 20) /* Client supports connection attributes */
+/* Enable authentication response packet to be larger than 255 bytes. */
+#define CLIENT_PLUGIN_AUTH_LENENC_CLIENT_DATA (1UL << 21)
+/* Don't close the connection for a connection with expired password. */
+#define CLIENT_CAN_HANDLE_EXPIRED_PASSWORDS (1UL << 22)
+
+#define CLIENT_PROGRESS  (1UL << 29)   /* Client support progress indicator */
 #define CLIENT_SSL_VERIFY_SERVER_CERT (1UL << 30)
+/*
+  It used to be that if mysql_real_connect() failed, it would delete any
+  options set by the client, unless the CLIENT_REMEMBER_OPTIONS flag was
+  given.
+  That behaviour does not appear very useful, and it seems unlikely that
+  any applications would actually depend on this. So from MariaDB 5.5 we
+  always preserve any options set in case of failed connect, and this
+  option is effectively always set.
+*/
 #define CLIENT_REMEMBER_OPTIONS (1UL << 31)
 
 #ifdef HAVE_COMPRESS
@@ -199,7 +263,15 @@ enum enum_server_command
                            CLIENT_PS_MULTI_RESULTS | \
                            CLIENT_SSL_VERIFY_SERVER_CERT | \
                            CLIENT_REMEMBER_OPTIONS | \
-                           CLIENT_PLUGIN_AUTH)
+                           CLIENT_PROGRESS | \
+                           CLIENT_PLUGIN_AUTH | \
+                           CLIENT_PLUGIN_AUTH_LENENC_CLIENT_DATA | \
+                           CLIENT_CONNECT_ATTRS)
+
+/*
+  To be added later:
+  CLIENT_CAN_HANDLE_EXPIRED_PASSWORDS
+*/
 
 /*
   Switch off the flags that are optional and depending on build flags
@@ -247,6 +319,16 @@ enum enum_server_command
   To mark ResultSet containing output parameter values.
 */
 #define SERVER_PS_OUT_PARAMS            4096
+
+/**
+  Set at the same time as SERVER_STATUS_IN_TRANS if the started
+  multi-statement transaction is a read-only transaction. Cleared
+  when the transaction commits or aborts. Since this flag is sent
+  to clients in OK and EOF packets, the flag indicates the
+  transaction status at the end of command execution.
+*/
+#define SERVER_STATUS_IN_TRANS_READONLY 8192
+
 
 /**
   Server status flags that must be cleared when starting
@@ -302,8 +384,8 @@ typedef struct st_net {
   unsigned int *return_status;
   unsigned char reading_or_writing;
   char save_char;
-  my_bool unused1; /* Please remove with the next incompatible ABI change. */
-  my_bool unused2; /* Please remove with the next incompatible ABI change */
+  char net_skip_rest_factor;
+  my_bool thread_specific_malloc;
   my_bool compress;
   my_bool unused3; /* Please remove with the next incompatible ABI change. */
   /*
@@ -324,16 +406,6 @@ typedef struct st_net {
   /** Client library sqlstate buffer. Set along with the error message. */
   char sqlstate[SQLSTATE_LENGTH+1];
   void *extension;
-#if defined(MYSQL_SERVER) && !defined(EMBEDDED_LIBRARY)
-  /*
-    Controls whether a big packet should be skipped.
-
-    Initially set to FALSE by default. Unauthenticated sessions must have
-    this set to FALSE so that the server can't be tricked to read packets
-    indefinitely.
-  */
-  my_bool skip_big_packet;
-#endif
 } NET;
 
 
@@ -348,6 +420,16 @@ enum enum_field_types { MYSQL_TYPE_DECIMAL, MYSQL_TYPE_TINY,
 			MYSQL_TYPE_DATETIME, MYSQL_TYPE_YEAR,
 			MYSQL_TYPE_NEWDATE, MYSQL_TYPE_VARCHAR,
 			MYSQL_TYPE_BIT,
+                        /*
+                          mysql-5.6 compatibility temporal types.
+                          They're only used internally for reading RBR
+                          mysql-5.6 binary log events and mysql-5.6 frm files.
+                          They're never sent to the client.
+                        */
+                        MYSQL_TYPE_TIMESTAMP2,
+                        MYSQL_TYPE_DATETIME2,
+                        MYSQL_TYPE_TIME2,
+                        
                         MYSQL_TYPE_NEWDECIMAL=246,
 			MYSQL_TYPE_ENUM=247,
 			MYSQL_TYPE_SET=248,
@@ -417,14 +499,14 @@ enum mysql_enum_shutdown_level {
   /* flush InnoDB buffers and other storage engines' buffers*/
   SHUTDOWN_WAIT_ALL_BUFFERS= (MYSQL_SHUTDOWN_KILLABLE_UPDATE << 1),
   /* don't flush InnoDB buffers, flush other storage engines' buffers*/
-  SHUTDOWN_WAIT_CRITICAL_BUFFERS= (MYSQL_SHUTDOWN_KILLABLE_UPDATE << 1) + 1,
-  /* Now the 2 levels of the KILL command */
-#if MYSQL_VERSION_ID >= 50000
-  KILL_QUERY= 254,
-#endif
-  KILL_CONNECTION= 255
+  SHUTDOWN_WAIT_CRITICAL_BUFFERS= (MYSQL_SHUTDOWN_KILLABLE_UPDATE << 1) + 1
 };
 
+/* Compatibility */
+#if !defined(MYSQL_SERVER) && defined(USE_OLD_FUNCTIONS)
+#define KILL_QUERY SHUTDOWN_KILL_QUERY
+#define KILL_CONNECTION SHUTDOWN_KILL_CONNECTION
+#endif
 
 enum enum_cursor_type
 {
@@ -448,10 +530,10 @@ enum enum_mysql_set_option
 extern "C" {
 #endif
 
-my_bool	my_net_init(NET *net, Vio* vio);
+my_bool	my_net_init(NET *net, Vio* vio, unsigned int my_flags);
 void	my_net_local_init(NET *net);
 void	net_end(NET *net);
-  void	net_clear(NET *net, my_bool clear_buffer);
+void	net_clear(NET *net, my_bool clear_buffer);
 my_bool net_realloc(NET *net, size_t length);
 my_bool	net_flush(NET *net);
 my_bool	my_net_write(NET *net,const unsigned char *packet, size_t len);
@@ -459,9 +541,10 @@ my_bool	net_write_command(NET *net,unsigned char command,
 			  const unsigned char *header, size_t head_len,
 			  const unsigned char *packet, size_t len);
 int	net_real_write(NET *net,const unsigned char *packet, size_t len);
-unsigned long my_net_read(NET *net);
+unsigned long my_net_read_packet(NET *net, my_bool read_from_server);
+#define my_net_read(A) my_net_read_packet((A), 0)
 
-#ifdef _global_h
+#ifdef MY_GLOBAL_INCLUDED
 void my_net_set_write_timeout(NET *net, uint timeout);
 void my_net_set_read_timeout(NET *net, uint timeout);
 #endif
@@ -469,11 +552,7 @@ void my_net_set_read_timeout(NET *net, uint timeout);
 struct sockaddr;
 int my_connect(my_socket s, const struct sockaddr *name, unsigned int namelen,
 	       unsigned int timeout);
-
-struct rand_struct {
-  unsigned long seed1,seed2,max_value;
-  double max_value_dbl;
-};
+struct my_rnd_struct;
 
 #ifdef __cplusplus
 }
@@ -481,8 +560,11 @@ struct rand_struct {
 
   /* The following is for user defined functions */
 
-enum Item_result {STRING_RESULT=0, REAL_RESULT, INT_RESULT, ROW_RESULT,
-                  DECIMAL_RESULT};
+enum Item_result
+{
+  STRING_RESULT=0, REAL_RESULT, INT_RESULT, ROW_RESULT, DECIMAL_RESULT,
+  TIME_RESULT,IMPOSSIBLE_RESULT
+};
 
 typedef struct st_udf_args
 {
@@ -527,10 +609,8 @@ extern "C" {
   implemented in sql/password.c
 */
 
-void randominit(struct rand_struct *, unsigned long seed1,
-                unsigned long seed2);
-double my_rnd(struct rand_struct *);
-void create_random_string(char *to, unsigned int length, struct rand_struct *rand_st);
+void create_random_string(char *to, unsigned int length,
+                          struct my_rnd_struct *rand_st);
 
 void hash_password(unsigned long *to, const char *password, unsigned int password_len);
 void make_scrambled_password_323(char *to, const char *password);
@@ -538,19 +618,23 @@ void scramble_323(char *to, const char *message, const char *password);
 my_bool check_scramble_323(const unsigned char *reply, const char *message,
                            unsigned long *salt);
 void get_salt_from_password_323(unsigned long *res, const char *password);
+#if MYSQL_VERSION_ID < 100100
 void make_password_from_salt_323(char *to, const unsigned long *salt);
-
+#endif
 void make_scrambled_password(char *to, const char *password);
 void scramble(char *to, const char *message, const char *password);
 my_bool check_scramble(const unsigned char *reply, const char *message,
                        const unsigned char *hash_stage2);
 void get_salt_from_password(unsigned char *res, const char *password);
+#if MYSQL_VERSION_ID < 100100
 void make_password_from_salt(char *to, const unsigned char *hash_stage2);
+#endif
 char *octet2hex(char *to, const char *str, unsigned int len);
 
 /* end of password.c */
 
 char *get_tty_password(const char *opt_message);
+void get_tty_password_buff(const char *opt_message, char *to, size_t length);
 const char *mysql_errno_to_sqlstate(unsigned int mysql_errno);
 
 /* Some other useful functions */
@@ -558,10 +642,12 @@ const char *mysql_errno_to_sqlstate(unsigned int mysql_errno);
 my_bool my_thread_init(void);
 void my_thread_end(void);
 
-#ifdef _global_h
+#ifdef MY_GLOBAL_INCLUDED
 ulong STDCALL net_field_length(uchar **packet);
 my_ulonglong net_field_length_ll(uchar **packet);
+my_ulonglong safe_net_field_length_ll(uchar **packet, size_t packet_len);
 uchar *net_store_length(uchar *pkg, ulonglong length);
+uchar *safe_net_store_length(uchar *pkg, size_t pkg_len, ulonglong length);
 #endif
 
 #ifdef __cplusplus

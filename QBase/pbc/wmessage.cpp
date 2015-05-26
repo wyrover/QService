@@ -13,6 +13,11 @@
 #include <stdbool.h>
 #endif
 
+#ifdef WIN32
+#pragma warning(disable:4244)
+#pragma warning(disable:4267)
+#endif
+
 #define WMESSAGE_SIZE 64
 
 struct pbc_wmessage {

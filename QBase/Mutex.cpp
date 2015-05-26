@@ -25,9 +25,9 @@ CQMutex::~CQMutex(void)
 
 int CQMutex::Init(void)
 {
-#ifdef Q_OS_WIN32
-    m_Mutex = CreateMutex(NULL, FALSE, NULL);
-    return (int)(NULL == m_Mutex ? Q_Error() : Q_RTN_OK);
+#ifdef Q_OS_WIN
+    InitializeCriticalSection(&m_Mutex);
+    return Q_RTN_OK;
 #else
     return pthread_mutex_init(&m_Mutex, (const pthread_mutexattr_t*)NULL);
 #endif
@@ -35,12 +35,8 @@ int CQMutex::Init(void)
 
 void CQMutex::Destroy(void)
 {
-#ifdef Q_OS_WIN32
-    if (NULL != m_Mutex)
-    {
-        (void)CloseHandle(m_Mutex);
-        m_Mutex = NULL;
-    }
+#ifdef Q_OS_WIN
+    DeleteCriticalSection(&m_Mutex);
 #else
     (void)pthread_mutex_destroy(&m_Mutex);
 #endif
@@ -52,9 +48,8 @@ void CQMutex::Lock(void)
 {
     int iRtn = Q_RTN_OK;
 
-#ifdef Q_OS_WIN32
-    iRtn = (int)WaitForSingleObject(m_Mutex, INFINITE);
-    iRtn = (int)((int)WAIT_OBJECT_0 == iRtn ? Q_RTN_OK : Q_Error());
+#ifdef Q_OS_WIN
+    EnterCriticalSection(&m_Mutex);
 #else
     iRtn = pthread_mutex_lock(&m_Mutex);
 #endif
@@ -69,11 +64,8 @@ void CQMutex::unLock(void)
 {
     int iRtn = Q_RTN_OK;
 
-#ifdef Q_OS_WIN32
-    BOOL bRtn = FALSE;
-
-    bRtn = ReleaseMutex(m_Mutex);
-    iRtn = (int)(FALSE == bRtn ? Q_Error() : Q_RTN_OK);
+#ifdef Q_OS_WIN
+    LeaveCriticalSection(&m_Mutex);
 #else
     iRtn = pthread_mutex_unlock(&m_Mutex);
 #endif

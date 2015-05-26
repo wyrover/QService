@@ -1,6 +1,5 @@
 
 #include "Binary.h"
-#include "SysLog.h"
 #include "OSFunc.h"
 #include "Exception.h"
 
@@ -10,8 +9,7 @@ CLuaBinary::CLuaBinary(void) : m_pParseBuffer(NULL), m_pLua(NULL),
     m_iParseBufLens(Q_INIT_NUMBER), m_iCurParseLens(Q_INIT_NUMBER),
     m_objWritBuffer()
 {
-    Q_Zero(acTmp, sizeof(acTmp));
-    Q_Zero(acEmpty, sizeof(acEmpty));
+
 }
 
 CLuaBinary::~CLuaBinary(void)
@@ -36,9 +34,9 @@ void CLuaBinary::setBuffer(const char *pszBuf, const size_t iLens)
     m_iCurParseLens = Q_INIT_NUMBER;
 }
 
-size_t CLuaBinary::getLens(void) const
+unsigned int CLuaBinary::getLens(void) const
 {
-    return m_iParseBufLens;
+    return (unsigned int)m_iParseBufLens;
 }
 
 void CLuaBinary::reSetWrite(void)
@@ -46,38 +44,19 @@ void CLuaBinary::reSetWrite(void)
     m_objWritBuffer.reSet();
 }
 
-void CLuaBinary::skipRead(const size_t iLens)
+void CLuaBinary::skipRead(const unsigned int iLens)
 {
     m_iCurParseLens += iLens;
 }
 
-bool CLuaBinary::skipWrite(const size_t iLens)
+bool CLuaBinary::skipWrite(const unsigned int iLens)
 {
     if (Q_INIT_NUMBER == iLens)
     {
         return true;
     }
 
-    bool bOk = false;
-    if (iLens > sizeof(acTmp))
-    {
-        char *pTmp = new(std::nothrow) char[iLens];
-        if (NULL == pTmp)
-        {
-            Q_Printf("%s", Q_EXCEPTION_ALLOCMEMORY);
-            return false;
-        }
-
-        Q_Zero(pTmp, iLens);
-        bOk = setVal(pTmp, iLens);
-        Q_SafeDelete_Array(pTmp);
-    }
-    else
-    {
-        bOk = setVal(acTmp, iLens);
-    }
-
-    return bOk;
+    return setVal(NULL, iLens);;
 }
 
 bool CLuaBinary::setVal(const char *pszBuf, const size_t iLens)
@@ -88,7 +67,7 @@ bool CLuaBinary::setVal(const char *pszBuf, const size_t iLens)
     }
     catch (CQException &e)
     {
-        Q_SYSLOG(LOGLV_ERROR, "%s", e.getErrorMsg());
+        Q_Printf("%s", e.getErrorMsg());
 
         return false;
     }
@@ -267,12 +246,12 @@ std::string CLuaBinary::getString(void)
     return strVal;
 }
 
-bool CLuaBinary::setByte(const char *pszVal, const size_t iLens)
+bool CLuaBinary::setByte(const char *pszVal, const unsigned int iLens)
 {
     return setVal(pszVal, iLens);
 }
 
-std::string CLuaBinary::getByte(const size_t iLens)
+std::string CLuaBinary::getByte(const unsigned int iLens)
 {
     if ((m_iCurParseLens + iLens) > m_iParseBufLens)
     {
@@ -290,7 +269,7 @@ luabridge::LuaRef CLuaBinary::getStructAttr(luabridge::LuaRef &objAttr,
     std::string &strName, DataType &emType, int &iSize)
 {
     strName.clear();
-    emType = DType_SINT8;
+    emType = DTYPE_SINT8;
     iSize = Q_INIT_NUMBER;
     luabridge::LuaRef objTable = luabridge::newTable(m_pLua);
     
@@ -298,22 +277,22 @@ luabridge::LuaRef CLuaBinary::getStructAttr(luabridge::LuaRef &objAttr,
     {
         switch(j)
         {
-        case StAttr_Name:
+        case STATTR_NAME:
             {
                 strName = objAttr[j].cast<std::string>();
             }
             break;
-        case StAttr_Type:
+        case STATTR_TYPE:
             {
                 emType = (DataType)objAttr[j].cast<int>();
             }
             break;
-        case StAttr_Size:
+        case STATTR_SIZE:
             {
                 iSize = objAttr[j].cast<int>();
             }
             break;
-        case StAttr_StAttr:
+        case STATTR_STATTR:
             {
                 objTable = objAttr[j];
             }
@@ -350,62 +329,62 @@ bool CLuaBinary::setStruct(luabridge::LuaRef objVal, luabridge::LuaRef objAttr)
 
         switch(emType)
         {
-        case DType_SINT8:
+        case DTYPE_SINT8:
             {
                 bOk = setSint8(getLuaNumber<short>(objFieldVal));
             }
             break;
-        case DType_UINT8:
+        case DTYPE_UINT8:
             {
                 bOk = setUint8(getLuaNumber<unsigned short>(objFieldVal));
             }
             break;
-        case DType_BOOL:
+        case DTYPE_BOOL:
             {
                 bOk = setBool(((Q_INIT_NUMBER != getLuaNumber<unsigned short>(objFieldVal)) ? true : false));
             }
             break;
-        case DType_SINT16:
+        case DTYPE_SINT16:
             {
                 bOk = setSint16(getLuaNumber<short>(objFieldVal));
             }
             break;
-        case DType_UINT16:
+        case DTYPE_UINT16:
             {
                 bOk = setUint16(getLuaNumber<unsigned short>(objFieldVal));
             }
             break;
-        case DType_SINT32:
+        case DTYPE_SINT32:
             {
                 bOk = setSint32(getLuaNumber<int>(objFieldVal));
             }
             break;
-        case DType_UINT32:
+        case DTYPE_UINT32:
             {
                 bOk = setUint32(getLuaNumber<unsigned int>(objFieldVal));
             }
             break;
-        case DType_SINT64:
+        case DTYPE_SINT64:
             {
                 bOk = setSint64(Q_ToString(getLuaNumber<int64_t>(objFieldVal)).c_str());
             }
             break;
-        case DType_UINT64:
+        case DTYPE_UINT64:
             {
                 bOk = setUint64(Q_ToString(getLuaNumber<uint64_t>(objFieldVal)).c_str());
             }
             break;
-        case DType_FLOAT:
+        case DTYPE_FLOAT:
             {
                 bOk = setFloat(getLuaNumber<float>(objFieldVal));
             }
             break;
-        case DType_DOUBLE:
+        case DTYPE_DOUBLE:
             {
                 bOk = setDouble(getLuaNumber<double>(objFieldVal));
             }
             break;
-        case DType_STRING:
+        case DTYPE_STRING:
             {
                 if (!objFieldVal.isString())
                 {
@@ -428,7 +407,7 @@ bool CLuaBinary::setStruct(luabridge::LuaRef objVal, luabridge::LuaRef objAttr)
                 }
             }
             break;
-        case DType_BYTE:
+        case DTYPE_BYTE:
             {
                 if (!objFieldVal.isString())
                 {
@@ -451,7 +430,7 @@ bool CLuaBinary::setStruct(luabridge::LuaRef objVal, luabridge::LuaRef objAttr)
                 }
             }
             break;
-        case DType_STRUCT:
+        case DTYPE_STRUCT:
             {
                 if (!objFieldVal.isTable()
                     || !objChildStAttr.isTable())
@@ -463,7 +442,7 @@ bool CLuaBinary::setStruct(luabridge::LuaRef objVal, luabridge::LuaRef objAttr)
                 bOk = setStruct(objFieldVal, objChildStAttr);
             }
             break;
-        case DType_SKIP:
+        case DTYPE_SKIP:
             {
                 if (iSize > Q_INIT_NUMBER)
                 {
@@ -506,79 +485,79 @@ luabridge::LuaRef CLuaBinary::getStruct(luabridge::LuaRef objAttr)
         luabridge::LuaRef objChildStAttr = getStructAttr(objTmp, strName, emType, iSize);
         switch(emType)
         {
-        case DType_SINT8:
+        case DTYPE_SINT8:
             {
                 objVal[strName] = getSint8();
             }
             break;
-        case DType_UINT8:
+        case DTYPE_UINT8:
             {
                 objVal[strName] = getUint8();
             }
             break;
-        case DType_BOOL:
+        case DTYPE_BOOL:
             {
                 objVal[strName] = getBool();
             }
             break;
-        case DType_SINT16:
+        case DTYPE_SINT16:
             {
                 objVal[strName] = getSint16();
             }
             break;
-        case DType_UINT16:
+        case DTYPE_UINT16:
             {
                 objVal[strName] = getUint16();
             }
             break;
-        case DType_SINT32:
+        case DTYPE_SINT32:
             {
                 objVal[strName] = getSint32();
             }
             break;
-        case DType_UINT32:
+        case DTYPE_UINT32:
             {
                 objVal[strName] = getUint32();
             }
             break;
-        case DType_SINT64:
+        case DTYPE_SINT64:
             {
                 objVal[strName] = getSint64();
             }
             break;
-        case DType_UINT64:
+        case DTYPE_UINT64:
             {
                 objVal[strName] = getUint64();
             }
             break;
-        case DType_FLOAT:
+        case DTYPE_FLOAT:
             {
                 objVal[strName] = getFloat();
             }
             break;
-        case DType_DOUBLE:
+        case DTYPE_DOUBLE:
             {
                 objVal[strName] = getDouble();
             }
             break;
-        case DType_STRING:
+        case DTYPE_STRING:
             {
                 std::string strVal = getString();
                 objVal[strName] = strVal;
-                skipRead(iSize - (strVal.size() + 1));
+                skipRead((unsigned int)(iSize - (strVal.size() + 1)));
             }
             break;
-        case DType_BYTE:
+        case DTYPE_BYTE:
             {
                 objVal[strName] = getByte(iSize);
             }
             break;
-        case DType_STRUCT:
+        case DTYPE_STRUCT:
             {
                 objVal[strName] = getStruct(objChildStAttr);
             }
             break;
-        case DType_SKIP:
+        case DTYPE_SKIP:
             {
                 if (iSize > Q_INIT_NUMBER)
                 {

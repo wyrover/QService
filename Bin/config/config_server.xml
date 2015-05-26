@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<QServer>
+    <!--服务器节点-->
+    <ServerInfo>
+		<!--服务器ID(最大1024)-->
+        <ServerID>1</ServerID>
+		<!--服务器名称-->
+        <Name>一区</Name>
+        <!--定时器触发间隔时间 0 不触发(毫秒)-->
+        <Timer>50</Timer>
+        <!--脚本文件-->
+        <Script>Lua/Main.lua</Script>
+        <!--Debug 绑定Ip 端口-->
+        <Debug>
+            <BindIP>0.0.0.0</BindIP>
+            <Port>15100</Port>
+        </Debug>
+        <!--tcp 绑定Ip 端口-->
+        <TCP>
+            <BindIP>0.0.0.0</BindIP>
+            <Port>15000</Port>
+        </TCP>
+        <!--Http 绑定Ip 端口-->
+        <Http>
+            <BindIP>0.0.0.0</BindIP>
+            <Port>8080</Port>
+        </Http>
+        <!--WebSocket 绑定Ip 端口-->
+        <WebSock>
+            <BindIP>0.0.0.0</BindIP>
+            <Port>8081</Port>
+        </WebSock>
+    </ServerInfo>
+</QServer>

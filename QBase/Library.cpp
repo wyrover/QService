@@ -20,7 +20,7 @@ CLibrary::~CLibrary(void)
 
 const char *CLibrary::getError(void) const
 {
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
     return Q_Error2Str((int)Q_Error());
 #else
     return dlerror();
@@ -52,7 +52,7 @@ void *CLibrary::getFuncAddr(const char *pSym)
         return NULL;
     }
 
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
     return GetProcAddress((HMODULE)m_pHandle, pSym);
 #else
     #ifdef Q_OS_HPUX
@@ -75,7 +75,7 @@ void CLibrary::Init(const char *pszLib)
         return;
     }
 
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
     m_pHandle = LoadLibrary(pszLib);
 #else
     #ifdef Q_OS_HPUX
@@ -93,7 +93,7 @@ void CLibrary::Destroy(void)
         return;
     }
 
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
     (void)FreeLibrary((HMODULE)m_pHandle);
 #else
     #ifdef Q_OS_HPUX

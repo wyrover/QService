@@ -49,6 +49,7 @@ TestTool/Debug
 TestTool/Release
 TestQBase/Debug
 TestQBase/Release
+x64
 *.exp
 *.ilk
 *.pdb
@@ -56,8 +57,18 @@ TestQBase/Release
 !Microsoft.DTfW.DHL.manifest
 *.txt
 !itemstrengthen.txt
+*.ini
+!Test.ini
+!AES.ini
+!RSA.ini
 *.xml
-!config.xml
+!config_dblog.xml
+!config_linkother.xml
+!config_mail.xml
+!config_server.xml
+!config_txtlog.xml
+!config_aes.xml
+!config_rsa.xml
 *.user
 *.syslog
 

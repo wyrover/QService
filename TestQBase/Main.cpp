@@ -9,22 +9,27 @@
 #include "TestCharset.h"
 #include "TestSnowflakeID.h"
 #include "TestBinary.h"
+#include "TestObjPool.h"
 
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
 CCoreDump objDump(true);
+#include "../vld/vld.h"
 #pragma comment(lib, "ws2_32.lib")
-#pragma comment(lib, "../Bin/libmysql.lib")
-#pragma comment(lib, "../Bin/libevent_core.lib")
-#pragma comment(lib, "../Bin/libevent_extras.lib")
-#pragma comment(lib, "../Bin/libcurl_a.lib")
-#pragma comment(lib, "../Bin/QBase.lib")
-#ifdef _DEBUG
-#pragma comment(lib, "../Bin/cppunitd.lib")
+#pragma comment(lib, "libmysql.lib")
+#pragma comment(lib, "libevent.lib")
+#pragma comment(lib, "libevent_core.lib")
+#pragma comment(lib, "libevent_extras.lib")
+#if _DEBUG
+#pragma comment(lib, "libcurl_a_debug.lib")
+#pragma comment(lib, "cppunitd.lib")
 #else
-#pragma comment(lib, "../Bin/cppunit.lib")
-#endif // _DEBUG
+#pragma comment(lib, "libcurl_a.lib")
+#pragma comment(lib, "cppunit.lib")
+#endif
+#pragma comment(lib, "QBase.lib")
 #endif //WIN32
 
+CPPUNIT_TEST_SUITE_REGISTRATION(CTestObjPool);
 CPPUNIT_TEST_SUITE_REGISTRATION(CTestBinary);
 CPPUNIT_TEST_SUITE_REGISTRATION(CTestLua);
 //CPPUNIT_TEST_SUITE_REGISTRATION(CTestDataBase);

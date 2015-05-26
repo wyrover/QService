@@ -3,6 +3,9 @@
 #include "Exception.h"
 #include "QString.h"
 
+SINGLETON_INIT(CLog)
+CLog objLog;
+
 #define LOG_EVTIME (5 * 60 * 1000)
 
 struct LogerInfo
@@ -14,14 +17,13 @@ struct LogerInfo
     CTcpParser *pParser;
     void FreeAll()
     {
-        Q_SafeDelete(pPair);        
+        Q_SafeDelete(pPair);
         Q_SafeDelete(pBuffer);
         if (NULL != pBev)
         {
             bufferevent_free(pBev);
             pBev = NULL;
         }
-        Q_SafeDelete(pLoger);
     };
     LogerInfo() : pPair(NULL), pLoger(NULL), pBev(NULL), pBuffer(NULL), pParser(NULL)
     {
@@ -84,19 +86,18 @@ int CLog::setTimer(unsigned int uiMS)
     return Q_RTN_OK;
 }
 
-Q_SOCK CLog::addLoger(CLoger *pLoger)
+void CLog::addLoger(CLoger *pLoger)
 {
     if (NULL == pLoger)
     {
-        return Q_INVALID_SOCK;
+        return;
     }
 
-    if (RunStatus_Runing != getRunStatus())
+    if (RUNSTATUS_RUNING != getRunStatus())
     {
         Q_Printf("%s", "loger not run.");
-        Q_SafeDelete(pLoger);
 
-        return Q_INVALID_SOCK;
+        return;
     }
 
     LogerInfo objLogInfo;
@@ -108,16 +109,17 @@ Q_SOCK CLog::addLoger(CLoger *pLoger)
         Q_Printf("%s", Q_EXCEPTION_ALLOCMEMORY);
         objLogInfo.FreeAll();
 
-        return Q_INVALID_SOCK;
+        return;
     }
 
+    pLoger->setSock(objLogInfo.pPair->getWriteFD());
     objLogInfo.pBuffer = new(std::nothrow) CEventBuffer();
     if (NULL == objLogInfo.pBuffer)
     {
         Q_Printf("%s", Q_EXCEPTION_ALLOCMEMORY);
         objLogInfo.FreeAll();
 
-        return Q_INVALID_SOCK;
+        return;
     }
     
     m_objMutex.Lock();
@@ -128,10 +130,10 @@ Q_SOCK CLog::addLoger(CLoger *pLoger)
         Q_Printf("%s", "send message error");
         objLogInfo.FreeAll();
 
-        return Q_INVALID_SOCK;
+        return;
     }
 
-    return objLogInfo.pPair->getWriteFD();
+    return;
 }
 
 void CLog::timerCB(evutil_socket_t, short, void *arg)
@@ -215,5 +217,6 @@ void CLog::onStop(void)
 
     m_lstLoger.clear();
 
-    setRunStatus(RunStatus_Stopped);
+    setRunStatus(RUNSTATUS_STOPPED);
+    Q_Printf("%s", "log system stopped.");
 }

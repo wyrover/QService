@@ -5,7 +5,7 @@
 #include "Macros.h"
 
 /*
-字符串集过滤
+字符串过滤
 */
 class CFilter
 {
@@ -14,11 +14,11 @@ public:
     ~CFilter(void);
 
     /*添加敏感词*/
-    bool addSensitiveWord(const char *pszWord, const size_t uiLens); 
+    bool addFilterWord(const char *pszWord, const unsigned int uiLens); 
     /*检查是否包含敏感词*/
-    bool checkHave(const char *pszWord, const size_t uiLens);
+    bool checkHave(const char *pszWord, const unsigned int uiLens);
     /*检查敏感词并替换*/    
-    const char *Filter(const char *pWord, const size_t uiLens);
+    const char *Filter(const char *pWord, const unsigned int uiLens);
     /*清理*/
     void Clear(void);
 private:
@@ -31,7 +31,7 @@ private:
 
 private:
     void freeNode(FilterMap *pFilterMap);
-    void checkAndModify(char *pWord, const size_t uiLens, const char cReplace = '*');
+    void checkAndModify(char *pWord, const unsigned int &uiLens, const char cReplace = '*');
 };
 
 #endif//Q_FILTER_H_

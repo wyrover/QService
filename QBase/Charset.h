@@ -14,7 +14,7 @@ public:
     ~CCharset(void);
 
     /*获取字符编码格式,返回"" 失败或为纯ascii*/
-    std::string getStrCharset(const char *pszData, const size_t iSize);
+    std::string getStrCharset(const char *pszData, const unsigned int iSize);
     /*获取文件编码格式, 返回"" 失败或为纯ascii*/
     std::string getCharset(const char *pszFile);
     std::string getCharset(FILE *pFile);

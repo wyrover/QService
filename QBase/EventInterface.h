@@ -10,24 +10,15 @@
 class CEventInterface
 {
 public:
-    CEventInterface(void) : m_pSessionManager(NULL)
+    CEventInterface(void)
     {
     };
 
     virtual ~CEventInterface(void)
     {
-        m_pSessionManager = NULL;
+
     };
 
-    void setSessionManager(class CSessionManager *pSessionManager)
-    {
-        m_pSessionManager = pSessionManager;
-    };
-
-    class CSessionManager *getSessionManager(void)
-    {
-        return m_pSessionManager;
-    };
     /*工作线程启动时执行*/
     virtual bool onSerciveStartUp(void){return true;};
     /*工作线程关闭时执行*/
@@ -40,6 +31,8 @@ public:
     virtual void onConnected(class CSession *){};
     /*tcp读取到完整包时执行*/
     virtual void onSockRead(const char *, const size_t &){};
+    /*debug*/
+    virtual void onDebug(const char *, const size_t &){};
     /*socket断开时执行*/
     virtual void onSockClose(class CSession *){};  
 
@@ -48,9 +41,6 @@ public:
 
     /*服务器连接启动*/
     virtual void onLinkedOther(class CSession *){};
-
-private:
-    class CSessionManager *m_pSessionManager;
 };
 
 #endif//Q_EVENT_INTERFACE_H_

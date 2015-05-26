@@ -1,9 +1,11 @@
 
 #include "DBLoger.h"
-#include "SysLog.h"
 #include "InitSock.h"
 
 #define LOG_TABLE "log"
+
+SINGLETON_INIT(CDBLoger)
+CDBLoger objDBLoger;
 
 CDBLoger::CDBLoger(void) : m_pStatement(NULL), 
     m_objLinker(), m_objUrl(), m_objMutex(), m_objTcpParser()
@@ -51,10 +53,10 @@ bool CDBLoger::Init(const char *pszIp, unsigned short &usPort,
     return false;
 }
 
-void CDBLoger::writeDBLog(const Q_SOCK &fd, const char *pszPlayerID, const short sType, 
+void CDBLoger::writeDBLog(const char *pszPlayerID, const short sType, 
     const char *pszMsg, const size_t iLens)
 {
-    if (Q_INVALID_SOCK == fd)
+    if (Q_INVALID_SOCK == getSock())
     {
         return;
     }
@@ -66,13 +68,13 @@ void CDBLoger::writeDBLog(const Q_SOCK &fd, const char *pszPlayerID, const short
     const char *pszHead = m_objTcpParser.createHead(iBufferLens, iHeadLens);
 
     m_objMutex.Lock();
-    (void)Q_SockWrite(fd, pszHead, iHeadLens);
-    (void)Q_SockWrite(fd, (const char *)&iPlayerID, sizeof(iPlayerID));
-    (void)Q_SockWrite(fd, (const char *)&sType, sizeof(sType));
+    (void)Q_SockWrite(getSock(), pszHead, iHeadLens);
+    (void)Q_SockWrite(getSock(), (const char *)&iPlayerID, sizeof(iPlayerID));
+    (void)Q_SockWrite(getSock(), (const char *)&sType, sizeof(sType));
     if (0 != iLens
         && NULL != pszMsg)
     {
-        (void)Q_SockWrite(fd, pszMsg, iLens);
+        (void)Q_SockWrite(getSock(), pszMsg, iLens);
     }
     m_objMutex.unLock();
 }
@@ -86,7 +88,6 @@ bool CDBLoger::Link(void)
     catch (CQException &e)
     {
         Q_Printf("%s", e.getErrorMsg());
-        Q_SYSLOG(LOGLV_ERROR, "%s", e.getErrorMsg());
 
         return false;
     }
@@ -118,7 +119,6 @@ bool CDBLoger::createTable(const std::string &strName)
     catch(CQException &e)
     {
         Q_Printf("%s", e.getErrorMsg());
-        Q_SYSLOG(LOGLV_ERROR, "%s", e.getErrorMsg());
 
         return false;
     }
@@ -169,8 +169,6 @@ void CDBLoger::Write(const char *pszMsg, const size_t iLens)
     catch(CQException &e)
     {
         Q_Printf("open mysql link error. code %d, messgae %s", 
-            e.getErrorCode(), e.getErrorMsg());
-        Q_SYSLOG(LOGLV_ERROR, "open mysql link error. code %d, messgae %s",
             e.getErrorCode(), e.getErrorMsg());
 
         bError = true;

@@ -1,7 +1,7 @@
 QService
 ========
 
-QService服务器支持http、 tcp 、websocket协议；数据库支持sqlite3、mysql、redis。  
+QService服务器支持http、 tcp 、websocket协议；数据库支持sqlite3、mysql、mariadb、redis。  
 所有业务均可用Lua脚本开发，已经用于手游服务器端开发。
 
 ##一、编译QService  

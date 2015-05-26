@@ -2,7 +2,7 @@
 一些常用函数
 --]]
 
---Debug打印开关
+--Debug打印开关 影响Debug table.print
 local bDebug = true
 --计时器
 if not g_objCtimer then
@@ -23,13 +23,24 @@ if not g_objCharset then
 end
 
 --[[
+描述：日志
+参数：
+返回值：无
+--]]
+function Log(iLevel, strFormat, ...)
+    local strMsg = string.format(strFormat, table.unpack({...}))
+    Q_LOG(iLevel, strMsg)
+end
+
+--[[
 描述：调试信息打印
 参数：
 返回值：无
 --]]
-function Debug(msg)
+function Debug(strFormat, ...)
     if bDebug then
-        print(string.format("[%s][Lua_Debug] %s", os.date(), tostring(msg)))
+        local strMsg = string.format(strFormat, table.unpack({...}))
+        print(string.format("[%s][Lua_Debug] %s", os.date(), strMsg))
     end
 end
 
@@ -57,7 +68,7 @@ end
 返回值：无
 --]]
 function addFilterWord(strWord)
-    g_objFilter:addSensitiveWord(strWord, string.len(strWord))
+    g_objFilter:addFilterWord(strWord, string.len(strWord))
 end
 
 --[[
@@ -97,15 +108,6 @@ function timerElapsed()
 end
 
 --[[
-描述：根据session ID关闭连接
-参数：
-返回值： 无
---]]
-function closeLink(iClentID)
-    g_objSessionMgr:closeLinkByID(iClentID)
-end
-
---[[
 描述：写文件
 参数：
 返回值：无
@@ -130,10 +132,10 @@ function callFunc(Func, ...)
 
     local function onExcept(strMsg)
         local strStack = debug.trace(3, true, 2)
-        Debug("error message:" .. strMsg)
-        Debug("trace:" .. strStack)
-        Q_LOG(LOGLV_ERROR, "error message:" .. strMsg)
-        Q_LOG(LOGLV_ERROR, "trace:" .. strStack)
+        Debug("error message: %s", strMsg)
+        Debug("trace: %s", strStack)
+        Log(LOGLV_ERROR, "error message: %s", strMsg)
+        Log(LOGLV_ERROR, "trace: %s", strStack)
     end
     
     return xpcall(Func, onExcept, table.unpack({...}))
@@ -233,6 +235,10 @@ end
 返回值：无
 --]]
 function table.print(lua_table, indent)
+    if not bDebug then
+        return
+    end
+    
     assert("table" == type(lua_table))    
     indent = indent or 0
     for k, v in pairs(lua_table) do

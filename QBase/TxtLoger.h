@@ -5,9 +5,11 @@
 #include "Loger.h"
 #include "Mutex.h"
 #include "TcpParser.h"
+#include "Singleton.h"
 
 //文本日志
-class CTxtLoger : public CLoger
+class CTxtLoger : public CLoger, 
+    public CSingleton<CTxtLoger>
 {
 public:
     CTxtLoger(void);
@@ -21,7 +23,7 @@ public:
     void setLogMaxSize(const size_t iSize);
 
     void writeLog(const LOG_LEVEL emInLogLv,
-        const char *pFile, const char *pFunction, const int iLine, const Q_SOCK &fd,
+        const char *pFile, const char *pFunction, const int iLine,
         const char *pFormat, ...);
 
     void Open(void);

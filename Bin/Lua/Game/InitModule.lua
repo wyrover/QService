@@ -15,13 +15,14 @@ local tLoad =
     {"Public/TimeWheel", true},
     {"Public/RegFuncs", true},
     {"Public/Protocol", true},
-    {"Public/DispPack", true},
-    {"Public/Debug", true},
-    {"Public/LogLuaMemory", true},
+    {"Public/ProtobufInit", true},
+    {"Public/SessionUtile", true}, 
+    {"Public/Mail", true},
+    {"Public/Debug", false},--这个设为真，重加载会循环加载      
+    {"Public/LogLuaMemory", true},    
+    {"Public/Ping", true},
     
-    {"Game/Ping", true},
-    {"Game/Test", true},
-    --{"Game/EchoSV", true},
+    {"Game/LogIn", true},
 }
 
 local function loadAllFile()
@@ -43,7 +44,7 @@ function reLoad(strFile)
     
     if strFile then
         strPath = luaDir..strFile..".lua"
-        Debug("reload file "..strPath)
+        Debug("reload file %s", strPath)
         dofile(strPath)
         
         return
@@ -52,7 +53,7 @@ function reLoad(strFile)
     for _, val in pairs(tLoad) do
         if val[2] then
             strPath = luaDir..val[1]..".lua"
-            Debug("reload file "..strPath)
+            Debug("reload file %s", strPath)
             dofile(strPath)
         end
     end

@@ -1,5 +1,5 @@
 /*
-   Copyright (c) 2002, 2011, Oracle and/or its affiliates. All rights reserved.
+   Copyright (c) 2002, 2013, Oracle and/or its affiliates.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -17,7 +17,9 @@
 #ifndef _my_getopt_h
 #define _my_getopt_h
 
-#include "my_sys.h"                             /* loglevel */
+#include "my_sys.h"             /* loglevel */
+/* my_getopt and my_default are almost always used together */
+#include <my_default.h>
 
 C_MODE_START
 
@@ -79,16 +81,13 @@ struct my_option
   enum get_opt_arg_type arg_type;       /**< e.g. REQUIRED_ARG or OPT_ARG */
   longlong   def_value;                 /**< Default value */
   longlong   min_value;                 /**< Min allowed value (for numbers) */
-  longlong   max_value;                 /**< Max allowed value (for numbers) */
+  ulonglong  max_value;                 /**< Max allowed value (for numbers) */
   longlong   sub_size;                  /**< Unused                          */
   long       block_size;                /**< Value should be a mult. of this (for numbers) */
   void       *app_type;                 /**< To be used by an application */
 };
 
-
 typedef my_bool (*my_get_one_option)(int, const struct my_option *, char *);
-typedef void (*my_error_reporter)(enum loglevel level, const char *format, ...)
-  ATTRIBUTE_FORMAT_FPTR(printf, 2, 3);
 
 /**
   Used to retrieve a reference to the object (variable) that holds the value
@@ -119,6 +118,9 @@ longlong getopt_ll_limit_value(longlong, const struct my_option *,
 double getopt_double_limit_value(double num, const struct my_option *optp,
                                  my_bool *fix);
 my_bool getopt_compare_strings(const char *s, const char *t, uint length);
+
+ulonglong getopt_double2ulonglong(double);
+double getopt_ulonglong2double(ulonglong);
 
 C_MODE_END
 

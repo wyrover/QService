@@ -109,6 +109,24 @@
     <Filter Include="Base\NetWork\Protocol">
       <UniqueIdentifier>{02632629-b64f-475b-bd79-cde93b3e1443}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Mail">
+      <UniqueIdentifier>{e6bf2902-a96f-49a4-abac-07067a9a0e03}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Mail\jwsmtp">
+      <UniqueIdentifier>{7db6d579-1b4b-4248-9572-2854da60f124}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Base\Common">
+      <UniqueIdentifier>{b87b69ea-62c4-48dc-8b42-f98242eafd87}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Service\TimerTrigger">
+      <UniqueIdentifier>{4a246d20-2cac-4cd4-8b5a-1a8706e25b74}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Encrypt\zlib">
+      <UniqueIdentifier>{c432d7fd-66be-4ecb-8bd1-330b0294fb77}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Jsoncpp">
+      <UniqueIdentifier>{69a9e30c-4e4f-4f48-a3e9-f766fd9a929e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Config.h">
@@ -166,9 +184,6 @@
     <ClInclude Include="Loger.h">
       <Filter>Log</Filter>
     </ClInclude>
-    <ClInclude Include="DBPool.h">
-      <Filter>DataBase</Filter>
-    </ClInclude>
     <ClInclude Include="rijndael\rijndael.h">
       <Filter>Encrypt\AES\rijndael</Filter>
     </ClInclude>
@@ -183,42 +198,6 @@
     </ClInclude>
     <ClInclude Include="WorkThreadEvent.h">
       <Filter>Service\Worker</Filter>
-    </ClInclude>
-    <ClInclude Include="RSAEuro\des.h">
-      <Filter>Encrypt\RSA\RSAEuro</Filter>
-    </ClInclude>
-    <ClInclude Include="RSAEuro\global.h">
-      <Filter>Encrypt\RSA\RSAEuro</Filter>
-    </ClInclude>
-    <ClInclude Include="RSAEuro\md2.h">
-      <Filter>Encrypt\RSA\RSAEuro</Filter>
-    </ClInclude>
-    <ClInclude Include="RSAEuro\md4.h">
-      <Filter>Encrypt\RSA\RSAEuro</Filter>
-    </ClInclude>
-    <ClInclude Include="RSAEuro\md5.h">
-      <Filter>Encrypt\RSA\RSAEuro</Filter>
-    </ClInclude>
-    <ClInclude Include="RSAEuro\nn.h">
-      <Filter>Encrypt\RSA\RSAEuro</Filter>
-    </ClInclude>
-    <ClInclude Include="RSAEuro\prime.h">
-      <Filter>Encrypt\RSA\RSAEuro</Filter>
-    </ClInclude>
-    <ClInclude Include="RSAEuro\r_random.h">
-      <Filter>Encrypt\RSA\RSAEuro</Filter>
-    </ClInclude>
-    <ClInclude Include="RSAEuro\rsa.h">
-      <Filter>Encrypt\RSA\RSAEuro</Filter>
-    </ClInclude>
-    <ClInclude Include="RSAEuro\rsaeuro.h">
-      <Filter>Encrypt\RSA\RSAEuro</Filter>
-    </ClInclude>
-    <ClInclude Include="RSAEuro\rsaref.h">
-      <Filter>Encrypt\RSA\RSAEuro</Filter>
-    </ClInclude>
-    <ClInclude Include="RSAEuro\shs.h">
-      <Filter>Encrypt\RSA\RSAEuro</Filter>
     </ClInclude>
     <ClInclude Include="RSAKey.h">
       <Filter>Encrypt\RSA</Filter>
@@ -336,9 +315,6 @@
     </ClInclude>
     <ClInclude Include="LuaBridge\RefCountedPtr.h">
       <Filter>Lua\LuaBridge</Filter>
-    </ClInclude>
-    <ClInclude Include="SysLog.h">
-      <Filter>Base\OS</Filter>
     </ClInclude>
     <ClInclude Include="Enum.h">
       <Filter>Config</Filter>
@@ -619,9 +595,6 @@
     <ClInclude Include="LuaSocket\wsocket.h">
       <Filter>Lua\LuaSocket</Filter>
     </ClInclude>
-    <ClInclude Include="BufferMgr.h">
-      <Filter>Base\OS</Filter>
-    </ClInclude>
     <ClInclude Include="LuaSocket\unix.h">
       <Filter>Lua\LuaSocket</Filter>
     </ClInclude>
@@ -645,6 +618,156 @@
     </ClInclude>
     <ClInclude Include="QFilter.h">
       <Filter>Arithmetic</Filter>
+    </ClInclude>
+    <ClInclude Include="InitEventBase.h">
+      <Filter>Base\NetWork</Filter>
+    </ClInclude>
+    <ClInclude Include="LockThis.h">
+      <Filter>Base\Thread</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\crc32.h">
+      <Filter>Encrypt\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\deflate.h">
+      <Filter>Encrypt\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\gzguts.h">
+      <Filter>Encrypt\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\inffast.h">
+      <Filter>Encrypt\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\inffixed.h">
+      <Filter>Encrypt\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\inflate.h">
+      <Filter>Encrypt\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\inftrees.h">
+      <Filter>Encrypt\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\trees.h">
+      <Filter>Encrypt\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\zconf.h">
+      <Filter>Encrypt\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\zlib.h">
+      <Filter>Encrypt\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\zutil.h">
+      <Filter>Encrypt\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="jwsmtp\mailer.h">
+      <Filter>Mail\jwsmtp</Filter>
+    </ClInclude>
+    <ClInclude Include="jwsmtp\compat.h">
+      <Filter>Mail\jwsmtp</Filter>
+    </ClInclude>
+    <ClInclude Include="jwsmtp\jwsmtp.h">
+      <Filter>Mail\jwsmtp</Filter>
+    </ClInclude>
+    <ClInclude Include="jwsmtp\jwsmtp_base64.h">
+      <Filter>Mail\jwsmtp</Filter>
+    </ClInclude>
+    <ClInclude Include="format.h">
+      <Filter>Base\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectPool.h">
+      <Filter>Base\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Singleton.h">
+      <Filter>Base\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="BufferMgr.h">
+      <Filter>Base\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="TimerTrigger.h">
+      <Filter>Service\TimerTrigger</Filter>
+    </ClInclude>
+    <ClInclude Include="RunStatus.h">
+      <Filter>Base\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Encrypt.h">
+      <Filter>Encrypt</Filter>
+    </ClInclude>
+    <ClInclude Include="MailSender.h">
+      <Filter>Mail</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncpp\json_tool.h">
+      <Filter>Jsoncpp</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncpp\json\assertions.h">
+      <Filter>Jsoncpp</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncpp\json\autolink.h">
+      <Filter>Jsoncpp</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncpp\json\config.h">
+      <Filter>Jsoncpp</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncpp\json\features.h">
+      <Filter>Jsoncpp</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncpp\json\forwards.h">
+      <Filter>Jsoncpp</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncpp\json\json.h">
+      <Filter>Jsoncpp</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncpp\json\reader.h">
+      <Filter>Jsoncpp</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncpp\json\value.h">
+      <Filter>Jsoncpp</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncpp\json\version.h">
+      <Filter>Jsoncpp</Filter>
+    </ClInclude>
+    <ClInclude Include="jsoncpp\json\writer.h">
+      <Filter>Jsoncpp</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\zconf_linux.h">
+      <Filter>Encrypt\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="zlib\zconf_win.h">
+      <Filter>Encrypt\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="RSAEuro\des.h">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </ClInclude>
+    <ClInclude Include="RSAEuro\global.h">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </ClInclude>
+    <ClInclude Include="RSAEuro\md2.h">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </ClInclude>
+    <ClInclude Include="RSAEuro\md4.h">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </ClInclude>
+    <ClInclude Include="RSAEuro\md5.h">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </ClInclude>
+    <ClInclude Include="RSAEuro\nn.h">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </ClInclude>
+    <ClInclude Include="RSAEuro\prime.h">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </ClInclude>
+    <ClInclude Include="RSAEuro\r_random.h">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </ClInclude>
+    <ClInclude Include="RSAEuro\rsa.h">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </ClInclude>
+    <ClInclude Include="RSAEuro\rsaeuro.h">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </ClInclude>
+    <ClInclude Include="RSAEuro\rsaref.h">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </ClInclude>
+    <ClInclude Include="RSAEuro\shs.h">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -681,9 +804,6 @@
     <ClCompile Include="QMySQL.cpp">
       <Filter>DataBase\MySQL</Filter>
     </ClCompile>
-    <ClCompile Include="DBPool.cpp">
-      <Filter>DataBase</Filter>
-    </ClCompile>
     <ClCompile Include="rijndael\rijndael.cpp">
       <Filter>Encrypt\AES\rijndael</Filter>
     </ClCompile>
@@ -698,48 +818,6 @@
     </ClCompile>
     <ClCompile Include="WorkThreadEvent.cpp">
       <Filter>Service\Worker</Filter>
-    </ClCompile>
-    <ClCompile Include="RSAEuro\desc.c">
-      <Filter>Encrypt\RSA\RSAEuro</Filter>
-    </ClCompile>
-    <ClCompile Include="RSAEuro\md2c.c">
-      <Filter>Encrypt\RSA\RSAEuro</Filter>
-    </ClCompile>
-    <ClCompile Include="RSAEuro\md4c.c">
-      <Filter>Encrypt\RSA\RSAEuro</Filter>
-    </ClCompile>
-    <ClCompile Include="RSAEuro\md5c.c">
-      <Filter>Encrypt\RSA\RSAEuro</Filter>
-    </ClCompile>
-    <ClCompile Include="RSAEuro\nn.c">
-      <Filter>Encrypt\RSA\RSAEuro</Filter>
-    </ClCompile>
-    <ClCompile Include="RSAEuro\prime.c">
-      <Filter>Encrypt\RSA\RSAEuro</Filter>
-    </ClCompile>
-    <ClCompile Include="RSAEuro\r_dh.c">
-      <Filter>Encrypt\RSA\RSAEuro</Filter>
-    </ClCompile>
-    <ClCompile Include="RSAEuro\r_encode.c">
-      <Filter>Encrypt\RSA\RSAEuro</Filter>
-    </ClCompile>
-    <ClCompile Include="RSAEuro\r_enhanc.c">
-      <Filter>Encrypt\RSA\RSAEuro</Filter>
-    </ClCompile>
-    <ClCompile Include="RSAEuro\r_keygen.c">
-      <Filter>Encrypt\RSA\RSAEuro</Filter>
-    </ClCompile>
-    <ClCompile Include="RSAEuro\r_random.c">
-      <Filter>Encrypt\RSA\RSAEuro</Filter>
-    </ClCompile>
-    <ClCompile Include="RSAEuro\r_stdlib.c">
-      <Filter>Encrypt\RSA\RSAEuro</Filter>
-    </ClCompile>
-    <ClCompile Include="RSAEuro\rsa.c">
-      <Filter>Encrypt\RSA\RSAEuro</Filter>
-    </ClCompile>
-    <ClCompile Include="RSAEuro\shsc.c">
-      <Filter>Encrypt\RSA\RSAEuro</Filter>
     </ClCompile>
     <ClCompile Include="QBase.cpp" />
     <ClCompile Include="RSAKey.cpp">
@@ -804,9 +882,6 @@
     </ClCompile>
     <ClCompile Include="QRSA.cpp">
       <Filter>Encrypt\RSA</Filter>
-    </ClCompile>
-    <ClCompile Include="SysLog.cpp">
-      <Filter>Base\OS</Filter>
     </ClCompile>
     <ClCompile Include="uchardet\CharDistribution.cpp">
       <Filter>String\uchardet</Filter>
@@ -1117,9 +1192,6 @@
     <ClCompile Include="LuaSocket\wsocket.c">
       <Filter>Lua\LuaSocket</Filter>
     </ClCompile>
-    <ClCompile Include="BufferMgr.cpp">
-      <Filter>Base\OS</Filter>
-    </ClCompile>
     <ClCompile Include="LuaSocket\unix.c">
       <Filter>Lua\LuaSocket</Filter>
     </ClCompile>
@@ -1147,20 +1219,134 @@
     <ClCompile Include="QFilter.cpp">
       <Filter>Arithmetic</Filter>
     </ClCompile>
+    <ClCompile Include="InitEventBase.cpp">
+      <Filter>Base\NetWork</Filter>
+    </ClCompile>
+    <ClCompile Include="LockThis.cpp">
+      <Filter>Base\Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\adler32.c">
+      <Filter>Encrypt\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\compress.c">
+      <Filter>Encrypt\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\crc32.c">
+      <Filter>Encrypt\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\deflate.c">
+      <Filter>Encrypt\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\gzclose.c">
+      <Filter>Encrypt\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\gzlib.c">
+      <Filter>Encrypt\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\gzread.c">
+      <Filter>Encrypt\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\gzwrite.c">
+      <Filter>Encrypt\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\infback.c">
+      <Filter>Encrypt\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\inffast.c">
+      <Filter>Encrypt\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\inflate.c">
+      <Filter>Encrypt\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\inftrees.c">
+      <Filter>Encrypt\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\trees.c">
+      <Filter>Encrypt\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\uncompr.c">
+      <Filter>Encrypt\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="zlib\zutil.c">
+      <Filter>Encrypt\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="jwsmtp\compat.cpp">
+      <Filter>Mail\jwsmtp</Filter>
+    </ClCompile>
+    <ClCompile Include="jwsmtp\jwsmtp_base64.cpp">
+      <Filter>Mail\jwsmtp</Filter>
+    </ClCompile>
+    <ClCompile Include="jwsmtp\mailer.cpp">
+      <Filter>Mail\jwsmtp</Filter>
+    </ClCompile>
+    <ClCompile Include="format.cpp">
+      <Filter>Base\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="BufferMgr.cpp">
+      <Filter>Base\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="TimerTrigger.cpp">
+      <Filter>Service\TimerTrigger</Filter>
+    </ClCompile>
+    <ClCompile Include="Encrypt.cpp">
+      <Filter>Encrypt</Filter>
+    </ClCompile>
+    <ClCompile Include="MailSender.cpp">
+      <Filter>Mail</Filter>
+    </ClCompile>
+    <ClCompile Include="jsoncpp\json_reader.cpp">
+      <Filter>Jsoncpp</Filter>
+    </ClCompile>
+    <ClCompile Include="jsoncpp\json_value.cpp">
+      <Filter>Jsoncpp</Filter>
+    </ClCompile>
+    <ClCompile Include="jsoncpp\json_writer.cpp">
+      <Filter>Jsoncpp</Filter>
+    </ClCompile>
+    <ClCompile Include="RSAEuro\desc.c">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </ClCompile>
+    <ClCompile Include="RSAEuro\md2c.c">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </ClCompile>
+    <ClCompile Include="RSAEuro\md4c.c">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </ClCompile>
+    <ClCompile Include="RSAEuro\md5c.c">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </ClCompile>
+    <ClCompile Include="RSAEuro\nn.c">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </ClCompile>
+    <ClCompile Include="RSAEuro\prime.c">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </ClCompile>
+    <ClCompile Include="RSAEuro\r_dh.c">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </ClCompile>
+    <ClCompile Include="RSAEuro\r_encode.c">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </ClCompile>
+    <ClCompile Include="RSAEuro\r_enhanc.c">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </ClCompile>
+    <ClCompile Include="RSAEuro\r_keygen.c">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </ClCompile>
+    <ClCompile Include="RSAEuro\r_random.c">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </ClCompile>
+    <ClCompile Include="RSAEuro\r_stdlib.c">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </ClCompile>
+    <ClCompile Include="RSAEuro\rsa.c">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </ClCompile>
+    <ClCompile Include="RSAEuro\shsc.c">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="RSAEuro\des386.s">
-      <Filter>Encrypt\RSA\RSAEuro</Filter>
-    </None>
-    <None Include="RSAEuro\rsa68k.s">
-      <Filter>Encrypt\RSA\RSAEuro</Filter>
-    </None>
-    <None Include="RSAEuro\rsa386.s">
-      <Filter>Encrypt\RSA\RSAEuro</Filter>
-    </None>
-    <None Include="RSAEuro\rsasparc.s">
-      <Filter>Encrypt\RSA\RSAEuro</Filter>
-    </None>
     <None Include="uchardet\Big5Freq.tab">
       <Filter>String\uchardet</Filter>
     </None>
@@ -1175,6 +1361,21 @@
     </None>
     <None Include="uchardet\JISFreq.tab">
       <Filter>String\uchardet</Filter>
+    </None>
+    <None Include="jsoncpp\json_valueiterator.inl">
+      <Filter>Jsoncpp</Filter>
+    </None>
+    <None Include="RSAEuro\des386.s">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </None>
+    <None Include="RSAEuro\rsa68k.s">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </None>
+    <None Include="RSAEuro\rsa386.s">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
+    </None>
+    <None Include="RSAEuro\rsasparc.s">
+      <Filter>Encrypt\RSA\RSAEuro</Filter>
     </None>
   </ItemGroup>
 </Project>

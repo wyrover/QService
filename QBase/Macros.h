@@ -7,26 +7,28 @@
 #include "Version.h"
 #include "Enum.h"
 
-#define Q_FILEPATH_LENS              260        //路径最大长度
+#define Q_FILEPATH_LENS              256        //路径最大长度
 #define Q_TIME_LENS                  30         //时间长度
 #define Q_ONEK                       1024       //1K
-#define Q_SERVICE_NAME_LEN           260        //windows 服务名称最大长度
+#define Q_SERVICE_NAME_LEN           256        //windows 服务名称最大长度
 #define Q_UUIDLENS                   64         //UUID长度
-#define Q_MaxTcpBetterSize           1450       //Tcp每次发送不分包最大字节数
 
-#define QService "QService"
+//对象池名称
+#define POOLNAM_SESSION "Session"
 
-#ifndef Q_OS_WIN32
+#define QSERVICE "QService"
+
+#ifndef Q_OS_WIN
     #define Q_SIGNAL_EXIT    SIGRTMIN + 10
 #endif
 
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
     #define Q_SOCK intptr_t
 #else
     #define Q_SOCK int
 #endif
 
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
     #define  Q_TIMEB  _timeb
     #define  ftime    _ftime
 #else
@@ -36,7 +38,7 @@
 #define Q_INVALID_SOCK -1
 #define Q_INVALID_ID   -1
 
-#ifndef Q_OS_WIN32
+#ifndef Q_OS_WIN
     #ifdef Q_OS_SOLARIS
         #define Q_AWK "nawk"
     #else
@@ -44,25 +46,25 @@
     #endif
 #endif
 
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
     #define Q_PATH_SEPARATOR "\\"
 #else
     #define Q_PATH_SEPARATOR "/"
 #endif
 
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
     #define Q_PATH_SEPARATOR_CHAR '\\'
 #else
     #define Q_PATH_SEPARATOR_CHAR '/'
 #endif
 
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
     #define Q_DLL_EXTENSIONNAME "dll"
 #else
     #define Q_DLL_EXTENSIONNAME "so"
 #endif
 
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
     #define Q_SCRIPT_EXTENSIONNAME "bat"
 #else
     #define Q_SCRIPT_EXTENSIONNAME "sh"
@@ -74,17 +76,11 @@
 #define Q_RTN_ERROR 1
 #define Q_INIT_NUMBER 0
 
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
     #define Q_SD_BOTH SD_BOTH
 #else
     #define Q_SD_BOTH SHUT_RDWR
 #endif
-
-/*系统日志,直接写文件*/
-extern class CSysLoger g_SysLoger;
-#define Q_SYSLOG(emLogLV, acFormat, ...)  \
-    g_SysLoger.sysLog(emLogLV, __FILE__, __FUNCTION__, __LINE__, \
-    acFormat, ##__VA_ARGS__)
 
 /*程序退出信号量*/
 extern class CQMutex g_objExitMutex;
@@ -92,18 +88,21 @@ extern class CCond g_objExitCond;
 
 /*连结x,y的内容*/
 #define Q_Concatenate(x, y) x##y
+
 /*数组大小*/#define Q_Array_Size(a) (sizeof(a)/sizeof(a[0]))
+
 #define Q_Max(a, b) ((a > b) ? (a) : (b))
 #define Q_Min(a, b) ((a < b) ? (a) : (b))
+
 /*清空*/
 #define Q_Zero(name, len) memset(name, 0, len)
 
 #define Q_Printf(pszFormat, ...) \
-            printf((std::string("[%s %d][Print] ") + std::string(pszFormat) + std::string("\n")).c_str(),\
+            printf((std::string("[%s %d] ") + std::string(pszFormat) + std::string("\n")).c_str(),\
                  __FUNCTION__, __LINE__, ##__VA_ARGS__)
 
-#ifdef Q_OS_WIN32
-    typedef HANDLE  Q_Mutex_t;
+#ifdef Q_OS_WIN
+    typedef CRITICAL_SECTION  Q_Mutex_t;
     typedef HANDLE  Q_Cond_t;
     typedef unsigned int Q_Thread_t;
     typedef DWORD   Q_Thread_Attr_t;
@@ -133,7 +132,7 @@ extern class CCond g_objExitCond;
     typedef Q_Thread_Result_t (Q_THREAD_CALL * Q_Thread_Func_t)(void *args);
 #endif//Q_OS_WIN32
 
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
     #define Q_Strcasecmp _stricmp
     #define Q_Strncasecmp _strnicmp
     #define Q_StrTok strtok_s

@@ -16,7 +16,6 @@
 #include <math.h>
 #include <string.h>
 #include <stdint.h>
-#include <algorithm>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/timeb.h>
@@ -31,7 +30,7 @@
 #include <sstream>
 #include <algorithm>
 
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
     #pragma warning(disable:4786)
     #pragma warning(disable:4819)
     #pragma warning(disable:4996)
@@ -95,6 +94,7 @@
 #include "event2/http.h"
 #include "event2/http_struct.h"
 #include "event2/event.h"
+#include "event2/thread.h"
 #include "Lua5.2/lua.hpp"
 #include "LuaBridge/LuaBridge.h"
 extern "C"

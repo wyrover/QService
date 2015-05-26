@@ -12,6 +12,9 @@ end
 if not g_objSessionMgr then
     g_objSessionMgr = nil
 end
+if not g_objToolDlg then
+    g_objToolDlg = nil
+end
 
 --启动
 function Lua_onStartUp(objSessionManager, objBinary)
@@ -51,8 +54,32 @@ function Lua_onMainConn(objSession)
     onGameEvent(ClientEvent.MainLinked, objSession)
 end
 function Lua_onMainRead()
-    local strMsg = string.sub(g_objBinary:getString(), 1, g_objBinary:getLens())
-    showMfcMsg(strMsg, string.len(strMsg))
+    if not getChecked() then
+        local strMsg = string.sub(g_objBinary:getString(), 1, g_objBinary:getLens())
+        showMfcMsg(strMsg, string.len(strMsg))
+    else
+        local iBufferLens = g_objBinary:getLens()
+        if iBufferLens < 2 then
+            local strMsg = "recv error message."
+            showMfcMsg(strMsg, string.len(strMsg))
+            return
+        end
+        
+        local iProtocol = g_objBinary:getUint16()
+        local strMsg = string.format("protocol %d", iProtocol)
+        showMfcMsg(strMsg, string.len(strMsg))
+        
+        if iBufferLens > 2 then
+            local iMsgLens = iBufferLens - 2
+            local strMsg = g_objBinary:getByte(iMsgLens)
+            local strProro = getProtoStr(iProtocol)
+            local tMsg = protobuf.decode(strProro, strMsg, iMsgLens)
+            if tMsg then
+                local strJson = cjson.encode(tMsg)
+                showMfcMsg(strJson, string.len(strJson))
+            end
+        end
+    end
 end
 
 --定时触发
@@ -139,7 +166,24 @@ function Lua_onTime()
     end
 end
 
+function Lua_setMainParam(objToolDlg, objBinary)
+    g_objToolDlg = objToolDlg
+    g_objBinary = objBinary
+end
+
 --input创建消息 运行在独立的lua vm中 g_objBinary g_objSessionMgr等不可用
-function Lua_createMsg(objToolDlg, objBinary, pszInput, uiLens)
-    onGameEvent(ClientEvent.CreateMsg, objToolDlg, objBinary, pszInput, uiLens)
+function Lua_createMsg(strInput, bDebug)
+    if bDebug then
+        g_objToolDlg:sendMainMsg(strInput, string.len(strInput))
+    else
+        local Func, strMsg = load(strInput)
+        if Func then
+            local bRtn, rtnMsg = callFunc(Func)
+            if not bRtn then
+                showMfcMsg("error", string.len("error"))
+            end
+        else
+            showMfcMsg(strMsg, string.len(strMsg))
+        end
+    end
 end

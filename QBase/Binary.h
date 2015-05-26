@@ -19,15 +19,15 @@ public:
     void setBuffer(const char *pszBuf, const size_t iLens);
 
     //获取要解析的数据长度
-    size_t getLens(void) const;
+    unsigned int getLens(void) const;
 
     //控制函数
     //重置写
     void reSetWrite(void);
     //读  跳过指定字节
-    void skipRead(const size_t iLens);
+    void skipRead(const unsigned int iLens);
     //写  跳过指定字节跳过字节以0填充
-    bool skipWrite(const size_t iLens);
+    bool skipWrite(const unsigned int iLens);
 
     //char
     bool setSint8(const short sVal);
@@ -70,8 +70,8 @@ public:
     std::string getString(void);
 
     //byte
-    bool setByte(const char *pszVal, const size_t iLens);
-    std::string getByte(const size_t iLens);
+    bool setByte(const char *pszVal, const unsigned int iLens);
+    std::string getByte(const unsigned int iLens);
 
     //struct 不支持位域
     /* objAttr 结构体属性 StructAttr枚举*/
@@ -135,8 +135,6 @@ private:
     struct lua_State *m_pLua;//lua句柄
     size_t m_iParseBufLens;//要解析的buffer长度
     size_t m_iCurParseLens;//已经解析的长度
-    char acEmpty[1];
-    char acTmp[Q_ONEK];
     CBuffer m_objWritBuffer;//写buffer
     std::string m_strVali64;
     std::stringstream m_objStream;

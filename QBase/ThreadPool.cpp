@@ -57,7 +57,11 @@ public:
             while(NULL != (pTask = getTask()))
             {
                 pTask->Run();
-                Q_SafeDelete(pTask);
+
+                if (pTask->getDel())
+                {
+                    Q_SafeDelete(pTask);
+                }                
             }
         }
 
@@ -197,7 +201,7 @@ void CThreadPool::Destroy(void)
     }
 
     unsigned int uiTimeCount = Q_INIT_NUMBER;
-    unsigned int uiTaskNum = Q_INIT_NUMBER;
+    size_t uiTaskNum = Q_INIT_NUMBER;
 
     /*等待队列中的任务处理完成*/
     while(0 != (uiTaskNum = getTaskNumber()))
@@ -235,9 +239,9 @@ void CThreadPool::Destroy(void)
     return;
 }
 
-unsigned int CThreadPool::getTaskNumber(void)
+size_t CThreadPool::getTaskNumber(void)
 {
-    unsigned int uiSize = Q_INIT_NUMBER;
+    size_t uiSize = Q_INIT_NUMBER;
 
     m_pstPool->objQueueMutex.Lock();
     uiSize += m_pstPool->quHigh.size();
@@ -248,7 +252,7 @@ unsigned int CThreadPool::getTaskNumber(void)
     return uiSize;
 }
 
-unsigned int CThreadPool::getPoolSize(void) const
+size_t CThreadPool::getPoolSize(void) const
 {
     return m_pstPool->uiThreadNum;
 }
@@ -264,7 +268,7 @@ unsigned int CThreadPool::getPoolSize(void) const
 * Modification 
 * ......record :first program
 ************************************************************************/
-void CThreadPool::Append(CTask *pTask, TaskLevel taskLV)
+void CThreadPool::Append(CTask *pTask, TaskLevel taskLV, const bool bDel)
 {
     if(NULL == pTask)
     {
@@ -273,18 +277,20 @@ void CThreadPool::Append(CTask *pTask, TaskLevel taskLV)
         return;
     }
 
+    pTask->setDel(bDel);
+
     m_pstPool->objQueueMutex.Lock();
     switch(taskLV)
     {
-    case Q_ThreadLV_High:
+    case TASKLV_HIGHT:
         m_pstPool->quHigh.push(pTask);            
         break;
 
-    case Q_ThreadLV_Normal:
+    case TASKLV_NORMAL:
         m_pstPool->quNormal.push(pTask);        
         break;
 
-    case Q_ThreadLV_Low:
+    case TASKLV_LOW:
         m_pstPool->quLow.push(pTask);
         break;
 

@@ -6,9 +6,11 @@
 #include "QMySQL.h"
 #include "Mutex.h"
 #include "TcpParser.h"
+#include "Singleton.h"
 
 //数据库日志
-class CDBLoger : public CLoger
+class CDBLoger : public CLoger,
+    public CSingleton<CDBLoger>
 {
 public:
     CDBLoger(void);
@@ -19,7 +21,7 @@ public:
         const char *pszUser, const char *pszPWD, const char *pszDB);
 
     //写
-    void writeDBLog(const Q_SOCK &fd, const char *pszPlayerID, const short sType, 
+    void writeDBLog(const char *pszPlayerID, const short sType, 
         const char *pszMsg, const size_t iLens);
 
 public:

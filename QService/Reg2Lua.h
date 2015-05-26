@@ -31,6 +31,7 @@ private:
     void reg_HttpClient(void);
     void reg_HttpBuffer(void);
     void reg_Binary(void);
+    void reg_Encrypt(void);
 
 private:
     struct lua_State *m_pstLState;    

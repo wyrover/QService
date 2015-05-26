@@ -1,19 +1,8 @@
 #include "TestLog.h"
 
-CLog objLog;
-
-class CTestLogTask : public CTask
-{
-public:
-    void Run()
-    {
-        objLog.Start();
-    };
-};
-
 void CTestLog::Test_Log(void)
 {
-    CThread objThread;
+    /*CThread objThread;
     std::string strLogPath;
 
     objThread.Execute(new CTestLogTask());
@@ -33,15 +22,15 @@ void CTestLog::Test_Log(void)
 
     for (int i = 0; i < 100; i++)
     {
-        Q_LOG(LOGLV_INFO, "%d", i);
+    Q_LOG(LOGLV_INFO, "%d", i);
     }
 
     Q_Sleep(2000);
 
-    objLog.Stop();
+    objLog.Stop();*/
 }
 
 void CTestLog::Test_SysLog(void)
 {
-    Q_SYSLOG(LOGLV_WARN, "%s", Q_Now().c_str());
+    //Q_SYSLOG(LOGLV_WARN, "%s", Q_Now().c_str());
 }

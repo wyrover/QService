@@ -5,6 +5,9 @@
 #include "QString.h"
 #include "File.h"
 
+SINGLETON_INIT(CTxtLoger)
+CTxtLoger objTxtLoger;
+
 CTxtLoger::CTxtLoger(void)
 {
     m_uiLogSize = 5*1024*1024;
@@ -131,7 +134,7 @@ void CTxtLoger::Write(const char *pszMsg, const size_t iLens)
 }
 
 void CTxtLoger::writeLog(const LOG_LEVEL emInLogLv,
-    const char *pFile, const char *pFunction, const int iLine, const Q_SOCK &fd,
+    const char *pFile, const char *pFunction, const int iLine,
     const char *pFormat, ...)
 {
     if (emInLogLv > m_emPriorityLV)
@@ -142,7 +145,7 @@ void CTxtLoger::writeLog(const LOG_LEVEL emInLogLv,
     if (NULL == pFormat
         || NULL == pFunction
         || NULL == pFile
-        || Q_INVALID_SOCK == fd)
+        || Q_INVALID_SOCK == getSock())
     {
         return;
     }
@@ -168,9 +171,9 @@ void CTxtLoger::writeLog(const LOG_LEVEL emInLogLv,
     size_t iHeadLens = Q_INIT_NUMBER;
     const char *pszHead = m_objTcpParser.createHead(strMsg.size(), iHeadLens);
 
-    m_objMutex.Lock();   
-    (void)Q_SockWrite(fd, pszHead, iHeadLens);
-    (void)Q_SockWrite(fd, strMsg.c_str(), strMsg.size());
+    m_objMutex.Lock();
+    (void)Q_SockWrite(getSock(), pszHead, iHeadLens);
+    (void)Q_SockWrite(getSock(), strMsg.c_str(), strMsg.size());
     m_objMutex.unLock();
 
     return;

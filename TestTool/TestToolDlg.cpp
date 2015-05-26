@@ -6,21 +6,24 @@
 #include "TestTool.h"
 #include "TestToolDlg.h"
 #include "afxdialogex.h"
+#ifndef _WIN64
+//#include "../vld/vld.h"
+#endif
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
-
 #include "../vld/vld.h"
-#pragma comment(lib, "../Bin/libmysql.lib")
-#pragma comment(lib, "../Bin/libevent_core.lib")
-#pragma comment(lib, "../Bin/libevent_extras.lib")
+#pragma comment(lib, "libmysql.lib")
+#pragma comment(lib, "libevent.lib")
+#pragma comment(lib, "libevent_core.lib")
+#pragma comment(lib, "libevent_extras.lib")
 #if _DEBUG
-#pragma comment(lib, "../Bin/libcurl_a_debug.lib")
+#pragma comment(lib, "libcurl_a_debug.lib")
 #else
-#pragma comment(lib, "../Bin/libcurl_a.lib")
+#pragma comment(lib, "libcurl_a.lib")
 #endif
-#pragma comment(lib, "../Bin/QBase.lib")
+#pragma comment(lib, "QBase.lib")
 
 #define Q_CLINETTIMER 50
 
@@ -93,6 +96,7 @@ void CTestToolDlg::DoDataExchange(CDataExchange* pDX)
     DDX_Control(pDX, IDC_EDIT3, m_CtrInput);
     DDX_Control(pDX, IDC_EDIT2, m_CtrOutPut);
     DDX_Control(pDX, IDC_LUAMEMO, m_CtrLuaMemory);
+    DDX_Control(pDX, IDC_CHECK1, m_CtrDebug);
 }
 
 BEGIN_MESSAGE_MAP(CTestToolDlg, CDialogEx)
@@ -107,6 +111,8 @@ BEGIN_MESSAGE_MAP(CTestToolDlg, CDialogEx)
     ON_BN_CLICKED(IDC_BUTTON3, &CTestToolDlg::OnBnClickedButton3)
     ON_BN_CLICKED(IDC_BUTTON1, &CTestToolDlg::OnBnClickedButton1)
     ON_WM_CLOSE()
+//    ON_BN_CLICKED(IDC_CHECK1, &CTestToolDlg::OnBnClickedCheck1)
+ON_BN_CLICKED(IDC_CHECK1, &CTestToolDlg::OnBnClickedCheck1)
 END_MESSAGE_MAP()
 
 
@@ -166,6 +172,28 @@ BOOL CTestToolDlg::OnInitDialog()
     m_CtrIp.SetWindowTextA("127.0.0.1");
     m_CtrPort.SetWindowTextA("15000");
     m_CtrLinkNum.SetWindowTextA("1");
+
+    std::string strTemp = strProPath + "TestToolTemplate.lua";
+    FILE *pFile = fopen(strTemp.c_str(), "r");
+    if (NULL != pFile)
+    {
+        char acTmp[2048] = {0};
+        fread(acTmp, 1, sizeof(acTmp) - 1, pFile);
+        
+        std::string strTmp(acTmp);
+        strTmp = Q_Replace(strTmp, "\n", "\r\n");
+        m_strTemplateLua = strTmp.c_str();
+        /*std::list<std::string>::iterator itTemplateLua;
+        std::list<std::string> lstTemplateLua;
+        Q_Split(std::string(acTmp), "\n", lstTemplateLua);
+
+        for (itTemplateLua = lstTemplateLua.begin(); lstTemplateLua.end() != itTemplateLua; itTemplateLua++)
+        {
+            m_strTemplateLua += itTemplateLua->c_str() + CString("\r\n");
+        }*/
+
+        fclose(pFile);
+    }
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -338,6 +366,17 @@ bool CTestToolDlg::initLua(void)
         return false;
     }
 
+    try
+    {
+        luabridge::getGlobal(m_pLua, "Lua_setMainParam")(this, &m_objBinary);
+    }
+    catch(luabridge::LuaException &e)
+    {
+        showMfcMsg(e.what(), strlen(e.what()));
+
+        return false;
+    }
+
     return true;
 }
 
@@ -448,11 +487,18 @@ void CTestToolDlg::OnBnClickedButton3()
     CString cstrVal;
     m_CtrInput.GetWindowTextA(cstrVal);
     std::string strMsg = cstrVal.GetBuffer();
+    bool bDebug = true;
+
+    int iCheck = m_CtrDebug.GetCheck();
+    if (1 == iCheck)
+    {
+        bDebug = false;
+    }
 
     //执行lua
     try
     {
-        luabridge::getGlobal(m_pLua, "Lua_createMsg")(this, &m_objBinary, strMsg.c_str(), strMsg.size());
+        luabridge::getGlobal(m_pLua, "Lua_createMsg")(strMsg, bDebug);
     }
     catch(luabridge::LuaException &e)
     {
@@ -481,4 +527,19 @@ void CTestToolDlg::OnClose()
     }
 
     CDialogEx::OnClose();
+}
+
+
+void CTestToolDlg::OnBnClickedCheck1()
+{
+    // TODO: 在此添加控件通知处理程序代码
+    g_iChecked = m_CtrDebug.GetCheck();
+    if (1 == g_iChecked)
+    {
+        m_CtrInput.SetWindowTextA(m_strTemplateLua);
+    }
+    else
+    {
+        m_CtrInput.SetWindowTextA("");
+    }
 }

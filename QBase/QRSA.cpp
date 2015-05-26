@@ -20,9 +20,9 @@ const char *CRSA::RSAEncrypt(RSAEncryptType emEnType, const char* pszData,
     const size_t &iDataLens, size_t &iOutLens)
 {
     int iRtn = Q_RTN_OK;
-    size_t iStep = Q_INIT_NUMBER;
-    size_t iBufLens = Q_INIT_NUMBER;
-    size_t iTmpSize = Q_INIT_NUMBER;
+    unsigned int iStep = Q_INIT_NUMBER;
+    unsigned int iBufLens = Q_INIT_NUMBER;
+    unsigned int iTmpSize = Q_INIT_NUMBER;
     unsigned char *pTmp = NULL;
 
     m_objBuffer.reSet();
@@ -50,7 +50,7 @@ const char *CRSA::RSAEncrypt(RSAEncryptType emEnType, const char* pszData,
 
     for (size_t i = 0; i < iDataLens; i += iStep)
     {
-        iBufLens = (((i + iStep) > iDataLens) ? (iDataLens - i) : iStep);
+        iBufLens = (unsigned int)(((i + iStep) > iDataLens) ? (iDataLens - i) : iStep);
         if (RSAEncryptType_Public == emEnType)
         {
             iRtn = RSAPublicEncrypt(m_acOutBuf, &iTmpSize, pTmp + i, iBufLens,
@@ -113,9 +113,9 @@ const char *CRSA::RSADecrypt(RSADecryptType emEnType, const char* pszData,
     const size_t &iDataLens, size_t &iOutLens)
 {
     int iRtn = Q_RTN_OK;
-    size_t iStep = Q_INIT_NUMBER;
-    size_t iBufLens = Q_INIT_NUMBER;
-    size_t iTmpSize = Q_INIT_NUMBER;
+    unsigned int iStep = Q_INIT_NUMBER;
+    unsigned int iBufLens = Q_INIT_NUMBER;
+    unsigned int iTmpSize = Q_INIT_NUMBER;
     unsigned char *pTmp = NULL;    
 
     m_objBuffer.reSet();
@@ -142,7 +142,7 @@ const char *CRSA::RSADecrypt(RSADecryptType emEnType, const char* pszData,
 
     for (size_t i = 0; i < iDataLens; i += iStep)
     {
-        iBufLens = (((i + iStep) > iDataLens) ? (iDataLens - i) : iStep);
+        iBufLens = (unsigned int)(((i + iStep) > iDataLens) ? (iDataLens - i) : iStep);
         if (RSADecryptType_Public == emEnType)
         {
             iRtn = RSAPublicDecrypt(m_acOutBuf, &iTmpSize, pTmp + i, iBufLens,

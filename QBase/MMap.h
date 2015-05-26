@@ -32,7 +32,7 @@ private:
     void *m_pDate;
     std::string m_strFile;
     std::string m_strMapName;
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
     HANDLE m_hMapFile;    
 #endif
 };
@@ -51,7 +51,7 @@ CMMap<T>::CMMap(const char *pszFileName, const char *pszMapName, const size_t iN
     m_strFile = pszFileName;
     m_strMapName = pszMapName;
 
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
     HANDLE hFile = NULL;
 
     hFile = CreateFile(pszFileName,  
@@ -129,7 +129,7 @@ CMMap<T>::CMMap(const char *pszFileName, const char *pszMapName, const size_t iN
 template <typename T>
 CMMap<T>::~CMMap(void)
 {
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
     if (NULL != m_pDate)
     {
         (void)UnmapViewOfFile(m_pDate);

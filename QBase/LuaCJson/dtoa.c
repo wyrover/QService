@@ -222,6 +222,11 @@ extern void *MALLOC(size_t);
 #define MALLOC malloc
 #endif
 
+#ifdef WIN32
+#pragma warning(disable:4244)
+#pragma warning(disable:4267)
+#endif
+
 #ifndef Omit_Private_Memory
 #ifndef PRIVATE_MEM
 #define PRIVATE_MEM 2304

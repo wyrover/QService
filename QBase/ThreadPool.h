@@ -12,12 +12,12 @@ public:
     explicit CThreadPool(const unsigned int uiThreadNum);
     ~CThreadPool(void);
 
-    /*向线程池中增加任务,任务指针在执行完成后自动删除*/
-    void Append(CTask *pTask, TaskLevel taskLV = Q_ThreadLV_Normal);
+    /*向线程池中增加任务*/
+    void Append(CTask *pTask, TaskLevel taskLV = TASKLV_NORMAL, const bool bDel = true);
     /*获取等待队列中任务数量*/
-    unsigned int getTaskNumber(void);
+    size_t getTaskNumber(void);
     /*获取线程池大小*/
-    unsigned int getPoolSize(void) const;
+    size_t getPoolSize(void) const;
 
 private:
     CThreadPool(void);

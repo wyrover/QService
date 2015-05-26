@@ -20,7 +20,7 @@ CSockInit::~CSockInit(void)
 
 int CSockInit::Init(void) const
 {
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
     WORD wVersionReq;
     WSAData wsData;
 
@@ -41,7 +41,7 @@ int CSockInit::Init(void) const
 
 void CSockInit::Destroy(void) const
 {
-#ifdef Q_OS_WIN32    
+#ifdef Q_OS_WIN    
     (void)WSACleanup();
 #endif
 }

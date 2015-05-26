@@ -1,7 +1,0 @@
-package Echo;
-message EchoMsg
-{
-    required int32 sInt = 1;   
-    required uint32 uInt = 2;
-    required string Str = 3;
-}

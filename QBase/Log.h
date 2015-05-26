@@ -5,17 +5,29 @@
 #include "SockPairEvent.h"
 #include "TcpParser.h"
 #include "Loger.h"
+#include "Singleton.h"
+#include "CTask.h"
 
 struct LogerInfo;
 //日志
-class CLog : public CSockPairEvent
+class CLog : public CSockPairEvent, 
+    public CTask,
+    public CSingleton<CLog>
 {
 public:
     CLog(void);
     ~CLog(void);
 
     //添加一日志记录器,返回一个用于写的句柄
-    Q_SOCK addLoger(CLoger *pLoger);
+    void addLoger(CLoger *pLoger);
+
+public:
+    //任务接口实现
+    void Run(void)
+    {
+        Q_Printf("%s", "log service running...");
+        Start();
+    };
 
 public:
     /*接口实现*/

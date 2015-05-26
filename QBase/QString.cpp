@@ -251,7 +251,7 @@ int Q_WideCharToMultiByte(const wchar_t *pszSrc, char *pszDest)
         return Q_ERROR_NULLPOINTER;
     }
 
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
     int iNum = Q_INIT_NUMBER;
 
     iNum = WideCharToMultiByte(CP_OEMCP, NULL, pszSrc, -1, NULL, 0, NULL, FALSE);
@@ -299,7 +299,7 @@ int Q_MultiByteToWideChar(const char *pszSrc, wchar_t *pszDest)
         return Q_ERROR_NULLPOINTER;
     }
 
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
     int iNum = Q_INIT_NUMBER;
 
     iNum = MultiByteToWideChar(CP_ACP, 0, pszSrc, -1, NULL, 0);

@@ -8,19 +8,19 @@ void CTestArithmetic::Test_Filter(void)
     bool bOK = false;
 
     strTmp = "毛泽东";
-    bOK = objFilter.addSensitiveWord(strTmp.c_str(), strTmp.size());
+    bOK = objFilter.addFilterWord(strTmp.c_str(), strTmp.size());
     CPPUNIT_ASSERT_EQUAL(true , bOK);
 
     strTmp = "周恩来";
-    bOK = objFilter.addSensitiveWord(strTmp.c_str(), strTmp.size());
+    bOK = objFilter.addFilterWord(strTmp.c_str(), strTmp.size());
     CPPUNIT_ASSERT_EQUAL(true , bOK);
 
     strTmp = "FUCK";
-    bOK = objFilter.addSensitiveWord(strTmp.c_str(), strTmp.size());
+    bOK = objFilter.addFilterWord(strTmp.c_str(), strTmp.size());
     CPPUNIT_ASSERT_EQUAL(true , bOK);
 
     strTmp = "%%";
-    bOK = objFilter.addSensitiveWord(strTmp.c_str(), strTmp.size());
+    bOK = objFilter.addFilterWord(strTmp.c_str(), strTmp.size());
     CPPUNIT_ASSERT_EQUAL(true , bOK);
 
     memcpy(acWord, "周恩来我xxasfdaf!%%!aaaaa!FUCK!毛泽东", 

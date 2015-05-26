@@ -3,10 +3,11 @@
 #define Q_SERVERTHREAD_EVENT_H_
 
 #include "SockPairEvent.h"
-#include "SessionManager.h"
 #include "WebSockParser.h"
 #include "TcpParser.h"
 #include "HttpParser.h"
+#include "Singleton.h"
+#include "CTask.h"
 
 struct TriggerSock
 {
@@ -22,46 +23,43 @@ struct TriggerSock
 * 工作线程事件
 * 通信格式 unsigned short(消息长度) + 消息
 */
-class CWorkThreadEvent : public CSockPairEvent
+class CWorkThreadEvent : public CSockPairEvent,
+    public CTask, 
+    public CSingleton<CWorkThreadEvent>
 {
 public:
     CWorkThreadEvent(void);
     ~CWorkThreadEvent(void);
 
-    /*设置接口对象*/
-    void setInterface(CEventInterface *pInterface);
-    /*定时器时间(ms)*/
-    int setTimer(unsigned int uiMS);
+    //http
     int setHttpSock(std::vector<Q_SOCK> &vcHttpSock);
 
-    /*获取该事件循环维护的CSessionManager*/
-    CSessionManager *getSessionManager(void);
-    /*获取WebSockParser*/
     CWebSockParser *getWebSockParser(void);
-    /*获取CTcpParser*/
     CTcpParser *getTcpParser(void);
-    /*获取链接到其他服务器对象*/
-    CLinkOther *getLinkOther(void);
     CHttpParser *getHttpParser(void);
+
+    void Run(void)
+    {
+        Q_Printf("%s", "worker service running...");
+        Start();
+    };
 
 public:
     //接口实现
     void onMainRead(CEventBuffer *);
     void onAssistRead(CEventBuffer *);
+    void onTimerRead(CEventBuffer *);
     void onStop(void);
     bool onStartUp(void);
 
 public:
     static void workThreadReadCB(struct bufferevent *bev, void *arg);
     static void workThreadEventCB(struct bufferevent *bev, short, void *arg);
-    static void workThreadTimerCB(evutil_socket_t, short, void *arg);
     static void workThreadHttpCB(struct evhttp_request *req, void *arg);
 
     //不同类型协议读取
-    static void dispTcp(CWorkThreadEvent *pWorkThreadEvent,
-        CSessionManager *pSessionManager, CSession *pSession);
-    static void dispWebSock(CWorkThreadEvent *pWorkThreadEvent,
-        CSessionManager *pSessionManager, CSession *pSession);
+    static void dispTcp(class CSession *pSession);
+    static void dispWebSock(class CSession *pSession);
 
 public:
     //websocket 分片帧操作
@@ -70,8 +68,6 @@ public:
     void delContinuation(const Q_SOCK &sock);
 
 private:
-    struct event *m_pEvent;
-    CSessionManager m_objSessionManager;
     TriggerSock m_stWorkSock;
     CWebSockParser m_objWebSockParser;
     CTcpParser m_objTcpParser;

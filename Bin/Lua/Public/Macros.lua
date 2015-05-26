@@ -28,6 +28,7 @@ GameEvent = {
     "HttpRead",--http
     "LinkedOther",--服务器间连接成功
     "OnConnected",--连接成功
+    "Debug",--调试
 }
 GameEvent = table.enum(GameEvent, 1)
 
@@ -36,6 +37,7 @@ SessionType = {
     "Tcp",
     "TcpClient",
     "WebSock",
+    "Debug",
 }
 SessionType = table.enum(SessionType)
 

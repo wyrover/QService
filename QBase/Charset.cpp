@@ -16,7 +16,7 @@ CCharset::~CCharset(void)
     }
 }
 
-std::string CCharset::getStrCharset(const char *pszData, const size_t iSize)
+std::string CCharset::getStrCharset(const char *pszData, const unsigned int iSize)
 {
     if (NULL == pszData
         || NULL == m_pCharset)

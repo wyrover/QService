@@ -4,7 +4,7 @@
 
 #include "Macros.h"
 
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
 //dump¿‡
 class CCoreDump
 {

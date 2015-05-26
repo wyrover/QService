@@ -11,6 +11,7 @@ package.path = string.format("%s;%s?.lua",
 require("Game/InitModule")
 
 local tNowDay = os.date("*t", time)
+local iProLens = 2
 
 --session管理
 if not g_objSessionMgr then
@@ -19,6 +20,14 @@ end
 --二进制解析
 if not g_objBinary then
     g_objBinary = nil
+end
+--加解码
+if not g_objEncrypt then
+    g_objEncrypt = nil
+end
+--邮件
+if not g_objMail then
+    g_objMail = Mail:new()
 end
 --非服务器连接，根据状态过滤操作码的函数
 if not g_ProFilterFun then
@@ -34,9 +43,10 @@ end
 参数：
 返回值： 无
 --]]
-function Lua_OnStartUp(objSessionMgr, objBinary)
+function Lua_OnStartUp(objSessionMgr, objBinary, objEncrypt)
     g_objSessionMgr = objSessionMgr
     g_objBinary = objBinary
+    g_objEncrypt = objEncrypt
     math.randomseed(tonumber(tostring(os.time()):reverse():sub(1,6)))
     
     onGameEvent(GameEvent.Start)--这里一般读取配置文件
@@ -52,7 +62,7 @@ function Lua_OnShutDown()
     onGameEvent(GameEvent.ShutDown)
     
     --确认退出，，，没这个不会退出
-    g_objSessionMgr:confirmStop()
+    shutDown()
 end
 
 --[[
@@ -69,32 +79,31 @@ end
 参数：
 返回值：无
 --]]
-function Lua_OnSockRead()
-    EchoSV()
-    
-    --[[
-    local tbMessage = {}
-    if 0 ~= iLens then
-        --if CarrierType.Json == MsgCarrier then
-            tbMessage = cjson.decode(strMsg)
-        --elseif CarrierType.Protobuf == MsgCarrier then
-            local strProro = getProtoStr(iProtocol)
-            tbMessage = protobuf.decode(strProro, strMsg, iLens)
-            assert(tbMessage, protobuf.lasterror()) 
-        --else
-            Debug("unknown message carrier.")
-            return
-        --end
+function Lua_OnSockRead()    
+    --buffer总长度
+    local iBufferLens = g_objBinary:getLens()
+    if iBufferLens < iProLens then
+        return
     end
     
-    local objCurSession = g_objSessionMgr:getCurSession()
+    --前2字节操作码    
+    local iProtocol = g_objBinary:getUint16()
+    Debug("protocol %d", iProtocol)
     
-    Debug(string.format("session type %d", objCurSession:getType()))
-    Debug("recv messge:")
-    table.print(tbMessage)
+    --取消息
+    local tMsg = {}
+    if iBufferLens > iProLens then
+        local iMsgLens = iBufferLens - iProLens
+        local strMsg = g_objBinary:getByte(iMsgLens)
+        
+        tMsg = parseProBuf(iProtocol, strMsg, iMsgLens)
+    end
+
+    table.print(tMsg)
     
-    --检查操作码与状态是否匹配       
-    if SessionType.TcpClient ~= objCurSession:getType() then
+    --检查操作码与状态是否匹配
+    --[[local objCurSession = g_objSessionMgr:getCurSession()
+    if SessionType.Tcp == objCurSession:getType() then
         if not g_Started then
             Debug("service not start completed.")
             return
@@ -103,15 +112,23 @@ function Lua_OnSockRead()
         if g_ProFilterFun then
             local iStatus = objCurSession:getStatus()
             if not g_ProFilterFun(iProtocol, iStatus) then
-                Q_LOG(LOGLV_WARN, string.format("session status %d, protocol %d was ignored.", 
-                    iStatus, iProtocol))
+                Log(LOGLV_WARN, "session status %d, protocol %d was ignored.", 
+                    iStatus, iProtocol)
                 return
             end
         end
-    end
+    end--]]
     
-    onNetEvent(iProtocol, tbMessage)
-    --]]
+    onNetEvent(iProtocol, tMsg)
+end
+
+--[[
+描述：调试
+参数：
+返回值：无
+--]]
+function Lua_OnDebug()
+    onGameEvent(GameEvent.Debug, g_objBinary:getByte(g_objBinary:getLens()))
 end
 
 --[[

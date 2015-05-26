@@ -32,6 +32,11 @@ extern "C" {
 	}
 #endif
 
+#ifdef WIN32
+#pragma warning(disable:4244)
+#pragma warning(disable:4267)
+#endif
+
 int
 fpconv_g_fmt(char *b, double x, int precision)
 {

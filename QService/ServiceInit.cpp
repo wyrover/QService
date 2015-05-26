@@ -3,186 +3,464 @@
 
 /*业务处理头文件*/
 
-#define Q_CONFIGFILE      "config.xml"
-#define Q_CONFIGFOLDER    "config"
-#define LOG_FOLDER        "log"
-
-static CServerInit m_objServerInit;
-
-/*日志任务*/
-class CLogSysTask : public CTask
+enum 
 {
-public:
-    CLogSysTask(void) : m_pLog(NULL)
-    {
-
-    };
-    ~CLogSysTask(void)
-    {
-        m_pLog = NULL;
-    };
-
-    void setLogSys(CLog *pLog)
-    {
-        m_pLog = pLog;
-    };
-
-    void Run(void)
-    {
-        m_pLog->Start();
-    };
-
-private:
-    CLog *m_pLog;
+    INICOFG_CLOSE = 0,
+    INICOFG_OPEN
 };
 
-/*****************************************************************************/
+#define CONFIG_SERVER      "config_server.xml"
+#define CONFIG_TXTLOG      "config_txtlog.xml"
+#define CONFIG_DBLOG       "config_dblog.xml"
+#define CONFIG_LINKOTHER   "config_linkother.xml"
+#define CONFIG_MAIL        "config_mail.xml"
+#define CONFIG_AES         "config_aes.xml"
+#define CONFIG_RSA         "config_rsa.xml"
 
-class CServerTask : public CTask
+#define CONFIG_FOLDER      "config"
+#define LOG_FOLDER         "log"
+
+#define RSAKEY_FOLDER      "rsakeys"
+
+struct LinkOther
 {
-public:
-    CServerTask(void) : m_pSV(NULL)
-    {
-
-    };
-    ~CServerTask(void)
-    {
-        m_pSV = NULL;
-    };
-
-    void setServerHandle(CServer *pSV)
-    {
-        m_pSV = pSV;
-    };
-
-    void Run(void)
-    {
-        m_pSV->Start();
-    };
-
-private:
-    CServer *m_pSV;
+    unsigned short usPort;
+    unsigned short usType;
+    std::string strIp;
+    std::string strName;
 };
 
-/*****************************************************************************/
-
-CServerInit::~CServerInit(void)
+int initAESKey(void)
 {
-    try
+    xml_node objXmlNode;
+    xml_document objXmlDoc;
+    xml_parse_result objXmlResult;
+
+    std::string strConfig = Q_FormatStr("%s%s%s%s", 
+        g_acModulPath, CONFIG_FOLDER, Q_PATH_SEPARATOR, CONFIG_AES);
+
+    objXmlResult = objXmlDoc.load_file(strConfig.c_str());
+    if (status_ok != objXmlResult.status)
     {
-        std::vector<CEventInterface * >::iterator itInterface;
-        for (itInterface = m_vcInterface.begin(); m_vcInterface.end() != itInterface; itInterface++)
-        {
-            Q_SafeDelete(*itInterface);
-        }
-
-        m_vcInterface.clear();
-    }
-    catch(...)
-    {
-
-    }     
-}
-
-int CServerInit::Start(void)
-{
-    int iRtn = Q_RTN_OK;
-    CLogSysTask *pLogSysTask = NULL;
-
-    m_strConfig = Q_FormatStr("%s%s%s%s", 
-        g_acModulPath, Q_CONFIGFOLDER, Q_PATH_SEPARATOR, Q_CONFIGFILE);
-    Q_Printf("config file %s.", m_strConfig.c_str()); 
-
-    /*加载配置文件*/
-    Q_Printf("%s", "load config file ...");
-    m_objXmlResult = m_objXmlDoc.load_file(m_strConfig.c_str());
-    if (status_ok != m_objXmlResult.status)
-    {
-        Q_Printf("%s", "load config file error.");
+        Q_Printf("%s", "load aes config error.");
 
         return Q_RTN_FAILE;
     }
 
-    /*初始化日志*/    
-    pLogSysTask = new(std::nothrow) CLogSysTask();
-    if (NULL == pLogSysTask)
+    objXmlNode = objXmlDoc.child("QServer").child("AES");
+    if (objXmlNode.empty())
     {
-        Q_Printf("%s", Q_EXCEPTION_ALLOCMEMORY);
-
-        return Q_ERROR_ALLOCMEMORY;
+        return Q_RTN_OK;
     }
 
-    pLogSysTask->setLogSys(&m_objLog);
-    m_objThread.Execute(pLogSysTask);
-    if (!m_objLog.waitForStarted())
-    {
-        Q_Printf("%s", "log system start timeout.");
+    std::string strKey = objXmlNode.child_value("Key");
+    unsigned short usType = (unsigned short)atoi(objXmlNode.child_value("KeyType"));
 
-        return Q_RTN_FAILE;
-    }
-
-    Q_Printf("%s", "init txt log system ...");
-    initTxtLog();
-    Q_Printf("%s", "init db log system ...");
-    if (!initDBLog())
-    {
-        Q_Printf("%s", "init db log system error.");
-
-        return Q_RTN_FAILE;
-    }
-
-    /*启动服务*/
-    Q_Printf("%s", "start service ...");
-    iRtn = initServer();
-    if (Q_RTN_OK != iRtn)
-    {
-        return iRtn;
-    }
-
-    Q_Printf("%s", "start service successfully!");
-    Q_LOG(LOGLV_INFO, "%s", "start service successful!");
+    CEncrypt::getSingletonPtr()->setAESKey(strKey.c_str(), usType);
 
     return Q_RTN_OK;
 }
 
-void CServerInit::Stop(void)
+int initRSAKey(void)
 {
-    Q_Printf("%s", "shutdown server...");
-    m_objServer.Stop();
-    Q_Printf("%s", "stop log system.");
-    m_objLog.Stop();
+    xml_node objXmlNode;
+    xml_document objXmlDoc;
+    xml_parse_result objXmlResult;
+
+    std::string strConfig = Q_FormatStr("%s%s%s%s", 
+        g_acModulPath, CONFIG_FOLDER, Q_PATH_SEPARATOR, CONFIG_RSA);
+
+    objXmlResult = objXmlDoc.load_file(strConfig.c_str());
+    if (status_ok != objXmlResult.status)
+    {
+        Q_Printf("%s", "load rsa config error.");
+
+        return Q_RTN_FAILE;
+    }
+
+    objXmlNode = objXmlDoc.child("QServer").child("RSA");
+    if (objXmlNode.empty())
+    {
+        return Q_RTN_OK;
+    }
+
+    std::string strPub = Q_FormatStr("%s%s%s%s", 
+        g_acModulPath, RSAKEY_FOLDER, Q_PATH_SEPARATOR, objXmlNode.child_value("PubKey"));
+    std::string strPri = Q_FormatStr("%s%s%s%s", 
+        g_acModulPath, RSAKEY_FOLDER, Q_PATH_SEPARATOR, objXmlNode.child_value("PriKey"));
+    std::string strRand = Q_FormatStr("%s%s%s%s", 
+        g_acModulPath, RSAKEY_FOLDER, Q_PATH_SEPARATOR, objXmlNode.child_value("RandKey"));
+
+    if ((Q_RTN_OK != Q_FileExist(strPub.c_str()))
+        || (Q_RTN_OK != Q_FileExist(strPri.c_str()))
+        || (Q_RTN_OK != Q_FileExist(strRand.c_str())))
+    {
+        CRSAKey objKey;
+
+        if (Q_RTN_OK != objKey.creatKey(512))
+        {
+            Q_Printf("%s", "create rsa key error.");
+
+            return Q_RTN_FAILE;
+        }
+
+        if ((Q_RTN_OK != objKey.savePublicKey(strPub.c_str())
+            || (Q_RTN_OK != objKey.savePrivateKey(strPri.c_str()))
+            || (Q_RTN_OK != objKey.saveRandom(strRand.c_str()))))
+        {
+            Q_Printf("%s", "save rsa key error.");
+
+            return Q_RTN_FAILE;
+        }
+    }
+
+    if (Q_RTN_OK != CEncrypt::getSingletonPtr()->setRSAKey(strPub.c_str(), strPri.c_str(), strRand.c_str()))
+    {
+        Q_Printf("%s", "load rsa key error.");
+
+        return Q_RTN_FAILE;
+    }
+
+    return Q_RTN_OK;
 }
 
-void CServerInit::readLinkOtherConfig(std::vector<LinkOther> &vcLinkOther) const
+int initEncrypt(void)
 {
-    pugi::xpath_node_set objNodeSet;
-    pugi::xpath_node_set::const_iterator itNode;
+    if (Q_RTN_OK != initAESKey())
+    {
+        return Q_RTN_FAILE;
+    }    
 
-    objNodeSet = m_objXmlDoc.select_nodes("//LinkOther");
+    return initRSAKey();
+}
+
+int rendMailConfig(std::string &strMailServer,
+    std::string &strSender,
+    std::string &strUserName,
+    std::string &strPassWord,
+    enum jwsmtp::mailer::authtype &emType,
+    bool &bOpen)
+{
+    xml_node objXmlNode;
+    xml_document objXmlDoc;
+    xml_parse_result objXmlResult;
+
+    bOpen = true;
+    std::string strConfig = Q_FormatStr("%s%s%s%s", 
+        g_acModulPath, CONFIG_FOLDER, Q_PATH_SEPARATOR, CONFIG_MAIL);
+
+    objXmlResult = objXmlDoc.load_file(strConfig.c_str());
+    if (status_ok != objXmlResult.status)
+    {
+        Q_Printf("%s", "load mail config error.");
+
+        return Q_RTN_FAILE;
+    }
+
+    objXmlNode = objXmlDoc.child("QServer").child("Mail");
+    if (objXmlNode.empty())
+    {
+        bOpen = false;
+
+        return Q_RTN_OK;
+    }
+
+    strMailServer = objXmlNode.child_value("MailServer");
+    emType = (enum jwsmtp::mailer::authtype)atoi(objXmlNode.child_value("AuthType"));
+    strSender = objXmlNode.child_value("Sender");
+    strUserName = objXmlNode.child_value("UserName");
+    strPassWord = objXmlNode.child_value("PassWord");
+    if (strMailServer.empty())
+    {
+        Q_Printf("%s", "mail server is empty.");
+        return Q_RTN_FAILE;
+    }
+    if (strSender.empty())
+    {
+        Q_Printf("%s", "mail sender is empty.");
+        return Q_RTN_FAILE;
+    }
+    if (strUserName.empty())
+    {
+        Q_Printf("%s", "mail username is empty.");
+        return Q_RTN_FAILE;
+    }
+
+    return Q_RTN_OK;
+}
+
+int initMailSender(void)
+{
+    std::string strMailServer;
+    std::string strSender;
+    std::string strUserName;
+    std::string strPassWord;
+    enum jwsmtp::mailer::authtype emType;
+    bool bOpen;
+
+    if (Q_RTN_OK != rendMailConfig(strMailServer, strSender, strUserName, strPassWord, emType, bOpen))
+    {
+        return Q_RTN_FAILE;
+    }
+
+    if (!bOpen)
+    {
+        return Q_RTN_OK;
+    }
+
+    CMailSender::getSingletonPtr()->setServer(strMailServer);
+    CMailSender::getSingletonPtr()->setAuthType(emType);
+    CMailSender::getSingletonPtr()->setSender(strSender);
+    CMailSender::getSingletonPtr()->setUserName(strUserName);
+    CMailSender::getSingletonPtr()->setPassWord(strPassWord);
+
+    CThread objThread;
+    objThread.Execute(CMailSender::getSingletonPtr(), false);
+    if (!CMailSender::getSingletonPtr()->waitForStarted())
+    {
+        return Q_RTN_FAILE;
+    }
+
+    return Q_RTN_OK;
+}
+
+void stopMailSender(void)
+{
+    CMailSender::getSingletonPtr()->Stop();
+}
+
+int initTxtLoger(void)
+{
+    int iMaxSize = 5*1024*1024;
+    int iPriority = LOGLV_DEBUG;
+    std::string strLogName;
+    xml_node objXmlNode;
+    xml_document objXmlDoc;
+    xml_parse_result objXmlResult;
+
+    std::string strConfig = Q_FormatStr("%s%s%s%s", 
+        g_acModulPath, CONFIG_FOLDER, Q_PATH_SEPARATOR, CONFIG_TXTLOG);
+    std::string strLogPath = Q_FormatStr("%s%s%s", g_acModulPath, LOG_FOLDER, Q_PATH_SEPARATOR);
+
+    objXmlResult = objXmlDoc.load_file(strConfig.c_str());
+    if (status_ok != objXmlResult.status)
+    {
+        Q_Printf("%s", "load txtlog config error.");
+
+        return Q_RTN_FAILE;
+    }
+
+    objXmlNode = objXmlDoc.child("QServer").child("TxtLog");
+    if (!objXmlNode.empty())
+    {
+        strLogName = objXmlNode.child_value("LogName");
+        Q_Printf("log file %s.", strLogName.c_str());
+
+        iMaxSize = atoi(objXmlNode.child_value("MaxSize"));
+        Q_Printf("log file size %d.", iMaxSize);
+
+        iPriority = atoi(objXmlNode.child_value("Priority"));
+        Q_Printf("log priority %d.", iPriority);
+    }
+
+    CTxtLoger::getSingletonPtr()->setLogMaxSize(iMaxSize);    
+    CTxtLoger::getSingletonPtr()->setPriority((LOG_LEVEL)iPriority);
+    CTxtLoger::getSingletonPtr()->setLogFile(std::string(strLogPath + strLogName).c_str());
+    CTxtLoger::getSingletonPtr()->Open();
+
+    return Q_RTN_OK;
+}
+
+int initDBLoger(bool &bUseDBLog)
+{
+    std::string strIp;
+    std::string strUser;
+    std::string strPWD;
+    std::string strDB;
+    unsigned short usPort = Q_INIT_NUMBER;
+    xml_node objXmlNode;
+    xml_document objXmlDoc;
+    xml_parse_result objXmlResult;
+
+    std::string strConfig = Q_FormatStr("%s%s%s%s", 
+        g_acModulPath, CONFIG_FOLDER, Q_PATH_SEPARATOR, CONFIG_DBLOG);
+
+    objXmlResult = objXmlDoc.load_file(strConfig.c_str());
+    if (status_ok != objXmlResult.status)
+    {
+        Q_Printf("%s", "load dblog config error.");
+
+        return Q_RTN_FAILE;
+    }
+
+    objXmlNode = objXmlDoc.child("QServer").child("DBLog");
+    if (objXmlNode.empty())
+    {
+        bUseDBLog = false;
+
+        return Q_RTN_OK;
+    }
+
+    bUseDBLog = true;
+    strIp = objXmlNode.child_value("Ip");
+    strUser = objXmlNode.child_value("User");
+    strPWD = objXmlNode.child_value("PWD");
+    strDB = objXmlNode.child_value("DB");
+    usPort = (unsigned short)atoi(objXmlNode.child_value("Port"));
+    Q_Printf("link to DB.ip %s port %d database %s...", 
+        strIp.c_str(), usPort, strDB.c_str());
+    if (!CDBLoger::getSingletonPtr()->Init(strIp.c_str(), usPort, strUser.c_str(), strPWD.c_str(), strDB.c_str()))
+    {
+        return Q_RTN_FAILE;
+    }
+
+    return Q_RTN_OK;
+}
+
+int initLogSystem(void)
+{
+    int iRtn = Q_RTN_OK;
+    bool bUseDBLog = false;
+    CThread objThread;
+
+    Q_Printf("%s", "start log system...");
+    objThread.Execute(CLog::getSingletonPtr(), false);
+    if (!CLog::getSingletonPtr()->waitForStarted())
+    {
+        Q_Printf("%s", "start log system error.");
+
+        return Q_RTN_FAILE;
+    }
+
+    Q_Printf("%s", "init txt loger ...");
+    iRtn = initTxtLoger();
+    if (Q_RTN_OK != iRtn)
+    {
+        Q_Printf("%s", "init txt loger error.");
+
+        return iRtn;
+    }
+
+    Q_Printf("%s", "init db loger ...");
+    iRtn = initDBLoger(bUseDBLog);
+    if (Q_RTN_OK != iRtn)
+    {
+        Q_Printf("%s", "init db loger error.");
+
+        return iRtn;
+    }
+
+    CLog::getSingletonPtr()->addLoger(CTxtLoger::getSingletonPtr());
+    if (bUseDBLog)
+    {
+        CLog::getSingletonPtr()->addLoger(CDBLoger::getSingletonPtr());
+    }
+
+    return Q_RTN_OK;
+}
+
+void stopLogSystem(void)
+{
+    CLog::getSingletonPtr()->Stop();
+}
+
+int readLinkConfig(std::vector<LinkOther> &vcLinkOther)
+{
+    xml_node objXmlNode;
+    xml_document objXmlDoc;
+    xml_parse_result objXmlResult;
+    xpath_node_set objNodeSet;
+    xpath_node_set::const_iterator itNode;
+
+    std::string strConfig = Q_FormatStr("%s%s%s%s", 
+        g_acModulPath, CONFIG_FOLDER, Q_PATH_SEPARATOR, CONFIG_LINKOTHER);
+
+    objXmlResult = objXmlDoc.load_file(strConfig.c_str());
+    if (status_ok != objXmlResult.status)
+    {
+        Q_Printf("%s", "load link other config error.");
+
+        return Q_RTN_FAILE;
+    }
+
+    objNodeSet = objXmlDoc.select_nodes("//LinkOther");
     for (itNode = objNodeSet.begin(); objNodeSet.end() != itNode; itNode++)
     {
         LinkOther stLinkOther;
         stLinkOther.strIp = itNode->node().child_value("IP");
         stLinkOther.strName = itNode->node().child_value("Name");
         stLinkOther.usPort = (unsigned short)atoi(itNode->node().child_value("Port"));
+        stLinkOther.usType = (unsigned short)atoi(itNode->node().child_value("Type"));
 
         vcLinkOther.push_back(stLinkOther);
     }
+
+    return Q_RTN_OK;
 }
 
-bool CServerInit::readConfig(void)
+int initServerLinker(void)
+{
+    std::vector<LinkOther> vcLinkOther;
+    std::vector<LinkOther>::iterator itHost;
+
+    if (Q_RTN_OK != readLinkConfig(vcLinkOther))
+    {
+        return Q_RTN_FAILE;
+    }
+
+    for (itHost = vcLinkOther.begin(); vcLinkOther.end() != itHost; itHost++)
+    {
+        if (!CLinkOther::getSingletonPtr()->addHost(itHost->strIp.c_str(), 
+                itHost->usPort, itHost->strName.c_str(), itHost->usType))
+        {
+            return Q_RTN_FAILE;
+        }
+    }
+
+    if (Q_RTN_OK != CLinkOther::getSingletonPtr()->Start())
+    {
+        return Q_RTN_FAILE;
+    }
+
+    return Q_RTN_OK;
+}
+
+void stopServerLinker(void)
+{
+    CLinkOther::getSingletonPtr()->Stop();
+}
+
+int readConfig(unsigned int &uiMS, std::string &strLua,
+    std::map<unsigned short, std::string> &mapDebug, 
+    std::map<unsigned short, std::string> &mapTcp, 
+    std::map<unsigned short, std::string> &mapWebSock, 
+    std::map<unsigned short, std::string> &mapHttp)
 {
     std::string strIp;
     unsigned short usPort = Q_INIT_NUMBER;
-    pugi::xpath_node_set objNodeSet;
-    pugi::xpath_node_set::const_iterator itNode;
+    xpath_node_set objNodeSet;
+    xpath_node_set::const_iterator itNode;
+    xml_node objXmlNode;
+    xml_document objXmlDoc;
+    xml_parse_result objXmlResult;
 
-    objNodeSet = m_objXmlDoc.select_nodes("//ServerInfo");
+    std::string strConfig = Q_FormatStr("%s%s%s%s", 
+        g_acModulPath, CONFIG_FOLDER, Q_PATH_SEPARATOR, CONFIG_SERVER);
+
+    objXmlResult = objXmlDoc.load_file(strConfig.c_str());
+    if (status_ok != objXmlResult.status)
+    {
+        Q_Printf("%s", "load service config error.");
+
+        return Q_RTN_FAILE;
+    }
+
+    objNodeSet = objXmlDoc.select_nodes("//ServerInfo");
     if (objNodeSet.empty())
     {
         Q_LOG(LOGLV_ERROR, "%s", "no find node //ServerInfo.");
 
-        return false;
+        return Q_RTN_FAILE;
     }
 
     itNode = objNodeSet.begin();
@@ -191,12 +469,11 @@ bool CServerInit::readConfig(void)
     g_strServerName = itNode->node().child_value("Name");
     Q_Printf("service id %d, name %s.", g_iServerID, g_strServerName.c_str());
 
-    m_stServerConfig.usThreadNum = (unsigned short)atoi(itNode->node().child_value("ThreadNum"));
-    m_stServerConfig.strScript = std::string(g_acModulPath) + 
+    strLua = std::string(g_acModulPath) + 
         std::string(itNode->node().child_value("Script"));
-    m_stServerConfig.uiTimer = (unsigned int)atoi(itNode->node().child_value("Timer"));
+    uiMS = (unsigned int)atoi(itNode->node().child_value("Timer"));
 
-    objNodeSet = m_objXmlDoc.select_nodes("//TCP");
+    objNodeSet = objXmlDoc.select_nodes("//Debug");
     if (!objNodeSet.empty())
     {
         for (itNode = objNodeSet.begin(); objNodeSet.end() != itNode; itNode++)
@@ -205,10 +482,10 @@ bool CServerInit::readConfig(void)
             usPort = (unsigned short)atoi(itNode->node().child_value("Port"));
         }
 
-        (void)m_stServerConfig.mapTcp.insert(std::make_pair(usPort, strIp));
+        (void)mapDebug.insert(std::make_pair(usPort, strIp));
     }
 
-    objNodeSet = m_objXmlDoc.select_nodes("//WebSock");
+    objNodeSet = objXmlDoc.select_nodes("//TCP");
     if (!objNodeSet.empty())
     {
         for (itNode = objNodeSet.begin(); objNodeSet.end() != itNode; itNode++)
@@ -217,10 +494,10 @@ bool CServerInit::readConfig(void)
             usPort = (unsigned short)atoi(itNode->node().child_value("Port"));
         }
 
-        (void)m_stServerConfig.mapWebSock.insert(std::make_pair(usPort, strIp));
+        (void)mapTcp.insert(std::make_pair(usPort, strIp));
     }
 
-    objNodeSet = m_objXmlDoc.select_nodes("//Http");
+    objNodeSet = objXmlDoc.select_nodes("//WebSock");
     if (!objNodeSet.empty())
     {
         for (itNode = objNodeSet.begin(); objNodeSet.end() != itNode; itNode++)
@@ -229,99 +506,60 @@ bool CServerInit::readConfig(void)
             usPort = (unsigned short)atoi(itNode->node().child_value("Port"));
         }
 
-        (void)m_stServerConfig.mapHttp.insert(std::make_pair(usPort, strIp));
+        (void)mapWebSock.insert(std::make_pair(usPort, strIp));
     }
 
-    return true;
+    objNodeSet = objXmlDoc.select_nodes("//Http");
+    if (!objNodeSet.empty())
+    {
+        for (itNode = objNodeSet.begin(); objNodeSet.end() != itNode; itNode++)
+        {
+            strIp = itNode->node().child_value("BindIP");
+            usPort = (unsigned short)atoi(itNode->node().child_value("Port"));
+        }
+
+        (void)mapHttp.insert(std::make_pair(usPort, strIp));
+    }
+
+    return Q_RTN_OK;
 }
 
-int CServerInit::initServer(void)
+int initServer(void)
 {
     int iRtn = Q_RTN_OK;
+    unsigned int uiMS = Q_INIT_NUMBER;
+    std::string strLua;
+    std::map<unsigned short, std::string> mapDebug;
+    std::map<unsigned short, std::string> mapTcp;
+    std::map<unsigned short, std::string> mapWebSock;
+    std::map<unsigned short, std::string> mapHttp;
 
-    Q_Printf("%s", "read service config...");
-    if (!readConfig())
-    {
-        Q_Printf("%s", "read service config error.");
-
-        return Q_RTN_FAILE;
-    }
-
-    try
-    {
-        for (unsigned short usI = 0; usI < m_stServerConfig.usThreadNum; usI++)
-        {
-            CEventInterface *pInterface = 
-                new(std::nothrow) CDisposeEvent(m_stServerConfig.strScript.c_str());
-            if (NULL == pInterface)
-            {
-                Q_Printf("%s", Q_EXCEPTION_ALLOCMEMORY);
-
-                return Q_ERROR_ALLOCMEMORY;
-            }
-
-            m_vcInterface.push_back(pInterface);
-        }
-    }
-    catch(CQException &e)
-    {
-        Q_Printf("get an exception. code %d, message %s", e.getErrorCode(), e.getErrorMsg());
-
-        return e.getErrorCode();
-    }     
-
-    /*完成初始化*/
-    iRtn = m_objServer.Init(m_stServerConfig.usThreadNum, m_stServerConfig.uiTimer,
-        m_vcInterface, 
-        m_stServerConfig.mapTcp, m_stServerConfig.mapWebSock, m_stServerConfig.mapHttp);
+    iRtn = readConfig(uiMS, strLua, mapDebug, mapTcp, mapWebSock, mapHttp);
     if (Q_RTN_OK != iRtn)
     {
         return iRtn;
     }
 
-    /*读取服务器间连接配置*/
-    std::vector<LinkOther> vcLinkOther;
-    std::vector<LinkOther>::iterator itLinkOther;
-
-    Q_Printf("%s", "read link other config...");
-    readLinkOtherConfig(vcLinkOther);
-
-    /*设置服务器间连接*/
-    CWorkThreadEvent *pThreadEvent = m_objServer.getServerThreadEvent();
-    for (unsigned short i = 0; i < *(m_objServer.getThreadNum()); i++)
+    Q_Printf("%s", "init lua vm...");
+    iRtn = CDisposeEvent::getSingletonPtr()->initLua(strLua);
+    if (Q_RTN_OK != iRtn)
     {
-        for (itLinkOther = vcLinkOther.begin(); vcLinkOther.end() != itLinkOther; itLinkOther++)
-        {
-            if (itLinkOther->strName.empty())
-            {
-                Q_Printf("%s", "link other name empty.");
-                return Q_RTN_FAILE;
-            }
-
-            if (!(pThreadEvent[i].getLinkOther()->addHost(itLinkOther->strIp.c_str(),
-                itLinkOther->usPort,
-                itLinkOther->strName.c_str())))
-            {
-                Q_Printf("add link other %s error.", itLinkOther->strName.c_str());
-                return Q_RTN_FAILE;
-            }
-        }
+        return iRtn;
     }
 
-    /*加入到线程*/
-    CServerTask *pTask = new(std::nothrow) CServerTask();
-    if (NULL == pTask)
+    iRtn = CServer::getSingletonPtr()->Init(uiMS, CDisposeEvent::getSingletonPtr(), 
+        CDisposeEvent::getSingletonPtr()->getLua(),
+        mapDebug, mapTcp, mapWebSock, mapHttp);
+    if (Q_RTN_OK != iRtn)
     {
-        Q_LOG(LOGLV_ERROR, "%s", Q_EXCEPTION_ALLOCMEMORY);
-
-        return Q_ERROR_ALLOCMEMORY;
+        return iRtn;
     }
 
-    pTask->setServerHandle(&m_objServer);
-    m_objThread.Execute(pTask);
-    if (!(m_objServer.waitForStarted()))
+    CThread objThread;
+    objThread.Execute(CServer::getSingletonPtr(), false);
+    if (!CServer::getSingletonPtr()->waitForStarted())
     {
-        Q_LOG(LOGLV_ERROR, "%s", "start server error.");
+        Q_Printf("%s", "start service error.");
 
         return Q_RTN_FAILE;
     }
@@ -329,88 +567,11 @@ int CServerInit::initServer(void)
     return Q_RTN_OK;
 }
 
-void CServerInit::initTxtLog(void)
+void stopServer(void)
 {
-    std::string strLogPath;
-    std::string strLogName;
-    int iMaxSize = 5*1024*1024;
-    int iPriority = 600;
-
-    g_pTxtLoger = new(std::nothrow) CTxtLoger();
-    if (NULL == g_pTxtLoger)
-    {
-        Q_Printf("%s", Q_EXCEPTION_ALLOCMEMORY);
-        return;
-    }
-
-    strLogPath = Q_FormatStr("%s%s%s", g_acModulPath, LOG_FOLDER, Q_PATH_SEPARATOR);    
-
-    m_objXmlNode = m_objXmlDoc.child("QServer").child("TxtLog");
-    if (!m_objXmlNode.empty())
-    {
-        strLogName = m_objXmlNode.child_value("LogName");
-        Q_Printf("log file %s.", strLogName.c_str());
-
-        iMaxSize = atoi(m_objXmlNode.child_value("MaxSize"));
-        Q_Printf("log file size %d.", iMaxSize);
-
-        iPriority = atoi(m_objXmlNode.child_value("Priority"));
-        Q_Printf("log priority %d.", iPriority);
-    }
-
-    g_pTxtLoger->setLogMaxSize(iMaxSize);    
-    g_pTxtLoger->setPriority((LOG_LEVEL)iPriority);
-    g_pTxtLoger->setLogFile(std::string(strLogPath + strLogName).c_str());
-    g_pTxtLoger->Open();
-
-    g_TxtLogerFD = m_objLog.addLoger(g_pTxtLoger);
-
-    return;
+    CServer::getSingletonPtr()->Stop();
 }
 
-bool CServerInit::initDBLog(void)
-{
-    m_objXmlNode = m_objXmlDoc.child("QServer").child("DBLog");
-    if (!m_objXmlNode.empty())
-    {
-        std::string strIp;
-        std::string strUser;
-        std::string strPWD;
-        std::string strDB;
-        unsigned short usPort = Q_INIT_NUMBER;
-
-        g_pDBLoger = new(std::nothrow) CDBLoger();
-        if (NULL == g_pDBLoger)
-        {
-            Q_Printf("%s", Q_EXCEPTION_ALLOCMEMORY);
-            return false;
-        }
-
-        strIp = m_objXmlNode.child_value("Ip");
-        strUser = m_objXmlNode.child_value("User");
-        strPWD = m_objXmlNode.child_value("PWD");
-        strDB = m_objXmlNode.child_value("DB");
-        usPort = (unsigned short)atoi(m_objXmlNode.child_value("Port"));
-        Q_Printf("link to mysql.ip %s port %d user name %s password %s database %s...", 
-            strIp.c_str(), usPort, strUser.c_str(), strPWD.c_str(), strDB.c_str());
-        if (!g_pDBLoger->Init(strIp.c_str(), usPort, strUser.c_str(), strPWD.c_str(), strDB.c_str()))
-        {
-            Q_SafeDelete(g_pDBLoger);
-
-            return false;
-        }
-
-        g_DBLogerFD = m_objLog.addLoger(g_pDBLoger);
-        if (Q_INVALID_SOCK == g_DBLogerFD)
-        {
-            Q_SafeDelete(g_pDBLoger);
-
-            return false;
-        }
-    }
-
-    return true;
-}
 
 /*************************************************
 * Function name:Service_InitProgram(void)
@@ -429,7 +590,44 @@ int Service_InitProgram(void)
 
     try
     {
-        iRtn = m_objServerInit.Start();
+        do 
+        {
+            Q_Printf("%s", "init log system...");
+            iRtn = initLogSystem();
+            if (Q_RTN_OK != iRtn)
+            {
+                break;
+            }
+
+            Q_Printf("%s", "init encrypt system...");
+            iRtn = initEncrypt();
+            if (Q_RTN_OK != iRtn)
+            {
+                break;
+            }
+
+            Q_Printf("%s", "init mail system...");
+            iRtn = initMailSender();
+            if (Q_RTN_OK != iRtn)
+            {
+                break;
+            }
+
+            Q_Printf("%s", "init service...");
+            iRtn = initServer();
+            if (Q_RTN_OK != iRtn)
+            {
+                break;
+            }
+
+            Q_Printf("%s", "init link other...");
+            iRtn = initServerLinker();
+            if (Q_RTN_OK != iRtn)
+            {
+                break;
+            }
+
+        } while (false);        
     }
     catch(CQException &e)
     {
@@ -441,6 +639,11 @@ int Service_InitProgram(void)
     if (Q_RTN_OK != iRtn)
     {
         Service_Exit();
+    }
+    else
+    {
+        Q_Printf("%s", "start service successfully.");
+        Q_LOG(LOGLV_INFO, "%s", "start service successfully.");
     }
 
     return iRtn;
@@ -459,8 +662,14 @@ int Service_InitProgram(void)
 **************************************************/
 int Service_Exit(void)
 {
-    m_objServerInit.Stop(); 
-
+    Q_Printf("%s", "stop service...");
+    stopServer();
+    Q_Printf("%s", "stop link other...");
+    stopServerLinker();
+    Q_Printf("%s", "stop mail system...");
+    stopMailSender();
+    Q_Printf("%s", "stop log system...");
+    stopLogSystem();
     Q_Printf("%s", "stop service successfully.");
 
     return Q_RTN_OK;
@@ -479,7 +688,7 @@ int Service_Exit(void)
 **************************************************/
 void SigHandEntry(int iSigNum)
 {
-#ifndef Q_OS_WIN32
+#ifndef Q_OS_WIN
     Q_LOG(LOGLV_INFO, "catch signal %d.", iSigNum);
     Q_Printf("catch signal %d.", iSigNum);
 

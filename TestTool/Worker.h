@@ -21,10 +21,6 @@ public:
     {
         return &m_objTcpParser;
     };
-    CSessionManager *getSessionManager(void)
-    {
-        return &m_objSessionManager;
-    };
 
     //接口实现
 public:
@@ -48,7 +44,8 @@ private:
     struct lua_State *m_pLua;
     CTcpParser m_objTcpParser;
     CReg2Lua m_objRegLua;
-    CSessionManager m_objSessionManager;
 };
+
+extern int g_iChecked;
 
 #endif//Q_WORKER_H_

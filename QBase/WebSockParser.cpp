@@ -129,7 +129,7 @@ std::string CWebSockParser::createChallengeKey(std::string &strKey)
     memset(m_acShaKey, 0, sizeof(m_acShaKey));
 
     m_objSHA1.Reset();
-    m_objSHA1.Update((const unsigned char *)strKey.c_str(), strKey.size());
+    m_objSHA1.Update((const unsigned char *)strKey.c_str(), (unsigned int)strKey.size());
     m_objSHA1.Final();
 
     if (!m_objSHA1.GetHash(m_acShaKey))
@@ -255,7 +255,7 @@ bool CWebSockParser::parseHead(class CEventBuffer *pBuffer)
         m_stFram.acMaskKey[1] = pHead[5];
         m_stFram.acMaskKey[2] = pHead[6];
         m_stFram.acMaskKey[3] = pHead[7];
-        m_stFram.uiDataLens = htons(*(unsigned short *)(pHead + 2));
+        m_stFram.uiDataLens = htons(*(u_short *)(pHead + 2));
     }
     else if (PAYLOADLENS_127 == m_stFram.ucPayloadLen)
     {

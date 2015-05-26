@@ -9,6 +9,10 @@
 #include "lpcap.h"
 #include "lptypes.h"
 
+#ifdef WIN32
+#pragma warning(disable:4244)
+#pragma warning(disable:4267)
+#endif
 
 #define captype(cap)	((cap)->kind)
 

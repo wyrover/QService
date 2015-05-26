@@ -4,21 +4,21 @@
 
 enum  WebSockOpCode
 {
-    CONTINUATION = 0x00,
-    TEXT_FRAME = 0x01,
-    BINARY_FRAME = 0x02,
-    CLOSE = 0x08,
-    PING = 0x09,
-    PONG = 0x0A
+    WSOCK_CONTINUATION = 0x00,
+    WSOCK_TEXTFRAME = 0x01,
+    WSOCK_BINARYFRAME = 0x02,
+    WSOCK_CLOSE = 0x08,
+    WSOCK_PING = 0x09,
+    WSOCK_PONG = 0x0A
 };
 
 /*aes key类型*/
 enum AESKeyType
 {
-    KeyNone = 0,
-    Key128 = 128,
-    Key192 = 192,
-    Key256 = 256
+    AESKEY_NONE = 0,
+    AESKEY_128 = 128,
+    AESKEY_192 = 192,
+    AESKEY_256 = 256
 };
 
 /*日志级别,越小越高*/
@@ -34,16 +34,16 @@ enum LOG_LEVEL
 /*任务级别*/
 enum TaskLevel
 {
-    Q_ThreadLV_High = 0,
-    Q_ThreadLV_Normal,
-    Q_ThreadLV_Low
+    TASKLV_HIGHT = 0,
+    TASKLV_NORMAL,
+    TASKLV_LOW
 };
 
 /*数据库类型*/
 enum DBType
 {
-    DBType_Sqlite3 = 0,
-    DBType_MySql
+    DBTYPE_SQLITE3 = 0,
+    DBTYPE_MYSQL
 };
 
 //连接类型
@@ -51,59 +51,60 @@ enum SessionType
 {
     STYPE_TCP = 0,//tcp
     STYPE_TCPCLIENT,//tcp连接
-    STYPE_WEBSOCK//websocket
+    STYPE_WEBSOCK,//websocket
+    STYPE_DEBUG//DEBUG
 };
 
 /*session状态*/
 enum SessionStatus
 {
-    SessionStatus_Closed = -1,
-    SessionStatus_Connect,
-    SessionStatus_Linked,
-    SessionStatus_Logining,
-    SessionStatus_Logined,
-    SessionStatus_Playing,
-    SessionStatus_GM
+    SESSSTATUS_CLOSED = -1,
+    SESSSTATUS_CONNECT,
+    SESSSTATUS_LINKED,
+    SESSSTATUS_LOGINING,
+    SESSSTATUS_LOGINED,
+    SESSSTATUS_PLAYING,
+    SESSSTATUS_GM
 };
 
 /*服务*/
 enum RunStatus
 {
-    RunStatus_Unknown = 0,//未知
-    RunStatus_Error,//发生错误
-    RunStatus_Starting,//正在启动
-    RunStatus_Runing,//运行
-    RunStatus_Stopping,//正在停止
-    RunStatus_Stopped//停止
+    RUNSTATUS_UNKNOWN = 0,//未知
+    RUNSTATUS_ERROR,//发生错误
+    RUNSTATUS_STARTING,//正在启动
+    RUNSTATUS_RUNING,//运行
+    RUNSTATUS_STOPPING,//正在停止
+    RUNSTATUS_STOPPED//停止
 };
 
 /*数据类型*/
 enum DataType
 {
-    DType_SINT8 = 0,//char 
-    DType_UINT8,//unsigned char
-    DType_BOOL,//bool
-    DType_SINT16,//short
-    DType_UINT16,//unsigned short
-    DType_SINT32,//int
-    DType_UINT32,//unsigned int
-    DType_SINT64,//int64_t 
-    DType_UINT64,//uint64_t
-    DType_FLOAT,//float
-    DType_DOUBLE,//double
-    DType_STRING,//string
-    DType_BYTE,//byte
-    DType_STRUCT,//struct
-    DType_SKIP//跳过，控制类型
+    DTYPE_SINT8 = 0,//char 
+    DTYPE_UINT8,//unsigned char
+    DTYPE_BOOL,//bool
+    DTYPE_SINT16,//short
+    DTYPE_UINT16,//unsigned short
+    DTYPE_SINT32,//int
+    DTYPE_UINT32,//unsigned int
+    DTYPE_SINT64,//int64_t 
+    DTYPE_UINT64,//uint64_t
+    DTYPE_FLOAT,//float
+    DTYPE_DOUBLE,//double
+    DTYPE_STRING,//string
+    DTYPE_BYTE,//byte
+    DTYPE_STRUCT,//struct
+    DTYPE_SKIP//跳过，控制类型
 };
 
 /*结构体属性*/
 enum StructAttr
 {
-    StAttr_Name = 1,//变量名
-    StAttr_Type,//数据类型
-    StAttr_Size,//字节 DType_STRING 和 DType_SKIP有用
-    StAttr_StAttr//结构体属性
+    STATTR_NAME = 1,//变量名
+    STATTR_TYPE,//数据类型
+    STATTR_SIZE,//字节 DType_STRING 和 DType_SKIP有用
+    STATTR_STATTR//结构体属性
 };
 
 #endif//Q_ENUM_H_

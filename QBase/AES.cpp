@@ -38,7 +38,7 @@ int CAESEncode::setKey(const char *pszKey, AESKeyType emKeyType)
     Q_SafeDelete(m_pRK);
     Q_SafeDelete(m_pKey);
 
-    if (KeyNone == emKeyType)
+    if (AESKEY_NONE == emKeyType)
     {
         return Q_RTN_FAILE;
     }
@@ -162,7 +162,7 @@ int CAESDecode::setKey(const char *pszKey, AESKeyType emKeyType)
     Q_SafeDelete(m_pRK);
     Q_SafeDelete(m_pKey);
 
-    if (KeyNone == emKeyType)
+    if (AESKEY_NONE == emKeyType)
     {
         return Q_RTN_FAILE;
     }

@@ -21,7 +21,7 @@ function TvecBase:new(Func, tParam, iTimeOut)
     self.Run = false
     
     --该定时器在轮中的信息
-    self.RegWheel = nil    
+    self.RegWheel = nil
     self.RegSlot = 0
     self.RegIndex = 0 
     

@@ -19,7 +19,7 @@ public:
     double Elapsed(void);
 
 private:
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
     bool m_bUseFrequency;    
     LARGE_INTEGER m_StartCount;//记录开始时间     
     LARGE_INTEGER m_EndCount;//记录结束时间     

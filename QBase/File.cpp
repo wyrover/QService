@@ -150,7 +150,7 @@ int Q_DirName(const char *pszPath, std::string &strPath)
 
     strPath.clear();
 
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
     size_t iPos = Q_INIT_NUMBER;
 
     strPath = pszPath;
@@ -194,7 +194,7 @@ int Q_DirExits(const char *pszPath)
         return Q_RTN_FAILE;
     }    
 
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
     HANDLE pvFile = NULL;
     char acTmpPath[Q_FILEPATH_LENS] = {0};
     WIN32_FIND_DATA stFindFileData;
@@ -259,7 +259,7 @@ int Q_MakeDir(const char *pszPath)
         return Q_RTN_FAILE;
     }    
 
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
     return _mkdir(pszPath);
 #else
     return mkdir(pszPath, S_IRWXU);
@@ -279,7 +279,7 @@ int Q_MakeDir(const char *pszPath)
 **************************************************/
 int Q_GetDrivce(std::list<std::string> &lstDrivce)
 {
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
     std::string strTmp;
     char acDriverStr[Q_ONEK] = {0};
     int iLen = (int)GetLogicalDriveStrings(sizeof(acDriverStr), acDriverStr);
@@ -386,7 +386,7 @@ int Q_MakeAllDir(const char *pszPath)
 
 int Q_DelDir(const char *pszPath)
 {
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
     return _rmdir(pszPath);
 #else
     return rmdir(pszPath);
@@ -395,7 +395,7 @@ int Q_DelDir(const char *pszPath)
 
 void Q_DelAllDir(const char *pszPath)
 {
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
     SHFILEOPSTRUCT stFileOP;    
     char acTmpPath[Q_FILEPATH_LENS] = {0};
 
@@ -436,7 +436,7 @@ int Q_GetProPath(std::string &strPath)
     int iSize = 0;
     char acPath[Q_FILEPATH_LENS] = {0};
 
-#ifdef Q_OS_WIN32 
+#ifdef Q_OS_WIN 
     iSize = (int)GetModuleFileName(NULL, acPath, sizeof(acPath) - 1);   
 #else
     iSize = readlink("/proc/self/exe", acPath, sizeof(acPath) - 1);
@@ -461,7 +461,7 @@ int Q_GetProPath(std::string &strPath)
 
 int Q_ChDir(const char *pszPath)
 {
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
     return _chdir(pszPath);
 #else
     return chdir(pszPath);
@@ -481,9 +481,7 @@ int Q_ChDir(const char *pszPath)
 **************************************************/
 int Q_GetSubDirName(const char *pszParentPathName, std::list<std::string> &lstDirName)
 {
-    lstDirName.clear();
-
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
     WIN32_FIND_DATA fd = {0};
     HANDLE hSearch;
     std::string strFilePathName;
@@ -588,9 +586,7 @@ int Q_GetSubDirName(const char *pszParentPathName, std::list<std::string> &lstDi
 **************************************************/
 int Q_GetAllFileName(const char *pszParentPathName, std::list<std::string> &lstFileName)
 {
-    lstFileName.clear();
-
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
     WIN32_FIND_DATA fd = {0};
     HANDLE hSearch;
     std::string strFilePathName;
@@ -683,7 +679,7 @@ int Q_GetAllFileName(const char *pszParentPathName, std::list<std::string> &lstF
 #endif
 }
 
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
 #define PIDFILE "342cfb6a-1374-11e2-a327-dd69792138b9"
 
 /*************************************************

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<QServer>
+    <!-- 文本日志参数配置 --> 
+    <TxtLog>
+		<!--日志文件名称-->
+		<LogName>Log.log</LogName>
+	    <!--日志文件大小限制-->
+        <MaxSize>5242880</MaxSize>
+        <!--LOGLV_NOLOG  = 0,
+            LOGLV_ERROR  = 300, 
+            LOGLV_WARN   = 400,
+            LOGLV_INFO   = 500,
+            LOGLV_DEBUG  = 600,
+        -->
+		<!--日志级别限制-->
+        <Priority>600</Priority>
+    </TxtLog>
+</QServer>

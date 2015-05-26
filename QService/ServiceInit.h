@@ -4,55 +4,45 @@
 
 #include "DispWithLua.h"
 
-class CServerInit
-{
-public:
-    CServerInit(void)
-    {};
-    ~CServerInit(void);
-
-    int Start(void);
-    void Stop(void);
-
-private:
-    struct LinkOther
-    {
-        unsigned short usPort;
-        std::string strIp;
-        std::string strName;
-    };
-    struct ServerConfig
-    {
-        unsigned short usThreadNum;
-        unsigned int uiTimer;
-        std::string strScript;
-
-        std::map<unsigned short, std::string> mapTcp;
-        std::map<unsigned short, std::string> mapWebSock;
-        std::map<unsigned short, std::string> mapHttp;
-    };
-
-private:
-    void initTxtLog(void);
-    bool initDBLog(void);
-    bool readConfig(void);
-    int initServer(void);
-    void readLinkOtherConfig(std::vector<LinkOther> &vcLinkOther) const;
-
-private:
-    CThread m_objThread;
-    std::string m_strConfig;
-    xml_document m_objXmlDoc;
-    xml_parse_result m_objXmlResult;
-    xml_node m_objXmlNode;
-    CLog m_objLog;
-    ServerConfig m_stServerConfig;
-    CServer m_objServer;
-    std::vector<CEventInterface * > m_vcInterface;
-};
+struct LinkOther;
 
 int Service_InitProgram(void);
 int Service_Exit(void);
 void SigHandEntry(int iSigNum);
+
+//编解码
+int initEncrypt(void);
+int initAESKey(void);
+int initRSAKey(void);
+
+//邮件发送服务
+int initMailSender(void);
+int rendMailConfig(std::string &strMailServer,
+    std::string &strSender,
+    std::string &strUserName,
+    std::string &strPassWord,
+    enum jwsmtp::mailer::authtype &emType,
+    bool &bOpen);
+void stopMailSender(void);
+
+//日志
+int initTxtLoger(void);
+int initDBLoger(bool &bUseDBLog);
+int initLogSystem(void);
+void stopLogSystem(void);
+
+//服务器间连接
+int initServerLinker(void);
+int readLinkConfig(std::vector<LinkOther> &vcLinkOther);
+void stopServerLinker(void);
+
+//服务
+int initServer(void);
+int readConfig(unsigned int &uiMS, std::string &strLua,
+    std::map<unsigned short, std::string> &mapDebug, 
+    std::map<unsigned short, std::string> &mapTcp, 
+    std::map<unsigned short, std::string> &mapWebSock, 
+    std::map<unsigned short, std::string> &mapHttp);
+void stopServer(void);
 
 #endif//Q_SERVICEINIT_H_

@@ -1,7 +1,7 @@
 
 #include "RWLock.h"
 
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
 
 CRWLock::CRWLock(void)
 {

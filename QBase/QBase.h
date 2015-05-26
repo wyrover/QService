@@ -22,7 +22,6 @@
 #include "Server.h"
 #include "QMySQL.h"
 #include "Sqlite.h"
-#include "DBPool.h"
 #include "md5.h"
 #include "SHA1.h"
 #include "QRSA.h"
@@ -34,7 +33,6 @@
 #include "Log.h"
 #include "DBLoger.h"
 #include "TxtLoger.h"
-#include "SysLog.h"
 #include "QString.h"
 #include "UUID.h"
 #include "pugixml/pugixml.hpp"
@@ -46,6 +44,14 @@
 #include "HttpClient.h"
 #include "HttpParser.h"
 #include "Binary.h"
+#include "format.h"
+#include "Session.h"
+#include "SessionManager.h"
+#include "LinkOther.h"
+#include "ObjectPool.h"
+#include "Singleton.h"
+#include "Encrypt.h"
+#include "MailSender.h"
 
 using namespace pugi;
 
@@ -53,17 +59,13 @@ using namespace pugi;
 /*一些全局变量*/
 
 /*日志全局变量*/
-extern class CTxtLoger *g_pTxtLoger;
-extern Q_SOCK g_TxtLogerFD;
 #define Q_LOG(emLogLV, acFormat, ...)  \
-    g_pTxtLoger->writeLog(emLogLV, __FILE__, __FUNCTION__, __LINE__, \
-    g_TxtLogerFD, acFormat, ##__VA_ARGS__)
+    CTxtLoger::getSingletonPtr()->writeLog(emLogLV, __FILE__, __FUNCTION__, __LINE__, \
+        acFormat, ##__VA_ARGS__)
 
 /*数据库日志*/
-extern class CDBLoger *g_pDBLoger;
-extern Q_SOCK g_DBLogerFD;
 #define Q_DBLOG(pszPlayerID, usType, pszMsg, iLens) \
-    g_pDBLoger->writeDBLog(g_DBLogerFD, pszPlayerID, usType, pszMsg, iLens)
+    CDBLoger::getSingletonPtr()->writeDBLog(pszPlayerID, usType, pszMsg, iLens)
 
 /*程序所在路径*/
 extern char g_acModulPath[Q_FILEPATH_LENS];

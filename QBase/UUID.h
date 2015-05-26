@@ -6,7 +6,7 @@
 
 #ifdef Q_UUID
 
-#ifndef Q_OS_WIN32
+#ifndef Q_OS_WIN
 typedef struct _GUID
 {
     unsigned long Data1;

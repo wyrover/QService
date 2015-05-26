@@ -6,11 +6,13 @@
 #include "EventInterface.h"
 #include "WebSockParser.h"
 #include "TcpParser.h"
-#include "LinkOther.h"
 #include "Binary.h"
+#include "Singleton.h"
+#include "ObjectPool.h"
+#include "LuaBridge/LuaBridge.h"
 
 /*session管理*/
-class CSessionManager
+class CSessionManager : public CSingleton<CSessionManager>
 {
 public:
     CSessionManager(void);
@@ -26,16 +28,20 @@ public:
     CSession *getSessionByID(const int iID);
     /*确认停止服务*/
     void confirmStop(void);
+
+    /*获取session数量*/
+    unsigned int getSessionSize(void) const;
+
     /*增加连接到其他服务器的TCP连接*/
-    bool addLinkOther(const char *pszIp, const unsigned short usPort, const char *pszNam);
+    bool addLinkOther(const char *pszIp, const unsigned short usPort, 
+        const char *pszName, const unsigned short usType);
     /*根据名称获取链接*/
     int getLinkOtherID(const char *pszName);
-    /*获取session数量*/
-    size_t getSessionSize(void) const;
+    luabridge::LuaRef getLinkOtherByType(const unsigned short usType);    
 
     /*发送*/
-    bool sendToCur(const char *pszData, const size_t uiLens);
-    bool sendToByID(const int iID, const char *pszData, const size_t uiLens);
+    bool sendToCur(const char *pszData, const unsigned int uiLens);
+    bool sendToByID(const int iID, const char *pszData, const unsigned int uiLens);
     /*发送m_objBinary中的数据  Lua中对应的g_objBinary*/
     bool sendBToCur(void);
     bool sendBToByID(const int iID);
@@ -48,34 +54,29 @@ public:
     int addSession(struct bufferevent *bev);
     /*获取session*/
     CSession *getSession(struct bufferevent *bev);
-    /*设置事件处理对象*/
-    void setInterface(class CEventInterface *pInterface);
+    /*事件处理对象*/
     class CEventInterface *getInterface(void);
-    /*定时器触发时间*/
-    void setTimer(const unsigned int &uiMS);
+    /*定时器触发时间*/   
     unsigned int getTimer(void) const;
     /*定时器触发次数*/
     void addCount(void);
     unsigned int getCount(void) const;
-    /*设置lua虚拟机*/
-    void setLua(struct lua_State *pLua);
-    /*设置工作线程指针*/
-    void setWorkThread(class CWorkThreadEvent *pThread);
 
-    CLinkOther *getLinkOther(void)
-    {
-        return &m_objLinkOther;
-    };
+    /*需要设置的*/
+     void setTimer(const unsigned int &uiMS);
+     void setInterface(class CEventInterface *pInterface);
+    void setLua(struct lua_State *pLua);
 
     CLuaBinary *getBinary(void)
     {
         return &m_objBinary;
     };
-private:
     /*释放所有session*/
     void freeAllSession(void);
-    bool sendTcp(CSession *pCurrent, const char *pszData, const size_t &uiLens);
-    bool sendWebSock(CSession *pCurrent, const char *pszData, const size_t &uiLens);
+
+private:
+    bool sendTcp(CSession *pCurrent, const char *pszData, const unsigned int &uiLens);
+    bool sendWebSock(CSession *pCurrent, const char *pszData, const unsigned int &uiLens);
 
 private:
     unsigned int m_uiTimer;
@@ -83,13 +84,10 @@ private:
     struct lua_State *m_pLua;
     CSession *m_pCurrent; //当前Session
     class CEventInterface *m_pInterface;
-    class CWorkThreadEvent *m_pWorkThread;
-    std::tr1::unordered_map<int, CSession *> m_umapSession;//所有Session
-    std::queue<CSession *> m_quFreeSession;//空闲的session
-    std::tr1::unordered_map<std::string, int> m_umapLinkOther;
+    std::tr1::unordered_map<Q_SOCK, CSession *> m_umapSession;//所有Session
+    CObjPool<CSession> m_objSessionPool;
     CWebSockParser m_objWebSockParser;
     CTcpParser m_objTcpParser;
-    CLinkOther m_objLinkOther;
     CLuaBinary m_objBinary;    
 };
 

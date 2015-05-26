@@ -38,23 +38,13 @@ CTestEncypt::~CTestEncypt(void)
 void CTestEncypt::Test_MD5(void)
 {
     std::string strMD5;
-    std::string strFile = "../Bin/ws2_32.dll";
-    std::string strBuf = "test md5";
-    CMD5 objMD5;
+    std::string strFile = "../Bin/dbghelp.dll";
 
-    objMD5.update(strBuf.c_str());
-    strMD5 = objMD5.toString();
-    objMD5.reset();
-
-    objMD5.update("admin");
-    strMD5 = objMD5.toString();
-    objMD5.reset();
+    strMD5 = CEncrypt::getSingletonPtr()->md5Str(std::string("admin"));
     CPPUNIT_ASSERT_EQUAL(std::string("21232f297a57a5a743894a0e4a801fc3") , strMD5);
 
-    objMD5.updatefile(strFile.c_str());
-    strMD5 = objMD5.toString();
-    objMD5.reset();
-    CPPUNIT_ASSERT_EQUAL(std::string("e0197a89302af5f217e6bd8148eba08b") , strMD5);
+    strMD5 = CEncrypt::getSingletonPtr()->md5File(strFile);
+    CPPUNIT_ASSERT_EQUAL(std::string("5c5e3afd499e5146fef1da5ef8a23205") , strMD5);
 }
 
 void CTestEncypt::Test_Base64(void)
@@ -69,21 +59,16 @@ void CTestEncypt::Test_Base64(void)
     stbs.i2 = 3;
     stbs.us1 = 4;
 
-    size_t iOutLens = 0;
-    CBase64 objBase64;
-    std::string  strEncode = objBase64.Encode((const unsigned char*)(str.c_str()), str.size());
-    char  *pDecode = (char *)objBase64.Decode(strEncode.c_str(), strEncode.size(), iOutLens);
+    std::string  strEncode = CEncrypt::getSingletonPtr()->b64Encode(str);
+    std::string strDecode = CEncrypt::getSingletonPtr()->b64Decode(strEncode);
 
-    CPPUNIT_ASSERT_EQUAL(str.size() , iOutLens);
-    CPPUNIT_ASSERT_EQUAL(str , std::string(pDecode, iOutLens));
+    CPPUNIT_ASSERT_EQUAL(str , strDecode);
 
-    strEncode = objBase64.Encode((const unsigned char*)(&stbs), sizeof(stbs));
-    pDecode = (char *)objBase64.Decode(strEncode.c_str(), strEncode.size(), iOutLens);
-
-    CPPUNIT_ASSERT_EQUAL(sizeof(stbs) , iOutLens);    
+    strEncode = CEncrypt::getSingletonPtr()->b64Encode(std::string((const char*)(&stbs), sizeof(stbs)));
+    strDecode = CEncrypt::getSingletonPtr()->b64Decode(strEncode); 
 
     char *pszSrc = (char*)&stbs;
-    bool bCheckBuf = Q_CheckBuff(pszSrc, pDecode, iOutLens);
+    bool bCheckBuf = Q_CheckBuff(pszSrc, strDecode.c_str(), strDecode.size());
 
     CPPUNIT_ASSERT(bCheckBuf);
 }
@@ -99,52 +84,34 @@ void CTestEncypt::Test_AES(void)
     stbs.i2 = 3;
     stbs.us1 = 4;
 
-    int iRtn = Q_RTN_OK;
-    AESKeyType emType = Key128;
+    AESKeyType emType = AESKEY_128;
     std::string strKey = "aaaaaaaaaaaaaaaa";
-    char *pEncodeRst = NULL;
-    char *pDecodeRst = NULL;
-    CAESEncode objEncode;
-    CAESDecode objDecode;
+    std::string strEncodeRst;
+    std::string strDecodeRst;
 
-    size_t iOutLens = 0;
-    size_t iInLens = 0;
+    CEncrypt::getSingletonPtr()->setAESKey(strKey.c_str(), emType);
 
-    iRtn = objEncode.setKey(strKey.c_str(), emType);
-    pEncodeRst = (char *)objEncode.Encode(str.c_str(), str.size(), iOutLens);
-
-    iRtn = objDecode.setKey(strKey.c_str(), emType);
-    iInLens = iOutLens;
-    pDecodeRst = (char *)objDecode.Decode((const char*)pEncodeRst, iInLens, iOutLens);
-
-    CPPUNIT_ASSERT_EQUAL(str.size() , iOutLens);
-    CPPUNIT_ASSERT_EQUAL(str , std::string(pDecodeRst, iOutLens));
+    strEncodeRst = CEncrypt::getSingletonPtr()->aesEncode(str);
+    strDecodeRst = CEncrypt::getSingletonPtr()->aesDecode(strEncodeRst);
+    CPPUNIT_ASSERT_EQUAL(str, strDecodeRst);
 
     str = "111111";
-    pEncodeRst = (char *)objEncode.Encode(str.c_str(), str.size(), iOutLens);
-    iInLens = iOutLens;
-    pDecodeRst = (char *)objDecode.Decode((const char*)pEncodeRst, iInLens, iOutLens);
-
-    CPPUNIT_ASSERT_EQUAL(str.size() , iOutLens);
-    CPPUNIT_ASSERT_EQUAL(str , std::string(pDecodeRst, iOutLens));
+    strEncodeRst = CEncrypt::getSingletonPtr()->aesEncode(str);
+    strDecodeRst = CEncrypt::getSingletonPtr()->aesDecode(strEncodeRst);
+    CPPUNIT_ASSERT_EQUAL(str, strDecodeRst);
 
     str = "111111111111111";
-    pEncodeRst = (char *)objEncode.Encode(str.c_str(), str.size(), iOutLens);
-    iInLens = iOutLens;
-    pDecodeRst = (char *)objDecode.Decode((const char*)pEncodeRst, iInLens, iOutLens);
+    strEncodeRst = CEncrypt::getSingletonPtr()->aesEncode(str);
+    strDecodeRst = CEncrypt::getSingletonPtr()->aesDecode(strEncodeRst);
+    CPPUNIT_ASSERT_EQUAL(str, strDecodeRst);
 
-    CPPUNIT_ASSERT_EQUAL(str.size() , iOutLens);
-    CPPUNIT_ASSERT_EQUAL(str , std::string(pDecodeRst, iOutLens));
+    strEncodeRst = CEncrypt::getSingletonPtr()->aesEncode(std::string((const char*)(&stbs), sizeof(stbs)));
+    strDecodeRst = CEncrypt::getSingletonPtr()->aesDecode(strEncodeRst);
 
-    pEncodeRst = (char *)objEncode.Encode((const char*)(&stbs), sizeof(stbs), iOutLens);
-    iInLens = iOutLens;
-    pDecodeRst = (char *)objDecode.Decode((const char*)pEncodeRst, iInLens, iOutLens);
-
-    
-    CPPUNIT_ASSERT_EQUAL(sizeof(stbs) , iOutLens);
+    CPPUNIT_ASSERT_EQUAL(sizeof(stbs), strDecodeRst.size());
 
     char *pTmp = (char*)&stbs;
-    bool bCheckBuf = Q_CheckBuff(pTmp, pDecodeRst, iOutLens);
+    bool bCheckBuf = Q_CheckBuff(pTmp, strDecodeRst.c_str(), strDecodeRst.size());
 
     CPPUNIT_ASSERT(bCheckBuf);
 }
@@ -152,7 +119,6 @@ void CTestEncypt::Test_AES(void)
 void CTestEncypt::Test_RSA(void)
 {
     CRSAKey objKey1;
-    CRSAKey objKey2;
     int iRtn = Q_RTN_OK;
     unsigned short usKeyLens = 0;
 
@@ -165,42 +131,21 @@ void CTestEncypt::Test_RSA(void)
     Q_FileDel("Random.txt");
 
     iRtn = objKey1.creatKey(usKeyLens);
-    CPPUNIT_ASSERT_EQUAL(iRtn , Q_RTN_OK);
-    iRtn = objKey1.setAESKey("lqf110110");
-    CPPUNIT_ASSERT_EQUAL(iRtn , Q_RTN_OK);
-    iRtn = objKey2.setAESKey("lqf110110");
-    CPPUNIT_ASSERT_EQUAL(iRtn , Q_RTN_OK);
+    CPPUNIT_ASSERT_EQUAL(iRtn, Q_RTN_OK);
 
     iRtn = objKey1.savePrivateKey("PrivateKey.txt");
-    CPPUNIT_ASSERT_EQUAL(iRtn , Q_RTN_OK);
+    CPPUNIT_ASSERT_EQUAL(iRtn, Q_RTN_OK);
     iRtn = objKey1.savePublicKey("PublicKey.txt");
-    CPPUNIT_ASSERT_EQUAL(iRtn , Q_RTN_OK);
+    CPPUNIT_ASSERT_EQUAL(iRtn, Q_RTN_OK);
     iRtn = objKey1.saveRandom("Random.txt");
-    CPPUNIT_ASSERT_EQUAL(iRtn , Q_RTN_OK);
+    CPPUNIT_ASSERT_EQUAL(iRtn, Q_RTN_OK);
 
-    iRtn = objKey2.loadPublicKey("PublicKey.txt");
-    CPPUNIT_ASSERT_EQUAL(iRtn , Q_RTN_OK);
-    iRtn = objKey2.loadPrivateKey("PrivateKey.txt");
-    CPPUNIT_ASSERT_EQUAL(iRtn , Q_RTN_OK);
-    iRtn = objKey2.loadRandom("Random.txt");
-    CPPUNIT_ASSERT_EQUAL(iRtn , Q_RTN_OK);
+    iRtn = CEncrypt::getSingletonPtr()->setRSAKey("PublicKey.txt", "PrivateKey.txt", "Random.txt");
+    CPPUNIT_ASSERT_EQUAL(iRtn, Q_RTN_OK);
 
-    bool bCheckBuf = Q_CheckBuff((const char*)objKey1.getPrivateKey(), 
-        (const char*)objKey2.getPrivateKey(), sizeof(R_RSA_PRIVATE_KEY));
-    CPPUNIT_ASSERT_EQUAL(bCheckBuf , true);
-    bCheckBuf = Q_CheckBuff((const char*)objKey1.getPublicKey(), 
-        (const char*)objKey2.getPublicKey(), sizeof(R_RSA_PUBLIC_KEY));
-    CPPUNIT_ASSERT_EQUAL(bCheckBuf , true);
-    bCheckBuf = Q_CheckBuff((const char*)objKey1.getRandom(), 
-        (const char*)objKey2.getRandom(), sizeof(R_RANDOM_STRUCT));
-    CPPUNIT_ASSERT_EQUAL(bCheckBuf , true);
-
-    CRSA objRSAEncrypt;
-    CRSA objRSADecrypt;
-    size_t iEncryptOutLens = 0;
-    size_t iDecryptOutLens = 0;
-    char *pRtn1 = NULL;
-    char *pRtn2 = NULL;
+   
+    std::string strEncodeRst;
+    std::string strDecodeRst;
     std::string strTest = "°¢Ê¿´ó·ò %@$#!*()?";
     stTestRSA stRSATest;
 
@@ -216,18 +161,13 @@ void CTestEncypt::Test_RSA(void)
     }
     stRSATest.ac2[sizeof(stRSATest.ac2) - 1] = '\0';
 
-    objRSAEncrypt.setKey(&objKey2);
-    objRSADecrypt.setKey(&objKey2);
+    strEncodeRst = CEncrypt::getSingletonPtr()->rsaPubEncode(strTest);
+    strDecodeRst = CEncrypt::getSingletonPtr()->rsaPriDecode(strEncodeRst);
+    CPPUNIT_ASSERT_EQUAL(strTest, strDecodeRst);
 
-    pRtn1 = (char*)objRSAEncrypt.publicKeyEncrypt(strTest.c_str(), strTest.size(), iEncryptOutLens);
-    pRtn2 = (char*)objRSADecrypt.privateKeyDecrypt(pRtn1, iEncryptOutLens, iDecryptOutLens);
-    CPPUNIT_ASSERT_EQUAL(strTest.size() , iDecryptOutLens);
-    CPPUNIT_ASSERT_EQUAL(strTest , std::string(pRtn2, iDecryptOutLens));
-
-    pRtn1 = (char*)objRSAEncrypt.privateKeyEncrypt(strTest.c_str(), strTest.size(), iEncryptOutLens);
-    pRtn2 = (char*)objRSADecrypt.publicKeyDecrypt(pRtn1, iEncryptOutLens, iDecryptOutLens);
-    CPPUNIT_ASSERT_EQUAL(strTest.size() , iDecryptOutLens);
-    CPPUNIT_ASSERT_EQUAL(strTest , std::string(pRtn2, iDecryptOutLens));
+    strEncodeRst = CEncrypt::getSingletonPtr()->rsaPriEncode(strTest);
+    strDecodeRst = CEncrypt::getSingletonPtr()->rsaPubDecode(strEncodeRst);
+    CPPUNIT_ASSERT_EQUAL(strTest, strDecodeRst);
 
     int itmp = strTest.size();
     for (int i = 0; i < (128 - itmp); i++)
@@ -235,33 +175,41 @@ void CTestEncypt::Test_RSA(void)
         strTest += Q_ToString(i);
     }
 
-    pRtn1 = (char*)objRSAEncrypt.publicKeyEncrypt(strTest.c_str(), strTest.size(), iEncryptOutLens);
-    pRtn2 = (char*)objRSADecrypt.privateKeyDecrypt(pRtn1, iEncryptOutLens, iDecryptOutLens);
-    CPPUNIT_ASSERT_EQUAL(strTest.size() , iDecryptOutLens);
-    CPPUNIT_ASSERT_EQUAL(strTest , std::string(pRtn2, iDecryptOutLens));
+    strEncodeRst = CEncrypt::getSingletonPtr()->rsaPubEncode(strTest);
+    strDecodeRst = CEncrypt::getSingletonPtr()->rsaPriDecode(strEncodeRst);
+    CPPUNIT_ASSERT_EQUAL(strTest, strDecodeRst);
 
-    pRtn1 = (char*)objRSAEncrypt.privateKeyEncrypt(strTest.c_str(), strTest.size(), iEncryptOutLens);
-    pRtn2 = (char*)objRSADecrypt.publicKeyDecrypt(pRtn1, iEncryptOutLens, iDecryptOutLens);
-    CPPUNIT_ASSERT_EQUAL(strTest.size() , iDecryptOutLens);
-    CPPUNIT_ASSERT_EQUAL(strTest , std::string(pRtn2, iDecryptOutLens));
+    strEncodeRst = CEncrypt::getSingletonPtr()->rsaPriEncode(strTest);
+    strDecodeRst = CEncrypt::getSingletonPtr()->rsaPubDecode(strEncodeRst);
+    CPPUNIT_ASSERT_EQUAL(strTest, strDecodeRst);
 
-    pRtn1 = (char*)objRSAEncrypt.publicKeyEncrypt((const char*)(&stRSATest), sizeof(stRSATest), iEncryptOutLens);
-    pRtn2 = (char*)objRSADecrypt.privateKeyDecrypt(pRtn1, iEncryptOutLens, iDecryptOutLens);
+    strEncodeRst = CEncrypt::getSingletonPtr()->rsaPubEncode(std::string((const char*)(&stRSATest), sizeof(stRSATest)));
+    strDecodeRst = CEncrypt::getSingletonPtr()->rsaPriDecode(strEncodeRst);
+    CPPUNIT_ASSERT_EQUAL(sizeof(stTestRSA) , strDecodeRst.size());
 
-    CPPUNIT_ASSERT_EQUAL(sizeof(stTestRSA) , iDecryptOutLens);
-
-    stTestRSA *pstRSATmp = (stTestRSA *)pRtn2;
-    bCheckBuf = Q_CheckBuff((const char*)pstRSATmp, 
+    stTestRSA *pstRSATmp = (stTestRSA *)strDecodeRst.c_str();
+    bool bCheckBuf = Q_CheckBuff((const char*)pstRSATmp, 
         (const char*)(&stRSATest), sizeof(stTestRSA));
     CPPUNIT_ASSERT_EQUAL(bCheckBuf , true);
 
-    pRtn1 = (char*)objRSAEncrypt.privateKeyEncrypt((const char*)(&stRSATest), sizeof(stRSATest), iEncryptOutLens);
-    pRtn2 = (char*)objRSADecrypt.publicKeyDecrypt(pRtn1, iEncryptOutLens, iDecryptOutLens);
-    CPPUNIT_ASSERT_EQUAL(sizeof(stTestRSA) , iDecryptOutLens);
+    strEncodeRst = CEncrypt::getSingletonPtr()->rsaPriEncode(std::string((const char*)(&stRSATest), sizeof(stRSATest)));
+    strDecodeRst = CEncrypt::getSingletonPtr()->rsaPubDecode(strEncodeRst);
+    CPPUNIT_ASSERT_EQUAL(sizeof(stTestRSA) , strDecodeRst.size());
 
     pstRSATmp = NULL;
-    pstRSATmp = (stTestRSA *)pRtn2;
+    pstRSATmp = (stTestRSA *)strDecodeRst.c_str();
     bCheckBuf = Q_CheckBuff((const char*)pstRSATmp, 
         (const char*)(&stRSATest), sizeof(stTestRSA));
     CPPUNIT_ASSERT_EQUAL(bCheckBuf , true);
+}
+
+void CTestEncypt::Test_ZLIB(void)
+{
+    std::string strRtn;
+    std::string strSrc = "12334555aaaaa*&^&%²âÊÔaaaaaaavdsaaaaaaaaaaaaxvcxvxcvxcaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa!²âÊÔ&";
+
+    strRtn = CEncrypt::getSingletonPtr()->zlibEncode(strSrc);
+    strRtn = CEncrypt::getSingletonPtr()->zlibDecode(strRtn);
+
+    CPPUNIT_ASSERT_EQUAL(strRtn , strSrc);
 }

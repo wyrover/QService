@@ -3,7 +3,7 @@
 
 CTimer::CTimer(void)
 {
-#ifdef Q_OS_WIN32    
+#ifdef Q_OS_WIN    
     if (QueryPerformanceFrequency(&m_Freq))
     {
         m_bUseFrequency = true;
@@ -32,7 +32,7 @@ CTimer::CTimer(void)
 ************************************************************************/
 void CTimer::reStart(void)
 {
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
     if (m_bUseFrequency)
     {
         (void)QueryPerformanceCounter(&m_StartCount);
@@ -59,7 +59,7 @@ void CTimer::reStart(void)
 ************************************************************************/
 double CTimer::Elapsed(void)
 {
-#ifdef Q_OS_WIN32
+#ifdef Q_OS_WIN
     if (m_bUseFrequency)
     {
         (void)QueryPerformanceCounter(&m_EndCount);

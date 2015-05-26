@@ -6,7 +6,7 @@
 #include "afxcmn.h"
 #include "afxwin.h"
 #include "Worker.h"
-
+#include <string>
 
 // CTestToolDlg ¶Ô»°¿ò
 class CTestToolDlg : public CDialogEx
@@ -30,6 +30,7 @@ private:
     bool initLua(void);
 
 private:
+    CString m_strTemplateLua;
     struct lua_State *m_pLua;
     Q_SOCK m_Sock;
     CWorker m_objWorker;
@@ -63,4 +64,7 @@ public:
     afx_msg void OnBnClickedButton1();
     afx_msg void OnClose();
     CStatic m_CtrLuaMemory;
+    CButton m_CtrDebug;
+//    afx_msg void OnBnClickedCheck1();
+    afx_msg void OnBnClickedCheck1();
 };

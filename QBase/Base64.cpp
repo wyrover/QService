@@ -1,7 +1,21 @@
 
 #include "Base64.h"
 
-CBase64::CBase64(void) : m_objBuffer()
+#ifdef WIN32
+#pragma warning(disable:4267)
+#endif
+
+static const std::string base64_chars = 
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    "abcdefghijklmnopqrstuvwxyz"
+    "0123456789+/";
+
+static inline bool is_base64(unsigned char c) 
+{
+    return (isalnum(c) || (c == '+') || (c == '/'));
+}
+
+CBase64::CBase64(void)
 {
 }
 
@@ -20,58 +34,60 @@ CBase64::~CBase64(void)
 * Modification 
 * ......record :first program
 **************************************************/
-std::string CBase64::Encode(const unsigned char *pszData, const size_t &iLens) const
+std::string CBase64::Encode(const unsigned char *pszData, const size_t &iLens)
 {
-    //编码表
-    static const char EncodeTable[] = 
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    std::string ret;
+    int i = 0;
+    int j = 0;
+    unsigned char char_array_3[3];
+    unsigned char char_array_4[4];
+    size_t iTmp = iLens;
 
-    std::string strEncode;
-    unsigned char acTmp[4] = {0};
-
-    int iLineLength = Q_INIT_NUMBER;
-    for(size_t i = 0; i < (iLens / 3); i++)
+    while (iTmp--) 
     {
-        acTmp[1] = *pszData++;
-        acTmp[2] = *pszData++;
-        acTmp[3] = *pszData++;
+        char_array_3[i++] = *(pszData++);
 
-        strEncode += EncodeTable[acTmp[1] >> 2];
-        strEncode += EncodeTable[((acTmp[1] << 4) | (acTmp[2] >> 4)) & 0x3F];
-        strEncode += EncodeTable[((acTmp[2] << 2) | (acTmp[3] >> 6)) & 0x3F];
-        strEncode += EncodeTable[acTmp[3] & 0x3F];
-
-        if(iLineLength += 4, 76 == iLineLength) 
+        if (3 == i) 
         {
-            strEncode += "\r\n";
-            iLineLength = 0;
+            char_array_4[0] = (char_array_3[0] & 0xfc) >> 2;
+            char_array_4[1] = ((char_array_3[0] & 0x03) << 4) + ((char_array_3[1] & 0xf0) >> 4);
+            char_array_4[2] = ((char_array_3[1] & 0x0f) << 2) + ((char_array_3[2] & 0xc0) >> 6);
+            char_array_4[3] = char_array_3[2] & 0x3f;
+
+            for(i = 0; (i <4) ; i++)
+            {
+                ret += base64_chars[char_array_4[i]];
+            }
+
+            i = 0;
         }
     }
 
-    //对剩余数据进行编码
-    int Mod = iLens % 3;
-    if(1 == Mod)
+    if (i)
     {
-        acTmp[1] = *pszData++;
+        for(j = i; j < 3; j++)
+        {
+            char_array_3[j] = '\0';
+        }
 
-        strEncode += EncodeTable[(acTmp[1] & 0xFC) >> 2];
-        strEncode += EncodeTable[((acTmp[1] & 0x03) << 4)];
+        char_array_4[0] = (char_array_3[0] & 0xfc) >> 2;
+        char_array_4[1] = ((char_array_3[0] & 0x03) << 4) + ((char_array_3[1] & 0xf0) >> 4);
+        char_array_4[2] = ((char_array_3[1] & 0x0f) << 2) + ((char_array_3[2] & 0xc0) >> 6);
+        char_array_4[3] = char_array_3[2] & 0x3f;
 
-        strEncode += "==";
+        for (j = 0; (j < i + 1); j++)
+        {
+            ret += base64_chars[char_array_4[j]];
+        }
+
+        while((i++ < 3))
+        {
+            ret += '=';
+        }
+
     }
-    else if(2 == Mod)
-    {
-        acTmp[1] = *pszData++;
-        acTmp[2] = *pszData++;
 
-        strEncode += EncodeTable[(acTmp[1] & 0xFC) >> 2];
-        strEncode += EncodeTable[((acTmp[1] & 0x03) << 4) | ((acTmp[2] & 0xF0) >> 4)];
-        strEncode += EncodeTable[((acTmp[2] & 0x0F) << 2)];
-
-        strEncode += "=";
-    }
-
-    return strEncode;
+    return ret;
 }
 
 /*************************************************
@@ -85,68 +101,61 @@ std::string CBase64::Encode(const unsigned char *pszData, const size_t &iLens) c
 * Modification 
 * ......record :first program
 **************************************************/
-const char *CBase64::Decode(const char* pszData, const size_t &iLens, size_t &iOutLens)
+std::string CBase64::Decode(std::string &strEncoded)
 {
-    //解码表
-    static const char acDecodeTable[] =
+    size_t in_len = strEncoded.size();
+    int i = 0;
+    int j = 0;
+    int in_ = 0;
+    unsigned char char_array_4[4], char_array_3[3];
+    std::string ret;
+
+    while (in_len-- && ( strEncoded[in_] != '=') && is_base64(strEncoded[in_])) 
     {
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        62, // '+'
-        0, 0, 0,
-        63, // '/'
-        52, 53, 54, 55, 56, 57, 58, 59, 60, 61, // '0'-'9'
-        0, 0, 0, 0, 0, 0, 0,
-        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
-        13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, // 'A'-'Z'
-        0, 0, 0, 0, 0, 0,
-        26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38,
-        39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, // 'a'-'z'
-    };
+        char_array_4[i++] = strEncoded[in_]; 
+        in_++;
 
-    int iValue = Q_INIT_NUMBER;
-    size_t i = 0;    
-    char cVal = 0;
-    size_t iCharLens = sizeof(cVal);
-
-    m_objBuffer.reSet();
-    iOutLens = Q_INIT_NUMBER;
-
-    while (i < iLens)
-    {
-        if ((*pszData != '\r')
-            && (*pszData != '\n'))
+        if (i ==4) 
         {
-            iValue = acDecodeTable[(unsigned char)*pszData++] << 18;
-            iValue += acDecodeTable[(unsigned char)*pszData++] << 12;
-            cVal = (iValue & 0x00FF0000) >> 16;
-            m_objBuffer.pushBuff(&cVal, iCharLens);
-            iOutLens++;
-
-            if ('=' != *pszData)
+            for (i = 0; i <4; i++)
             {
-                iValue += acDecodeTable[(unsigned char)*pszData++] << 6;
-                cVal = (iValue & 0x0000FF00) >> 8;
-                m_objBuffer.pushBuff(&cVal, iCharLens);
-                iOutLens++;
-
-                if ('=' != *pszData)
-                {
-                    iValue += acDecodeTable[(unsigned char)*pszData++];
-                    cVal = iValue & 0x000000FF;
-                    m_objBuffer.pushBuff(&cVal, iCharLens);
-                    iOutLens++;
-                }
+                char_array_4[i] = base64_chars.find(char_array_4[i]);
             }
 
-            i += 4;
-        }
-        else// 回车换行,跳过
-        {
-            pszData++;
-            i++;
+            char_array_3[0] = (char_array_4[0] << 2) + ((char_array_4[1] & 0x30) >> 4);
+            char_array_3[1] = ((char_array_4[1] & 0xf) << 4) + ((char_array_4[2] & 0x3c) >> 2);
+            char_array_3[2] = ((char_array_4[2] & 0x3) << 6) + char_array_4[3];
+
+            for (i = 0; (i < 3); i++)
+            {
+                ret += char_array_3[i];
+            }
+
+            i = 0;
         }
     }
 
-    return m_objBuffer.getBuffer();
+    if (i) 
+    {
+        for (j = i; j <4; j++)
+        {
+            char_array_4[j] = 0;
+        }
+
+        for (j = 0; j <4; j++)
+        {
+            char_array_4[j] = base64_chars.find(char_array_4[j]);
+        }
+
+        char_array_3[0] = (char_array_4[0] << 2) + ((char_array_4[1] & 0x30) >> 4);
+        char_array_3[1] = ((char_array_4[1] & 0xf) << 4) + ((char_array_4[2] & 0x3c) >> 2);
+        char_array_3[2] = ((char_array_4[2] & 0x3) << 6) + char_array_4[3];
+
+        for (j = 0; (j < i - 1); j++) 
+        {
+            ret += char_array_3[j];
+        }
+    }
+
+    return ret;
 }

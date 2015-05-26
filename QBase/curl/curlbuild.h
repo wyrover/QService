@@ -108,12 +108,14 @@
 /*  DEFINITION OF THESE SYMBOLS SHALL NOT TAKE PLACE ANYWHERE ELSE  */
 /* ================================================================ */
 
-#include "Macros.h"
-
-#ifdef Q_OS_WIN32
-#include "curlbuild_win32.h"
+#ifdef WIN32
+    #include "curlbuild_win.h"
 #else
-#include "curlbuild_linux.h"
+    #if __x86_64__ || __ppc64__ || __x86_64 || __amd64__  || __amd64
+        #include "curlbuild_linux_x64.h"
+    #else
+        #include "curlbuild_linux_x86.h"
+    #endif
 #endif
 
 #endif /* __CURL_CURLBUILD_H */

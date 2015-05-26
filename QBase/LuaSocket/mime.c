@@ -13,6 +13,11 @@
 
 #include "mime.h"
 
+#ifdef WIN32
+#pragma warning(disable:4244)
+#pragma warning(disable:4267)
+#endif
+
 /*=========================================================================*\
 * Don't want to trust escape character constants
 \*=========================================================================*/
