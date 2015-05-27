@@ -4,7 +4,9 @@
 #include "TransMsg.h"
 #include "Reg2Lua.h"
 
-class CWorker : public CSockPairEvent
+class CWorker : public CSockPairEvent,
+    public CTask,
+    public CSingleton<CWorker>
 {
 public:
     CWorker(void);
@@ -12,6 +14,11 @@ public:
 
     bool initLua(void);
     void setTimer(unsigned int uiMS);
+
+    void Run(void)
+    {
+        Start();
+    };
 
     struct lua_State * getLua(void)
     {
@@ -25,7 +32,7 @@ public:
     //接口实现
 public:
     void onMainRead(CEventBuffer *pBuffer);//input
-    void onAssistRead(CEventBuffer *pBuffer);
+    void onAssistRead(CEventBuffer *){};
     bool onStartUp(void);
     void onStop(void);
 
@@ -33,8 +40,6 @@ public:
     static void workThreadTimerCB(evutil_socket_t, short event, void *arg);   
     static void mainReadCB(struct bufferevent *bev, void *arg);
     static void mainEventCB(struct bufferevent *bev, short event, void *arg);
-    static void assistReadCB(struct bufferevent *bev, void *arg);
-    static void assistEventCB(struct bufferevent *bev, short event, void *arg);
 
 private:
     void regMFCFunc(void);
@@ -47,5 +52,6 @@ private:
 };
 
 extern int g_iChecked;
+extern CQMutex g_objWorkerMutex;
 
 #endif//Q_WORKER_H_

@@ -52,6 +52,7 @@
 #include "Singleton.h"
 #include "Encrypt.h"
 #include "MailSender.h"
+#include "LockThis.h"
 
 using namespace pugi;
 

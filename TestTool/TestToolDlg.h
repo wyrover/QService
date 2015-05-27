@@ -7,6 +7,7 @@
 #include "afxwin.h"
 #include "Worker.h"
 #include <string>
+#include <list>
 
 // CTestToolDlg 对话框
 class CTestToolDlg : public CDialogEx
@@ -30,10 +31,11 @@ private:
     bool initLua(void);
 
 private:
+    std::string strCommand;
+    std::list<std::string> m_lstCommand;
     CString m_strTemplateLua;
     struct lua_State *m_pLua;
     Q_SOCK m_Sock;
-    CWorker m_objWorker;
     CReg2Lua m_objRegLua;
     CTcpParser m_objTcpParser;
     CLuaBinary m_objBinary;
@@ -44,6 +46,7 @@ protected:
 
 	// 生成的消息映射函数
 	virtual BOOL OnInitDialog();
+    afx_msg void OnTimer(UINT nIDEvent);
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
@@ -54,17 +57,18 @@ protected:
 public:
     CIPAddressCtrl m_CtrIp;
     CEdit m_CtrPort;
-    CEdit m_CtrLinkNum;
     CButton m_CtrLinkBtt;
     CEdit m_CtrInput;
     CEdit m_CtrOutPut;
     afx_msg void OnBnClickedButton2();
-    afx_msg void OnBnClickedButton4();
     afx_msg void OnBnClickedButton3();
     afx_msg void OnBnClickedButton1();
     afx_msg void OnClose();
     CStatic m_CtrLuaMemory;
     CButton m_CtrDebug;
-//    afx_msg void OnBnClickedCheck1();
     afx_msg void OnBnClickedCheck1();
+    CComboBox m_ctrComList;
+    afx_msg void OnCbnSelchangeCombo1();
+    afx_msg void OnBnClickedButton5();
+    CEdit m_CtrComName;
 };

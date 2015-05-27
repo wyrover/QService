@@ -6,9 +6,8 @@
 #include "TestTool.h"
 #include "TestToolDlg.h"
 #include "afxdialogex.h"
-#ifndef _WIN64
-//#include "../vld/vld.h"
-#endif
+
+#define TIMERID 1
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -26,23 +25,6 @@
 #pragma comment(lib, "QBase.lib")
 
 #define Q_CLINETTIMER 50
-
-class CWorkerTask : public CTask
-{
-public:
-    void setWorker(CWorker *pWorker)
-    {
-        m_pWorker = pWorker;
-    };
-
-    void Run(void)
-    {
-        m_pWorker->Start();
-    };
-
-private:
-    CWorker *m_pWorker;
-};
 
 
 // 用于应用程序“关于”菜单项的 CAboutDlg 对话框
@@ -91,28 +73,30 @@ void CTestToolDlg::DoDataExchange(CDataExchange* pDX)
     CDialogEx::DoDataExchange(pDX);
     DDX_Control(pDX, IDC_IPADDRESS1, m_CtrIp);
     DDX_Control(pDX, IDC_EDIT1, m_CtrPort);
-    DDX_Control(pDX, IDC_EDIT4, m_CtrLinkNum);
     DDX_Control(pDX, IDC_BUTTON2, m_CtrLinkBtt);
     DDX_Control(pDX, IDC_EDIT3, m_CtrInput);
     DDX_Control(pDX, IDC_EDIT2, m_CtrOutPut);
     DDX_Control(pDX, IDC_LUAMEMO, m_CtrLuaMemory);
     DDX_Control(pDX, IDC_CHECK1, m_CtrDebug);
+    DDX_Control(pDX, IDC_COMBO1, m_ctrComList);
+    DDX_Control(pDX, IDC_EDIT5, m_CtrComName);
 }
 
 BEGIN_MESSAGE_MAP(CTestToolDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+    ON_WM_TIMER()
     ON_MESSAGE(WM_MESSAGE_SHOWMFCMSG, ShowMsg)
     ON_MESSAGE(WM_MESSAGE_SHOWLUAMEMORY, ShowLuaMemo)
     ON_MESSAGE(WM_MESSAGE_ENBLELINKBUTT, EnableLinkButt)
     ON_BN_CLICKED(IDC_BUTTON2, &CTestToolDlg::OnBnClickedButton2)
-    ON_BN_CLICKED(IDC_BUTTON4, &CTestToolDlg::OnBnClickedButton4)
     ON_BN_CLICKED(IDC_BUTTON3, &CTestToolDlg::OnBnClickedButton3)
     ON_BN_CLICKED(IDC_BUTTON1, &CTestToolDlg::OnBnClickedButton1)
     ON_WM_CLOSE()
-//    ON_BN_CLICKED(IDC_CHECK1, &CTestToolDlg::OnBnClickedCheck1)
 ON_BN_CLICKED(IDC_CHECK1, &CTestToolDlg::OnBnClickedCheck1)
+ON_CBN_SELCHANGE(IDC_COMBO1, &CTestToolDlg::OnCbnSelchangeCombo1)
+ON_BN_CLICKED(IDC_BUTTON5, &CTestToolDlg::OnBnClickedButton5)
 END_MESSAGE_MAP()
 
 
@@ -160,40 +144,51 @@ BOOL CTestToolDlg::OnInitDialog()
     if (initLua())
     {
         m_objBinary.setLua(m_pLua);
-        m_objWorker.initLua();
-        m_objWorker.setTimer(Q_CLINETTIMER);
+        CWorker::getSingletonPtr()->initLua();
+        CWorker::getSingletonPtr()->setTimer(Q_CLINETTIMER);
 
-        CWorkerTask *pTask = new CWorkerTask();
-        pTask->setWorker(&m_objWorker);
         CThread objThread;    
-        objThread.Execute(pTask);
-    }    
+        objThread.Execute(CWorker::getSingletonPtr(), false);
+    }
+
+    m_CtrDebug.SetCheck(1);
+    g_iChecked = 1;
 
     m_CtrIp.SetWindowTextA("127.0.0.1");
     m_CtrPort.SetWindowTextA("15000");
-    m_CtrLinkNum.SetWindowTextA("1");
 
-    std::string strTemp = strProPath + "TestToolTemplate.lua";
-    FILE *pFile = fopen(strTemp.c_str(), "r");
+    strCommand = strProPath + "Command\\";
+    std::string strTmp = strCommand  + "Template.lua";
+    FILE *pFile = fopen(strTmp.c_str(), "r");
     if (NULL != pFile)
     {
         char acTmp[2048] = {0};
         fread(acTmp, 1, sizeof(acTmp) - 1, pFile);
         
         std::string strTmp(acTmp);
+        strTmp = Q_Replace(strTmp, "\r\n", "\n");
         strTmp = Q_Replace(strTmp, "\n", "\r\n");
         m_strTemplateLua = strTmp.c_str();
-        /*std::list<std::string>::iterator itTemplateLua;
-        std::list<std::string> lstTemplateLua;
-        Q_Split(std::string(acTmp), "\n", lstTemplateLua);
-
-        for (itTemplateLua = lstTemplateLua.begin(); lstTemplateLua.end() != itTemplateLua; itTemplateLua++)
-        {
-            m_strTemplateLua += itTemplateLua->c_str() + CString("\r\n");
-        }*/
+        m_CtrInput.SetWindowTextA(m_strTemplateLua);
 
         fclose(pFile);
     }
+
+    std::list<std::string> lstAllFile;
+    std::list<std::string>::iterator itFile;
+    std::string::size_type iPos = Q_INIT_NUMBER;
+
+    Q_GetAllFileName(strCommand.c_str(), lstAllFile);
+    for (itFile = lstAllFile.begin(); lstAllFile.end() != itFile; itFile++)
+    {
+        if (std::string("Template.lua") != *itFile)
+        {
+            m_ctrComList.AddString(itFile->c_str());
+            m_lstCommand.push_back(*itFile);
+        }
+    }
+    
+    SetTimer(TIMERID, 1000 * 60 * 2, NULL);
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -368,7 +363,7 @@ bool CTestToolDlg::initLua(void)
 
     try
     {
-        luabridge::getGlobal(m_pLua, "Lua_setMainParam")(this, &m_objBinary);
+        luabridge::getGlobal(m_pLua, "Lua_setMainParam")(this, &m_objBinary, CEncrypt::getSingletonPtr());
     }
     catch(luabridge::LuaException &e)
     {
@@ -423,50 +418,10 @@ void CTestToolDlg::OnBnClickedButton2()
 
     size_t iHeadLens = Q_INIT_NUMBER;
     const char *pszHead = m_objTcpParser.createHead(sizeof(m_Sock), iHeadLens);
-    m_objWorker.sendMainMsg(pszHead, iHeadLens);
-    m_objWorker.sendMainMsg((const char*)&m_Sock, sizeof(m_Sock));
+    CWorker::getSingletonPtr()->sendMainMsg(pszHead, iHeadLens);
+    CWorker::getSingletonPtr()->sendMainMsg((const char*)&m_Sock, sizeof(m_Sock));
 
     m_CtrLinkBtt.EnableWindow(FALSE);
-}
-
-//create
-void CTestToolDlg::OnBnClickedButton4()
-{
-    // TODO: 在此添加控件通知处理程序代码
-    CString cstrVal;
-    m_CtrLinkNum.GetWindowTextA(cstrVal);
-    if (0 == cstrVal.GetLength())
-    {
-        AfxMessageBox("请输入连接数.");
-        return;
-    }
-
-    unsigned int uiCount = atoi(cstrVal.GetBuffer());
-    if (uiCount <= 0)
-    {
-        AfxMessageBox("连接数必须大于0.");
-        return;
-    }
-
-    m_CtrIp.GetWindowTextA(cstrVal);
-    std::string strIp = cstrVal.GetBuffer();
-    m_CtrPort.GetWindowTextA(cstrVal);
-    unsigned short usPort = atoi(cstrVal.GetBuffer());
-
-    for (unsigned int i = 0; i < uiCount; i++)
-    {
-        evutil_socket_t sock = initSock(strIp.c_str(), usPort);
-        if (INVALID_SOCKET == sock)
-        {
-            AfxMessageBox("创建连接失败.");
-            return;
-        }
-
-        size_t iHeadLens = Q_INIT_NUMBER;
-        const char *pszHead = m_objTcpParser.createHead(sizeof(sock), iHeadLens);
-        m_objWorker.sendAssistMsg(pszHead, iHeadLens);
-        m_objWorker.sendAssistMsg((const char*)&sock, sizeof(sock));
-    }
 }
 
 //send
@@ -498,7 +453,29 @@ void CTestToolDlg::OnBnClickedButton3()
     //执行lua
     try
     {
+        CLockThis objLock(&g_objWorkerMutex);
         luabridge::getGlobal(m_pLua, "Lua_createMsg")(strMsg, bDebug);
+    }
+    catch(luabridge::LuaException &e)
+    {
+        showMfcMsg(e.what(), strlen(e.what()));
+
+        return;
+    }
+}
+
+void CTestToolDlg::OnTimer(UINT nIDEvent)
+{
+    if (1 != g_iChecked)
+    {
+        return;
+    }
+
+    std::string strMsg = m_strTemplateLua;
+    try
+    {
+        CLockThis objLock(&g_objWorkerMutex);
+        luabridge::getGlobal(m_pLua, "Lua_createMsg")(strMsg, false);
     }
     catch(luabridge::LuaException &e)
     {
@@ -519,7 +496,7 @@ void CTestToolDlg::OnBnClickedButton1()
 void CTestToolDlg::OnClose()
 {
     // TODO: 在此添加消息处理程序代码和/或调用默认值
-    m_objWorker.Stop();
+    CWorker::getSingletonPtr()->Stop();
     if (NULL != m_pLua)
     {
         lua_close(m_pLua);
@@ -541,5 +518,85 @@ void CTestToolDlg::OnBnClickedCheck1()
     else
     {
         m_CtrInput.SetWindowTextA("");
+    }
+}
+
+
+void CTestToolDlg::OnCbnSelchangeCombo1()
+{
+    // TODO: 在此添加控件通知处理程序代码
+    CString cstrVal;
+
+    m_ctrComList.GetWindowTextA(cstrVal);
+    if (0 == cstrVal.GetLength())
+    {
+        return;
+    }
+
+    m_CtrComName.SetWindowTextA(cstrVal);
+
+    std::string strTmp = strCommand  + cstrVal.GetBuffer();
+    FILE *pFile = fopen(strTmp.c_str(), "r");
+    if (NULL != pFile)
+    {
+        char acTmp[2048] = {0};
+        fread(acTmp, 1, sizeof(acTmp) - 1, pFile);
+
+        std::string strTmp(acTmp);
+        strTmp = Q_Replace(strTmp, "\r\n", "\n");
+        strTmp = Q_Replace(strTmp, "\n", "\r\n");
+        m_CtrInput.SetWindowTextA(strTmp.c_str());
+
+        fclose(pFile);
+    }
+}
+
+
+void CTestToolDlg::OnBnClickedButton5()
+{
+    // TODO: 在此添加控件通知处理程序代码
+    CString cstrVal;
+
+    m_CtrComName.GetWindowTextA(cstrVal);
+    if (0 == cstrVal.GetLength())
+    {
+        AfxMessageBox("command name is empty.");
+
+        return;
+    }
+    std::string strName = cstrVal.GetBuffer();
+
+    m_CtrInput.GetWindowTextA(cstrVal);
+    if (0 == cstrVal.GetLength())
+    {
+        AfxMessageBox("command message is empty.");
+
+        return;
+    }
+    std::string strMsg = cstrVal.GetBuffer();
+
+    bool bHave = false;
+    std::list<std::string>::iterator itFile;
+    for (itFile = m_lstCommand.begin(); m_lstCommand.end() != itFile; itFile++)
+    {
+        if (*itFile == strName)
+        {
+            bHave = true;
+            break;
+        }
+    }
+
+    if (!bHave)
+    {
+        m_ctrComList.AddString(strName.c_str());
+    }
+
+    std::string strTmp = strCommand  + strName;
+    FILE *pFile = fopen(strTmp.c_str(), "w");
+    if (NULL != pFile)
+    {
+        fwrite(strMsg.c_str(), 1, strMsg.size(), pFile);
+
+        fclose(pFile);
     }
 }

@@ -21,7 +21,7 @@ end
 if not g_objBinary then
     g_objBinary = nil
 end
---¼Ó½âÂë
+--±à½âÂë
 if not g_objEncrypt then
     g_objEncrypt = nil
 end

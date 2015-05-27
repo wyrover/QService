@@ -1,6 +1,9 @@
 #include "Worker.h"
 
 int g_iChecked = 0;
+CQMutex g_objWorkerMutex;
+SINGLETON_INIT(CWorker)
+CWorker m_objWorker;
 
 CWorker::CWorker(void) : m_pEvent(NULL), m_pLua(NULL)
 {
@@ -242,154 +245,6 @@ void CWorker::onMainRead(CEventBuffer *pBuffer)
         pSession = CSessionManager::getSingletonPtr()->getSession(pBev);
         pSession->setType(STYPE_TCPCLIENT);
         pSession->setStatus(SESSSTATUS_LINKED);
-
-        try
-        {
-            luabridge::getGlobal(getLua(), "Lua_onMainConn")(pSession);
-        }
-        catch(luabridge::LuaException &e)
-        {
-            showMfcMsg(e.what(), strlen(e.what()));
-        }
-    }
-}
-
-void CWorker::assistReadCB(struct bufferevent *bev, void *arg)
-{
-    CWorker *pWorker = (CWorker*)arg;
-    CSessionManager *pSessionManager = CSessionManager::getSingletonPtr();
-    CSession *pSession = pSessionManager->getSession(bev);
-    CTcpParser *pParser = pWorker->getTcpParser();
-    if (NULL == pSession)
-    {
-        Q_Printf("%s", "get session error.");
-        bufferevent_free(bev);
-
-        return;
-    }
-
-    pSessionManager->setCurSession(pSession);
-    while(true)
-    {
-        const char *pszBuf = pParser->parsePack(pSession->getBuffer());
-        if (NULL == pszBuf)
-        {
-            break;
-        }
-
-        pSessionManager->getBinary()->setBuffer(pszBuf, pParser->getBufLens());
-
-        try
-        {
-            luabridge::getGlobal(pWorker->getLua(), "Lua_onAssistRead")();
-        }
-        catch(luabridge::LuaException &e)
-        {
-            showMfcMsg(e.what(), strlen(e.what()));
-        }
-
-        if (SESSSTATUS_CLOSED != pSession->getStatus())
-        {
-            (void)pSession->getBuffer()->delBuffer(pParser->getParsedLens());
-        }
-        else
-        {
-            break;
-        }
-    }
-    pSessionManager->setCurSession(NULL);
-}
-
-void CWorker::assistEventCB(struct bufferevent *bev, short event, void *arg)
-{
-    CWorker *pWorker = (CWorker*)arg;
-    CSessionManager *pSessionManager = CSessionManager::getSingletonPtr();
-    CSession *pSession = pSessionManager->getSession(bev);
-    if (NULL == pSession)
-    {
-        bufferevent_free(bev);
-
-        return;
-    }
-
-    try
-    {
-        luabridge::getGlobal(pWorker->getLua(), "Lua_onAssistClose")(pSession);
-    }
-    catch(luabridge::LuaException &e)
-    {
-        showMfcMsg(e.what(), strlen(e.what()));
-    }
-
-    unsigned int uiSock = pSession->getBuffer()->getFD();
-    pSessionManager->dellSession(bev);
-    bufferevent_free(bev);
-
-    std::string strMsg = Q_FormatStr("client %d closed.", uiSock);
-    showMfcMsg(strMsg.c_str(), strMsg.size());
-}
-
-void CWorker::onAssistRead(CEventBuffer *pBuffer)
-{
-    struct bufferevent *pBev = NULL;
-    CSession *pSession = NULL;
-
-    while(true)
-    {
-        const char *pszBuf = m_objTcpParser.parsePack(pBuffer);
-        if (NULL == pszBuf)
-        {
-            break;
-        }
-
-        evutil_socket_t sock = *((evutil_socket_t*)pszBuf);
-        pBuffer->delBuffer(m_objTcpParser.getParsedLens());
-        if (Q_INVALID_SOCK == sock)
-        {
-            continue;
-        }
-
-        (void)evutil_make_socket_nonblocking(sock);
-        pBev = bufferevent_socket_new(getBase(), sock, BEV_OPT_CLOSE_ON_FREE);
-        if (NULL == pBev)
-        {
-            enableLinkButt();
-            evutil_closesocket(sock);
-            continue;
-        }
-        if (Q_RTN_OK != CSessionManager::getSingletonPtr()->addSession(pBev))
-        {
-            enableLinkButt();
-            evutil_closesocket(sock);
-            bufferevent_free(pBev);
-
-            continue;
-        }
-
-        bufferevent_setcb(pBev, assistReadCB, NULL, assistEventCB, 
-            this);
-        if (Q_RTN_OK != bufferevent_enable(pBev, EV_READ | EV_WRITE))
-        {
-            enableLinkButt();
-            CSessionManager::getSingletonPtr()->dellSession(pBev);
-            evutil_closesocket(sock);
-            bufferevent_free(pBev);
-
-            continue;
-        }
-
-        pSession = CSessionManager::getSingletonPtr()->getSession(pBev);
-        pSession->setType(STYPE_TCPCLIENT);
-        pSession->setStatus(SESSSTATUS_LINKED);
-
-        try
-        {
-            luabridge::getGlobal(getLua(), "Lua_onAssistConn")(pSession);
-        }
-        catch(luabridge::LuaException &e)
-        {
-            showMfcMsg(e.what(), strlen(e.what()));
-        }
     }
 }
 
@@ -398,7 +253,7 @@ bool CWorker::onStartUp(void)
     try
     {
         luabridge::getGlobal(getLua(), "Lua_onStartUp")(CSessionManager::getSingletonPtr(), 
-            CSessionManager::getSingletonPtr()->getBinary());
+            CSessionManager::getSingletonPtr()->getBinary(), CEncrypt::getSingletonPtr());
     }
     catch(luabridge::LuaException &e)
     {

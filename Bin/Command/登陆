@@ -1,0 +1,9 @@
+local iProtocol = Protocol.CS_Login --操作码
+local tReqMsg = {}--消息
+--这里填充消息
+tReqMsg.strUserName = "lqf"
+tReqMsg.strPSW = "123456"
+tReqMsg.strParam = "param"
+
+createMsg(iProtocol, tReqMsg)
+g_objToolDlg:sendBMainMsg()
