@@ -83,6 +83,7 @@ void CWorker::workThreadTimerCB(evutil_socket_t, short event, void *arg)
     try
     {
         CSessionManager::getSingletonPtr()->addCount();
+        CLockThis objLock(&g_objWorkerMutex);
         luabridge::getGlobal(pWorker->getLua(), "Lua_onTime")();
     }
     catch(luabridge::LuaException &e)
@@ -156,6 +157,7 @@ void CWorker::mainReadCB(struct bufferevent *bev, void *arg)
 
         try
         {
+            CLockThis objLock(&g_objWorkerMutex);
             luabridge::getGlobal(pWorker->getLua(), "Lua_onMainRead")();
         }
         catch(luabridge::LuaException &e)
@@ -252,6 +254,7 @@ bool CWorker::onStartUp(void)
 {
     try
     {
+        CLockThis objLock(&g_objWorkerMutex);
         luabridge::getGlobal(getLua(), "Lua_onStartUp")(CSessionManager::getSingletonPtr(), 
             CSessionManager::getSingletonPtr()->getBinary(), CEncrypt::getSingletonPtr());
     }
@@ -269,6 +272,7 @@ void CWorker::onStop(void)
 {
     try
     {
+        CLockThis objLock(&g_objWorkerMutex);
         luabridge::getGlobal(getLua(), "Lua_onStop")();
     }
     catch(luabridge::LuaException &e)
