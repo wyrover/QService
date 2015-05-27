@@ -1,0 +1,10 @@
+local tFile = {} --为空加载所有
+
+if table.empty(tFile) then
+    reLoad()
+else
+    for _, val in pairs(tFile) do
+         reLoad(val)
+    end
+end
+

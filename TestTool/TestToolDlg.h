@@ -29,16 +29,22 @@ public:
 private:
     Q_SOCK initSock(const char *pszIp, const unsigned short usPort);
     bool initLua(void);
+    int initEncrypt(void);
+    int initAESKey(void);
+    int initRSAKey(void);
 
 private:
-    std::string strCommand;
+    std::string m_strCommand;
+    std::string m_strDebugComm;
     std::list<std::string> m_lstCommand;
+    std::list<std::string> m_lstDebugComm;
     CString m_strTemplateLua;
     struct lua_State *m_pLua;
     Q_SOCK m_Sock;
     CReg2Lua m_objRegLua;
     CTcpParser m_objTcpParser;
     CLuaBinary m_objBinary;
+    WorkerCommand m_stCommand;
 
 // й╣ож
 protected:
@@ -71,4 +77,7 @@ public:
     afx_msg void OnCbnSelchangeCombo1();
     afx_msg void OnBnClickedButton5();
     CEdit m_CtrComName;
+    CButton m_CtrSave;
+    afx_msg void OnBnClickedButton4();
+    CButton m_CtrClose;
 };

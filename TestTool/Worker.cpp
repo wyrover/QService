@@ -250,6 +250,26 @@ void CWorker::onMainRead(CEventBuffer *pBuffer)
     }
 }
 
+void CWorker::onAssistRead(CEventBuffer *pEventBuffer)
+{
+    WorkerCommand stCommand;
+    while(Q_GetEventValue<WorkerCommand>(pEventBuffer, stCommand))
+    {
+        switch(stCommand.emType)
+        {
+        case WCOMM_CLOSEMAIN:
+            {
+                CSessionManager::getSingletonPtr()->closeLinkByID(stCommand.sock);
+                enableLinkButt();
+            }
+            break;
+
+        default:
+            break;
+        }
+    }
+}
+
 bool CWorker::onStartUp(void)
 {
     try
@@ -270,15 +290,5 @@ bool CWorker::onStartUp(void)
 
 void CWorker::onStop(void)
 {
-    try
-    {
-        CLockThis objLock(&g_objWorkerMutex);
-        luabridge::getGlobal(getLua(), "Lua_onStop")();
-    }
-    catch(luabridge::LuaException &e)
-    {
-        showMfcMsg(e.what(), strlen(e.what()));
-    }
-
     setRunStatus(RUNSTATUS_STOPPED);
 }

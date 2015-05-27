@@ -9,6 +9,12 @@
 
 #define TIMERID 1
 
+#define CONFIG_FOLDER      "config"
+#define CONFIG_AES         "config_aes.xml"
+#define CONFIG_RSA         "config_rsa.xml"
+
+#define RSAKEY_FOLDER      "rsakeys"
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -80,6 +86,8 @@ void CTestToolDlg::DoDataExchange(CDataExchange* pDX)
     DDX_Control(pDX, IDC_CHECK1, m_CtrDebug);
     DDX_Control(pDX, IDC_COMBO1, m_ctrComList);
     DDX_Control(pDX, IDC_EDIT5, m_CtrComName);
+    DDX_Control(pDX, IDC_BUTTON5, m_CtrSave);
+    DDX_Control(pDX, IDC_BUTTON4, m_CtrClose);
 }
 
 BEGIN_MESSAGE_MAP(CTestToolDlg, CDialogEx)
@@ -97,6 +105,7 @@ BEGIN_MESSAGE_MAP(CTestToolDlg, CDialogEx)
 ON_BN_CLICKED(IDC_CHECK1, &CTestToolDlg::OnBnClickedCheck1)
 ON_CBN_SELCHANGE(IDC_COMBO1, &CTestToolDlg::OnCbnSelchangeCombo1)
 ON_BN_CLICKED(IDC_BUTTON5, &CTestToolDlg::OnBnClickedButton5)
+ON_BN_CLICKED(IDC_BUTTON4, &CTestToolDlg::OnBnClickedButton4)
 END_MESSAGE_MAP()
 
 
@@ -141,7 +150,8 @@ BOOL CTestToolDlg::OnInitDialog()
     g_hWnd = m_hWnd;
     m_Sock = Q_INVALID_SOCK;
 
-    if (initLua())
+    if (initLua()
+        && (Q_RTN_OK == initEncrypt()))
     {
         m_objBinary.setLua(m_pLua);
         CWorker::getSingletonPtr()->initLua();
@@ -153,12 +163,14 @@ BOOL CTestToolDlg::OnInitDialog()
 
     m_CtrDebug.SetCheck(1);
     g_iChecked = 1;
+    this->SetWindowTextA("TestTool -- Simulation");
 
     m_CtrIp.SetWindowTextA("127.0.0.1");
     m_CtrPort.SetWindowTextA("15000");
+    m_CtrClose.EnableWindow(FALSE);
 
-    strCommand = strProPath + "Command\\";
-    std::string strTmp = strCommand  + "Template.lua";
+    m_strCommand = strProPath + "Command\\";
+    std::string strTmp = m_strCommand  + "Template.lua";
     FILE *pFile = fopen(strTmp.c_str(), "r");
     if (NULL != pFile)
     {
@@ -176,9 +188,7 @@ BOOL CTestToolDlg::OnInitDialog()
 
     std::list<std::string> lstAllFile;
     std::list<std::string>::iterator itFile;
-    std::string::size_type iPos = Q_INIT_NUMBER;
-
-    Q_GetAllFileName(strCommand.c_str(), lstAllFile);
+    Q_GetAllFileName(m_strCommand.c_str(), lstAllFile);
     for (itFile = lstAllFile.begin(); lstAllFile.end() != itFile; itFile++)
     {
         if (std::string("Template.lua") != *itFile)
@@ -186,6 +196,14 @@ BOOL CTestToolDlg::OnInitDialog()
             m_ctrComList.AddString(itFile->c_str());
             m_lstCommand.push_back(*itFile);
         }
+    }
+
+    m_strDebugComm = strProPath + "DebugComm\\";
+    lstAllFile.clear();
+    Q_GetAllFileName(m_strDebugComm.c_str(), lstAllFile);
+    for (itFile = lstAllFile.begin(); lstAllFile.end() != itFile; itFile++)
+    {
+        m_lstDebugComm.push_back(*itFile);
     }
     
     SetTimer(TIMERID, 1000 * 60 * 2, NULL);
@@ -286,6 +304,7 @@ LRESULT CTestToolDlg::ShowLuaMemo(WPARAM wParam, LPARAM lParam)
 LRESULT CTestToolDlg::EnableLinkButt(WPARAM wParam, LPARAM lParam)
 {
     m_CtrLinkBtt.EnableWindow(TRUE);
+    m_CtrClose.EnableWindow(FALSE);
 
     return 0;
 }
@@ -319,6 +338,110 @@ Q_SOCK CTestToolDlg::initSock(const char *pszIp, const unsigned short usPort)
     (void)setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, (char *)&iKeepAlive, sizeof(iKeepAlive));
 
     return sock;
+}
+
+int CTestToolDlg::initAESKey(void)
+{
+    xml_node objXmlNode;
+    xml_document objXmlDoc;
+    xml_parse_result objXmlResult;
+
+    std::string strConfig = Q_FormatStr("%s%s%s%s", 
+        g_acModulPath, CONFIG_FOLDER, Q_PATH_SEPARATOR, CONFIG_AES);
+
+    objXmlResult = objXmlDoc.load_file(strConfig.c_str());
+    if (status_ok != objXmlResult.status)
+    {
+        Q_Printf("%s", "load aes config error.");
+
+        return Q_RTN_FAILE;
+    }
+
+    objXmlNode = objXmlDoc.child("QServer").child("AES");
+    if (objXmlNode.empty())
+    {
+        return Q_RTN_OK;
+    }
+
+    std::string strKey = objXmlNode.child_value("Key");
+    unsigned short usType = (unsigned short)atoi(objXmlNode.child_value("KeyType"));
+
+    CEncrypt::getSingletonPtr()->setAESKey(strKey.c_str(), usType);
+
+    return Q_RTN_OK;
+}
+
+int CTestToolDlg::initRSAKey(void)
+{
+    xml_node objXmlNode;
+    xml_document objXmlDoc;
+    xml_parse_result objXmlResult;
+
+    std::string strConfig = Q_FormatStr("%s%s%s%s", 
+        g_acModulPath, CONFIG_FOLDER, Q_PATH_SEPARATOR, CONFIG_RSA);
+
+    objXmlResult = objXmlDoc.load_file(strConfig.c_str());
+    if (status_ok != objXmlResult.status)
+    {
+        Q_Printf("%s", "load rsa config error.");
+
+        return Q_RTN_FAILE;
+    }
+
+    objXmlNode = objXmlDoc.child("QServer").child("RSA");
+    if (objXmlNode.empty())
+    {
+        return Q_RTN_OK;
+    }
+
+    std::string strPub = Q_FormatStr("%s%s%s%s", 
+        g_acModulPath, RSAKEY_FOLDER, Q_PATH_SEPARATOR, objXmlNode.child_value("PubKey"));
+    std::string strPri = Q_FormatStr("%s%s%s%s", 
+        g_acModulPath, RSAKEY_FOLDER, Q_PATH_SEPARATOR, objXmlNode.child_value("PriKey"));
+    std::string strRand = Q_FormatStr("%s%s%s%s", 
+        g_acModulPath, RSAKEY_FOLDER, Q_PATH_SEPARATOR, objXmlNode.child_value("RandKey"));
+
+    if ((Q_RTN_OK != Q_FileExist(strPub.c_str()))
+        || (Q_RTN_OK != Q_FileExist(strPri.c_str()))
+        || (Q_RTN_OK != Q_FileExist(strRand.c_str())))
+    {
+        CRSAKey objKey;
+
+        if (Q_RTN_OK != objKey.creatKey(512))
+        {
+            Q_Printf("%s", "create rsa key error.");
+
+            return Q_RTN_FAILE;
+        }
+
+        if ((Q_RTN_OK != objKey.savePublicKey(strPub.c_str())
+            || (Q_RTN_OK != objKey.savePrivateKey(strPri.c_str()))
+            || (Q_RTN_OK != objKey.saveRandom(strRand.c_str()))))
+        {
+            Q_Printf("%s", "save rsa key error.");
+
+            return Q_RTN_FAILE;
+        }
+    }
+
+    if (Q_RTN_OK != CEncrypt::getSingletonPtr()->setRSAKey(strPub.c_str(), strPri.c_str(), strRand.c_str()))
+    {
+        Q_Printf("%s", "load rsa key error.");
+
+        return Q_RTN_FAILE;
+    }
+
+    return Q_RTN_OK;
+}
+
+int CTestToolDlg::initEncrypt(void)
+{
+    if (Q_RTN_OK != initAESKey())
+    {
+        return Q_RTN_FAILE;
+    }    
+
+    return initRSAKey();
 }
 
 bool CTestToolDlg::initLua(void)
@@ -422,6 +545,7 @@ void CTestToolDlg::OnBnClickedButton2()
     CWorker::getSingletonPtr()->sendMainMsg((const char*)&m_Sock, sizeof(m_Sock));
 
     m_CtrLinkBtt.EnableWindow(FALSE);
+    m_CtrClose.EnableWindow(TRUE);
 }
 
 //send
@@ -511,13 +635,28 @@ void CTestToolDlg::OnBnClickedCheck1()
 {
     // TODO: 在此添加控件通知处理程序代码
     g_iChecked = m_CtrDebug.GetCheck();
+    std::list<std::string>::iterator itComm;
+    m_ctrComList.ResetContent();
+
+    std::list<std::string> *pComm = NULL;
     if (1 == g_iChecked)
     {
+        pComm = &m_lstCommand;
+        this->SetWindowTextA("TestTool -- Simulation");
         m_CtrInput.SetWindowTextA(m_strTemplateLua);
+        m_CtrComName.SetWindowTextA("");
     }
     else
     {
+        pComm = &m_lstDebugComm;
+        this->SetWindowTextA("TestTool -- Debug");
         m_CtrInput.SetWindowTextA("");
+        m_CtrComName.SetWindowTextA("");
+    }
+
+    for (itComm = pComm->begin(); pComm->end() != itComm; itComm++)
+    {
+        m_ctrComList.AddString(itComm->c_str());
     }
 }
 
@@ -533,9 +672,14 @@ void CTestToolDlg::OnCbnSelchangeCombo1()
         return;
     }
 
+    std::string strTmp = m_strCommand  + cstrVal.GetBuffer();
+    if (1 != g_iChecked)
+    {
+        strTmp = m_strDebugComm + cstrVal.GetBuffer();
+    }
+
     m_CtrComName.SetWindowTextA(cstrVal);
 
-    std::string strTmp = strCommand  + cstrVal.GetBuffer();
     FILE *pFile = fopen(strTmp.c_str(), "r");
     if (NULL != pFile)
     {
@@ -551,7 +695,7 @@ void CTestToolDlg::OnCbnSelchangeCombo1()
     }
 }
 
-
+//save
 void CTestToolDlg::OnBnClickedButton5()
 {
     // TODO: 在此添加控件通知处理程序代码
@@ -575,9 +719,23 @@ void CTestToolDlg::OnBnClickedButton5()
     }
     std::string strMsg = cstrVal.GetBuffer();
 
+    std::string *pPath = NULL;
+    std::list<std::string> *pComm = NULL;
+
+    if (1 == g_iChecked)
+    {
+        pComm = &m_lstCommand;
+        pPath = &m_strCommand;
+    }
+    else
+    {
+        pComm = &m_lstDebugComm;
+        pPath = &m_strDebugComm;
+    }
+    
     bool bHave = false;
     std::list<std::string>::iterator itFile;
-    for (itFile = m_lstCommand.begin(); m_lstCommand.end() != itFile; itFile++)
+    for (itFile = pComm->begin(); pComm->end() != itFile; itFile++)
     {
         if (*itFile == strName)
         {
@@ -589,9 +747,18 @@ void CTestToolDlg::OnBnClickedButton5()
     if (!bHave)
     {
         m_ctrComList.AddString(strName.c_str());
+        pComm->push_back(strName);
+    }
+    else
+    {
+        std::string strMsg = Q_FormatStr("file %s already exist, are you sure rewrite it?", strName.c_str());
+        if (IDOK != MessageBox(strMsg.c_str(), "", MB_OKCANCEL))
+        {
+            return;
+        }        
     }
 
-    std::string strTmp = strCommand  + strName;
+    std::string strTmp = *pPath  + strName;
     FILE *pFile = fopen(strTmp.c_str(), "w");
     if (NULL != pFile)
     {
@@ -599,4 +766,19 @@ void CTestToolDlg::OnBnClickedButton5()
 
         fclose(pFile);
     }
+}
+
+
+void CTestToolDlg::OnBnClickedButton4()
+{
+    // TODO: 在此添加控件通知处理程序代码
+    if (Q_INVALID_SOCK == m_Sock)
+    {
+        return;
+    }
+
+    m_stCommand.emType = WCOMM_CLOSEMAIN;
+    m_stCommand.sock = m_Sock;
+
+    CWorker::getSingletonPtr()->sendAssistMsg((const char*)(&m_stCommand), sizeof(m_stCommand));
 }

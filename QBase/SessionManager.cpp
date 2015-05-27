@@ -184,7 +184,10 @@ void CSessionManager::closeLinkByID(const int iID)
         return;
     }
 
-    m_pInterface->onSockClose(itSession->second);
+    if (NULL != m_pInterface)
+    {
+        m_pInterface->onSockClose(itSession->second);
+    }    
 
     switch(itSession->second->getType())
     {

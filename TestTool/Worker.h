@@ -32,7 +32,7 @@ public:
     //接口实现
 public:
     void onMainRead(CEventBuffer *pBuffer);//input
-    void onAssistRead(CEventBuffer *){};
+    void onAssistRead(CEventBuffer *);
     bool onStartUp(void);
     void onStop(void);
 
@@ -53,5 +53,16 @@ private:
 
 extern int g_iChecked;
 extern CQMutex g_objWorkerMutex;
+
+enum WorkerCommandType
+{
+    WCOMM_CLOSEMAIN = 0,
+};
+
+struct WorkerCommand
+{
+    WorkerCommandType emType;
+    Q_SOCK sock;
+};
 
 #endif//Q_WORKER_H_

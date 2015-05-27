@@ -31,11 +31,6 @@ function Lua_onStartUp(objSessionManager, objBinary, objEncrypt)
     onGameEvent(GameEvent.Started)--这里读取配置文件完成后做初始化操作
 end
 
---退出
-function Lua_onStop()
-    onGameEvent(GameEvent.ShutDown)
-end
-
 --主连接
 function Lua_onMainRead()
     if not getChecked() then
