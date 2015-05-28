@@ -4,23 +4,11 @@
     <Filter Include="Config">
       <UniqueIdentifier>{5898aaee-4557-4207-9e27-af7cd05052cd}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Log">
-      <UniqueIdentifier>{b3df48a5-bdca-4ac2-b522-16c115184e62}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Base">
       <UniqueIdentifier>{f9e9e308-f9f1-45b8-a080-d3d711659b03}</UniqueIdentifier>
     </Filter>
-    <Filter Include="File">
-      <UniqueIdentifier>{2d933d4f-c040-4e56-961c-36b99d6194a5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="String">
-      <UniqueIdentifier>{cd1f3bc0-240f-4192-ae93-4c3327275d88}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Encrypt">
       <UniqueIdentifier>{eb462928-4c57-4e40-a854-a6cf3c0e9229}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Xml">
-      <UniqueIdentifier>{f105553c-0760-42a5-ba63-508fdead5be6}</UniqueIdentifier>
     </Filter>
     <Filter Include="DataBase">
       <UniqueIdentifier>{308debb4-45c8-4962-90ca-f71013c9ce31}</UniqueIdentifier>
@@ -67,9 +55,6 @@
     <Filter Include="Lua\LuaBridge\detail">
       <UniqueIdentifier>{7c7bb3c1-1a41-4d2e-bd46-f158a2e8ed1c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="String\uchardet">
-      <UniqueIdentifier>{fd4f9b32-6eb8-4a84-aae0-be5e5d4fcf6a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Lua\lua5.2">
       <UniqueIdentifier>{de1fdfaa-7eab-48f9-8388-c871adab3338}</UniqueIdentifier>
     </Filter>
@@ -94,26 +79,11 @@
     <Filter Include="Service">
       <UniqueIdentifier>{404438f3-ebef-4875-892f-fc55bf3556c5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Service\Session">
-      <UniqueIdentifier>{253f895c-a984-435e-9251-e88f62fd05df}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="HttpClient">
-      <UniqueIdentifier>{99521b8f-68cc-4813-88e9-f359559c738a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Service\Worker">
-      <UniqueIdentifier>{b96add17-3e73-4002-a1ad-6b525a6de1f9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Lua\LuaSocket">
       <UniqueIdentifier>{1de284e5-f58f-4bf7-98bc-996529a73b25}</UniqueIdentifier>
     </Filter>
     <Filter Include="Base\NetWork\Protocol">
       <UniqueIdentifier>{02632629-b64f-475b-bd79-cde93b3e1443}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Mail">
-      <UniqueIdentifier>{e6bf2902-a96f-49a4-abac-07067a9a0e03}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Mail\jwsmtp">
-      <UniqueIdentifier>{7db6d579-1b4b-4248-9572-2854da60f124}</UniqueIdentifier>
     </Filter>
     <Filter Include="Base\Common">
       <UniqueIdentifier>{b87b69ea-62c4-48dc-8b42-f98242eafd87}</UniqueIdentifier>
@@ -124,8 +94,50 @@
     <Filter Include="Encrypt\zlib">
       <UniqueIdentifier>{c432d7fd-66be-4ecb-8bd1-330b0294fb77}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Jsoncpp">
+    <Filter Include="Base\NetWork\HttpClient">
+      <UniqueIdentifier>{99521b8f-68cc-4813-88e9-f359559c738a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Service\Mail">
+      <UniqueIdentifier>{e6bf2902-a96f-49a4-abac-07067a9a0e03}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Service\Mail\jwsmtp">
+      <UniqueIdentifier>{7db6d579-1b4b-4248-9572-2854da60f124}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Service\Log">
+      <UniqueIdentifier>{b3df48a5-bdca-4ac2-b522-16c115184e62}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Service\Server">
+      <UniqueIdentifier>{118d26f3-5d85-4967-a364-a56c0c97b4e5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Service\Server\Session">
+      <UniqueIdentifier>{253f895c-a984-435e-9251-e88f62fd05df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Service\Server\Worker">
+      <UniqueIdentifier>{b96add17-3e73-4002-a1ad-6b525a6de1f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Base\OS\sigar">
+      <UniqueIdentifier>{32744d5e-66af-4946-9f07-c27b41f9bf74}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Base\Common\File">
+      <UniqueIdentifier>{4f20bb3f-d230-461c-a9cd-3ddd3616d392}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Base\Common\String">
+      <UniqueIdentifier>{2ae4bd92-1144-4078-86c0-9b7723b80d98}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Base\Common\String\uchardet">
+      <UniqueIdentifier>{fd4f9b32-6eb8-4a84-aae0-be5e5d4fcf6a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Base\Common\Time">
+      <UniqueIdentifier>{2e216f79-c666-4746-bd71-bacf6dc3793d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Base\DataParser">
+      <UniqueIdentifier>{64b5ffb8-5d65-4e1d-a1ee-8cdcc4a8f18d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Base\DataParser\Jsoncpp">
       <UniqueIdentifier>{69a9e30c-4e4f-4f48-a3e9-f766fd9a929e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Base\DataParser\Xml">
+      <UniqueIdentifier>{f105553c-0760-42a5-ba63-508fdead5be6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -145,28 +157,13 @@
       <Filter>Config</Filter>
     </ClInclude>
     <ClInclude Include="Log.h">
-      <Filter>Log</Filter>
-    </ClInclude>
-    <ClInclude Include="Exception.h">
-      <Filter>Base</Filter>
-    </ClInclude>
-    <ClInclude Include="QString.h">
-      <Filter>String</Filter>
-    </ClInclude>
-    <ClInclude Include="File.h">
-      <Filter>File</Filter>
-    </ClInclude>
-    <ClInclude Include="Ini.h">
-      <Filter>File</Filter>
-    </ClInclude>
-    <ClInclude Include="TableFile.h">
-      <Filter>File</Filter>
+      <Filter>Service\Log</Filter>
     </ClInclude>
     <ClInclude Include="pugixml\pugiconfig.hpp">
-      <Filter>Xml</Filter>
+      <Filter>Base\DataParser\Xml</Filter>
     </ClInclude>
     <ClInclude Include="pugixml\pugixml.hpp">
-      <Filter>Xml</Filter>
+      <Filter>Base\DataParser\Xml</Filter>
     </ClInclude>
     <ClInclude Include="DataBase.h">
       <Filter>DataBase</Filter>
@@ -182,22 +179,19 @@
     </ClInclude>
     <ClInclude Include="QBase.h" />
     <ClInclude Include="Loger.h">
-      <Filter>Log</Filter>
+      <Filter>Service\Log</Filter>
     </ClInclude>
     <ClInclude Include="rijndael\rijndael.h">
       <Filter>Encrypt\AES\rijndael</Filter>
     </ClInclude>
-    <ClInclude Include="Server.h">
-      <Filter>Service</Filter>
-    </ClInclude>
     <ClInclude Include="Session.h">
-      <Filter>Service\Session</Filter>
+      <Filter>Service\Server\Session</Filter>
     </ClInclude>
     <ClInclude Include="SessionManager.h">
-      <Filter>Service\Session</Filter>
+      <Filter>Service\Server\Session</Filter>
     </ClInclude>
     <ClInclude Include="WorkThreadEvent.h">
-      <Filter>Service\Worker</Filter>
+      <Filter>Service\Server\Worker</Filter>
     </ClInclude>
     <ClInclude Include="RSAKey.h">
       <Filter>Encrypt\RSA</Filter>
@@ -241,9 +235,6 @@
     <ClInclude Include="SockPairEvent.h">
       <Filter>Base\NetWork</Filter>
     </ClInclude>
-    <ClInclude Include="QTime.h">
-      <Filter>Base\OS</Filter>
-    </ClInclude>
     <ClInclude Include="OSFunc.h">
       <Filter>Base\OS</Filter>
     </ClInclude>
@@ -253,14 +244,8 @@
     <ClInclude Include="CoreDump.h">
       <Filter>Base\OS</Filter>
     </ClInclude>
-    <ClInclude Include="Timer.h">
-      <Filter>Base\OS</Filter>
-    </ClInclude>
     <ClInclude Include="UUID.h">
       <Filter>Base\OS</Filter>
-    </ClInclude>
-    <ClInclude Include="CTask.h">
-      <Filter>Base\Thread</Filter>
     </ClInclude>
     <ClInclude Include="QRSA.h">
       <Filter>Encrypt\RSA</Filter>
@@ -319,80 +304,74 @@
     <ClInclude Include="Enum.h">
       <Filter>Config</Filter>
     </ClInclude>
-    <ClInclude Include="EventInterface.h">
-      <Filter>Service\Worker</Filter>
-    </ClInclude>
     <ClInclude Include="MMap.h">
       <Filter>Base\OS</Filter>
     </ClInclude>
     <ClInclude Include="uchardet\CharDistribution.h">
-      <Filter>String\uchardet</Filter>
+      <Filter>Base\Common\String\uchardet</Filter>
     </ClInclude>
     <ClInclude Include="uchardet\JpCntx.h">
-      <Filter>String\uchardet</Filter>
+      <Filter>Base\Common\String\uchardet</Filter>
     </ClInclude>
     <ClInclude Include="uchardet\nsBig5Prober.h">
-      <Filter>String\uchardet</Filter>
+      <Filter>Base\Common\String\uchardet</Filter>
     </ClInclude>
     <ClInclude Include="uchardet\nsCharSetProber.h">
-      <Filter>String\uchardet</Filter>
+      <Filter>Base\Common\String\uchardet</Filter>
     </ClInclude>
     <ClInclude Include="uchardet\nsCodingStateMachine.h">
-      <Filter>String\uchardet</Filter>
+      <Filter>Base\Common\String\uchardet</Filter>
     </ClInclude>
     <ClInclude Include="uchardet\nscore.h">
-      <Filter>String\uchardet</Filter>
+      <Filter>Base\Common\String\uchardet</Filter>
     </ClInclude>
     <ClInclude Include="uchardet\nsEscCharsetProber.h">
-      <Filter>String\uchardet</Filter>
+      <Filter>Base\Common\String\uchardet</Filter>
     </ClInclude>
     <ClInclude Include="uchardet\nsEUCJPProber.h">
-      <Filter>String\uchardet</Filter>
+      <Filter>Base\Common\String\uchardet</Filter>
     </ClInclude>
     <ClInclude Include="uchardet\nsEUCKRProber.h">
-      <Filter>String\uchardet</Filter>
+      <Filter>Base\Common\String\uchardet</Filter>
     </ClInclude>
     <ClInclude Include="uchardet\nsEUCTWProber.h">
-      <Filter>String\uchardet</Filter>
+      <Filter>Base\Common\String\uchardet</Filter>
     </ClInclude>
     <ClInclude Include="uchardet\nsGB2312Prober.h">
-      <Filter>String\uchardet</Filter>
+      <Filter>Base\Common\String\uchardet</Filter>
     </ClInclude>
     <ClInclude Include="uchardet\nsHebrewProber.h">
-      <Filter>String\uchardet</Filter>
+      <Filter>Base\Common\String\uchardet</Filter>
     </ClInclude>
     <ClInclude Include="uchardet\nsLatin1Prober.h">
-      <Filter>String\uchardet</Filter>
+      <Filter>Base\Common\String\uchardet</Filter>
     </ClInclude>
     <ClInclude Include="uchardet\nsMBCSGroupProber.h">
-      <Filter>String\uchardet</Filter>
+      <Filter>Base\Common\String\uchardet</Filter>
     </ClInclude>
     <ClInclude Include="uchardet\nsPkgInt.h">
-      <Filter>String\uchardet</Filter>
+      <Filter>Base\Common\String\uchardet</Filter>
     </ClInclude>
     <ClInclude Include="uchardet\nsSBCharSetProber.h">
-      <Filter>String\uchardet</Filter>
+      <Filter>Base\Common\String\uchardet</Filter>
     </ClInclude>
     <ClInclude Include="uchardet\nsSBCSGroupProber.h">
-      <Filter>String\uchardet</Filter>
+      <Filter>Base\Common\String\uchardet</Filter>
     </ClInclude>
     <ClInclude Include="uchardet\nsSJISProber.h">
-      <Filter>String\uchardet</Filter>
+      <Filter>Base\Common\String\uchardet</Filter>
     </ClInclude>
     <ClInclude Include="uchardet\nsUniversalDetector.h">
-      <Filter>String\uchardet</Filter>
+      <Filter>Base\Common\String\uchardet</Filter>
     </ClInclude>
     <ClInclude Include="uchardet\nsUTF8Prober.h">
-      <Filter>String\uchardet</Filter>
+      <Filter>Base\Common\String\uchardet</Filter>
     </ClInclude>
     <ClInclude Include="uchardet\prmem.h">
-      <Filter>String\uchardet</Filter>
+      <Filter>Base\Common\String\uchardet</Filter>
     </ClInclude>
     <ClInclude Include="uchardet\uchardet.h">
-      <Filter>String\uchardet</Filter>
-    </ClInclude>
-    <ClInclude Include="Charset.h">
-      <Filter>String</Filter>
+      <Filter>Base\Common\String\uchardet</Filter>
     </ClInclude>
     <ClInclude Include="lua5.2\lapi.h">
       <Filter>Lua\lua5.2</Filter>
@@ -542,16 +521,16 @@
       <Filter>Encrypt\Sha1</Filter>
     </ClInclude>
     <ClInclude Include="HttpClient.h">
-      <Filter>HttpClient</Filter>
+      <Filter>Base\NetWork\HttpClient</Filter>
     </ClInclude>
     <ClInclude Include="LinkOther.h">
-      <Filter>Service\Worker</Filter>
+      <Filter>Service\Server\Worker</Filter>
     </ClInclude>
     <ClInclude Include="TxtLoger.h">
-      <Filter>Log</Filter>
+      <Filter>Service\Log</Filter>
     </ClInclude>
     <ClInclude Include="DBLoger.h">
-      <Filter>Log</Filter>
+      <Filter>Service\Log</Filter>
     </ClInclude>
     <ClInclude Include="LuaSocket\auxiliar.h">
       <Filter>Lua\LuaSocket</Filter>
@@ -659,16 +638,16 @@
       <Filter>Encrypt\zlib</Filter>
     </ClInclude>
     <ClInclude Include="jwsmtp\mailer.h">
-      <Filter>Mail\jwsmtp</Filter>
+      <Filter>Service\Mail\jwsmtp</Filter>
     </ClInclude>
     <ClInclude Include="jwsmtp\compat.h">
-      <Filter>Mail\jwsmtp</Filter>
+      <Filter>Service\Mail\jwsmtp</Filter>
     </ClInclude>
     <ClInclude Include="jwsmtp\jwsmtp.h">
-      <Filter>Mail\jwsmtp</Filter>
+      <Filter>Service\Mail\jwsmtp</Filter>
     </ClInclude>
     <ClInclude Include="jwsmtp\jwsmtp_base64.h">
-      <Filter>Mail\jwsmtp</Filter>
+      <Filter>Service\Mail\jwsmtp</Filter>
     </ClInclude>
     <ClInclude Include="format.h">
       <Filter>Base\Common</Filter>
@@ -692,40 +671,40 @@
       <Filter>Encrypt</Filter>
     </ClInclude>
     <ClInclude Include="MailSender.h">
-      <Filter>Mail</Filter>
+      <Filter>Service\Mail</Filter>
     </ClInclude>
     <ClInclude Include="jsoncpp\json_tool.h">
-      <Filter>Jsoncpp</Filter>
+      <Filter>Base\DataParser\Jsoncpp</Filter>
     </ClInclude>
     <ClInclude Include="jsoncpp\json\assertions.h">
-      <Filter>Jsoncpp</Filter>
+      <Filter>Base\DataParser\Jsoncpp</Filter>
     </ClInclude>
     <ClInclude Include="jsoncpp\json\autolink.h">
-      <Filter>Jsoncpp</Filter>
+      <Filter>Base\DataParser\Jsoncpp</Filter>
     </ClInclude>
     <ClInclude Include="jsoncpp\json\config.h">
-      <Filter>Jsoncpp</Filter>
+      <Filter>Base\DataParser\Jsoncpp</Filter>
     </ClInclude>
     <ClInclude Include="jsoncpp\json\features.h">
-      <Filter>Jsoncpp</Filter>
+      <Filter>Base\DataParser\Jsoncpp</Filter>
     </ClInclude>
     <ClInclude Include="jsoncpp\json\forwards.h">
-      <Filter>Jsoncpp</Filter>
+      <Filter>Base\DataParser\Jsoncpp</Filter>
     </ClInclude>
     <ClInclude Include="jsoncpp\json\json.h">
-      <Filter>Jsoncpp</Filter>
+      <Filter>Base\DataParser\Jsoncpp</Filter>
     </ClInclude>
     <ClInclude Include="jsoncpp\json\reader.h">
-      <Filter>Jsoncpp</Filter>
+      <Filter>Base\DataParser\Jsoncpp</Filter>
     </ClInclude>
     <ClInclude Include="jsoncpp\json\value.h">
-      <Filter>Jsoncpp</Filter>
+      <Filter>Base\DataParser\Jsoncpp</Filter>
     </ClInclude>
     <ClInclude Include="jsoncpp\json\version.h">
-      <Filter>Jsoncpp</Filter>
+      <Filter>Base\DataParser\Jsoncpp</Filter>
     </ClInclude>
     <ClInclude Include="jsoncpp\json\writer.h">
-      <Filter>Jsoncpp</Filter>
+      <Filter>Base\DataParser\Jsoncpp</Filter>
     </ClInclude>
     <ClInclude Include="zlib\zconf_linux.h">
       <Filter>Encrypt\zlib</Filter>
@@ -769,28 +748,46 @@
     <ClInclude Include="RSAEuro\shs.h">
       <Filter>Encrypt\RSA\RSAEuro</Filter>
     </ClInclude>
+    <ClInclude Include="EventInterface.h">
+      <Filter>Base\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="CTask.h">
+      <Filter>Base\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Exception.h">
+      <Filter>Base\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Server.h">
+      <Filter>Service\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="QString.h">
+      <Filter>Base\Common\String</Filter>
+    </ClInclude>
+    <ClInclude Include="Charset.h">
+      <Filter>Base\Common\String</Filter>
+    </ClInclude>
+    <ClInclude Include="Ini.h">
+      <Filter>Base\Common\File</Filter>
+    </ClInclude>
+    <ClInclude Include="TableFile.h">
+      <Filter>Base\Common\File</Filter>
+    </ClInclude>
+    <ClInclude Include="File.h">
+      <Filter>Base\Common\File</Filter>
+    </ClInclude>
+    <ClInclude Include="QTime.h">
+      <Filter>Base\Common\Time</Filter>
+    </ClInclude>
+    <ClInclude Include="Timer.h">
+      <Filter>Base\Common\Time</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Log.cpp">
-      <Filter>Log</Filter>
-    </ClCompile>
-    <ClCompile Include="Exception.cpp">
-      <Filter>Base</Filter>
-    </ClCompile>
-    <ClCompile Include="QString.cpp">
-      <Filter>String</Filter>
-    </ClCompile>
-    <ClCompile Include="File.cpp">
-      <Filter>File</Filter>
-    </ClCompile>
-    <ClCompile Include="Ini.cpp">
-      <Filter>File</Filter>
-    </ClCompile>
-    <ClCompile Include="TableFile.cpp">
-      <Filter>File</Filter>
+      <Filter>Service\Log</Filter>
     </ClCompile>
     <ClCompile Include="pugixml\pugixml.cpp">
-      <Filter>Xml</Filter>
+      <Filter>Base\DataParser\Xml</Filter>
     </ClCompile>
     <ClCompile Include="DataBase.cpp">
       <Filter>DataBase</Filter>
@@ -807,17 +804,14 @@
     <ClCompile Include="rijndael\rijndael.cpp">
       <Filter>Encrypt\AES\rijndael</Filter>
     </ClCompile>
-    <ClCompile Include="Server.cpp">
-      <Filter>Service</Filter>
-    </ClCompile>
     <ClCompile Include="Session.cpp">
-      <Filter>Service\Session</Filter>
+      <Filter>Service\Server\Session</Filter>
     </ClCompile>
     <ClCompile Include="SessionManager.cpp">
-      <Filter>Service\Session</Filter>
+      <Filter>Service\Server\Session</Filter>
     </ClCompile>
     <ClCompile Include="WorkThreadEvent.cpp">
-      <Filter>Service\Worker</Filter>
+      <Filter>Service\Server\Worker</Filter>
     </ClCompile>
     <ClCompile Include="QBase.cpp" />
     <ClCompile Include="RSAKey.cpp">
@@ -862,9 +856,6 @@
     <ClCompile Include="SockPairEvent.cpp">
       <Filter>Base\NetWork</Filter>
     </ClCompile>
-    <ClCompile Include="QTime.cpp">
-      <Filter>Base\OS</Filter>
-    </ClCompile>
     <ClCompile Include="OSFunc.cpp">
       <Filter>Base\OS</Filter>
     </ClCompile>
@@ -874,9 +865,6 @@
     <ClCompile Include="CoreDump.cpp">
       <Filter>Base\OS</Filter>
     </ClCompile>
-    <ClCompile Include="Timer.cpp">
-      <Filter>Base\OS</Filter>
-    </ClCompile>
     <ClCompile Include="UUID.cpp">
       <Filter>Base\OS</Filter>
     </ClCompile>
@@ -884,85 +872,82 @@
       <Filter>Encrypt\RSA</Filter>
     </ClCompile>
     <ClCompile Include="uchardet\CharDistribution.cpp">
-      <Filter>String\uchardet</Filter>
+      <Filter>Base\Common\String\uchardet</Filter>
     </ClCompile>
     <ClCompile Include="uchardet\JpCntx.cpp">
-      <Filter>String\uchardet</Filter>
+      <Filter>Base\Common\String\uchardet</Filter>
     </ClCompile>
     <ClCompile Include="uchardet\LangBulgarianModel.cpp">
-      <Filter>String\uchardet</Filter>
+      <Filter>Base\Common\String\uchardet</Filter>
     </ClCompile>
     <ClCompile Include="uchardet\LangCyrillicModel.cpp">
-      <Filter>String\uchardet</Filter>
+      <Filter>Base\Common\String\uchardet</Filter>
     </ClCompile>
     <ClCompile Include="uchardet\LangGreekModel.cpp">
-      <Filter>String\uchardet</Filter>
+      <Filter>Base\Common\String\uchardet</Filter>
     </ClCompile>
     <ClCompile Include="uchardet\LangHebrewModel.cpp">
-      <Filter>String\uchardet</Filter>
+      <Filter>Base\Common\String\uchardet</Filter>
     </ClCompile>
     <ClCompile Include="uchardet\LangHungarianModel.cpp">
-      <Filter>String\uchardet</Filter>
+      <Filter>Base\Common\String\uchardet</Filter>
     </ClCompile>
     <ClCompile Include="uchardet\LangThaiModel.cpp">
-      <Filter>String\uchardet</Filter>
+      <Filter>Base\Common\String\uchardet</Filter>
     </ClCompile>
     <ClCompile Include="uchardet\nsBig5Prober.cpp">
-      <Filter>String\uchardet</Filter>
+      <Filter>Base\Common\String\uchardet</Filter>
     </ClCompile>
     <ClCompile Include="uchardet\nsCharSetProber.cpp">
-      <Filter>String\uchardet</Filter>
+      <Filter>Base\Common\String\uchardet</Filter>
     </ClCompile>
     <ClCompile Include="uchardet\nsEscCharsetProber.cpp">
-      <Filter>String\uchardet</Filter>
+      <Filter>Base\Common\String\uchardet</Filter>
     </ClCompile>
     <ClCompile Include="uchardet\nsEscSM.cpp">
-      <Filter>String\uchardet</Filter>
+      <Filter>Base\Common\String\uchardet</Filter>
     </ClCompile>
     <ClCompile Include="uchardet\nsEUCJPProber.cpp">
-      <Filter>String\uchardet</Filter>
+      <Filter>Base\Common\String\uchardet</Filter>
     </ClCompile>
     <ClCompile Include="uchardet\nsEUCKRProber.cpp">
-      <Filter>String\uchardet</Filter>
+      <Filter>Base\Common\String\uchardet</Filter>
     </ClCompile>
     <ClCompile Include="uchardet\nsEUCTWProber.cpp">
-      <Filter>String\uchardet</Filter>
+      <Filter>Base\Common\String\uchardet</Filter>
     </ClCompile>
     <ClCompile Include="uchardet\nsGB2312Prober.cpp">
-      <Filter>String\uchardet</Filter>
+      <Filter>Base\Common\String\uchardet</Filter>
     </ClCompile>
     <ClCompile Include="uchardet\nsHebrewProber.cpp">
-      <Filter>String\uchardet</Filter>
+      <Filter>Base\Common\String\uchardet</Filter>
     </ClCompile>
     <ClCompile Include="uchardet\nsLatin1Prober.cpp">
-      <Filter>String\uchardet</Filter>
+      <Filter>Base\Common\String\uchardet</Filter>
     </ClCompile>
     <ClCompile Include="uchardet\nsMBCSGroupProber.cpp">
-      <Filter>String\uchardet</Filter>
+      <Filter>Base\Common\String\uchardet</Filter>
     </ClCompile>
     <ClCompile Include="uchardet\nsMBCSSM.cpp">
-      <Filter>String\uchardet</Filter>
+      <Filter>Base\Common\String\uchardet</Filter>
     </ClCompile>
     <ClCompile Include="uchardet\nsSBCharSetProber.cpp">
-      <Filter>String\uchardet</Filter>
+      <Filter>Base\Common\String\uchardet</Filter>
     </ClCompile>
     <ClCompile Include="uchardet\nsSBCSGroupProber.cpp">
-      <Filter>String\uchardet</Filter>
+      <Filter>Base\Common\String\uchardet</Filter>
     </ClCompile>
     <ClCompile Include="uchardet\nsSJISProber.cpp">
-      <Filter>String\uchardet</Filter>
+      <Filter>Base\Common\String\uchardet</Filter>
     </ClCompile>
     <ClCompile Include="uchardet\nsUniversalDetector.cpp">
-      <Filter>String\uchardet</Filter>
+      <Filter>Base\Common\String\uchardet</Filter>
     </ClCompile>
     <ClCompile Include="uchardet\nsUTF8Prober.cpp">
-      <Filter>String\uchardet</Filter>
+      <Filter>Base\Common\String\uchardet</Filter>
     </ClCompile>
     <ClCompile Include="uchardet\uchardet.cpp">
-      <Filter>String\uchardet</Filter>
-    </ClCompile>
-    <ClCompile Include="Charset.cpp">
-      <Filter>String</Filter>
+      <Filter>Base\Common\String\uchardet</Filter>
     </ClCompile>
     <ClCompile Include="lua5.2\lapi.c">
       <Filter>Lua\lua5.2</Filter>
@@ -1145,16 +1130,16 @@
       <Filter>Encrypt\Sha1</Filter>
     </ClCompile>
     <ClCompile Include="HttpClient.cpp">
-      <Filter>HttpClient</Filter>
+      <Filter>Base\NetWork\HttpClient</Filter>
     </ClCompile>
     <ClCompile Include="LinkOther.cpp">
-      <Filter>Service\Worker</Filter>
+      <Filter>Service\Server\Worker</Filter>
     </ClCompile>
     <ClCompile Include="TxtLoger.cpp">
-      <Filter>Log</Filter>
+      <Filter>Service\Log</Filter>
     </ClCompile>
     <ClCompile Include="DBLoger.cpp">
-      <Filter>Log</Filter>
+      <Filter>Service\Log</Filter>
     </ClCompile>
     <ClCompile Include="LuaSocket\auxiliar.c">
       <Filter>Lua\LuaSocket</Filter>
@@ -1271,13 +1256,13 @@
       <Filter>Encrypt\zlib</Filter>
     </ClCompile>
     <ClCompile Include="jwsmtp\compat.cpp">
-      <Filter>Mail\jwsmtp</Filter>
+      <Filter>Service\Mail\jwsmtp</Filter>
     </ClCompile>
     <ClCompile Include="jwsmtp\jwsmtp_base64.cpp">
-      <Filter>Mail\jwsmtp</Filter>
+      <Filter>Service\Mail\jwsmtp</Filter>
     </ClCompile>
     <ClCompile Include="jwsmtp\mailer.cpp">
-      <Filter>Mail\jwsmtp</Filter>
+      <Filter>Service\Mail\jwsmtp</Filter>
     </ClCompile>
     <ClCompile Include="format.cpp">
       <Filter>Base\Common</Filter>
@@ -1292,16 +1277,16 @@
       <Filter>Encrypt</Filter>
     </ClCompile>
     <ClCompile Include="MailSender.cpp">
-      <Filter>Mail</Filter>
+      <Filter>Service\Mail</Filter>
     </ClCompile>
     <ClCompile Include="jsoncpp\json_reader.cpp">
-      <Filter>Jsoncpp</Filter>
+      <Filter>Base\DataParser\Jsoncpp</Filter>
     </ClCompile>
     <ClCompile Include="jsoncpp\json_value.cpp">
-      <Filter>Jsoncpp</Filter>
+      <Filter>Base\DataParser\Jsoncpp</Filter>
     </ClCompile>
     <ClCompile Include="jsoncpp\json_writer.cpp">
-      <Filter>Jsoncpp</Filter>
+      <Filter>Base\DataParser\Jsoncpp</Filter>
     </ClCompile>
     <ClCompile Include="RSAEuro\desc.c">
       <Filter>Encrypt\RSA\RSAEuro</Filter>
@@ -1345,25 +1330,52 @@
     <ClCompile Include="RSAEuro\shsc.c">
       <Filter>Encrypt\RSA\RSAEuro</Filter>
     </ClCompile>
+    <ClCompile Include="Exception.cpp">
+      <Filter>Base\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Server.cpp">
+      <Filter>Service\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="QString.cpp">
+      <Filter>Base\Common\String</Filter>
+    </ClCompile>
+    <ClCompile Include="Charset.cpp">
+      <Filter>Base\Common\String</Filter>
+    </ClCompile>
+    <ClCompile Include="Ini.cpp">
+      <Filter>Base\Common\File</Filter>
+    </ClCompile>
+    <ClCompile Include="TableFile.cpp">
+      <Filter>Base\Common\File</Filter>
+    </ClCompile>
+    <ClCompile Include="File.cpp">
+      <Filter>Base\Common\File</Filter>
+    </ClCompile>
+    <ClCompile Include="QTime.cpp">
+      <Filter>Base\Common\Time</Filter>
+    </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>Base\Common\Time</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="uchardet\Big5Freq.tab">
-      <Filter>String\uchardet</Filter>
+      <Filter>Base\Common\String\uchardet</Filter>
     </None>
     <None Include="uchardet\EUCKRFreq.tab">
-      <Filter>String\uchardet</Filter>
+      <Filter>Base\Common\String\uchardet</Filter>
     </None>
     <None Include="uchardet\EUCTWFreq.tab">
-      <Filter>String\uchardet</Filter>
+      <Filter>Base\Common\String\uchardet</Filter>
     </None>
     <None Include="uchardet\GB2312Freq.tab">
-      <Filter>String\uchardet</Filter>
+      <Filter>Base\Common\String\uchardet</Filter>
     </None>
     <None Include="uchardet\JISFreq.tab">
-      <Filter>String\uchardet</Filter>
+      <Filter>Base\Common\String\uchardet</Filter>
     </None>
     <None Include="jsoncpp\json_valueiterator.inl">
-      <Filter>Jsoncpp</Filter>
+      <Filter>Base\DataParser\Jsoncpp</Filter>
     </None>
     <None Include="RSAEuro\des386.s">
       <Filter>Encrypt\RSA\RSAEuro</Filter>
