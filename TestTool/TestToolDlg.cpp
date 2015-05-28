@@ -305,6 +305,7 @@ LRESULT CTestToolDlg::EnableLinkButt(WPARAM wParam, LPARAM lParam)
 {
     m_CtrLinkBtt.EnableWindow(TRUE);
     m_CtrClose.EnableWindow(FALSE);
+    m_CtrDebug.EnableWindow(TRUE);
 
     return 0;
 }
@@ -546,6 +547,7 @@ void CTestToolDlg::OnBnClickedButton2()
 
     m_CtrLinkBtt.EnableWindow(FALSE);
     m_CtrClose.EnableWindow(TRUE);
+    m_CtrDebug.EnableWindow(FALSE);
 }
 
 //send
