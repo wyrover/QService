@@ -19,12 +19,10 @@ PROGRAMNAME="QService"
 #############################################
 #QServer文件夹
 QServerDir="QBase QBase/event2 QBase/pugixml QBase/RSAEuro QBase/uchardet QBase/curl"
-QServerDir=$QServerDir" QBase/Lua5.2 QBase/LuaCJson QBase/LuaSql QBase/Lpeg QBase/pbc QBase/LuaSocket"
+QServerDir=$QServerDir" QBase/lua5.2 QBase/LuaCJson QBase/LuaSql QBase/Lpeg QBase/pbc QBase/LuaSocket QBase/LuaSigar"
 QServerDir=$QServerDir" QBase/rijndael QBase/Sqlite QBase/mysql QBase/zlib QBase/jwsmtp"
-QServerDir=$QServerDir" QBase/jsoncpp"
+QServerDir=$QServerDir" QBase/jsoncpp QBase/sigar"
 QServerDir=$QServerDir" QService"
-
-LIBDIR=$QServerDir" "$LIBDIR
 
 #main函数所在文件夹
 MAINDIR="QService"
@@ -74,6 +72,7 @@ then
     CC="gcc -DLINUX"
     GCC="g++ -DLINUX"
     LIBAPP="-ldl -lpthread"
+    QServerDir=$QServerDir" QBase/sigar/linux"
 elif [ "$OSNAME" = "FreeBSD" ]
 then
     CC="gcc"
@@ -84,17 +83,22 @@ then
     CC="gcc -DSOLARIS"
     GCC="g++ -DSOLARIS"
     LIBAPP="-lsocket -lkstat -lnsl -lpthread"
+    QServerDir=$QServerDir" QBase/sigar/solaris"
 elif [ "$OSNAME" = "AIX" ]
 then
     CC="gcc -DAIX"
     GCC="g++ -DAIX"
     LIBAPP="-ldl -lperfstat -lpthread"
+    QServerDir=$QServerDir" QBase/sigar/aix"
 elif [ "${OSNAME}" = "HP-UX" ]
 then
     CC="gcc -mlp64 -D_POSIX_SOURCE=199506 -DHP_UX_C"
     GCC="g++ -mlp64 -D_POSIX_SOURCE=199506 -DHP_UX_C"
     LIBAPP="-ldl -lm -lpthread"
+    QServerDir=$QServerDir" QBase/sigar/hpux"
 fi
+
+LIBDIR=$QServerDir" "$LIBDIR
 
 GetIncludePath()
 {

@@ -153,6 +153,9 @@ void CTestLua::RunLua(void)
         pTest3 = (Test3 *)str.c_str();
         m_objBinary.setBuffer(str.c_str(), str.size());
         luabridge::getGlobal(m_pLua, "TestStructRead2")(&m_objBinary);
+
+
+        luabridge::getGlobal(m_pLua, "Testsigar")();
     }
     catch(luabridge::LuaException &e)
     {

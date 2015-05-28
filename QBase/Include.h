@@ -95,7 +95,7 @@
 #include "event2/http_struct.h"
 #include "event2/event.h"
 #include "event2/thread.h"
-#include "Lua5.2/lua.hpp"
+#include "lua5.2/lua.hpp"
 #include "LuaBridge/LuaBridge.h"
 extern "C"
 {

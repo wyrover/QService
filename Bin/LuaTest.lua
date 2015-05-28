@@ -218,3 +218,7 @@ function TestStructRead2(objBinary)
     print("----------------------------------")
     table.print(tInfo)
 end
+
+function Testsigar()
+    require("sigar-test")
+end

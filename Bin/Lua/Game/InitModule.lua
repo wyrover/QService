@@ -3,6 +3,8 @@
 --]]
 
 cjson = require("cjson")
+--系统信息获取
+sigar = require("sigar")
 
 local tLoad = 
 {

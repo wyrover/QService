@@ -139,6 +139,12 @@
     <Filter Include="Base\DataParser\Xml">
       <UniqueIdentifier>{f105553c-0760-42a5-ba63-508fdead5be6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Lua\sigar">
+      <UniqueIdentifier>{61fc87b8-67a6-4844-9eeb-0ceb697f1ff4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Base\OS\sigar\win32">
+      <UniqueIdentifier>{29de7b98-c4c4-4825-979c-48dc556b9f5e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Config.h">
@@ -781,6 +787,39 @@
     <ClInclude Include="Timer.h">
       <Filter>Base\Common\Time</Filter>
     </ClInclude>
+    <ClInclude Include="sigar\sigar.h">
+      <Filter>Base\OS\sigar</Filter>
+    </ClInclude>
+    <ClInclude Include="sigar\sigar_fileinfo.h">
+      <Filter>Base\OS\sigar</Filter>
+    </ClInclude>
+    <ClInclude Include="sigar\sigar_format.h">
+      <Filter>Base\OS\sigar</Filter>
+    </ClInclude>
+    <ClInclude Include="sigar\sigar_getline.h">
+      <Filter>Base\OS\sigar</Filter>
+    </ClInclude>
+    <ClInclude Include="sigar\sigar_log.h">
+      <Filter>Base\OS\sigar</Filter>
+    </ClInclude>
+    <ClInclude Include="sigar\sigar_private.h">
+      <Filter>Base\OS\sigar</Filter>
+    </ClInclude>
+    <ClInclude Include="sigar\sigar_ptql.h">
+      <Filter>Base\OS\sigar</Filter>
+    </ClInclude>
+    <ClInclude Include="sigar\sigar_util.h">
+      <Filter>Base\OS\sigar</Filter>
+    </ClInclude>
+    <ClInclude Include="sigar\win32\sigar_os.h">
+      <Filter>Base\OS\sigar\win32</Filter>
+    </ClInclude>
+    <ClInclude Include="sigar\win32\sigar_pdh.h">
+      <Filter>Base\OS\sigar\win32</Filter>
+    </ClInclude>
+    <ClInclude Include="LuaSigar\lua-sigar.h">
+      <Filter>Lua\sigar</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Log.cpp">
@@ -1356,6 +1395,75 @@
     </ClCompile>
     <ClCompile Include="Timer.cpp">
       <Filter>Base\Common\Time</Filter>
+    </ClCompile>
+    <ClCompile Include="sigar\sigar.c">
+      <Filter>Base\OS\sigar</Filter>
+    </ClCompile>
+    <ClCompile Include="sigar\sigar_cache.c">
+      <Filter>Base\OS\sigar</Filter>
+    </ClCompile>
+    <ClCompile Include="sigar\sigar_fileinfo.c">
+      <Filter>Base\OS\sigar</Filter>
+    </ClCompile>
+    <ClCompile Include="sigar\sigar_format.c">
+      <Filter>Base\OS\sigar</Filter>
+    </ClCompile>
+    <ClCompile Include="sigar\sigar_getline.c">
+      <Filter>Base\OS\sigar</Filter>
+    </ClCompile>
+    <ClCompile Include="sigar\sigar_ptql.c">
+      <Filter>Base\OS\sigar</Filter>
+    </ClCompile>
+    <ClCompile Include="sigar\sigar_signal.c">
+      <Filter>Base\OS\sigar</Filter>
+    </ClCompile>
+    <ClCompile Include="sigar\sigar_util.c">
+      <Filter>Base\OS\sigar</Filter>
+    </ClCompile>
+    <ClCompile Include="sigar\win32\peb.c">
+      <Filter>Base\OS\sigar\win32</Filter>
+    </ClCompile>
+    <ClCompile Include="sigar\win32\win32_sigar.c">
+      <Filter>Base\OS\sigar\win32</Filter>
+    </ClCompile>
+    <ClCompile Include="sigar\win32\wmi.cpp">
+      <Filter>Base\OS\sigar\win32</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaSigar\sigar-cpu.c">
+      <Filter>Lua\sigar</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaSigar\sigar-disk.c">
+      <Filter>Lua\sigar</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaSigar\sigar-fs.c">
+      <Filter>Lua\sigar</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaSigar\sigar-mem.c">
+      <Filter>Lua\sigar</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaSigar\sigar-netif.c">
+      <Filter>Lua\sigar</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaSigar\sigar-proc.c">
+      <Filter>Lua\sigar</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaSigar\sigar-swap.c">
+      <Filter>Lua\sigar</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaSigar\sigar-sysinfo.c">
+      <Filter>Lua\sigar</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaSigar\sigar-version.c">
+      <Filter>Lua\sigar</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaSigar\sigar-who.c">
+      <Filter>Lua\sigar</Filter>
+    </ClCompile>
+    <ClCompile Include="LuaSigar\lua-sigar.c">
+      <Filter>Lua\sigar</Filter>
+    </ClCompile>
+    <ClCompile Include="sigar\sigar_version_autoconf.c">
+      <Filter>Base\OS\sigar</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

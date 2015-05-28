@@ -62,6 +62,9 @@ LUALIB_API int (luaopen_protobuf_c) (lua_State *L);
 #define LUA_SOCKET "socket.core"
 LUALIB_API int (luaopen_socket_core) (lua_State *L);
 
+#define LUA_SIGAR "sigar"
+LUALIB_API int (luaopen_sigar) (lua_State *L);
+
 /* open all previous libraries */
 LUALIB_API void (luaL_openlibs) (lua_State *L);
 

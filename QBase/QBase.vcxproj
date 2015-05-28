@@ -114,6 +114,7 @@
     <ClInclude Include="LuaCJson\fpconv.h" />
     <ClInclude Include="LuaCJson\strbuf.h" />
     <ClInclude Include="LuaFunc.h" />
+    <ClInclude Include="LuaSigar\lua-sigar.h" />
     <ClInclude Include="LuaSocket\auxiliar.h" />
     <ClInclude Include="LuaSocket\buffer.h" />
     <ClInclude Include="LuaSocket\except.h" />
@@ -181,6 +182,16 @@
     <ClInclude Include="Session.h" />
     <ClInclude Include="SessionManager.h" />
     <ClInclude Include="SHA1.h" />
+    <ClInclude Include="sigar\sigar.h" />
+    <ClInclude Include="sigar\sigar_fileinfo.h" />
+    <ClInclude Include="sigar\sigar_format.h" />
+    <ClInclude Include="sigar\sigar_getline.h" />
+    <ClInclude Include="sigar\sigar_log.h" />
+    <ClInclude Include="sigar\sigar_private.h" />
+    <ClInclude Include="sigar\sigar_ptql.h" />
+    <ClInclude Include="sigar\sigar_util.h" />
+    <ClInclude Include="sigar\win32\sigar_os.h" />
+    <ClInclude Include="sigar\win32\sigar_pdh.h" />
     <ClInclude Include="Singleton.h" />
     <ClInclude Include="SnowflakeID.h" />
     <ClInclude Include="SockPair.h" />
@@ -303,6 +314,17 @@
     <ClCompile Include="LuaCJson\g_fmt.c" />
     <ClCompile Include="LuaCJson\lua_cjson.c" />
     <ClCompile Include="LuaCJson\strbuf.c" />
+    <ClCompile Include="LuaSigar\lua-sigar.c" />
+    <ClCompile Include="LuaSigar\sigar-cpu.c" />
+    <ClCompile Include="LuaSigar\sigar-disk.c" />
+    <ClCompile Include="LuaSigar\sigar-fs.c" />
+    <ClCompile Include="LuaSigar\sigar-mem.c" />
+    <ClCompile Include="LuaSigar\sigar-netif.c" />
+    <ClCompile Include="LuaSigar\sigar-proc.c" />
+    <ClCompile Include="LuaSigar\sigar-swap.c" />
+    <ClCompile Include="LuaSigar\sigar-sysinfo.c" />
+    <ClCompile Include="LuaSigar\sigar-version.c" />
+    <ClCompile Include="LuaSigar\sigar-who.c" />
     <ClCompile Include="LuaSocket\auxiliar.c" />
     <ClCompile Include="LuaSocket\buffer.c" />
     <ClCompile Include="LuaSocket\except.c" />
@@ -371,6 +393,18 @@
     <ClCompile Include="Session.cpp" />
     <ClCompile Include="SessionManager.cpp" />
     <ClCompile Include="SHA1.cpp" />
+    <ClCompile Include="sigar\sigar.c" />
+    <ClCompile Include="sigar\sigar_cache.c" />
+    <ClCompile Include="sigar\sigar_fileinfo.c" />
+    <ClCompile Include="sigar\sigar_format.c" />
+    <ClCompile Include="sigar\sigar_getline.c" />
+    <ClCompile Include="sigar\sigar_ptql.c" />
+    <ClCompile Include="sigar\sigar_signal.c" />
+    <ClCompile Include="sigar\sigar_util.c" />
+    <ClCompile Include="sigar\sigar_version_autoconf.c" />
+    <ClCompile Include="sigar\win32\peb.c" />
+    <ClCompile Include="sigar\win32\win32_sigar.c" />
+    <ClCompile Include="sigar\win32\wmi.cpp" />
     <ClCompile Include="SnowflakeID.cpp" />
     <ClCompile Include="SockPair.cpp" />
     <ClCompile Include="SockPairEvent.cpp" />
@@ -503,7 +537,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;ZLIB_WINAPI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../QBase;../QBase/mysql;../QBase/Sqlite;../QBase/LuaCJson;../QBase/LuaSql;../QBase/lua5.2;../QBase/pbc;../QBase/Lpeg;../QBase/LuaSocket;../QBase/pugixml;../QBase/rijndael;../QBase/RSAEuro;../QBase/uchardet;../QBase/curl;../QBase/zlib;../QBase/jwsmtp;../QBase/jsoncpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../QBase;../QBase/mysql;../QBase/Sqlite;../QBase/LuaCJson;../QBase/LuaSql;../QBase/lua5.2;../QBase/pbc;../QBase/Lpeg;../QBase/LuaSocket;../QBase/pugixml;../QBase/rijndael;../QBase/RSAEuro;../QBase/uchardet;../QBase/curl;../QBase/zlib;../QBase/jwsmtp;../QBase/jsoncpp;../QBase/sigar;../QBase/sigar/win32;../QBase/sigar/LuaSigar;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -517,7 +551,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;ZLIB_WINAPI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../QBase;../QBase/mysql;../QBase/Sqlite;../QBase/LuaCJson;../QBase/LuaSql;../QBase/lua5.2;../QBase/pbc;../QBase/Lpeg;../QBase/LuaSocket;../QBase/pugixml;../QBase/rijndael;../QBase/RSAEuro;../QBase/uchardet;../QBase/curl;../QBase/zlib;../QBase/jwsmtp;../QBase/jsoncpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../QBase;../QBase/mysql;../QBase/Sqlite;../QBase/LuaCJson;../QBase/LuaSql;../QBase/lua5.2;../QBase/pbc;../QBase/Lpeg;../QBase/LuaSocket;../QBase/pugixml;../QBase/rijndael;../QBase/RSAEuro;../QBase/uchardet;../QBase/curl;../QBase/zlib;../QBase/jwsmtp;../QBase/jsoncpp;../QBase/sigar;../QBase/sigar/win32;../QBase/sigar/LuaSigar;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -533,7 +567,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;ZLIB_WINAPI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../QBase;../QBase/mysql;../QBase/Sqlite;../QBase/LuaCJson;../QBase/LuaSql;../QBase/lua5.2;../QBase/pbc;../QBase/Lpeg;../QBase/LuaSocket;../QBase/pugixml;../QBase/rijndael;../QBase/RSAEuro;../QBase/uchardet;../QBase/curl;../QBase/zlib;../QBase/jwsmtp;../QBase/jsoncpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../QBase;../QBase/mysql;../QBase/Sqlite;../QBase/LuaCJson;../QBase/LuaSql;../QBase/lua5.2;../QBase/pbc;../QBase/Lpeg;../QBase/LuaSocket;../QBase/pugixml;../QBase/rijndael;../QBase/RSAEuro;../QBase/uchardet;../QBase/curl;../QBase/zlib;../QBase/jwsmtp;../QBase/jsoncpp;../QBase/sigar;../QBase/sigar/win32;../QBase/sigar/LuaSigar;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -551,7 +585,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;ZLIB_WINAPI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../QBase;../QBase/mysql;../QBase/Sqlite;../QBase/LuaCJson;../QBase/LuaSql;../QBase/lua5.2;../QBase/pbc;../QBase/Lpeg;../QBase/LuaSocket;../QBase/pugixml;../QBase/rijndael;../QBase/RSAEuro;../QBase/uchardet;../QBase/curl;../QBase/zlib;../QBase/jwsmtp;../QBase/jsoncpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../QBase;../QBase/mysql;../QBase/Sqlite;../QBase/LuaCJson;../QBase/LuaSql;../QBase/lua5.2;../QBase/pbc;../QBase/Lpeg;../QBase/LuaSocket;../QBase/pugixml;../QBase/rijndael;../QBase/RSAEuro;../QBase/uchardet;../QBase/curl;../QBase/zlib;../QBase/jwsmtp;../QBase/jsoncpp;../QBase/sigar;../QBase/sigar/win32;../QBase/sigar/LuaSigar;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

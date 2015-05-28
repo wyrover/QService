@@ -590,7 +590,7 @@ void CTestToolDlg::OnBnClickedButton3()
     }
 }
 
-void CTestToolDlg::OnTimer(UINT nIDEvent)
+void CTestToolDlg::OnTimer(UINT_PTR nIDEvent)
 {
     if (1 != g_iChecked)
     {
