@@ -108,6 +108,11 @@ void CTimerTrigger::timerCB(evutil_socket_t, short, void *arg)
 
 int CTimerTrigger::setTime(const unsigned int &uiMS)
 {
+    if (Q_INIT_NUMBER == uiMS)
+    {
+        return Q_RTN_OK;
+    }
+
     timeval tVal;
     evutil_timerclear(&tVal);
     if (uiMS >= 1000)

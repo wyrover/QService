@@ -21,6 +21,7 @@ public:
     const char *Filter(const char *pWord, const unsigned int uiLens);
     /*«Â¿Ì*/
     void Clear(void);
+
 private:
     struct FilterMap
     {

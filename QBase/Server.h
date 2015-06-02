@@ -62,6 +62,7 @@ private:
     Q_SOCK initHttpSock(const char *pszIp, const unsigned short &usPort) const;
 
 private:
+    unsigned int m_uiTime;
     struct event_base *m_pMainBase;
     struct event *m_pExitEvent;
     CQMutex m_objMutex_Exit;

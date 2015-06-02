@@ -7,7 +7,7 @@
 		<!--服务器名称-->
         <Name>一区</Name>
         <!--定时器触发间隔时间 0 不触发(毫秒)-->
-        <Timer>50</Timer>
+        <Timer>20</Timer>
         <!--脚本文件-->
         <Script>Lua/Main.lua</Script>
         <!--Debug 绑定Ip 端口-->

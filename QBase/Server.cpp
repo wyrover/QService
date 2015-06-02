@@ -7,6 +7,7 @@ CServer objServer;
 
 CServer::CServer(void)
 {
+    m_uiTime = Q_INIT_NUMBER;
     m_pMainBase = NULL;
     m_pExitEvent = NULL;
     m_pMainBase = m_objInitBase.getBase();
@@ -212,13 +213,16 @@ int CServer::Loop(void)
         return Q_RTN_FAILE;
     }
 
-    objThread.Execute(CTimerTrigger::getSingletonPtr(), false);
-    if (!CTimerTrigger::getSingletonPtr()->waitForStarted())
+    if (Q_INIT_NUMBER != m_uiTime)
     {
-        setRunStatus(RUNSTATUS_ERROR);
-        Q_Printf("%s", "wait timer trigger start error.");
+        objThread.Execute(CTimerTrigger::getSingletonPtr(), false);
+        if (!CTimerTrigger::getSingletonPtr()->waitForStarted())
+        {
+            setRunStatus(RUNSTATUS_ERROR);
+            Q_Printf("%s", "wait timer trigger start error.");
 
-        return Q_RTN_FAILE;
+            return Q_RTN_FAILE;
+        }
     }
 
     setRunStatus(RUNSTATUS_RUNING);
@@ -282,15 +286,19 @@ int CServer::Init(const unsigned int &uiMS, class CEventInterface *pInterface,
     struct evconnlistener *pListener = NULL;
     std::map<unsigned short, std::string>::iterator itHost;
     
-    CSessionManager::getSingletonPtr()->setTimer(uiMS);
+    m_uiTime = uiMS;
+    CSessionManager::getSingletonPtr()->setTimer(m_uiTime);
     CSessionManager::getSingletonPtr()->setInterface(pInterface);
     CSessionManager::getSingletonPtr()->setLua(pLua);
 
     /*初始化定时器触发器*/
-    iRtn = CTimerTrigger::getSingletonPtr()->setTime(uiMS);
-    if (Q_RTN_OK != iRtn)
+    if (Q_INIT_NUMBER != m_uiTime)
     {
-        return iRtn;
+        iRtn = CTimerTrigger::getSingletonPtr()->setTime(m_uiTime);
+        if (Q_RTN_OK != iRtn)
+        {
+            return iRtn;
+        }
     }
 
     /*初始化HTTP*/
