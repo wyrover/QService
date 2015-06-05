@@ -88,55 +88,55 @@ EchoMsgType = {
 EchoMsgType = table.enum(EchoMsgType, 1)
 
 function EchoSV()
-    g_objBinary:reSetWrite()
-    local iType = g_objBinary:getUint8()
-    g_objBinary:setUint8(iType)
+    g_objNetBinary:reSetWrite()
+    local iType = g_objNetBinary:getUint8()
+    g_objNetBinary:setUint8(iType)
     
     if EchoMsgType.Json == iType then
-        local strMsg = g_objBinary:getString() 
+        local strMsg = g_objNetBinary:getString() 
         
-        g_objBinary:setString(cjson.encode(tJson))        
+        g_objNetBinary:setString(cjson.encode(tJson))        
     end
     if EchoMsgType.String == iType then
-        local strMsg = g_objBinary:getString()
+        local strMsg = g_objNetBinary:getString()
         
         local iRand = math.random(1, 4)
         if 1 == iRand then
-            g_objBinary:setString(strEmpty)
+            g_objNetBinary:setString(strEmpty)
         end
         if 2 == iRand then
-            g_objBinary:setString(str125)
+            g_objNetBinary:setString(str125)
         end
         if 3 == iRand then
-            g_objBinary:setString(str65535)
+            g_objNetBinary:setString(str65535)
         end
         if 4 == iRand then
-            g_objBinary:setString(strBigThan65535)
+            g_objNetBinary:setString(strBigThan65535)
         end
     end
     
     if EchoMsgType.Struct == iType then
-        local tInfo = g_objBinary:getStruct(tStructAttr3)
+        local tInfo = g_objNetBinary:getStruct(tStructAttr3)
         
-        g_objBinary:setStruct(tStruct3Val, tStructAttr3)
+        g_objNetBinary:setStruct(tStruct3Val, tStructAttr3)
     end
     
     if EchoMsgType.Protobuf == iType then
-        local iLens = g_objBinary:getLens() - 1
-        local Byte = g_objBinary:getByte(iLens)
+        local iLens = g_objNetBinary:getLens() - 1
+        local Byte = g_objNetBinary:getByte(iLens)
         local tInfo = protobuf.decode("Echo.EchoMsg", Byte, iLens)
         
         local strRtn = protobuf.encode("Echo.EchoMsg", tProBuf)
-        g_objBinary:setByte(strRtn, string.len(strRtn))
+        g_objNetBinary:setByte(strRtn, string.len(strRtn))
     end
     
     if EchoMsgType.SInt64 == iType then
-        local strSin64 = g_objBinary:getSint64()
-        g_objBinary:setSint64(strSin64)
+        local strSin64 = g_objNetBinary:getSint64()
+        g_objNetBinary:setSint64(strSin64)
     end
     if EchoMsgType.UInt64 == iType then  
-        local strUin64 = g_objBinary:getUint64()
-        g_objBinary:setUint64(strUin64)
+        local strUin64 = g_objNetBinary:getUint64()
+        g_objNetBinary:setUint64(strUin64)
     end
     
     g_objSessionMgr:sendBToCur()

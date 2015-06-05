@@ -6,8 +6,8 @@ package.path = package.path .. ";" .. luaDir2 .. "?.lua"
 require("InitTool")
 
 local tNowDay = os.date("*t", time)
-if not g_objBinary then
-    g_objBinary = nil
+if not g_objNetBinary then
+    g_objNetBinary = nil
 end 
 if not g_objSessionMgr then
     g_objSessionMgr = nil
@@ -23,7 +23,7 @@ end
 --启动
 function Lua_onStartUp(objSessionManager, objBinary, objEncrypt)
     g_objSessionMgr = objSessionManager
-    g_objBinary = objBinary
+    g_objNetBinary = objBinary
     g_objEncrypt = objEncrypt
     math.randomseed(tonumber(tostring(os.time()):reverse():sub(1,6)))
     
@@ -34,25 +34,23 @@ end
 --主连接
 function Lua_onMainRead()
     if not getChecked() then
-        local strMsg = string.sub(g_objBinary:getString(), 1, g_objBinary:getLens())
+        local strMsg = string.sub(g_objNetBinary:getString(), 1, g_objNetBinary:getLens())
         showMfcMsg(strMsg, string.len(strMsg))
     else
-        local iBufferLens = g_objBinary:getLens()
+        local iBufferLens = g_objNetBinary:getLens()
         if iBufferLens < 2 then
             local strMsg = "recv error message."
             showMfcMsg(strMsg, string.len(strMsg))
             return
         end
 
-        local iProtocol = g_objBinary:getUint16()
+        local iProtocol = g_objNetBinary:getUint16()
         local strMsg = string.format("protocol %d", iProtocol)
         showMfcMsg(strMsg, string.len(strMsg))
         
         if iBufferLens > 2 then
             local iMsgLens = iBufferLens - 2
-            local strMsg = g_objBinary:getByte(iMsgLens)
-            local strProro = getProtoStr(iProtocol)
-            local tMsg = protobuf.decode(strProro, strMsg, iMsgLens)
+            local tMsg = parseMsg(iProtocol, iMsgLens)
             if tMsg then
                 local strJson = cjson.encode(tMsg)
                 showMfcMsg(strJson, string.len(strJson))
@@ -75,18 +73,18 @@ end
 --------------------------------主界面-----------------------------------
 function Lua_setMainParam(objToolDlg, objBinary, objEncrypt)
     g_objToolDlg = objToolDlg
-    g_objBinary = objBinary
+    g_objNetBinary = objBinary
     g_objEncrypt = objEncrypt
 end
 
---input创建消息 运行在独立的lua vm中 g_objBinary g_objSessionMgr等不可用
+--input创建消息 运行在独立的lua
 function Lua_createMsg(strInput, bDebug)
     if bDebug then
         g_objToolDlg:sendMainMsg(strInput, string.len(strInput))
     else
         local Func, strMsg = load(strInput)
         if Func then
-            local bRtn, rtnMsg = callFunc(Func)
+            local bRtn = callFunc(Func)
             if not bRtn then
                 showMfcMsg("error", string.len("error"))
             end

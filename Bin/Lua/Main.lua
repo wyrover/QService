@@ -18,8 +18,12 @@ if not g_objSessionMgr then
     g_objSessionMgr = nil
 end
 --二进制解析
-if not g_objBinary then
-    g_objBinary = nil
+if not g_objNetBinary then
+    g_objNetBinary = nil
+end
+--序列化使用
+if not g_objSerBinary then
+    g_objSerBinary = nil
 end
 --编解码
 if not g_objEncrypt then
@@ -43,9 +47,10 @@ end
 参数：
 返回值： 无
 --]]
-function Lua_OnStartUp(objSessionMgr, objBinary, objEncrypt)
+function Lua_OnStartUp(objSessionMgr, objNetBinary, objSerBinary, objEncrypt)
     g_objSessionMgr = objSessionMgr
-    g_objBinary = objBinary
+    g_objNetBinary = objNetBinary
+    g_objSerBinary = objSerBinary
     g_objEncrypt = objEncrypt
     math.randomseed(tonumber(tostring(os.time()):reverse():sub(1,6)))
     
@@ -81,22 +86,21 @@ end
 --]]
 function Lua_OnSockRead()    
     --buffer总长度
-    local iBufferLens = g_objBinary:getLens()
+    local iBufferLens = g_objNetBinary:getLens()
     if iBufferLens < iProLens then
         return
     end
     
     --前2字节操作码    
-    local iProtocol = g_objBinary:getUint16()
+    local iProtocol = g_objNetBinary:getUint16()
     Debug("protocol %d", iProtocol)
     
     --取消息
     local tMsg = {}
     if iBufferLens > iProLens then
         local iMsgLens = iBufferLens - iProLens
-        local strMsg = g_objBinary:getByte(iMsgLens)
         
-        tMsg = parseProBuf(iProtocol, strMsg, iMsgLens)
+        tMsg = parseMsg(iProtocol, iMsgLens)
     end
 
     table.print(tMsg)
@@ -128,7 +132,7 @@ end
 返回值：无
 --]]
 function Lua_OnDebug()
-    onGameEvent(GameEvent.Debug, g_objBinary:getByte(g_objBinary:getLens()))
+    onGameEvent(GameEvent.Debug, g_objNetBinary:getByte(g_objNetBinary:getLens()))
 end
 
 --[[

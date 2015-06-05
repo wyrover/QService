@@ -44,6 +44,7 @@ static const luaL_Reg loadedlibs[] = {
   {LUA_PROTOBUFC, luaopen_protobuf_c},
   {LUA_SOCKET, luaopen_socket_core},
   {LUA_SIGAR, luaopen_sigar},
+  {LUA_LFS, luaopen_lfs},
   {NULL, NULL}
 };
 

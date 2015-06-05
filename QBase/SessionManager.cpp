@@ -11,7 +11,7 @@ CSessionManager objSessionManager;
 CSessionManager::CSessionManager(void) : m_uiTimer(Q_INIT_NUMBER),
     m_uiCount(Q_INIT_NUMBER), m_pLua(NULL), m_pCurrent(NULL), m_pInterface(NULL),
     m_objSessionPool(Q_INITSESSIONSIZE, POOLNAM_SESSION), m_objWebSockParser(), 
-    m_objTcpParser(), m_objBinary()
+    m_objTcpParser(), m_objNetBinary()
 {
    
 }
@@ -53,7 +53,8 @@ void CSessionManager::setLua(struct lua_State *pLua)
     assert(NULL != pLua);
 
     m_pLua = pLua;
-    m_objBinary.setLua(pLua);
+    m_objNetBinary.setLua(pLua);
+    m_objSerializeBinary.setLua(pLua);
 }
 
 void CSessionManager::setCurSession(CSession *pSession)
@@ -392,10 +393,10 @@ bool CSessionManager::sendToByID(const int iID, const char *pszData, const unsig
 
 bool CSessionManager::sendBToCur(void)
 {
-    return sendToCur(m_objBinary.getBufferMgr()->getBuffer(), (unsigned int)m_objBinary.getBufferMgr()->getLens());
+    return sendToCur(m_objNetBinary.getBufferMgr()->getBuffer(), (unsigned int)m_objNetBinary.getBufferMgr()->getLens());
 }
 
 bool CSessionManager::sendBToByID(const int iID)
 {
-    return sendToByID(iID, m_objBinary.getBufferMgr()->getBuffer(), (unsigned int)m_objBinary.getBufferMgr()->getLens());
+    return sendToByID(iID, m_objNetBinary.getBufferMgr()->getBuffer(), (unsigned int)m_objNetBinary.getBufferMgr()->getLens());
 }

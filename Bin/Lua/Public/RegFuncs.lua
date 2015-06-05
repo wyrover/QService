@@ -9,25 +9,23 @@ if not RegFuncs then
     
     --网络消息
     RegFuncs.NetEvent = {}
-    --proto消息字符串
-    RegFuncs.ProtoStr = {}
+    --消息描述
+    RegFuncs.MsgDesp = {}
     --游戏事件
     RegFuncs.GameEvent = {}
     --延迟事件
     RegFuncs.DelayEvent = WheelMgr:new()
 end
 
---proto消息字符串
-function setProtoStr(iProtocol, strProto)
-    if strProto and (0 ~= string.len(strProto)) then
-        RegFuncs.ProtoStr[iProtocol] = strProto
-    end
+--消息描述
+function setMsgDesp(iProtocol, varDesp)
+    RegFuncs.MsgDesp[iProtocol] = varDesp
 end
-function getProtoStr(iProtocol)
-    local strProto = RegFuncs.ProtoStr[iProtocol]
-    assert(strProto, string.format("get protobuf type by protocol %d error.", iProtocol))
+function getMsgDesp(iProtocol)
+    local varDesp = RegFuncs.MsgDesp[iProtocol]
+    assert(varDesp, string.format("get message description by protocol %d error.", iProtocol))
     
-    return strProto
+    return varDesp
 end
 
 --[[

@@ -6,6 +6,16 @@
 Q_INVALID_ID = -1
 Q_INVALID_SOCK = -1
 
+--通信消息类型
+MSGType = {
+    "Protobuf",
+    "Json",
+    "Struct",
+}
+MSGType = table.enum(MSGType, 1)
+--当前使用的类型
+MSGCarrier = MSGType.Struct
+
 --session状态 与c++中enum SessionStatus对应
 SessionStatus = {
     "Closed",

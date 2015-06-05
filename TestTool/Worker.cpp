@@ -153,7 +153,7 @@ void CWorker::mainReadCB(struct bufferevent *bev, void *arg)
             break;
         }
 
-        pSessionManager->getBinary()->setBuffer(pszBuf, pParser->getBufLens());
+        pSessionManager->getNetBinary()->setBuffer(pszBuf, pParser->getBufLens());
 
         try
         {
@@ -276,7 +276,7 @@ bool CWorker::onStartUp(void)
     {
         CLockThis objLock(&g_objWorkerMutex);
         luabridge::getGlobal(getLua(), "Lua_onStartUp")(CSessionManager::getSingletonPtr(), 
-            CSessionManager::getSingletonPtr()->getBinary(), CEncrypt::getSingletonPtr());
+            CSessionManager::getSingletonPtr()->getNetBinary(), CEncrypt::getSingletonPtr());
     }
     catch(luabridge::LuaException &e)
     {

@@ -238,6 +238,8 @@ void CReg2Lua::reg_Binary(void)
 {
     luabridge::getGlobalNamespace(m_pstLState)
         .beginClass<CLuaBinary>("CLuaBinary")
+            .addFunction("setBuffer", &CLuaBinary::setBuffer)   
+
             .addFunction("getLens", &CLuaBinary::getLens)
 
             .addFunction("reSetWrite", &CLuaBinary::reSetWrite)

@@ -19,7 +19,7 @@ PROGRAMNAME="TestQBase"
 #############################################
 #QServerÎÄ¼þ¼Ð
 QServerDir="QBase QBase/event2 QBase/pugixml QBase/RSAEuro QBase/uchardet QBase/curl"
-QServerDir=$QServerDir" QBase/lua5.2 QBase/LuaCJson QBase/LuaSql QBase/Lpeg QBase/pbc QBase/LuaSocket QBase/LuaSigar"
+QServerDir=$QServerDir" QBase/lua5.2 QBase/LuaCJson QBase/LuaSql QBase/Lpeg QBase/pbc QBase/LuaSocket QBase/LuaSigar QBase/LuaFileSystem"
 QServerDir=$QServerDir" QBase/rijndael QBase/Sqlite QBase/mysql QBase/zlib QBase/jwsmtp"
 QServerDir=$QServerDir" QBase/jsoncpp QBase/sigar"
 QServerDir=$QServerDir" cppunit"

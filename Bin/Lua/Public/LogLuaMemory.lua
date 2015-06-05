@@ -9,7 +9,6 @@ local function onLogLuaMemory()
     local strMemUsage = string.format("lua memory usage:%d,session size:%d", 
         iTotalMem, g_objSessionMgr:getSessionSize())
         
-    Debug(strMemUsage)
     Q_LOG(LOGLV_INFO, strMemUsage)
     
     regDelayEvent(m_iLogMemoTime, onLogLuaMemory)

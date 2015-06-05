@@ -5,26 +5,42 @@
 cjson = require("cjson")
 --系统信息获取
 sigar = require("sigar")
+--文件系统 
+lfs = require("lfs")
 
 local tLoad = 
 {
+    --公共
     {"Public/pbc/initpbc", true},
     {"Public/luasocket/initluasocket", true},
     {"Public/redis/initredis", true},
     {"Public/Utile", true},
-    {"Public/Macros", true},    
+    {"Public/Macros", true},
     {"Public/ErrorCodes", true},
     {"Public/TimeWheel", true},
     {"Public/RegFuncs", true},
     {"Public/Protocol", true},
-    {"Public/ProtobufInit", true},
+    {"Public/ProtobufDesp", true},
+    {"Public/StructDesp", true},
+    {"Public/NetMsgParser", true}, 
     {"Public/SessionUtile", true}, 
     {"Public/Mail", true},
     {"Public/Debug", false},--这个设为真，重加载会循环加载      
-    {"Public/LogLuaMemory", true},    
-    {"Public/Ping", true},
+    {"Public/LogLuaMemory", true},
+    {"Public/Ping", true},    
+    {"Public/Object", true},
+    {"Public/Component", true},
+    {"Public/Entity", true},
+    
+    --组件
+    {"Game/Component/Comp_Name", true},
+    {"Game/Component/Comp_Attr", true},
+    --实体
+    
     
     {"Game/LogIn", true},
+    
+    {"Game/Test", true},
 }
 
 local function loadAllFile()

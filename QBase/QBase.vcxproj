@@ -113,6 +113,7 @@
     <ClInclude Include="LuaCJson\dtoa_config.h" />
     <ClInclude Include="LuaCJson\fpconv.h" />
     <ClInclude Include="LuaCJson\strbuf.h" />
+    <ClInclude Include="LuaFileSystem\lfs.h" />
     <ClInclude Include="LuaFunc.h" />
     <ClInclude Include="LuaSigar\lua-sigar.h" />
     <ClInclude Include="LuaSocket\auxiliar.h" />
@@ -314,6 +315,7 @@
     <ClCompile Include="LuaCJson\g_fmt.c" />
     <ClCompile Include="LuaCJson\lua_cjson.c" />
     <ClCompile Include="LuaCJson\strbuf.c" />
+    <ClCompile Include="LuaFileSystem\lfs.c" />
     <ClCompile Include="LuaSigar\lua-sigar.c" />
     <ClCompile Include="LuaSigar\sigar-cpu.c" />
     <ClCompile Include="LuaSigar\sigar-disk.c" />
@@ -537,7 +539,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;ZLIB_WINAPI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../QBase;../QBase/mysql;../QBase/Sqlite;../QBase/LuaCJson;../QBase/LuaSql;../QBase/lua5.2;../QBase/pbc;../QBase/Lpeg;../QBase/LuaSocket;../QBase/pugixml;../QBase/rijndael;../QBase/RSAEuro;../QBase/uchardet;../QBase/curl;../QBase/zlib;../QBase/jwsmtp;../QBase/jsoncpp;../QBase/sigar;../QBase/sigar/win32;../QBase/sigar/LuaSigar;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../QBase;../QBase/mysql;../QBase/Sqlite;../QBase/LuaCJson;../QBase/LuaSql;../QBase/lua5.2;../QBase/pbc;../QBase/Lpeg;../QBase/LuaSocket;../QBase/pugixml;../QBase/rijndael;../QBase/RSAEuro;../QBase/uchardet;../QBase/curl;../QBase/zlib;../QBase/jwsmtp;../QBase/jsoncpp;../QBase/sigar;../QBase/sigar/win32;../QBase/sigar/LuaSigar;../QBase/LuaFileSystem;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -551,7 +553,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;ZLIB_WINAPI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../QBase;../QBase/mysql;../QBase/Sqlite;../QBase/LuaCJson;../QBase/LuaSql;../QBase/lua5.2;../QBase/pbc;../QBase/Lpeg;../QBase/LuaSocket;../QBase/pugixml;../QBase/rijndael;../QBase/RSAEuro;../QBase/uchardet;../QBase/curl;../QBase/zlib;../QBase/jwsmtp;../QBase/jsoncpp;../QBase/sigar;../QBase/sigar/win32;../QBase/sigar/LuaSigar;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../QBase;../QBase/mysql;../QBase/Sqlite;../QBase/LuaCJson;../QBase/LuaSql;../QBase/lua5.2;../QBase/pbc;../QBase/Lpeg;../QBase/LuaSocket;../QBase/pugixml;../QBase/rijndael;../QBase/RSAEuro;../QBase/uchardet;../QBase/curl;../QBase/zlib;../QBase/jwsmtp;../QBase/jsoncpp;../QBase/sigar;../QBase/sigar/win32;../QBase/sigar/LuaSigar;../QBase/LuaFileSystem;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -567,7 +569,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;ZLIB_WINAPI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../QBase;../QBase/mysql;../QBase/Sqlite;../QBase/LuaCJson;../QBase/LuaSql;../QBase/lua5.2;../QBase/pbc;../QBase/Lpeg;../QBase/LuaSocket;../QBase/pugixml;../QBase/rijndael;../QBase/RSAEuro;../QBase/uchardet;../QBase/curl;../QBase/zlib;../QBase/jwsmtp;../QBase/jsoncpp;../QBase/sigar;../QBase/sigar/win32;../QBase/sigar/LuaSigar;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../QBase;../QBase/mysql;../QBase/Sqlite;../QBase/LuaCJson;../QBase/LuaSql;../QBase/lua5.2;../QBase/pbc;../QBase/Lpeg;../QBase/LuaSocket;../QBase/pugixml;../QBase/rijndael;../QBase/RSAEuro;../QBase/uchardet;../QBase/curl;../QBase/zlib;../QBase/jwsmtp;../QBase/jsoncpp;../QBase/sigar;../QBase/sigar/win32;../QBase/sigar/LuaSigar;../QBase/LuaFileSystem;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -585,7 +587,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;ZLIB_WINAPI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../QBase;../QBase/mysql;../QBase/Sqlite;../QBase/LuaCJson;../QBase/LuaSql;../QBase/lua5.2;../QBase/pbc;../QBase/Lpeg;../QBase/LuaSocket;../QBase/pugixml;../QBase/rijndael;../QBase/RSAEuro;../QBase/uchardet;../QBase/curl;../QBase/zlib;../QBase/jwsmtp;../QBase/jsoncpp;../QBase/sigar;../QBase/sigar/win32;../QBase/sigar/LuaSigar;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../QBase;../QBase/mysql;../QBase/Sqlite;../QBase/LuaCJson;../QBase/LuaSql;../QBase/lua5.2;../QBase/pbc;../QBase/Lpeg;../QBase/LuaSocket;../QBase/pugixml;../QBase/rijndael;../QBase/RSAEuro;../QBase/uchardet;../QBase/curl;../QBase/zlib;../QBase/jwsmtp;../QBase/jsoncpp;../QBase/sigar;../QBase/sigar/win32;../QBase/sigar/LuaSigar;../QBase/LuaFileSystem;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

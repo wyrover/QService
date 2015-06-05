@@ -217,8 +217,44 @@ end
 regGameEvent(GameEvent.Start, onStart)
 
 local function addLinker()
-    g_objSessionMgr:addLinkOther("127.0.0.1", 15000, "test1")
-    g_objSessionMgr:addLinkOther("127.0.0.1", 15000, "test2")
+    g_objSessionMgr:addLinkOther("127.0.0.1", 15000, "test1", 1)
+    g_objSessionMgr:addLinkOther("127.0.0.1", 15000, "test2", 1)
+end
+
+local function testEntity()
+    local objAttr = nil
+    local objAttr2 = nil
+    
+    if MSGType.Protobuf == MSGCarrier then
+        objAttr = CompAttr:new("PK_Login.CS_Login")
+        objAttr2 = CompAttr:new("PK_Login.CS_Login")
+    end
+    if MSGType.Json == MSGCarrier then
+        objAttr = CompAttr:new()
+        objAttr2 = CompAttr:new()
+    end
+    if MSGType.Struct == MSGCarrier then
+        objAttr = CompAttr:new(CS_Login)
+        objAttr2 = CompAttr:new(CS_Login)
+    end
+    
+    objAttr:setAttr("strUserName", "lqf_name")
+    objAttr:setAttr("strPSW", "1234567")
+    objAttr:setAttr("strParam", "param{}")
+    
+    local strMsg = objAttr:toString()
+    Debug(strMsg)
+    
+    objAttr2:fromString(strMsg)
+    table.print(objAttr2)
+    table.print(objAttr)
+end
+
+local function TestLFS()
+    local strProtoDir = string.format("%s%s%s%s%s%s", 
+        Q_GetModulPath(), "Lua", Q_GetPathSeparator(), "Public", Q_GetPathSeparator(),
+        "ProtobufStr")
+    table.print( getAllFile(strProtoDir))
 end
 
 local function onStarted()
@@ -226,5 +262,7 @@ local function onStarted()
     --luaSqlWriteOK()
     Debug("onStarted")
     addLinker()
+    testEntity()
+    --TestLFS()
 end
 regGameEvent(GameEvent.Started, onStarted)

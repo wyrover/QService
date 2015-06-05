@@ -67,9 +67,13 @@ public:
      void setInterface(class CEventInterface *pInterface);
     void setLua(struct lua_State *pLua);
 
-    CLuaBinary *getBinary(void)
+    CLuaBinary *getNetBinary(void)
     {
-        return &m_objBinary;
+        return &m_objNetBinary;
+    };
+    CLuaBinary *getSerializeBinary(void)
+    {
+        return &m_objSerializeBinary;
     };
     /* Õ∑≈À˘”–session*/
     void freeAllSession(void);
@@ -88,7 +92,8 @@ private:
     CObjPool<CSession> m_objSessionPool;
     CWebSockParser m_objWebSockParser;
     CTcpParser m_objTcpParser;
-    CLuaBinary m_objBinary;    
+    CLuaBinary m_objNetBinary;
+    CLuaBinary m_objSerializeBinary; 
 };
 
 #endif//Q_SESSION_MANAGER_H_

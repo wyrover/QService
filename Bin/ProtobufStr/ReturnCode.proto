@@ -1,8 +1,0 @@
-//·µ»Ø´íÎóÂë
-package PK_RtnCode;
-
-message RtnCode
-{
-    required int32 iCode = 1;
-    optional string strDescribe = 2;
-}

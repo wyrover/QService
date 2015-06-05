@@ -3,44 +3,6 @@
 --]]
 
 --[[
-描述：protobuf构建、解析
-参数：
-返回值：无
---]]
-function createProBuf(iProtocol, tMsg)
-    local strProro = getProtoStr(iProtocol)
-    
-    return protobuf.encode(strProro, tMsg)
-end
-
-function parseProBuf(iProtocol, strMsg, iMsgLens)
-    local strProro = getProtoStr(iProtocol)
-    
-    local tMsg = protobuf.decode(strProro, strMsg, iMsgLens)
-    assert(tMsg, protobuf.lasterror())
-    
-    return tMsg
-end
-
---[[
-描述：二进制消息构建
-参数：
-返回值：无
---]]
-function createMsg(iProtocol, tMsg)
-    g_objBinary:reSetWrite()
-    
-    g_objBinary:setUint16(iProtocol)
-    
-    if (not tMsg) or (table.empty(tMsg)) then
-        return
-    end
-    
-    local strMsg = createProBuf(iProtocol, tMsg)
-    g_objBinary:setByte(strMsg, string.len(strMsg))
-end
-
---[[
 描述：session获取
 参数：
 返回值：无
@@ -171,10 +133,7 @@ end
 返回值： 无
 --]]
 function addLinker(strIp, usPort, strName, usType)
-    assert(strIp)
-    assert(usPort)
-    assert(strName)
-    assert(usType)
+    assert(strIp and usPort and strName and usType)
     
     g_objSessionMgr:addLinkOther(strIp, usPort, strName, usType)
 end

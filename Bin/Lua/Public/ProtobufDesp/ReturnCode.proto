@@ -1,0 +1,7 @@
+//?????  
+package PK_RtnCode;
+
+message SC_RtnCode
+{
+    required int32 iCode = 1;
+}

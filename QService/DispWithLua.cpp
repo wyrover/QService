@@ -66,7 +66,9 @@ bool CDisposeEvent::onSerciveStartUp(void)
     {
         CSessionManager::getSingletonPtr()->setLua(m_pLua);
         luabridge::getGlobal(m_pLua, LUA_EVENT_ONSTARTUP)(CSessionManager::getSingletonPtr(), 
-            CSessionManager::getSingletonPtr()->getBinary(), CEncrypt::getSingletonPtr());
+            CSessionManager::getSingletonPtr()->getNetBinary(), 
+            CSessionManager::getSingletonPtr()->getSerializeBinary(), 
+            CEncrypt::getSingletonPtr());
     }
     catch(luabridge::LuaException &e)
     {
@@ -152,7 +154,7 @@ void CDisposeEvent::onSockRead(const char *pszMsg, const size_t &iLens)
 {
     try
     {
-        CSessionManager::getSingletonPtr()->getBinary()->setBuffer(pszMsg, iLens);
+        CSessionManager::getSingletonPtr()->getNetBinary()->setBuffer(pszMsg, iLens);
         luabridge::getGlobal(m_pLua, LUA_EVENT_ONSOCKREAD)();
     }
     catch(luabridge::LuaException &e)
@@ -173,7 +175,7 @@ void CDisposeEvent::onDebug(const char *pszMsg, const size_t &iLens)
 {
     try
     {
-        CSessionManager::getSingletonPtr()->getBinary()->setBuffer(pszMsg, iLens);
+        CSessionManager::getSingletonPtr()->getNetBinary()->setBuffer(pszMsg, iLens);
         luabridge::getGlobal(m_pLua, LUA_EVENT_ONDEBUG)();
     }
     catch(luabridge::LuaException &e)

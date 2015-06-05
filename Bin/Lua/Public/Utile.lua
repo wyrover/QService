@@ -29,6 +29,10 @@ end
 --]]
 function Log(iLevel, strFormat, ...)
     local strMsg = string.format(strFormat, table.unpack({...}))
+    if bDebug then
+        print(strMsg)
+    end
+    
     Q_LOG(iLevel, strMsg)
 end
 
@@ -120,6 +124,62 @@ function fileWrite(strFile, strFormat, ...)
     
     pFile:write(string.format(strFormat, table.unpack({...})))
     pFile:close()
+end
+
+--[[
+描述：获取文件名
+参数：
+返回值：
+--]]
+function getFileName(str)
+    local idx = str:match(".+()%.%w+$")
+    if(idx) then
+        return str:sub(1, idx-1)
+    else
+        return str
+    end
+end
+
+--[[
+描述：获取文件扩展名
+参数：
+返回值：
+--]]
+function getExtension(str)
+    return str:match(".+%.(%w+)$")
+end
+
+--[[
+描述：获取文件夹下所有文件名
+参数：strPath --路径 strExtension --扩展名 
+返回值：table
+--]]
+function getAllFile(strPath, strExtension, tAllFile)
+    if not tAllFile then
+        tAllFile = {}
+    end
+    
+    for file in lfs.dir(strPath) do
+        if file ~= "." and file ~= ".." then
+            local strFile = string.format("%s%s%s", strPath, Q_GetPathSeparator(), file)
+            local tAttr = lfs.attributes(strFile)
+            if "directory" == tAttr.mode then
+                getAllFile(strFile, strExtension, tAllFile)
+            else
+                if (not strExtension) 
+                    or ("*" == strExtension) 
+                    or (0 == string.len(strExtension)) then
+                    table.insert(tAllFile, file)
+                else
+                    if string.upper(strExtension) == string.upper(getExtension(file)) then
+                        table.insert(tAllFile, file)
+                    end
+                end
+            end
+        end
+    end
+    
+    return tAllFile
 end
 
 --[[
