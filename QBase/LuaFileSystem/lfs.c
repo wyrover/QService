@@ -136,6 +136,7 @@ typedef struct dir_data {
 
 #ifdef WIN32
 #pragma warning(disable:4996)
+#pragma warning(disable:4244)
 #endif
 
 /*
