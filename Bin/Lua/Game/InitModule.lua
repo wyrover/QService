@@ -11,9 +11,9 @@ lfs = require("lfs")
 local tLoad = 
 {
     --公共
-    {"Public/pbc/initpbc", true},
-    {"Public/luasocket/initluasocket", true},
-    {"Public/redis/initredis", true},
+    {"Public/pbc/initpbc", false},
+    {"Public/luasocket/initluasocket", false},
+    {"Public/redis/initredis", false},
     {"Public/Utile", true},
     {"Public/Macros", true},
     {"Public/ErrorCodes", true},
@@ -30,12 +30,9 @@ local tLoad =
     {"Public/Ping", true},    
     {"Public/Object", true},
     {"Public/Component", true},
+    {"Public/Component/InitComp", true},
     {"Public/Entity", true},
-    
-    --组件
-    {"Game/Component/Comp_Name", true},
-    {"Game/Component/Comp_Attr", true},
-    --实体
+    {"Public/Entity/InitEntity", true},
     
     
     {"Game/LogIn", true},
@@ -57,22 +54,13 @@ loadAllFile()
 返回值： 无
 --]]
 function reLoad(strFile)
-    local luaDir = Q_GetModulPath() .. "Lua" .. Q_GetPathSeparator()
-    local strPath = ""
+    local tTmp = nil
     
     if strFile then
-        strPath = luaDir..strFile..".lua"
-        Debug("reload file %s", strPath)
-        dofile(strPath)
-        
-        return
+        tTmp = {strFile, true}
+    else
+        tTmp = tLoad
     end
     
-    for _, val in pairs(tLoad) do
-        if val[2] then
-            strPath = luaDir..val[1]..".lua"
-            Debug("reload file %s", strPath)
-            dofile(strPath)
-        end
-    end
+    loadFile(tTmp)
 end
