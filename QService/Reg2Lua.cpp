@@ -133,6 +133,9 @@ void CReg2Lua::reg_Ini(void)
             .addFunction("getStringValue", &CIniFile::getStringValue)
             .addFunction("getIntValue", &CIniFile::getIntValue)
             .addFunction("getFloatValue", &CIniFile::getFloatValue)
+
+            .addFunction("setStringValue", &CIniFile::setStringValue)
+            .addFunction("Save", &CIniFile::Save)
         .endClass();
 }
 

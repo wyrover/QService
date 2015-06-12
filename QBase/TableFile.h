@@ -50,6 +50,7 @@ private:
     bool parseHead(std::list<std::string> &lstTableHead, std::map<int, std::string> &mapTableHead) const;
     void checkEof(void);
     bool checkNote(const std::string &strMsg) const;
+    void Clear(void);
 
 private:
     bool m_bEof;

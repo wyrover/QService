@@ -4,23 +4,6 @@
 
 --Debug打印开关 影响Debug table.print
 local bDebug = true
---计时器
-if not g_objCtimer then
-    g_objCtimer = CTimer()
-end
---ID生成
-if not g_objSnowflakeID then
-    g_objSnowflakeID = CSnowflakeID()
-    g_objSnowflakeID:setMachineID(getServerID())
-end
---过滤敏感字
-if not g_objFilter then
-    g_objFilter = CFilter()
-end
---字符集
-if not g_objCharset then
-    g_objCharset = CCharset()
-end
 
 --[[
 描述：日志
@@ -46,69 +29,6 @@ function Debug(strFormat, ...)
         local strMsg = string.format(strFormat, table.unpack({...}))
         print(string.format("[%s][Lua_Debug] %s", os.date(), strMsg))
     end
-end
-
---[[
-描述：获取字符串编码格式
-参数：
-返回值：无
---]]
-function getCharset(strWord)
-    return g_objCharset:getStrCharset(strWord, string.len(strWord))
-end
-
---[[
-描述：获取一不重复的ID
-参数：
-返回值：无
---]]
-function getID()
-    return g_objSnowflakeID:getSnowflakeID()
-end
-
---[[
-描述：添加敏感词
-参数：
-返回值：无
---]]
-function addFilterWord(strWord)
-    g_objFilter:addFilterWord(strWord, string.len(strWord))
-end
-
---[[
-描述：是否包含敏感词
-参数：
-返回值：bool
---]]
-function checkFilterWord(strWord)
-    return g_objFilter:checkHave(strWord, string.len(strWord))
-end
-
---[[
-描述：过滤敏感词
-参数：
-返回值：过滤后的结果
---]]
-function Filter(strWord)
-    return g_objFilter:Filter(strWord, string.len(strWord))
-end
-
---[[
-描述：重置计时器
-参数：
-返回值：无
---]]
-function timerReStart()
-    g_objCtimer:reStart()
-end
-
---[[
-描述：获取耗时
-参数：
-返回值：double
---]]
-function timerElapsed()
-    return g_objCtimer:Elapsed()
 end
 
 --[[

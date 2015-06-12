@@ -36,8 +36,19 @@ bool CTableFile::checkNote(const std::string &strMsg) const
     return false;
 }
 
+void CTableFile::Clear(void)
+{
+    m_bEof = true;
+    m_iRemoveCount = Q_INIT_NUMBER;
+    m_mapTableHead.clear();
+    m_lstAllValue.clear();
+    m_itNowRow = m_lstAllValue.begin();
+}
+
 int CTableFile::Parse(void)
 {
+    Clear();
+
     std::fstream inStream(m_strFile.c_str(), std::ios::in);
     if (!inStream.good())
     {

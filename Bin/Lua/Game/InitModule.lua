@@ -14,6 +14,7 @@ local tLoad =
     {"Public/pbc/initpbc", false},
     {"Public/luasocket/initluasocket", false},
     {"Public/redis/initredis", false},
+    {"Public/CppUtile", true},
     {"Public/Utile", true},
     {"Public/Macros", true},
     {"Public/ErrorCodes", true},
