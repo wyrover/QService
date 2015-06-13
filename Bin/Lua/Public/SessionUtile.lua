@@ -63,7 +63,7 @@ function sendToType(usType, iProtocol, tMsg)
     sendToID(iSessionID, iProtocol, tMsg)
 end
 
-function broadcastToType(usType, iProtocol, tMsg)
+function broadCastToType(usType, iProtocol, tMsg)
     local tID = g_objSessionMgr:getLinkOtherByType(usType)
     if table.empty(tID) then
         return
@@ -134,6 +134,16 @@ end
 --]]
 function addLinker(strIp, usPort, strName, usType)
     assert(strIp and usPort and strName and usType)
-    
+
     g_objSessionMgr:addLinkOther(strIp, usPort, strName, usType)
 end
+
+--[[
+描述：sesion数量
+参数：
+返回值： 无
+--]]
+function getSessionSize()
+    return g_objSessionMgr:getSessionSize()
+end
+

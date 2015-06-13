@@ -13,19 +13,19 @@ require("Game/InitModule")
 local tNowDay = os.date("*t", time)
 local iProLens = 2
 
---session管理
+--session管理 CSessionManager
 if not g_objSessionMgr then
     g_objSessionMgr = nil
 end
---二进制解析
+--二进制解析 CLuaBinary
 if not g_objNetBinary then
     g_objNetBinary = nil
 end
---序列化使用
+--序列化使用 CLuaBinary
 if not g_objSerBinary then
     g_objSerBinary = nil
 end
---编解码
+--编解码 CEncrypt
 if not g_objEncrypt then
     g_objEncrypt = nil
 end
@@ -52,6 +52,7 @@ function Lua_OnStartUp(objSessionMgr, objNetBinary, objSerBinary, objEncrypt)
     g_objNetBinary = objNetBinary
     g_objSerBinary = objSerBinary
     g_objEncrypt = objEncrypt
+
     math.randomseed(tonumber(tostring(os.time()):reverse():sub(1,6)))
     
     onGameEvent(GameEvent.Start)--这里一般读取配置文件
