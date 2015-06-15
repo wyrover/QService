@@ -1,0 +1,4 @@
+//ÉúÃüÖÜÆÚ
+message Comp_Life {
+    required uint32 uiLife = 1;
+}

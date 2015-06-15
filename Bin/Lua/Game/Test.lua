@@ -226,8 +226,8 @@ local function testEntity()
     local objAttr2 = nil
     
     if MSGType.Protobuf == MSGCarrier then
-        objAttr = CompAttr:new("PK_Login.CS_Login")
-        objAttr2 = CompAttr:new("PK_Login.CS_Login")
+        objAttr = CompAttr:new("CS_Login")
+        objAttr2 = CompAttr:new("CS_Login")
     end
     if MSGType.Json == MSGCarrier then
         objAttr = CompAttr:new()

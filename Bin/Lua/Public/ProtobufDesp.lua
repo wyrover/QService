@@ -4,8 +4,8 @@ Protobuf 描述初始化
 
 --协议对应的protobuf描述字符串  需要自己写对应
 local tProtoDesp = {
-    {Protocol.CS_Login, "PK_Login.CS_Login"},
-    {Protocol.SC_Login, "PK_RtnCode.SC_RtnCode"},
+    {Protocol.CS_Login, "CS_Login"},
+    {Protocol.SC_Login, "SC_RtnCode"},
 }
 
 --protobuf描述文件加载

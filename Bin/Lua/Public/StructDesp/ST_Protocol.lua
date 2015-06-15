@@ -1,3 +1,7 @@
+--´íÎóÂë
+SC_RtnCode = {
+    {'iCode', DataType.SINT32},
+}
 
 --ÇëÇóµÇÂ½
 CS_Login = {

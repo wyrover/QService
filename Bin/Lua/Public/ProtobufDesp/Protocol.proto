@@ -1,9 +1,10 @@
-//登陆模块协议
-package PK_Login;
+//返回码   
+message SC_RtnCode {
+    required int32 iCode = 1;
+}
 
 //请求登陆
-message CS_Login
-{
+message CS_Login {
     required string strUserName = 1;
     required string strPSW = 2;
     optional string strParam = 3;
