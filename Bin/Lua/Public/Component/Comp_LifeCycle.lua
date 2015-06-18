@@ -3,7 +3,7 @@
 --]]
 
 CompLifeCycle = {}
---设置类型是Component    继承
+--继承Component
 setmetatable(CompLifeCycle, Component)
 CompLifeCycle.__index = CompLifeCycle
 

@@ -3,7 +3,7 @@
 --]]
 
 CompAttr = {}
---设置类型是Component    继承
+--继承Component
 setmetatable(CompAttr, Component)
 CompAttr.__index = CompAttr
 

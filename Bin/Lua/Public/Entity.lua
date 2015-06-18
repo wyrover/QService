@@ -3,7 +3,7 @@
 --]]
 
 Entity = {}
---设置类型是Object    继承
+--继承Object
 setmetatable(Entity, Object)
 Entity.__index = Entity
 

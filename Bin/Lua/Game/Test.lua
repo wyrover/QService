@@ -248,6 +248,10 @@ local function testEntity()
     objAttr2:fromString(strMsg)
     table.print(objAttr2)
     table.print(objAttr)
+
+    local objPlayer = Player:new()
+    print("player attr:")
+    print(objPlayer:getComponent(CompNam_Attr):toString())
 end
 
 local function TestLFS()

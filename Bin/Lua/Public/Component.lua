@@ -3,7 +3,7 @@
 --]]
 
 Component = {}
---设置类型是Object    继承
+--继承Object
 setmetatable(Component, Object)
 Component.__index = Component
 
