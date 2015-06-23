@@ -7,7 +7,7 @@ local m_iLogMemoTime = 60
 local function onLogLuaMemory()
     local iTotalMem = collectgarbage("count")
     local strMemUsage = string.format("lua memory usage:%d,session size:%d", 
-        iTotalMem, g_objSessionMgr:getSessionSize())
+        iTotalMem, getSessionSize())
         
     Log(LOGLV_INFO, strMemUsage)
     
