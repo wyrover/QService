@@ -4,8 +4,7 @@
 
 local tLoad = 
 {
-    {"Game/LogIn", true},    
-    {"Game/Test", true},
+    {"Game/LogIn", true},
 }
 
 loadFile(tLoad)

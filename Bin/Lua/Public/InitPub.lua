@@ -57,6 +57,7 @@ local tLoad =
     {"Public/Component/InitComp", true},
     {"Public/Entity", true},
     {"Public/Entity/InitEntity", true},
+    {"Public/OnShutDown", true},
 }
 
 loadFile(tLoad)

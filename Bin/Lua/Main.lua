@@ -67,9 +67,6 @@ end
 --]]
 function Lua_OnShutDown()
     onGameEvent(GameEvent.ShutDown)
-    
-    --确认退出，，，没这个不会退出
-    shutDown()
 end
 
 --[[
