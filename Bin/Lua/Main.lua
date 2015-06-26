@@ -8,6 +8,7 @@ local luaDir = string.format("%s%s%s",
 package.path = string.format("%s;%s?.lua", 
     package.path, luaDir)
 
+require("Public/InitPub")
 require("Game/InitModule")
 
 local tNowDay = os.date("*t", time)

@@ -69,14 +69,11 @@ function createMsg(iProtocol, tMsg)
     if MSGType.Protobuf == MSGCarrier then
         local strMsg = createProBuf(iProtocol, tMsg)
         g_objNetBinary:setByte(strMsg, string.len(strMsg))
-        Debug("create protobuf message.")
     elseif MSGType.Struct == MSGCarrier then
         createStructBuf(iProtocol, tMsg)
-        Debug("create struct message.")
     elseif MSGType.Json == MSGCarrier then
         local strMsg = createJsonBuf(tMsg)
         g_objNetBinary:setByte(strMsg, string.len(strMsg))
-        Debug("create json message.")
     else
         assert(false)
     end    
@@ -88,14 +85,11 @@ function parseMsg(iProtocol, iMsgLens)
     if MSGType.Protobuf == MSGCarrier then
         local strMsg = g_objNetBinary:getByte(iMsgLens)
         tMsg = parseProBuf(iProtocol, strMsg, iMsgLens)
-        Debug("parse protobuf message.")
     elseif MSGType.Struct == MSGCarrier then
         tMsg = parseStructBuf(iProtocol)
-        Debug("parse struct message.")
     elseif MSGType.Json == MSGCarrier then
         local strMsg = g_objNetBinary:getByte(iMsgLens)
         tMsg = parseJsonBuf(strMsg)
-        Debug("parse json message.")
     else
         assert(false)
     end

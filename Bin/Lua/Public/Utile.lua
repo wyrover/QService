@@ -103,23 +103,6 @@ function getAllFile(strPath, strExtension, tAllFile)
 end
 
 --[[
-描述：加载lua文件
-参数：
-返回值： 
---]]
-function loadFile(tFile)
-    local luaDir = Q_GetModulPath() .. "Lua" .. Q_GetPathSeparator()
-    local strPath = ""
-    
-    for _, val in pairs(tFile) do
-        if val[2] then
-            strPath = luaDir .. val[1] .. ".lua"
-            dofile(strPath)
-        end
-    end
-end
-
---[[
 描述：保护模式中调用函数
 参数：
 返回值：bool 函数返回值
