@@ -2,8 +2,8 @@
 <QServer>
     <!-- 邮件参数配置 不需要则屏蔽该节点--> 
     <Mail>
-		<!--邮件服务器-->
-		<MailServer>smtp.163.com</MailServer>
+        <!--邮件服务器-->
+        <MailServer>smtp.163.com</MailServer>
 	    <!--类型 1：LOGIN  2：PLAIN-->
         <AuthType>2</AuthType>
         <!--发送者-->

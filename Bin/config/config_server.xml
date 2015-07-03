@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <QServer>
     <!--服务器节点-->
     <ServerInfo>
-		<!--服务器ID(最大1024)-->
+        <!--服务器ID(最大1024)-->
         <ServerID>1</ServerID>
-		<!--服务器名称-->
+        <!--服务器名称-->
         <Name>一区</Name>
         <!--定时器触发间隔时间 0 不触发(毫秒)-->
         <Timer>20</Timer>

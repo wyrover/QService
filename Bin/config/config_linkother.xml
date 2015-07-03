@@ -2,7 +2,7 @@
 <QServer>
     <!--服务器节点-->
     <ServerInfo>
-		<!--连接到其他服务器-->
+        <!--连接到其他服务器-->
         <LinkOther>
             <Name>accounsv</Name>
             <Type>1</Type>

@@ -2,7 +2,7 @@
 <QServer>    
     <!-- mysql日志参数配置,不需要则屏蔽该节点。log表的生成sql语句在log.sql中 --> 
     <!--<DBLog>
-		<Ip>127.0.0.1</Ip>
+        <Ip>127.0.0.1</Ip>
         <Port>3306</Port>
         <User>root</User>
         <PWD></PWD>

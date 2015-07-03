@@ -3,7 +3,7 @@ local luaDir2 = Q_GetModulPath() .. "Lua" .. Q_GetPathSeparator() .. "Public" ..
 package.path = package.path .. ";" .. luaDir1 .. "?.lua"
 package.path = package.path .. ";" .. luaDir2 .. "?.lua"
 
-require("InitTool")
+require("InitPub")
 
 local tNowDay = os.date("*t", time)
 if not g_objNetBinary then
