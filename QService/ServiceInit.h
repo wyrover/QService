@@ -17,7 +17,7 @@ int initRSAKey(void);
 
 //邮件发送服务
 int initMailSender(void);
-int rendMailConfig(std::string &strMailServer,
+int readMailConfig(std::string &strMailServer,
     std::string &strSender,
     std::string &strUserName,
     std::string &strPassWord,

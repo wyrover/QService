@@ -134,7 +134,7 @@ int initEncrypt(void)
     return initRSAKey();
 }
 
-int rendMailConfig(std::string &strMailServer,
+int readMailConfig(std::string &strMailServer,
     std::string &strSender,
     std::string &strUserName,
     std::string &strPassWord,
@@ -198,7 +198,8 @@ int initMailSender(void)
     enum jwsmtp::mailer::authtype emType;
     bool bOpen;
 
-    if (Q_RTN_OK != rendMailConfig(strMailServer, strSender, strUserName, strPassWord, emType, bOpen))
+    if (Q_RTN_OK != readMailConfig(strMailServer, strSender, 
+        strUserName, strPassWord, emType, bOpen))
     {
         return Q_RTN_FAILE;
     }
