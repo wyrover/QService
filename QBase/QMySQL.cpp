@@ -988,16 +988,6 @@ void CMySQLLink::open(CDBUrl &objDBUrl)
         goto EXT;
     }
 
-    if (Q_RTN_OK != mysql_options(m_pDb_Ptr, MYSQL_OPT_RECONNECT, &cReConnect))
-    {
-        goto EXT;
-    }
-
-    /*if (Q_RTN_OK != mysql_options(m_pDb_Ptr, MYSQL_SET_CHARSET_NAME, "utf8"))
-    {
-        goto EXT;
-    }*/
-
     //选择制定的数据库失败
     //0表示成功，非0值表示出现错误。
     if (mysql_select_db( m_pDb_Ptr, objDBUrl.getDB().c_str()) != Q_RTN_OK) 
