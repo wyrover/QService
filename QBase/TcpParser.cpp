@@ -63,8 +63,8 @@ bool CTcpParser::parseHead(class CEventBuffer *pBuffer)
             return false;
         }
 
-        m_iBufLens = ntohl(*((u_long *)(pHead + sizeof(cFlag))));
-        m_iHeadLens = sizeof(cFlag) + sizeof(u_long);
+        m_iBufLens = ntohl(*((size_t *)(pHead + sizeof(cFlag))));
+        m_iHeadLens = sizeof(cFlag) + sizeof(size_t);
     }
     else
     {
@@ -134,7 +134,7 @@ const char *CTcpParser::createHead(const size_t &iLens, size_t &iHeadLens)
     else 
     {
         m_acHead[0] = TCPBUFLENS_127;
-        u_long uiLens = ntohl((u_long)iLens);
+        size_t uiLens = ntohl(iLens);
         memcpy(m_acHead + 1, &uiLens, sizeof(uiLens));
 
         iHeadLens = sizeof(char) + sizeof(uiLens);
