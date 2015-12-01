@@ -46,6 +46,8 @@
 #include <windows.h>
 #include <io.h>
 #include <sys/locking.h>
+#pragma warning(disable:4996)
+#pragma warning(disable:4244)
 #ifdef __BORLANDC__
  #include <utime.h>
 #else
@@ -134,11 +136,6 @@ typedef struct dir_data {
 #define LSTAT_FUNC lstat
 #endif
 
-#ifdef WIN32
-#pragma warning(disable:4996)
-#pragma warning(disable:4244)
-#endif
-
 /*
 ** Utility functions
 */
@@ -202,15 +199,23 @@ static int get_dir (lua_State *L) {
 ** Check if the given element on the stack is a file and returns it.
 */
 static FILE *check_file (lua_State *L, int idx, const char *funcname) {
+#if LUA_VERSION_NUM == 501
         FILE **fh = (FILE **)luaL_checkudata (L, idx, "FILE*");
-        if (fh == NULL) {
-                luaL_error (L, "%s: not a file", funcname);
-                return 0;
-        } else if (*fh == NULL) {
+        if (*fh == NULL) {
                 luaL_error (L, "%s: closed file", funcname);
                 return 0;
         } else
                 return *fh;
+#elif LUA_VERSION_NUM >= 502 && LUA_VERSION_NUM <= 503
+        luaL_Stream *fh = (luaL_Stream *)luaL_checkudata (L, idx, "FILE*");
+        if (fh->closef == 0 || fh->f == NULL) {
+                luaL_error (L, "%s: closed file", funcname);
+                return 0;
+        } else
+                return fh->f;
+#else
+#error unsupported Lua version
+#endif
 }
 
 
