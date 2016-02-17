@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <QServer>
     <!-- 邮件参数配置 不需要则屏蔽该节点--> 
     <Mail>
@@ -11,6 +11,6 @@
         <!--用户名-->
         <UserName>200309129@163.com</UserName>
         <!--密码-->
-        <PassWord>lqf110110</PassWord>
+        <PassWord>xxxxxx</PassWord>
     </Mail>
 </QServer>
