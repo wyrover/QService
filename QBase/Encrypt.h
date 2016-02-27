@@ -47,7 +47,22 @@ public:
 
     //zlib
     std::string zlibEncode(std::string strVal);
+    const char *zlibCompress(const char *pszVal, const size_t &iValLens, size_t &iOutLens);
     std::string zlibDecode(std::string strVal);
+    const char *zlibDecompression(const char *pszVal, const size_t &iValLens, size_t &iOutLens);
+
+    CAESEncode *getAESEncode(void)
+    {
+        return &m_objAESEncode;
+    };
+    CAESDecode *getAESDecode(void)
+    {
+        return &m_objAESDecode;
+    };
+    CRSA *getRSA(void)
+    {
+        return &m_objRSA;
+    };
 
 private:
     unsigned char toHex(unsigned char x);

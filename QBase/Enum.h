@@ -107,4 +107,12 @@ enum StructAttr
     STATTR_STATTR//结构体属性
 };
 
+/*链接加密类型*/
+enum EncryptType
+{
+    AES = 1,
+    RSA,
+    ZLib,
+};
+
 #endif//Q_ENUM_H_

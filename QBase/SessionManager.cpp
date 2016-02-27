@@ -3,6 +3,7 @@
 #include "LinkOther.h"
 #include "LuaFunc.h"
 #include "WorkThreadEvent.h"
+#include "Encrypt.h"
 
 #define Q_INITSESSIONSIZE 1024
 SINGLETON_INIT(CSessionManager)

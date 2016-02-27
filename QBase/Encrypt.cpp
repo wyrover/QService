@@ -296,45 +296,62 @@ std::string CEncrypt::urlDecode(std::string strVal)
     return strTemp;  
 }
 
-std::string CEncrypt::zlibEncode(std::string strVal)
+const char *CEncrypt::zlibCompress(const char *pszVal, const size_t &iValLens, size_t &iOutLens)
 {
     char *pBuffer = NULL;
-    uLong ulEnSize = compressBound((uLong)strVal.size());
+    uLong ulEnSize = compressBound((uLong)iValLens);
+    iOutLens = Q_INIT_NUMBER;
 
     pBuffer = m_objBuffer.New(ulEnSize);
     if (NULL == pBuffer)
     {
-        return "";
+        return NULL;
     }
-    
-    if (Z_OK != compress((Bytef*)pBuffer, &ulEnSize, (Bytef*)strVal.c_str(), (uLong)strVal.size()))
+
+    if (Z_OK != compress((Bytef*)pBuffer, &ulEnSize, (Bytef*)pszVal, (uLong)iValLens))
+    {
+        return NULL;
+    }
+
+    iOutLens = ulEnSize;
+
+    return pBuffer;
+}
+
+std::string CEncrypt::zlibEncode(std::string strVal)
+{
+    size_t iOutLens = Q_INIT_NUMBER;
+    size_t iInLens = strVal.size();
+    const char *pszRtn = zlibCompress(strVal.c_str(), iInLens, iOutLens);
+    if (NULL == pszRtn)
     {
         return "";
     }
 
-    return std::string(pBuffer, ulEnSize);
+    return std::string(pszRtn, iOutLens);
 }
 
-std::string CEncrypt::zlibDecode(std::string strVal)
+const char *CEncrypt::zlibDecompression(const char *pszVal, const size_t &iValLens, size_t &iOutLens)
 {
     char *pBuffer = NULL;
     int iErr = Z_OK;
     int iWSize = DEF_WBITS;
-    size_t iBufferLen= (0 == m_objBuffer.getTotalLens() ? strVal.size() : m_objBuffer.getTotalLens());
+    size_t iBufferLen = (0 == m_objBuffer.getTotalLens() ? iValLens : m_objBuffer.getTotalLens());
     z_stream stStream;
+    iOutLens = Q_INIT_NUMBER;
 
     pBuffer = m_objBuffer.New(iBufferLen);
     if (NULL == pBuffer)
     {
-        return "";
+        return NULL;
     }
 
-    stStream.avail_in = (uInt)strVal.size();;
+    stStream.avail_in = (uInt)iValLens;
     stStream.avail_out = (uInt)iBufferLen;
     stStream.zalloc = (alloc_func)NULL;
     stStream.zfree = (free_func)Z_NULL;
     stStream.next_out = (Byte *)pBuffer;
-    stStream.next_in = (Byte *)strVal.c_str();
+    stStream.next_in = (Byte *)pszVal;
 
     iErr = inflateInit2(&stStream, iWSize);
     switch(iErr) 
@@ -343,11 +360,11 @@ std::string CEncrypt::zlibDecode(std::string strVal)
         break;
 
     case(Z_MEM_ERROR):
-        return "";
+        return NULL;
 
     default:
         inflateEnd(&stStream);
-        return "";
+        return NULL;
     }
 
     do 
@@ -367,7 +384,7 @@ std::string CEncrypt::zlibDecode(std::string strVal)
             if (stStream.avail_out > 0) 
             {
                 inflateEnd(&stStream);
-                return "";
+                return NULL;
             }
             /* fall through */
         case(Z_OK):
@@ -376,7 +393,7 @@ std::string CEncrypt::zlibDecode(std::string strVal)
             if (NULL == pBuffer) 
             {
                 inflateEnd(&stStream);
-                return "";
+                return NULL;
             }
    
             stStream.next_out = (unsigned char *)pBuffer + iBufferLen;
@@ -386,15 +403,31 @@ std::string CEncrypt::zlibDecode(std::string strVal)
 
         default:
             inflateEnd(&stStream);
-            return "";
+            return NULL;
         }
     } while (Z_STREAM_END != iErr);
 
     iErr = inflateEnd(&stStream);
     if (Z_OK != iErr) 
     {
+        return NULL;
+    }
+
+    iOutLens = stStream.total_out;
+
+    return pBuffer;
+}
+
+std::string CEncrypt::zlibDecode(std::string strVal)
+{
+    size_t iOutLens = Q_INIT_NUMBER;
+    size_t iInLens = strVal.size();
+
+    const char *pszRtn = zlibDecompression(strVal.c_str(), iInLens, iOutLens);
+    if (NULL == pszRtn)
+    {
         return "";
     }
 
-    return std::string(pBuffer, stStream.total_out);
+    return std::string(pszRtn, iOutLens);
 }

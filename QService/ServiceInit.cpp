@@ -3,12 +3,6 @@
 
 /*业务处理头文件*/
 
-enum 
-{
-    INICOFG_CLOSE = 0,
-    INICOFG_OPEN
-};
-
 #define CONFIG_SERVER      "config_server.xml"
 #define CONFIG_TXTLOG      "config_txtlog.xml"
 #define CONFIG_DBLOG       "config_dblog.xml"
@@ -16,6 +10,7 @@ enum
 #define CONFIG_MAIL        "config_mail.xml"
 #define CONFIG_AES         "config_aes.xml"
 #define CONFIG_RSA         "config_rsa.xml"
+#define CONFIG_COMMENCRYPT "config_encrypt.xml"
 
 #define CONFIG_FOLDER      "config"
 #define LOG_FOLDER         "log"
