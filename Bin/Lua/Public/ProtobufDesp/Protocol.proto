@@ -3,6 +3,11 @@ message SC_RtnCode {
     required int32 iCode = 1;
 }
 
+--服务器间链接注册
+message SS_Link {
+    required string strName = 2;
+}
+
 //请求登陆
 message CS_Login {
     required string strUserName = 1;

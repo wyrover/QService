@@ -5,16 +5,23 @@
 SINGLETON_INIT(CCommEncrypt)
 CCommEncrypt objLuaEncrypt;
 
-void CCommEncrypt::addType(EncryptType emType)
+void CCommEncrypt::addType(EncryptType emType, bool bSVLink)
 {
-    m_vcType.push_back(emType);
+    if (bSVLink)
+    {
+        m_vcSVLinkType.push_back(emType);
+    }
+    else
+    {
+        m_vcClinetType.push_back(emType);
+    }    
 }
 
-const char *CCommEncrypt::Encode(const char *pszMsg, const size_t iMsgLens, size_t &iOutLens)
+const char *CCommEncrypt::Encode(const char *pszMsg, const size_t iMsgLens, size_t &iOutLens, bool bSVLink)
 {
     iOutLens = Q_INIT_NUMBER;
 
-    if (m_vcType.empty())
+    if (m_vcClinetType.empty())
     {
         iOutLens = iMsgLens;
 
@@ -32,7 +39,17 @@ const char *CCommEncrypt::Encode(const char *pszMsg, const size_t iMsgLens, size
     bool bFirst = true;
     size_t iTmpLens = Q_INIT_NUMBER;
     std::vector<EncryptType>::iterator itType;
-    for (itType = m_vcType.begin(); m_vcType.end() != itType; itType++)
+    std::vector<EncryptType> *pType = NULL;
+    if (bSVLink)
+    {
+        pType = &m_vcSVLinkType;
+    }
+    else
+    {
+        pType = &m_vcClinetType;
+    }
+
+    for (itType = pType->begin(); pType->end() != itType; itType++)
     {
         switch(*itType)
         {
@@ -68,27 +85,57 @@ const char *CCommEncrypt::Encode(const char *pszMsg, const size_t iMsgLens, size
             {
                 if (bFirst)
                 {
-                    const char *pszTmp = CEncrypt::getSingletonPtr()->
-                        getRSA()->publicKeyEncrypt(pszMsg, iMsgLens, iTmpLens);
-                    if (NULL == pszTmp)
+                    if (bSVLink)
                     {
-                        return NULL;
-                    }
+                        const char *pszTmp = CEncrypt::getSingletonPtr()->
+                            getRSA()->privateKeyEncrypt(pszMsg, iMsgLens, iTmpLens);
+                        if (NULL == pszTmp)
+                        {
+                            return NULL;
+                        }
 
-                    m_objBuffer.reSet();
-                    m_objBuffer.pushBuff(pszTmp, iTmpLens);
+                        m_objBuffer.reSet();
+                        m_objBuffer.pushBuff(pszTmp, iTmpLens);
+                    }
+                    else
+                    {
+                        const char *pszTmp = CEncrypt::getSingletonPtr()->
+                            getRSA()->publicKeyEncrypt(pszMsg, iMsgLens, iTmpLens);
+                        if (NULL == pszTmp)
+                        {
+                            return NULL;
+                        }
+
+                        m_objBuffer.reSet();
+                        m_objBuffer.pushBuff(pszTmp, iTmpLens);
+                    }
                 }
                 else
                 {
-                    const char *pszTmp = CEncrypt::getSingletonPtr()->
-                        getRSA()->publicKeyEncrypt(m_objBuffer.getBuffer(), m_objBuffer.getLens(), iTmpLens);
-                    if (NULL == pszTmp)
+                    if (bSVLink)
                     {
-                        return NULL;
-                    }
+                        const char *pszTmp = CEncrypt::getSingletonPtr()->
+                            getRSA()->privateKeyEncrypt(m_objBuffer.getBuffer(), m_objBuffer.getLens(), iTmpLens);
+                        if (NULL == pszTmp)
+                        {
+                            return NULL;
+                        }
 
-                    m_objBuffer.reSet();
-                    m_objBuffer.pushBuff(pszTmp, iTmpLens);
+                        m_objBuffer.reSet();
+                        m_objBuffer.pushBuff(pszTmp, iTmpLens);
+                    }
+                    else
+                    {
+                        const char *pszTmp = CEncrypt::getSingletonPtr()->
+                            getRSA()->publicKeyEncrypt(m_objBuffer.getBuffer(), m_objBuffer.getLens(), iTmpLens);
+                        if (NULL == pszTmp)
+                        {
+                            return NULL;
+                        }
+
+                        m_objBuffer.reSet();
+                        m_objBuffer.pushBuff(pszTmp, iTmpLens);
+                    }
                 }
             }
             break;
@@ -130,11 +177,11 @@ const char *CCommEncrypt::Encode(const char *pszMsg, const size_t iMsgLens, size
     return m_objBuffer.getBuffer();
 }
 
-const char *CCommEncrypt::Decode(const char *pszMsg, const size_t iMsgLens, size_t &iOutLens)
+const char *CCommEncrypt::Decode(const char *pszMsg, const size_t iMsgLens, size_t &iOutLens, bool bSVLink)
 {
     iOutLens = Q_INIT_NUMBER;
 
-    if (m_vcType.empty())
+    if (m_vcClinetType.empty())
     {
         iOutLens = iMsgLens;
 
@@ -152,7 +199,17 @@ const char *CCommEncrypt::Decode(const char *pszMsg, const size_t iMsgLens, size
     bool bFirst = true;
     size_t iTmpLens = Q_INIT_NUMBER;
     std::vector<EncryptType>::reverse_iterator itType;
-    for (itType = m_vcType.rbegin(); m_vcType.rend() != itType; itType++)
+    std::vector<EncryptType> *pType = NULL;
+    if (bSVLink)
+    {
+        pType = &m_vcSVLinkType;
+    }
+    else
+    {
+        pType = &m_vcClinetType;
+    }
+
+    for (itType = pType->rbegin(); pType->rend() != itType; itType++)
     {
         switch(*itType)
         {

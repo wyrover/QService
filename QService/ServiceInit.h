@@ -44,7 +44,8 @@ int readConfig(unsigned int &uiMS, std::string &strLua,
     std::map<unsigned short, std::string> &mapDebug, 
     std::map<unsigned short, std::string> &mapTcp, 
     std::map<unsigned short, std::string> &mapWebSock, 
-    std::map<unsigned short, std::string> &mapHttp);
+    std::map<unsigned short, std::string> &mapHttp,
+    std::map<unsigned short, std::string> &mapSVLink);
 void stopServer(void);
 
 #endif//Q_SERVICEINIT_H_

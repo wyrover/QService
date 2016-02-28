@@ -17,7 +17,7 @@ public:
 
     //增加要连接的主机信息
     bool addHost(const char *pszIp, const unsigned short usPort, 
-        const char *pszName, const unsigned short usType);
+        const char *pszName);
 
     //开始、停止
     int Start(void);
@@ -31,15 +31,12 @@ public:
     
     //根据名称获取链接ID
     Q_SOCK getSockByName(const char *pszName);
-    //根据类型获取
-    std::vector<int> getSockByType(const unsigned short usType);
 
 private:
     struct LinkInfo
     {
         SessionStatus emStatus;
         unsigned short usPort;
-        unsigned short usType;
         Q_SOCK sock;
         std::string strIp;
         std::string strName;

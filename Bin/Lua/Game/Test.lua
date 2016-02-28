@@ -217,8 +217,8 @@ end
 regGameEvent(GameEvent.Start, onStart)
 
 local function addLinker()
-    g_objSessionMgr:addLinkOther("127.0.0.1", 15000, "test1", 1)
-    g_objSessionMgr:addLinkOther("127.0.0.1", 15000, "test2", 1)
+    g_objSessionMgr:addLinkOther("127.0.0.1", 15000, "test1")
+    g_objSessionMgr:addLinkOther("127.0.0.1", 15000, "test2")
 end
 
 local function testEntity()

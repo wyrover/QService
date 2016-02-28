@@ -137,9 +137,9 @@ void CSessionManager::confirmStop(void)
 }
 
 bool CSessionManager::addLinkOther(const char *pszIp, const unsigned short usPort, 
-    const char *pszName, const unsigned short usType)
+    const char *pszName)
 {
-    return CLinkOther::getSingleton().addHost(pszIp, usPort, pszName, usType);
+    return CLinkOther::getSingleton().addHost(pszIp, usPort, pszName);
 }
 
 int CSessionManager::getLinkOtherID(const char *pszName)
@@ -147,13 +147,6 @@ int CSessionManager::getLinkOtherID(const char *pszName)
     assert(NULL != pszName);
 
     return (int)CLinkOther::getSingleton().getSockByName(pszName);
-}
-
-luabridge::LuaRef CSessionManager::getLinkOtherByType(const unsigned short usType)
-{
-    std::vector<int> vcSock = CLinkOther::getSingleton().getSockByType(usType);
-
-    return Q_VectorToLua(m_pLua, &vcSock);
 }
 
 unsigned int CSessionManager::getSessionSize(void) const
@@ -303,8 +296,8 @@ bool CSessionManager::sendTcp(CSession *pCurrent, const char *pszData, const uns
     size_t iHeadLens = Q_INIT_NUMBER;
 
     //¼ÓÃÜ´¦Àí
-    const char *pszMsg = (STYPE_TCPCLIENT == pCurrent->getType() ?  pszData : 
-        CCommEncrypt::getSingletonPtr()->Encode(pszData, uiLens, iMsgLens));
+    bool bSVLink = (STYPE_TCPCLIENT == pCurrent->getType()) ? true : false;
+    const char *pszMsg = CCommEncrypt::getSingletonPtr()->Encode(pszData, uiLens, iMsgLens, bSVLink);
     if (NULL != pszData
         && NULL == pszMsg)
     {

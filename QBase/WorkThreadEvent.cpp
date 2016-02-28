@@ -205,6 +205,7 @@ void CWorkThreadEvent::dispTcp(class CSession *pSession)
 {
     size_t iMsgLens = Q_INIT_NUMBER;
     CTcpParser *pParser = CWorkThreadEvent::getSingletonPtr()->getTcpParser();
+    bool bSVLink = (STYPE_TCPCLIENT == pSession->getType()) ? true : false;
 
     while(true)
     {
@@ -215,7 +216,7 @@ void CWorkThreadEvent::dispTcp(class CSession *pSession)
         }
 
         //½âÃÜ´¦Àí
-        const char *pszMsg = CCommEncrypt::getSingletonPtr()->Decode(pszBuf, pParser->getBufLens(), iMsgLens);
+        const char *pszMsg = CCommEncrypt::getSingletonPtr()->Decode(pszBuf, pParser->getBufLens(), iMsgLens, bSVLink);
         if (NULL == pszMsg
             && NULL != pszBuf)
         {

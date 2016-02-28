@@ -37,6 +37,7 @@ public:
 
     /*session ¿‡–Õ  enum SessionType*/
     void setType(const SessionType emType);
+    void luaSetType(const int iType);
     int getType(void) const;
 
     void Clear(void);

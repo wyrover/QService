@@ -180,6 +180,7 @@ void CReg2Lua::reg_Session(void)
             .addFunction("setStatus", &CSession::setStatus)
             .addFunction("getStatus", &CSession::getStatus)
 
+            .addFunction("setType", &CSession::luaSetType)
             .addFunction("getType", &CSession::getType)
         .endClass();
 }
@@ -209,7 +210,6 @@ void CReg2Lua::reg_SessionManager(void)
 
             .addFunction("addLinkOther", &CSessionManager::addLinkOther)
             .addFunction("getLinkOtherID", &CSessionManager::getLinkOtherID)
-            .addFunction("getLinkOtherByType", &CSessionManager::getLinkOtherByType)
         .endClass();
 }
 

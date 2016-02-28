@@ -34,10 +34,9 @@ public:
 
     /*增加连接到其他服务器的TCP连接*/
     bool addLinkOther(const char *pszIp, const unsigned short usPort, 
-        const char *pszName, const unsigned short usType);
+        const char *pszName);
     /*根据名称获取链接*/
-    int getLinkOtherID(const char *pszName);
-    luabridge::LuaRef getLinkOtherByType(const unsigned short usType);    
+    int getLinkOtherID(const char *pszName);  
 
     /*发送*/
     bool sendToCur(const char *pszData, const unsigned int uiLens);
@@ -63,8 +62,8 @@ public:
     unsigned int getCount(void) const;
 
     /*需要设置的*/
-     void setTimer(const unsigned int &uiMS);
-     void setInterface(class CEventInterface *pInterface);
+    void setTimer(const unsigned int &uiMS);
+    void setInterface(class CEventInterface *pInterface);
     void setLua(struct lua_State *pLua);
 
     CLuaBinary *getNetBinary(void)

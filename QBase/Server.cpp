@@ -280,7 +280,8 @@ int CServer::Init(const unsigned int &uiMS, class CEventInterface *pInterface,
     std::map<unsigned short, std::string> &mapDebug, 
     std::map<unsigned short, std::string> &mapTcp, 
     std::map<unsigned short, std::string> &mapWebSock, 
-    std::map<unsigned short, std::string> &mapHttp)
+    std::map<unsigned short, std::string> &mapHttp,
+    std::map<unsigned short, std::string> &mapSVLink)
 {
     int iRtn = Q_RTN_OK;
     struct evconnlistener *pListener = NULL;
@@ -368,6 +369,23 @@ int CServer::Init(const unsigned int &uiMS, class CEventInterface *pInterface,
 
         m_vcAllListener.push_back(pListener);
         (void)m_mapType.insert(std::make_pair(evconnlistener_get_fd(pListener), STYPE_TCP));
+    }
+
+    /*初始化服务器间链接监听*/
+    if (!mapSVLink.empty())
+    {
+        Q_Printf("%s", "init server linker listener...");
+    }
+    for (itHost = mapSVLink.begin(); mapSVLink.end() != itHost; itHost++)
+    {
+        pListener = initListener(itHost->second.c_str(), itHost->first);
+        if (NULL == pListener)
+        {
+            return Q_RTN_FAILE;
+        }
+
+        m_vcAllListener.push_back(pListener);
+        (void)m_mapType.insert(std::make_pair(evconnlistener_get_fd(pListener), STYPE_TCPCLIENT));
     }
 
     /*初始化退出*/

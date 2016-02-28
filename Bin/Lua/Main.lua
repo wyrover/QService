@@ -104,24 +104,6 @@ function Lua_OnSockRead()
 
     table.print(tMsg)
     
-    --¼ì²é²Ù×÷ÂëÓë×´Ì¬ÊÇ·ñÆ¥Åä
-    --[[local objCurSession = g_objSessionMgr:getCurSession()
-    if SessionType.Tcp == objCurSession:getType() then
-        if not g_Started then
-            Debug("service not start completed.")
-            return
-        end
-        
-        if g_ProFilterFun then
-            local iStatus = objCurSession:getStatus()
-            if not g_ProFilterFun(iProtocol, iStatus) then
-                Log(LOGLV_WARN, "session status %d, protocol %d was ignored.", 
-                    iStatus, iProtocol)
-                return
-            end
-        end
-    end--]]
-    
     onNetEvent(iProtocol, tMsg)
 end
 

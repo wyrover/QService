@@ -17,14 +17,15 @@ public:
 
     };
 
-    void addType(EncryptType emType);
+    void addType(EncryptType emType, bool bSVLink = false);
 
-    const char *Encode(const char *pszMsg, const size_t iMsgLens, size_t &iOutLens);
-    const char *Decode(const char *pszMsg, const size_t iMsgLens, size_t &iOutLens);
+    const char *Encode(const char *pszMsg, const size_t iMsgLens, size_t &iOutLens, bool bSVLink = false);
+    const char *Decode(const char *pszMsg, const size_t iMsgLens, size_t &iOutLens, bool bSVLink = false);
 
 private:
     CBuffer m_objBuffer;
-    std::vector<EncryptType> m_vcType;
+    std::vector<EncryptType> m_vcClinetType;
+    std::vector<EncryptType> m_vcSVLinkType;
 };
 
 #endif//Q_COMMENCRYPT_H_

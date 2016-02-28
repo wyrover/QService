@@ -18,6 +18,12 @@ void CSession::setType(const SessionType emType)
     m_emSessionType = emType;
 }
 
+void CSession::luaSetType(const int iType)
+{
+    SessionType emType = (SessionType)iType;
+    setType(emType);
+}
+
 int CSession::getType(void) const
 {
     return m_emSessionType;

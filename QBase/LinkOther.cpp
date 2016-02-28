@@ -84,7 +84,7 @@ bool CLinkOther::checkHaveHost(const char *pszName)
 }
 
 bool CLinkOther::addHost(const char *pszIp, const unsigned short usPort, 
-    const char *pszName, const unsigned short usType)
+    const char *pszName)
 {
     if (checkHaveHost(pszName))
     {
@@ -99,7 +99,6 @@ bool CLinkOther::addHost(const char *pszIp, const unsigned short usPort,
     stLinkInfo.strIp = pszIp;
     stLinkInfo.strName = pszName;
     stLinkInfo.usPort = usPort;
-    stLinkInfo.usType = usType;
 
     m_objMutex.Lock();
     m_vcLinkInfo.push_back(stLinkInfo);
@@ -266,23 +265,4 @@ Q_SOCK CLinkOther::getSockByName(const char *pszName)
     m_objMutex.unLock();
 
     return iSock;
-}
-
-std::vector<int> CLinkOther::getSockByType(const unsigned short usType)
-{
-    std::vector<LinkInfo>::iterator itInfo;
-    std::vector<int> vcSock;
-
-    m_objMutex.Lock();
-    for (itInfo = m_vcLinkInfo.begin(); m_vcLinkInfo.end() != itInfo; itInfo++)
-    {
-        if ((usType == itInfo->usType)
-            && (Q_INVALID_SOCK != itInfo->sock))
-        {
-            vcSock.push_back((int)(itInfo->sock));
-        }
-    }
-    m_objMutex.unLock();
-
-    return vcSock;
 }

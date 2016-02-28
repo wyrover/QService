@@ -22,8 +22,10 @@ end
 
 --协议对应的struct描述table  需要自己写对应
 local tStructDesp = {
+    {Protocol.SYS_RegLinkOther, SS_Link},
+    
     {Protocol.CS_Login, CS_Login},
-    {Protocol.SC_Login, SC_RtnCode},
+    {Protocol.SC_Login, SC_RtnCode},    
 }
 
 local function initStructDesp()

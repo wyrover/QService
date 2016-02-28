@@ -4,4 +4,5 @@
     <!--RSA 客户端用私钥加密 和私钥解密-->
     <!--tcp websocket debug 加密配置 多种方式以+组合-->
     <ClientEncrypt>1+2+3</ClientEncrypt>
+    <SVLinkeEncrypt>1+2+3</SVLinkeEncrypt>
 </QServer>

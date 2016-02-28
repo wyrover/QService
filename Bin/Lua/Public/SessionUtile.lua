@@ -39,6 +39,7 @@ function sendToID(iSessionID, iProtocol, tMsg)
     g_objSessionMgr:sendBToByID(iSessionID)
 end
 
+--向链接到服务器的链接发送消息
 function sendToName(strName, iProtocol, tMsg)
     local iSessionID = g_objSessionMgr:getLinkOtherID(strName)
     if Q_INVALID_SOCK == iSessionID then
@@ -48,31 +49,12 @@ function sendToName(strName, iProtocol, tMsg)
     sendToID(iSessionID, iProtocol, tMsg)
 end
 
-function sendToType(usType, iProtocol, tMsg)
-    local tID = g_objSessionMgr:getLinkOtherByType(usType)
-    if table.empty(tID) then
-        return
-    end
-    
-    local iRand = 1
-    if #tID > 1 then
-        iRand = math.random(1, #tID)
-    end
-    local iSessionID = tID[iRand]
-    
-    sendToID(iSessionID, iProtocol, tMsg)
-end
-
-function broadCastToType(usType, iProtocol, tMsg)
-    local tID = g_objSessionMgr:getLinkOtherByType(usType)
-    if table.empty(tID) then
-        return
-    end
-    
-    createMsg(iProtocol, tMsg)
-    
-    for _, val in pairs(tID) do
-        g_objSessionMgr:sendBToByID(val)
+--向其他服务器的链接发送消息
+function returnToName(strName, iProtocol, tMsg)
+    for _, val in pairs(g_LinkedOther) do
+        if strName == val[1] then
+            sendToID(val[2], iProtocol, tMsg)
+        end
     end
 end
 

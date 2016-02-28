@@ -31,7 +31,8 @@ public:
         std::map<unsigned short, std::string> &mapDebug, 
         std::map<unsigned short, std::string> &mapTcp, 
         std::map<unsigned short, std::string> &mapWebSock, 
-        std::map<unsigned short, std::string> &mapHttp);
+        std::map<unsigned short, std::string> &mapHttp,
+        std::map<unsigned short, std::string> &mapSVLink);
     /*启动服务*/
     int Start(void);
     /*停止服务*/

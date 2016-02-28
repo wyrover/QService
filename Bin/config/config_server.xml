@@ -5,7 +5,7 @@
         <!--服务器ID(最大1024)-->
         <ServerID>1</ServerID>
         <!--服务器名称-->
-        <Name>一区</Name>
+        <Name>yiqu</Name>
         <!--定时器触发间隔时间 0 不触发(毫秒)-->
         <Timer>20</Timer>
         <!--脚本文件-->
@@ -30,5 +30,10 @@
             <BindIP>0.0.0.0</BindIP>
             <Port>8081</Port>
         </WebSock>
+        <!--服务器间链接 绑定Ip 端口-->
+        <ServerLink>
+            <BindIP>0.0.0.0</BindIP>
+            <Port>15011</Port>
+        </ServerLink>
     </ServerInfo>
 </QServer>

@@ -22,7 +22,6 @@
 struct LinkOther
 {
     unsigned short usPort;
-    unsigned short usType;
     std::string strIp;
     std::string strName;
 };
@@ -160,6 +159,19 @@ int initCommEncrypt(void)
             && iVal <= ZLib)
         {
             CCommEncrypt::getSingletonPtr()->addType((EncryptType)iVal);
+        }
+    }
+
+    strVal = objXmlDoc.child("QServer").child_value("SVLinkeEncrypt");
+    lstVal.clear();
+    Q_Split(strVal, COMMENCRYPT_SPLITFLAG, lstVal);
+    for (itVal = lstVal.begin(); lstVal.end() != itVal; itVal++)
+    {
+        iVal = atoi(itVal->c_str());
+        if (iVal >= AES
+            && iVal <= ZLib)
+        {
+            CCommEncrypt::getSingletonPtr()->addType((EncryptType)iVal, true);
         }
     }
 
@@ -423,7 +435,6 @@ int readLinkConfig(std::vector<LinkOther> &vcLinkOther)
         stLinkOther.strIp = itNode->node().child_value("IP");
         stLinkOther.strName = itNode->node().child_value("Name");
         stLinkOther.usPort = (unsigned short)atoi(itNode->node().child_value("Port"));
-        stLinkOther.usType = (unsigned short)atoi(itNode->node().child_value("Type"));
 
         vcLinkOther.push_back(stLinkOther);
     }
@@ -444,7 +455,7 @@ int initServerLinker(void)
     for (itHost = vcLinkOther.begin(); vcLinkOther.end() != itHost; itHost++)
     {
         if (!CLinkOther::getSingletonPtr()->addHost(itHost->strIp.c_str(), 
-                itHost->usPort, itHost->strName.c_str(), itHost->usType))
+                itHost->usPort, itHost->strName.c_str()))
         {
             return Q_RTN_FAILE;
         }
@@ -467,7 +478,8 @@ int readConfig(unsigned int &uiMS, std::string &strLua,
     std::map<unsigned short, std::string> &mapDebug, 
     std::map<unsigned short, std::string> &mapTcp, 
     std::map<unsigned short, std::string> &mapWebSock, 
-    std::map<unsigned short, std::string> &mapHttp)
+    std::map<unsigned short, std::string> &mapHttp,
+    std::map<unsigned short, std::string> &mapSVLink)
 {
     std::string strIp;
     unsigned short usPort = Q_INIT_NUMBER;
@@ -554,6 +566,18 @@ int readConfig(unsigned int &uiMS, std::string &strLua,
         (void)mapHttp.insert(std::make_pair(usPort, strIp));
     }
 
+    objNodeSet = objXmlDoc.select_nodes("//ServerLink");
+    if (!objNodeSet.empty())
+    {
+        for (itNode = objNodeSet.begin(); objNodeSet.end() != itNode; itNode++)
+        {
+            strIp = itNode->node().child_value("BindIP");
+            usPort = (unsigned short)atoi(itNode->node().child_value("Port"));
+        }
+
+        (void)mapSVLink.insert(std::make_pair(usPort, strIp));
+    }
+
     return Q_RTN_OK;
 }
 
@@ -566,8 +590,9 @@ int initServer(void)
     std::map<unsigned short, std::string> mapTcp;
     std::map<unsigned short, std::string> mapWebSock;
     std::map<unsigned short, std::string> mapHttp;
+    std::map<unsigned short, std::string> mapSVLink;
 
-    iRtn = readConfig(uiMS, strLua, mapDebug, mapTcp, mapWebSock, mapHttp);
+    iRtn = readConfig(uiMS, strLua, mapDebug, mapTcp, mapWebSock, mapHttp, mapSVLink);
     if (Q_RTN_OK != iRtn)
     {
         return iRtn;
@@ -582,7 +607,7 @@ int initServer(void)
 
     iRtn = CServer::getSingletonPtr()->Init(uiMS, CDisposeEvent::getSingletonPtr(), 
         CDisposeEvent::getSingletonPtr()->getLua(),
-        mapDebug, mapTcp, mapWebSock, mapHttp);
+        mapDebug, mapTcp, mapWebSock, mapHttp, mapSVLink);
     if (Q_RTN_OK != iRtn)
     {
         return iRtn;
