@@ -144,6 +144,7 @@ void CWorker::mainReadCB(struct bufferevent *bev, void *arg)
         return;
     }
 
+    size_t iTmpLens = Q_INIT_NUMBER;
     pSessionManager->setCurSession(pSession);
     while(true)
     {
@@ -153,7 +154,8 @@ void CWorker::mainReadCB(struct bufferevent *bev, void *arg)
             break;
         }
 
-        pSessionManager->getNetBinary()->setBuffer(pszBuf, pParser->getBufLens());
+        const char *pszTmp = CClientEncrypt::getSingletonPtr()->Decode(pszBuf, pParser->getBufLens(), iTmpLens);
+        pSessionManager->getNetBinary()->setBuffer(pszTmp, iTmpLens);
 
         try
         {

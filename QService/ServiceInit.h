@@ -15,6 +15,8 @@ int initEncrypt(void);
 int initAESKey(void);
 int initRSAKey(void);
 
+int initCommEncrypt(void);
+
 //邮件发送服务
 int initMailSender(void);
 int readMailConfig(std::string &strMailServer,

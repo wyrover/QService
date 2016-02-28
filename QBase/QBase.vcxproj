@@ -24,6 +24,7 @@
     <ClInclude Include="Binary.h" />
     <ClInclude Include="BufferMgr.h" />
     <ClInclude Include="Charset.h" />
+    <ClInclude Include="CommEncrypt.h" />
     <ClInclude Include="Cond.h" />
     <ClInclude Include="Config.h" />
     <ClInclude Include="CoreDump.h" />
@@ -252,6 +253,7 @@
     <ClCompile Include="Binary.cpp" />
     <ClCompile Include="BufferMgr.cpp" />
     <ClCompile Include="Charset.cpp" />
+    <ClCompile Include="CommEncrypt.cpp" />
     <ClCompile Include="Cond.cpp" />
     <ClCompile Include="CoreDump.cpp" />
     <ClCompile Include="DataBase.cpp" />

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<QServer>
+    <!--AES:1 RSA:2 ZLib:3-->
+    <!--RSA 客户端用私钥加密 和私钥解密-->
+    <!--tcp websocket debug 加密配置 多种方式以+组合-->
+    <ClientEncrypt>1+2+3</ClientEncrypt>
+</QServer>

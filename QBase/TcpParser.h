@@ -29,7 +29,7 @@ public:
 private:
     bool parseHead(class CEventBuffer *pBuffer);
 
-private:    
+private:
     size_t m_iParsedLens;
     size_t m_iBufLens;
     size_t m_iHeadLens;

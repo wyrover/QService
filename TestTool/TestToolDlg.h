@@ -32,6 +32,7 @@ private:
     int initEncrypt(void);
     int initAESKey(void);
     int initRSAKey(void);
+    int initClientEncrypt(void);
 
 private:
     std::string m_strCommand;

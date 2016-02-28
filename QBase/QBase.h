@@ -51,6 +51,7 @@
 #include "ObjectPool.h"
 #include "Singleton.h"
 #include "Encrypt.h"
+#include "CommEncrypt.h"
 #include "MailSender.h"
 #include "LockThis.h"
 

@@ -3,6 +3,7 @@
 
 #include "TransMsg.h"
 #include "Reg2Lua.h"
+#include "ClientEncrypt.h"
 
 class CWorker : public CSockPairEvent,
     public CTask,

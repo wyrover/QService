@@ -826,6 +826,9 @@
     <ClInclude Include="LuaFileSystem\lfs.h">
       <Filter>Lua\LuaFileSystem</Filter>
     </ClInclude>
+    <ClInclude Include="CommEncrypt.h">
+      <Filter>Encrypt</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Log.cpp">
@@ -1473,6 +1476,9 @@
     </ClCompile>
     <ClCompile Include="LuaFileSystem\lfs.c">
       <Filter>Lua\LuaFileSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="CommEncrypt.cpp">
+      <Filter>Encrypt</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

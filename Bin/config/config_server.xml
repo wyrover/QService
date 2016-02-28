@@ -13,7 +13,7 @@
         <!--Debug 绑定Ip 端口-->
         <Debug>
             <BindIP>0.0.0.0</BindIP>
-            <Port>15100</Port>
+            <Port>15010</Port>
         </Debug>
         <!--tcp 绑定Ip 端口-->
         <TCP>

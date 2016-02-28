@@ -14,7 +14,7 @@ MSGType = {
 }
 MSGType = table.enum(MSGType, 1)
 --当前使用的类型
-MSGCarrier = MSGType.Protobuf
+MSGCarrier = MSGType.Json
 
 --session状态 与c++中enum SessionStatus对应
 SessionStatus = {

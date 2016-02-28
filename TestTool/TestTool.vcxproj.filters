@@ -50,6 +50,9 @@
     <ClInclude Include="TransMsg.h">
       <Filter>Public</Filter>
     </ClInclude>
+    <ClInclude Include="ClientEncrypt.h">
+      <Filter>Public</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TestTool.cpp">
@@ -68,6 +71,9 @@
       <Filter>Public</Filter>
     </ClCompile>
     <ClCompile Include="TransMsg.cpp">
+      <Filter>Public</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientEncrypt.cpp">
       <Filter>Public</Filter>
     </ClCompile>
   </ItemGroup>

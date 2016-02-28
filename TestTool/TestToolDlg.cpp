@@ -12,8 +12,11 @@
 #define CONFIG_FOLDER      "config"
 #define CONFIG_AES         "config_aes.xml"
 #define CONFIG_RSA         "config_rsa.xml"
+#define CONFIG_COMMENCRYPT "config_encrypt.xml"
 
 #define RSAKEY_FOLDER      "rsakeys"
+
+#define COMMENCRYPT_SPLITFLAG "+"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -435,14 +438,48 @@ int CTestToolDlg::initRSAKey(void)
     return Q_RTN_OK;
 }
 
+int CTestToolDlg::initClientEncrypt(void)
+{
+    xml_document objXmlDoc;
+    xml_parse_result objXmlResult;
+
+    std::string strConfig = Q_FormatStr("%s%s%s%s", 
+        g_acModulPath, CONFIG_FOLDER, Q_PATH_SEPARATOR, CONFIG_COMMENCRYPT);
+
+    objXmlResult = objXmlDoc.load_file(strConfig.c_str());
+    if (status_ok != objXmlResult.status)
+    {
+        Q_Printf("%s", "load communication encrypt config error.");
+
+        return Q_RTN_FAILE;
+    }
+
+    std::string strVal = objXmlDoc.child("QServer").child_value("ClientEncrypt");
+
+    int iVal = Q_INIT_NUMBER;
+    std::list<std::string> lstVal;
+    std::list<std::string>::iterator itVal;
+    Q_Split(strVal, COMMENCRYPT_SPLITFLAG, lstVal);
+    for (itVal = lstVal.begin(); lstVal.end() != itVal; itVal++)
+    {
+        iVal = atoi(itVal->c_str());
+        if (iVal >= AES
+            && iVal <= ZLib)
+        {
+            CClientEncrypt::getSingletonPtr()->addType((EncryptType)iVal);
+        }
+    }
+
+    return Q_RTN_OK;
+}
+
 int CTestToolDlg::initEncrypt(void)
 {
-    if (Q_RTN_OK != initAESKey())
-    {
-        return Q_RTN_FAILE;
-    }    
+    initAESKey();
+    initRSAKey();
+    initClientEncrypt();
 
-    return initRSAKey();
+    return Q_RTN_OK;
 }
 
 bool CTestToolDlg::initLua(void)
@@ -501,25 +538,31 @@ bool CTestToolDlg::initLua(void)
 
 void CTestToolDlg::sendMainMsg(const char *pszMsg, const size_t iLens)
 {
+    size_t iTmpLens = Q_INIT_NUMBER;
+    const char *pszTmp = CClientEncrypt::getSingletonPtr()->Encode(pszMsg, iLens, iTmpLens);
+
     size_t iHeadLens = Q_INIT_NUMBER;
-    const char *pHead = m_objTcpParser.createHead(iLens, iHeadLens);
+    const char *pHead = m_objTcpParser.createHead(iTmpLens, iHeadLens);
     Q_SockWrite(m_Sock, pHead, iHeadLens);
-    if (NULL != pszMsg
-        && 0 != iLens)
+    if (NULL != pszTmp
+        && 0 != iTmpLens)
     {
-        Q_SockWrite(m_Sock, pszMsg, iLens);
+        Q_SockWrite(m_Sock, pszTmp, iTmpLens);
     }
 }
 
 void CTestToolDlg::sendBMainMsg(void)
 { 
-    size_t iHeadLens = Q_INIT_NUMBER;
+    size_t iTmpLens = Q_INIT_NUMBER;
     CBuffer *pBuffer = m_objBinary.getBufferMgr();
-    const char *pHead = m_objTcpParser.createHead(pBuffer->getLens(), iHeadLens);
+    const char *pszTmp = CClientEncrypt::getSingletonPtr()->Encode(pBuffer->getBuffer(), pBuffer->getLens(), iTmpLens);
+
+    size_t iHeadLens = Q_INIT_NUMBER;    
+    const char *pHead = m_objTcpParser.createHead(iTmpLens, iHeadLens);
     Q_SockWrite(m_Sock, pHead, iHeadLens);
-    if (0 != pBuffer->getLens())
+    if (0 != iTmpLens)
     {
-        Q_SockWrite(m_Sock, pBuffer->getBuffer(), pBuffer->getLens());
+        Q_SockWrite(m_Sock, pszTmp, iTmpLens);
     }
 }
 
@@ -645,6 +688,7 @@ void CTestToolDlg::OnBnClickedCheck1()
     {
         pComm = &m_lstCommand;
         this->SetWindowTextA("TestTool -- Simulation");
+        m_CtrPort.SetWindowTextA("15000");
         m_CtrInput.SetWindowTextA(m_strTemplateLua);
         m_CtrComName.SetWindowTextA("");
     }
@@ -652,6 +696,7 @@ void CTestToolDlg::OnBnClickedCheck1()
     {
         pComm = &m_lstDebugComm;
         this->SetWindowTextA("TestTool -- Debug");
+        m_CtrPort.SetWindowTextA("15010");
         m_CtrInput.SetWindowTextA("");
         m_CtrComName.SetWindowTextA("");
     }

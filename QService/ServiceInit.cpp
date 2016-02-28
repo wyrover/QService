@@ -17,6 +17,8 @@
 
 #define RSAKEY_FOLDER      "rsakeys"
 
+#define COMMENCRYPT_SPLITFLAG "+"
+
 struct LinkOther
 {
     unsigned short usPort;
@@ -127,6 +129,41 @@ int initEncrypt(void)
     }    
 
     return initRSAKey();
+}
+
+int initCommEncrypt(void)
+{
+    xml_document objXmlDoc;
+    xml_parse_result objXmlResult;
+
+    std::string strConfig = Q_FormatStr("%s%s%s%s", 
+        g_acModulPath, CONFIG_FOLDER, Q_PATH_SEPARATOR, CONFIG_COMMENCRYPT);
+
+    objXmlResult = objXmlDoc.load_file(strConfig.c_str());
+    if (status_ok != objXmlResult.status)
+    {
+        Q_Printf("%s", "load communication encrypt config error.");
+
+        return Q_RTN_FAILE;
+    }
+
+    std::string strVal = objXmlDoc.child("QServer").child_value("ClientEncrypt");
+
+    int iVal = Q_INIT_NUMBER;
+    std::list<std::string> lstVal;
+    std::list<std::string>::iterator itVal;
+    Q_Split(strVal, COMMENCRYPT_SPLITFLAG, lstVal);
+    for (itVal = lstVal.begin(); lstVal.end() != itVal; itVal++)
+    {
+        iVal = atoi(itVal->c_str());
+        if (iVal >= AES
+            && iVal <= ZLib)
+        {
+            CCommEncrypt::getSingletonPtr()->addType((EncryptType)iVal);
+        }
+    }
+
+    return Q_RTN_OK;
 }
 
 int readMailConfig(std::string &strMailServer,
@@ -597,6 +634,13 @@ int Service_InitProgram(void)
 
             Q_Printf("%s", "init encrypt system...");
             iRtn = initEncrypt();
+            if (Q_RTN_OK != iRtn)
+            {
+                break;
+            }
+
+            Q_Printf("%s", "init communication encrypt...");
+            iRtn = initCommEncrypt();
             if (Q_RTN_OK != iRtn)
             {
                 break;

@@ -3,7 +3,7 @@
 #include "LinkOther.h"
 #include "LuaFunc.h"
 #include "WorkThreadEvent.h"
-#include "Encrypt.h"
+#include "CommEncrypt.h"
 
 #define Q_INITSESSIONSIZE 1024
 SINGLETON_INIT(CSessionManager)
@@ -264,7 +264,17 @@ CSession *CSessionManager::getSessionByID(const int iID)
 bool CSessionManager::sendWebSock(CSession *pCurrent, const char *pszData, const unsigned int &uiLens)
 {
     size_t iOutLens = Q_INIT_NUMBER;
-    const char *pszHead = m_objWebSockParser.createHead(true, WSOCK_TEXTFRAME, uiLens, iOutLens);
+    size_t iMsgLens = Q_INIT_NUMBER;
+
+    //加密处理
+    const char *pszMsg = CCommEncrypt::getSingletonPtr()->Encode(pszData, uiLens, iMsgLens);
+    if (NULL != pszData
+        && NULL == pszMsg)
+    {
+        return false;
+    }
+
+    const char *pszHead = m_objWebSockParser.createHead(true, WSOCK_BINARYFRAME, iMsgLens, iOutLens);
 
     if (Q_RTN_OK != pCurrent->getBuffer()->writeBuffer(pszHead, iOutLens))
     {
@@ -273,10 +283,10 @@ bool CSessionManager::sendWebSock(CSession *pCurrent, const char *pszData, const
         return false;
     }
 
-    if ((NULL != pszData) 
-        && (0 != uiLens))
+    if ((NULL != pszMsg) 
+        && (0 != iMsgLens))
     {
-        if (Q_RTN_OK != pCurrent->getBuffer()->writeBuffer(pszData, uiLens))
+        if (Q_RTN_OK != pCurrent->getBuffer()->writeBuffer(pszMsg, iMsgLens))
         {
             Q_Printf("send message to session: id %d error", pCurrent->getSessionID());
 
@@ -289,8 +299,19 @@ bool CSessionManager::sendWebSock(CSession *pCurrent, const char *pszData, const
 
 bool CSessionManager::sendTcp(CSession *pCurrent, const char *pszData, const unsigned int &uiLens)
 {
+    size_t iMsgLens = uiLens;
     size_t iHeadLens = Q_INIT_NUMBER;
-    const char *pszHead = m_objTcpParser.createHead(uiLens, iHeadLens);
+
+    //加密处理
+    const char *pszMsg = (STYPE_TCPCLIENT == pCurrent->getType() ?  pszData : 
+        CCommEncrypt::getSingletonPtr()->Encode(pszData, uiLens, iMsgLens));
+    if (NULL != pszData
+        && NULL == pszMsg)
+    {
+        return false;
+    }
+
+    const char *pszHead = m_objTcpParser.createHead(iMsgLens, iHeadLens);
 
     if (Q_RTN_OK != pCurrent->getBuffer()->writeBuffer(pszHead, iHeadLens))
     {
@@ -299,10 +320,10 @@ bool CSessionManager::sendTcp(CSession *pCurrent, const char *pszData, const uns
         return false;
     }
 
-    if ((NULL != pszData) 
-        && (0 != uiLens))
+    if ((NULL != pszMsg) 
+        && (0 != iMsgLens))
     {
-        if (Q_RTN_OK != pCurrent->getBuffer()->writeBuffer(pszData, uiLens))
+        if (Q_RTN_OK != pCurrent->getBuffer()->writeBuffer(pszMsg, iMsgLens))
         {
             Q_Printf("send message to session: id %d error", pCurrent->getSessionID());
 

@@ -2,6 +2,7 @@
 #include "WorkThreadEvent.h"
 #include "SessionManager.h"
 #include "LinkOther.h"
+#include "CommEncrypt.h"
 
 #define Http_TimeOut  10
 SINGLETON_INIT(CWorkThreadEvent)
@@ -202,6 +203,7 @@ void CWorkThreadEvent::onStop(void)
 
 void CWorkThreadEvent::dispTcp(class CSession *pSession)
 {
+    size_t iMsgLens = Q_INIT_NUMBER;
     CTcpParser *pParser = CWorkThreadEvent::getSingletonPtr()->getTcpParser();
 
     while(true)
@@ -212,14 +214,23 @@ void CWorkThreadEvent::dispTcp(class CSession *pSession)
             return;
         }
 
+        //解密处理
+        const char *pszMsg = CCommEncrypt::getSingletonPtr()->Decode(pszBuf, pParser->getBufLens(), iMsgLens);
+        if (NULL == pszMsg
+            && NULL != pszBuf)
+        {
+            return;
+        }
+
         if (STYPE_DEBUG == pSession->getType())
         {
-            CSessionManager::getSingletonPtr()->getInterface()->onDebug(pszBuf, pParser->getBufLens());
+            CSessionManager::getSingletonPtr()->getInterface()->onDebug(pszMsg, iMsgLens);
         }
         else
         {
-            CSessionManager::getSingletonPtr()->getInterface()->onSockRead(pszBuf, pParser->getBufLens());
-        }        
+            CSessionManager::getSingletonPtr()->getInterface()->onSockRead(pszMsg, iMsgLens);
+        }
+
         if (SESSSTATUS_CLOSED != pSession->getStatus())
         {
             (void)pSession->getBuffer()->delBuffer(pParser->getParsedLens());
@@ -236,6 +247,7 @@ void CWorkThreadEvent::dispWebSock(CSession *pSession)
     CWebSockParser *pParser = CWorkThreadEvent::getSingletonPtr()->getWebSockParser();
     CSessionManager *pSessionMgr = CSessionManager::getSingletonPtr();
     CWorkThreadEvent *pWorkThread = CWorkThreadEvent::getSingletonPtr();
+    size_t iMsgLens = Q_INIT_NUMBER;
 
     //握手处理
     if (SESSSTATUS_CONNECT == pSession->getStatus())
@@ -325,7 +337,15 @@ void CWorkThreadEvent::dispWebSock(CSession *pSession)
         if ((WSOCK_CONTINUATION != pHead->emOpCode)
             && (1 == pHead->cFin))
         {
-            pSessionMgr->getInterface()->onSockRead(pParser->getMsg(), pHead->uiDataLens);
+            //解密处理
+            const char *pszMsg = CCommEncrypt::getSingletonPtr()->Decode(pParser->getMsg(), pHead->uiDataLens, iMsgLens);
+            if (NULL == pszMsg
+                && NULL != pParser->getMsg())
+            {
+                return;
+            }
+
+            pSessionMgr->getInterface()->onSockRead(pszMsg, iMsgLens);
             if (SESSSTATUS_CLOSED == pSession->getStatus())
             {
                 pWorkThread->delContinuation(sock);
@@ -342,6 +362,7 @@ void CWorkThreadEvent::dispWebSock(CSession *pSession)
         始帧（FIN为0，opcode非0），
         若干（0个或多个）帧（FIN为0，opcode为0），
         结束帧（FIN为1，opcode为0）*/
+
         //是否为结束帧
         if ((1 == pHead->cFin)
             && (WSOCK_CONTINUATION == pHead->emOpCode))
@@ -349,7 +370,14 @@ void CWorkThreadEvent::dispWebSock(CSession *pSession)
             std::string *pStrBuf = pWorkThread->getContinuation(sock);
             if (NULL != pStrBuf)
             {
-                pStrBuf->append(pParser->getMsg(), pHead->uiDataLens);
+                const char *pszMsg = CCommEncrypt::getSingletonPtr()->Decode(pParser->getMsg(), pHead->uiDataLens, iMsgLens);
+                if (NULL == pszMsg
+                    && NULL != pParser->getMsg())
+                {
+                    return;
+                }
+
+                pStrBuf->append(pszMsg, iMsgLens);
                 pSessionMgr->getInterface()->onSockRead(pStrBuf->c_str(), pStrBuf->size());
                 if (SESSSTATUS_CLOSED == pSession->getStatus())
                 {
@@ -370,7 +398,15 @@ void CWorkThreadEvent::dispWebSock(CSession *pSession)
         }
         else
         {
-            pWorkThread->addContinuation(sock, pParser->getMsg(), pHead->uiDataLens);
+            //解密处理
+            const char *pszMsg = CCommEncrypt::getSingletonPtr()->Decode(pParser->getMsg(), pHead->uiDataLens, iMsgLens);
+            if (NULL == pszMsg
+                && NULL != pParser->getMsg())
+            {
+                return;
+            }
+
+            pWorkThread->addContinuation(sock, pszMsg, iMsgLens);
             (void)pSession->getBuffer()->delBuffer(pParser->getParsedLens());
         }
     }
