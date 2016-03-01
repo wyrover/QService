@@ -1,7 +1,10 @@
 QService
 ========
 
-QService服务器支持http、 tcp 、websocket协议；数据库支持sqlite3、mysql、mariadb、redis。  
+QService服务器支持http、 tcp 、websocket协议；
+序列化支持Protobuf、struct、json;
+数据加密压缩支持aes、rsa、zlib等;
+数据库支持sqlite3、mysql、mariadb、redis。  
 所有业务均可用Lua脚本开发，已经用于手游服务器端开发。
 
 ##一、编译QService  
@@ -9,7 +12,7 @@ QService服务器支持http、 tcp 、websocket协议；数据库支持sqlite3�
 * linux使用mklib.sh编译出依赖库，然后再mk.sh。  
 
 ##二、配置文件  
-* config.xml 配置服务器启动参数  
+* config   文件夹配置服务器启动参数、加密信息等。  
 
 ##三、Lua文件  
 * Main.lua  
@@ -28,8 +31,8 @@ QService服务器支持http、 tcp 、websocket协议；数据库支持sqlite3�
 	错误码  
 * Debug.lua  
 	debug   
-* DBManager.lua  
-	数据库  
+* SessionUtile.lua  
+	网络操作相关  
 * TimeWheel.lua   
 	时间轮   
 * 其他Lua文件  
