@@ -3,7 +3,7 @@
 #include "Encrypt.h"
 
 SINGLETON_INIT(CClientEncrypt)
-CClientEncrypt objLuaEncrypt;
+CClientEncrypt objClientEncrypt;
 
 void CClientEncrypt::addType(EncryptType emType)
 {

@@ -3,7 +3,7 @@
 #include "Encrypt.h"
 
 SINGLETON_INIT(CCommEncrypt)
-CCommEncrypt objLuaEncrypt;
+CCommEncrypt objCommEncrypt;
 
 void CCommEncrypt::addType(EncryptType emType, bool bSVLink)
 {

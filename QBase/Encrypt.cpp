@@ -6,7 +6,7 @@
 #include "zlib/zlib.h"
 
 SINGLETON_INIT(CEncrypt)
-CEncrypt objLuaEncrypt;
+CEncrypt objEncrypt;
 
 CEncrypt::CEncrypt(void)
 {
