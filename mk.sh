@@ -38,7 +38,7 @@ then
 fi
 
 #¸½¼Ó°üº¬¿â
-INCLUDELIB="-lrt -lz -levent_core -levent_extra"
+INCLUDELIB="-lrt -lz -levent_core -levent_extra -luuid"
 if [ "$X64" != "x64" ] 
 then
     INCLUDELIB=$INCLUDELIB" -lcrypto -lidn -lssl"

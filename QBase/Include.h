@@ -65,6 +65,7 @@
     #include <sys/sem.h>
     #include <sys/ipc.h>
     #include <sys/errno.h>
+    #include <netinet/tcp.h>
     #include <sys/socket.h>
     #include <netinet/in.h>
     #include <arpa/inet.h>

@@ -153,7 +153,6 @@ void CLinkOther::Stop(void)
 Q_SOCK CLinkOther::initSock(const char *pszIp, const unsigned short &usPort) const
 {
     CNETAddr objAddr;
-    int iKeepAlive = 1;
     Q_SOCK sock = Q_INVALID_SOCK;
 
     if (Q_RTN_OK != objAddr.setAddr(pszIp, usPort))
