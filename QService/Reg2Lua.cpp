@@ -26,14 +26,14 @@ const char *Q_GetPathSeparator(void)
     return Q_PATH_SEPARATOR;
 }
 
-int getServerID(void)
-{
-    return g_iServerID;
-}
-
 const char *getServerNam(void)
 {
     return g_strServerName.c_str();
+}
+
+const char *getUUID(void)
+{
+    return CUUID::getSingletonPtr()->getUUID();
 }
 
 CReg2Lua::CReg2Lua(void) : m_pstLState(NULL)
@@ -70,8 +70,8 @@ void CReg2Lua::reg_Func(void)
         .addFunction("Q_GetPathSeparator", Q_GetPathSeparator)
         .addFunction("Q_LOG", Q_LuaLog)
         .addFunction("Q_DBLOG", Q_DBLog)
+        .addFunction("getUUID", getUUID)
         .addFunction("sendMail", sendMail)
-        .addFunction("getServerID", getServerID)
         .addFunction("getServerNam", getServerNam);
 }
 

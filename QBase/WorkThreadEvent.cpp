@@ -79,6 +79,7 @@ void CWorkThreadEvent::onMainRead(CEventBuffer *)
 
     while(Q_GetEventValue<TriggerSock>(getMainBuffer(), m_stWorkSock))
     {
+        Q_SockKeepAlive(m_stWorkSock.iSock, Q_SOCKKEEPALIVE_IDLE, Q_SOCKKEEPALIVE_INTERVAL);
         (void)evutil_make_socket_nonblocking(m_stWorkSock.iSock);
         pBev = bufferevent_socket_new(getBase(), m_stWorkSock.iSock, 
             BEV_OPT_CLOSE_ON_FREE);
@@ -135,6 +136,7 @@ void CWorkThreadEvent::onAssistRead(CEventBuffer *)
 
     while(Q_GetEventValue<TriggerSock>(getAssistBuffer(), m_stWorkSock))
     {
+        Q_SockKeepAlive(m_stWorkSock.iSock, Q_SOCKKEEPALIVE_IDLE, Q_SOCKKEEPALIVE_INTERVAL);
         (void)evutil_make_socket_nonblocking(m_stWorkSock.iSock);
         pBev = bufferevent_socket_new(getBase(), m_stWorkSock.iSock, 
             BEV_OPT_CLOSE_ON_FREE);

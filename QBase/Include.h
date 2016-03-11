@@ -47,6 +47,7 @@
     #include <process.h>
     #include <ObjBase.h>
     #include <Windows.h>
+    #include <MSTcpIP.h>
     #include <unordered_map>
 #else
     #include <pthread.h>

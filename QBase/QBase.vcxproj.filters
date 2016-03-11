@@ -829,6 +829,9 @@
     <ClInclude Include="CommEncrypt.h">
       <Filter>Encrypt</Filter>
     </ClInclude>
+    <ClInclude Include="lua5.2\redisrand.h">
+      <Filter>Lua\lua5.2</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Log.cpp">
@@ -1479,6 +1482,9 @@
     </ClCompile>
     <ClCompile Include="CommEncrypt.cpp">
       <Filter>Encrypt</Filter>
+    </ClCompile>
+    <ClCompile Include="lua5.2\redisrand.c">
+      <Filter>Lua\lua5.2</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

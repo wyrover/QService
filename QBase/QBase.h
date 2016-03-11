@@ -72,8 +72,6 @@ using namespace pugi;
 /*程序所在路径*/
 extern char g_acModulPath[Q_FILEPATH_LENS];
 
-/*服务器ID*/
-extern int g_iServerID;
 /*服务器名称*/
 extern std::string g_strServerName;
 

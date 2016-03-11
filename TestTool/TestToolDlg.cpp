@@ -146,7 +146,7 @@ BOOL CTestToolDlg::OnInitDialog()
 	// TODO: 在此添加额外的初始化代码
     srand((unsigned int)time(NULL));
 
-    g_iServerID = rand() % 1023 + 1;
+    //g_iServerID = rand() % 1023 + 1;
     std::string strProPath;
     Q_GetProPath(strProPath);
     memcpy(g_acModulPath, strProPath.c_str(), strProPath.size());

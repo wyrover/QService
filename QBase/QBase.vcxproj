@@ -94,6 +94,7 @@
     <ClInclude Include="lua5.2\lundump.h" />
     <ClInclude Include="lua5.2\lvm.h" />
     <ClInclude Include="lua5.2\lzio.h" />
+    <ClInclude Include="lua5.2\redisrand.h" />
     <ClInclude Include="LuaBridge\detail\CFunctions.h" />
     <ClInclude Include="LuaBridge\detail\ClassInfo.h" />
     <ClInclude Include="LuaBridge\detail\Constructor.h" />
@@ -313,6 +314,7 @@
     <ClCompile Include="lua5.2\lundump.c" />
     <ClCompile Include="lua5.2\lvm.c" />
     <ClCompile Include="lua5.2\lzio.c" />
+    <ClCompile Include="lua5.2\redisrand.c" />
     <ClCompile Include="LuaCJson\dtoa.c" />
     <ClCompile Include="LuaCJson\g_fmt.c" />
     <ClCompile Include="LuaCJson\lua_cjson.c" />

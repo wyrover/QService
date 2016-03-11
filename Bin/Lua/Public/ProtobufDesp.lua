@@ -5,9 +5,6 @@ Protobuf 描述初始化
 --协议对应的protobuf描述字符串  需要自己写对应
 local tProtoDesp = {
     {Protocol.SYS_RegLinkOther, "SS_Link"},
-    
-    {Protocol.CS_Login, "CS_Login"},
-    {Protocol.SC_Login, "SC_RtnCode"},
 }
 
 --protobuf描述文件加载

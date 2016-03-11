@@ -510,9 +510,8 @@ int readConfig(unsigned int &uiMS, std::string &strLua,
 
     itNode = objNodeSet.begin();
 
-    g_iServerID =  atoi(itNode->node().child_value("ServerID"));
     g_strServerName = itNode->node().child_value("Name");
-    Q_Printf("service id %d, name %s.", g_iServerID, g_strServerName.c_str());
+    Q_Printf("service name: %s.", g_strServerName.c_str());
 
     strLua = std::string(g_acModulPath) + 
         std::string(itNode->node().child_value("Script"));

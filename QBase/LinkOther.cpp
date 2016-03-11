@@ -173,8 +173,6 @@ Q_SOCK CLinkOther::initSock(const char *pszIp, const unsigned short &usPort) con
         return Q_INVALID_SOCK;
     }
 
-    (void)setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, (char *)&iKeepAlive, sizeof(iKeepAlive));
-
     return sock;
 }
 

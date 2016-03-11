@@ -50,7 +50,7 @@
     #endif
 #endif
 
-//#define Q_UUID
+#define Q_UUID
 
 #define Q_WITHMYSQL
 

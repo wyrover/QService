@@ -51,7 +51,7 @@ local tLoad =
     {"Public/Mail", true},
     {"Public/Debug", false},--这个设为真，重加载会循环加载      
     {"Public/LogLuaMemory", true},
-    {"Public/Ping", true}, 
+    {"Public/OnConnected", true}, 
     {"Public/RegLinkOther", true},     
     {"Public/Object", true},
     {"Public/Component", true},

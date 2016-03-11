@@ -3,6 +3,7 @@
 #define Q_UUID_H_
 
 #include "Macros.h"
+#include "Singleton.h"
 
 #ifdef Q_UUID
 
@@ -23,17 +24,20 @@ cp /usr/include/uuid.h  /usr/include/uuid/
 yum install e2fsprogs-devel
 yum install libuuid libuuid-devel
 */
-class CUUID
+class CUUID : public CSingleton<CUUID>
 {
 public:
     CUUID(void);
     ~CUUID(void);
 
     /*ªÒ»°“ªUUID*/
-    std::string getUUID(void);
+    const char *getUUID(void);
 
 private:
     int createGuid(GUID &stUUID);
+
+private:
+    char m_acBuf[Q_UUIDLENS];
 };
 
 #endif//Q_UUID

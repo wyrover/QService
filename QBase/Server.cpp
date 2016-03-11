@@ -87,6 +87,7 @@ void CServer::exitMonitorCB(evutil_socket_t, short, void *arg)
 
 Q_SOCK CServer::initHttpSock(const char *pszIp, const unsigned short &usPort) const
 {
+    int iKeepAlive = 1;
     CNETAddr objAddr;
     Q_SOCK sock = Q_INVALID_SOCK;
 
@@ -102,6 +103,12 @@ Q_SOCK CServer::initHttpSock(const char *pszIp, const unsigned short &usPort) co
         return Q_INVALID_SOCK;
     }
 
+    if (setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, (char *)&iKeepAlive, (int)sizeof(iKeepAlive)) < 0)
+    {
+        Q_Printf("%s", "setsockopt SO_KEEPALIVE error!");
+        evutil_closesocket(sock);
+        return Q_INVALID_SOCK;
+    }
     if (Q_RTN_OK != evutil_make_listen_socket_reuseable(sock))
     {
         Q_Printf("%s", "make socket reuseable error.");

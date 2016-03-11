@@ -6,11 +6,6 @@
 if not g_objCtimer then
     g_objCtimer = CTimer()
 end
---ID生成
-if not g_objSnowflakeID then
-    g_objSnowflakeID = CSnowflakeID()
-    g_objSnowflakeID:setMachineID(getServerID())
-end
 --过滤敏感字
 if not g_objFilter then
     g_objFilter = CFilter()
@@ -47,7 +42,7 @@ end
 返回值：无
 --]]
 function getID()
-    return g_objSnowflakeID:getSnowflakeID()
+    return getUUID()
 end
 
 --[[

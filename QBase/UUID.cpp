@@ -3,8 +3,12 @@
 
 #ifdef Q_UUID
 
+SINGLETON_INIT(CUUID)
+CUUID objUUID;
+
 CUUID::CUUID(void)
 {
+    Q_Zero(m_acBuf, sizeof(m_acBuf));
 #ifdef Q_OS_WIN
     (void)CoInitialize(NULL);
 #endif
@@ -38,32 +42,32 @@ int CUUID::createGuid(GUID &stUUID)
 * Description  :ªÒ»°“ªUUID
 * IN           :NONE
 * OUT          :NONE
-* Return       :std::string
+* Return       :const char *
 * Make By      :lqf/200309129@163.com
 * Date Time    :2014/04/30
 * Modification 
 * ......record :first program
 ************************************************************************/
-std::string CUUID::getUUID(void)
+const char *CUUID::getUUID(void)
 {
     GUID stGuid;
-    char acBuf[Q_UUIDLENS] = {0};
+    Q_Zero(m_acBuf, sizeof(m_acBuf));
 
     if (Q_RTN_OK != createGuid(stGuid))
     {
         return "";
     }
 
-    Q_Snprintf(acBuf,
-        sizeof(acBuf) - 1,
-        "{%08X-%04X-%04X-%02X%02X-%02X%02X%02X%02X%02X%02X}",
+    Q_Snprintf(m_acBuf,
+        sizeof(m_acBuf) - 1,
+        "%08X%04X%04X%02X%02X%02X%02X%02X%02X%02X%02X",
         (unsigned int)stGuid.Data1, stGuid.Data2, stGuid.Data3,
         stGuid.Data4[0], stGuid.Data4[1],
         stGuid.Data4[2], stGuid.Data4[3],
         stGuid.Data4[4], stGuid.Data4[5],
         stGuid.Data4[6], stGuid.Data4[7]);
 
-    return std::string(acBuf);
+    return m_acBuf;
 }
 
 #endif//Q_UUID

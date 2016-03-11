@@ -12,6 +12,8 @@
 #define Q_ONEK                       1024       //1K
 #define Q_SERVICE_NAME_LEN           256        //windows 服务名称最大长度
 #define Q_UUIDLENS                   64         //UUID长度
+#define Q_SOCKKEEPALIVE_IDLE         30         //开始首次KeepAlive探测前的TCP空闭时间（秒）
+#define Q_SOCKKEEPALIVE_INTERVAL     3          //两次KeepAlive探测的时间间隔（秒）
 
 //对象池名称
 #define POOLNAM_SESSION "Session"

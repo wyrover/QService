@@ -24,4 +24,7 @@ int Q_SockRead(const Q_SOCK &fd, char *pBuf, const size_t &iLens);
 /*向socket中写入发送的内容*/
 int Q_SockWrite(const Q_SOCK &fd, const char *pBuf, const size_t &iLens);
 
+/*TCP keepalive*/
+void Q_SockKeepAlive(Q_SOCK &fd, const unsigned int iKeepIdle, const unsigned int iKeepInterval);
+
 #endif//Q_INITSOCK_H_

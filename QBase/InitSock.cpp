@@ -1,6 +1,8 @@
 
 #include "InitSock.h"
 
+#define Q_TCPKEEPCOUNT    5
+
 CSockInit::CSockInit(void)
 {
     (void)Init();
@@ -112,4 +114,60 @@ int Q_SockWrite(const Q_SOCK &fd, const char *pBuf, const size_t &iLens)
     } while (iLens > iSendTotalSize);
 
     return Q_RTN_OK;
+}
+
+/************************************************************************
+* Function name:Q_SockKeepAlive
+* Description  :TCP keepalive
+* IN           :fd --socket句柄 iKeepIdle --开始首次KeepAlive探测前的TCP空闭时间（秒）
+                iKeepInterval --两次KeepAlive探测的时间间隔（秒）  
+* OUT          :NONE
+* Return       :NONE
+* Make By      :lqf/200309129@163.com
+* Date Time    :2016/03/10
+* Modification 
+* ......record :first program
+************************************************************************/
+void Q_SockKeepAlive(Q_SOCK &fd, const unsigned int iKeepIdle, const unsigned int iKeepInterval)
+{
+    int iKeepAlive = 1;
+
+    if (setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, (char *)&iKeepAlive, (int)sizeof(iKeepAlive)) < 0)
+    {
+        Q_Printf("%s", "setsockopt SO_KEEPALIVE error!");
+        return;
+    }
+
+#ifdef Q_OS_WIN
+    unsigned long ulBytesReturn = Q_INIT_NUMBER;
+    tcp_keepalive stAliveIn = {0};
+    tcp_keepalive stAliveOut = {0};
+
+    stAliveIn.onoff = 1;
+    stAliveIn.keepalivetime = iKeepIdle * 1000;
+    stAliveIn.keepaliveinterval = iKeepInterval * 1000;
+    if (SOCKET_ERROR == WSAIoctl(fd, SIO_KEEPALIVE_VALS, &stAliveIn, sizeof(stAliveIn), 
+        &stAliveOut, sizeof(stAliveOut), &ulBytesReturn, NULL, NULL))
+    {
+        Q_Printf("%s", "WSAIoctl set error!");
+    }
+#else 
+    int ikeepCount = Q_TCPKEEPCOUNT;//判定断开前的KeepAlive探测次数
+
+    if(setsockopt(fd, SOL_TCP, TCP_KEEPIDLE, (void *)&iKeepIdle, sizeof(iKeepIdle)) < 0)  
+    {
+        Q_Printf("%s", "setsockopt TCP_KEEPIDLE error!");
+        return;
+    }  
+    if(setsockopt(fd, SOL_TCP, TCP_KEEPINTVL, (void *)&iKeepInterval, sizeof(iKeepInterval)) < 0)  
+    {
+        Q_Printf("%s", "setsockopt TCP_KEEPINTVL error!");
+        return;
+    }  
+    if(setsockopt(fd, SOL_TCP, TCP_KEEPCNT, (void *)&ikeepCount, sizeof(ikeepCount)) < 0)  
+    {
+        Q_Printf("%s", "setsockopt TCP_KEEPCNT error!");
+        return;
+    }
+#endif
 }
