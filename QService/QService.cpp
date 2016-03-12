@@ -737,6 +737,50 @@ static void PrintUseAge()
     printf("%s\n", "\"./QService -v\" show server version!");
 }
 
+/*
+RLIMIT_AS //进程的最大虚内存空间
+RLIMIT_CORE //内核转存文件的最大长度。
+RLIMIT_CPU //最大允许的CPU使用时间
+RLIMIT_DATA //进程数据段的最大值。
+RLIMIT_FSIZE //进程可建立的文件的最大长度。如果进程试图超出这一限制时，核心会给其发送SIGXFSZ信号，默认情况下将终止进程的执行。
+RLIMIT_LOCKS //进程可建立的锁和租赁的最大值。
+RLIMIT_MEMLOCK //进程可锁定在内存中的最大数据量，字节为单位。
+RLIMIT_MSGQUEUE //进程可为POSIX消息队列分配的最大字节数。
+RLIMIT_NICE //进程可通过setpriority() 或 nice()调用设置的最大完美值。
+RLIMIT_NOFILE //指定比进程可打开的最大文件描述词大一的值，超出此值，将会产生EMFILE错误。
+RLIMIT_NPROC //用户可拥有的最大进程数。
+RLIMIT_RTPRIO //进程可通过sched_setscheduler 和 sched_setparam设置的最大实时优先级。
+RLIMIT_SIGPENDING //用户可拥有的最大挂起信号数。
+RLIMIT_STACK //最大的进程堆栈，以字节为单位。
+*/
+int setRLimit(int iResource)
+{
+    struct rlimit stLimitOld;
+    struct rlimit stLimNew;
+
+    Q_Printf("setrlimit %d", iResource);
+    if (getrlimit(iResource, &stLimitOld) < 0)
+    {
+        Q_Printf("getrlimit failed: %s, resource %d", strerror(errno), iResource);
+        return Q_RTN_ERROR;
+    }
+
+    Q_Printf("get rlim_cur %d, rlim_max %d.", stLimitOld.rlim_cur, stLimitOld.rlim_max);
+
+    stLimNew.rlim_cur = stLimitOld.rlim_max;
+    stLimNew.rlim_max = stLimitOld.rlim_max;
+    Q_Printf("set rlim_cur %d, rlim_max %d.", stLimNew.rlim_cur, stLimNew.rlim_max);
+    if (setrlimit(iResource, &stLimNew) < 0)
+    {
+        Q_Printf("setrlimit failed: %s, resource %d", strerror(errno), iResource);
+        (void)setrlimit(iResource, &stLimitOld);
+
+        return Q_RTN_ERROR;
+    } 
+
+    return Q_RTN_OK;
+}
+
 int main(int argc, char *argv[])
 {
     int iRtn = Q_RTN_OK;
@@ -753,12 +797,12 @@ int main(int argc, char *argv[])
 
     Q_Printf("exit service by command \"kill -%d + pid\".", Q_SIGNAL_EXIT);
 
-    //可以生产dump文件
-    struct rlimit stLimit;
-
-    getrlimit(RLIMIT_CORE, &stLimit);
-    stLimit.rlim_cur = stLimit.rlim_max;
-    setrlimit(RLIMIT_CORE, &stLimit);
+    //打开dump文件限制
+    iRtn = setRLimit(RLIMIT_CORE);
+    if (Q_RTN_OK != iRtn)
+    {
+        return iRtn;
+    }
 
     iRtn = Q_GetProPath(strDir);
     if (Q_RTN_OK != iRtn)
