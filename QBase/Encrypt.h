@@ -51,6 +51,11 @@ public:
     std::string zlibDecode(std::string strVal);
     const char *zlibDecompression(const char *pszVal, const size_t &iValLens, size_t &iOutLens);
 
+    //crc16
+    unsigned short hashCRC16(const char *pszKey, const size_t iLens);
+    //crc32
+    unsigned int hashCRC32(const char *pszKey, const size_t iLens);
+
     CAESEncode *getAESEncode(void)
     {
         return &m_objAESEncode;

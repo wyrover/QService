@@ -317,5 +317,8 @@ void CReg2Lua::reg_Encrypt(void)
 
             .addFunction("zlibEncode", &CEncrypt::zlibEncode)
             .addFunction("zlibDecode", &CEncrypt::zlibDecode)
+
+            .addFunction("hashCRC16", &CEncrypt::hashCRC16)
+            .addFunction("hashCRC32", &CEncrypt::hashCRC32)
         .endClass();
 }
