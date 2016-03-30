@@ -56,7 +56,7 @@ bool CLuaBinary::skipWrite(const unsigned int iLens)
         return true;
     }
 
-    return setVal(NULL, iLens);;
+    return setVal(NULL, iLens);
 }
 
 bool CLuaBinary::setVal(const char *pszBuf, const size_t iLens)
